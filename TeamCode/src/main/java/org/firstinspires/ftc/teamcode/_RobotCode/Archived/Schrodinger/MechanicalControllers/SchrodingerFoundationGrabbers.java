@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Archive.Schrodinger.MechanicalControllers;
+package org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger.MechanicalControllers;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;

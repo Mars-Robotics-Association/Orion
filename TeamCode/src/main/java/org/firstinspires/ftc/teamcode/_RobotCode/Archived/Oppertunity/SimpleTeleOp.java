@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Archive.Oppertunity;
+package org.firstinspires.ftc.teamcode._RobotCode.Archived.Oppertunity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;

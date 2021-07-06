@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Archive.Curiosity;
+package org.firstinspires.ftc.teamcode._RobotCode.Archived.Curiosity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;

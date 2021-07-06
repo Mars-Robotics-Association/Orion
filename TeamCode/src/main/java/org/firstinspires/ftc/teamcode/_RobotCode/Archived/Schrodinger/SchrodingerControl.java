@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Archive.Schrodinger;
+package org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger;
 
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -6,12 +6,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.BaseRobots.MecanumBaseControl;
-import org.firstinspires.ftc.teamcode.MechanicalControl.MotorizedIntake;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
-import org.firstinspires.ftc.teamcode._RobotCode.Archive.Schrodinger.MechanicalControllers.SchrodingerArm;
-import org.firstinspires.ftc.teamcode._RobotCode.Archive.Schrodinger.MechanicalControllers.SchrodingerFoundationGrabbers;
-import org.firstinspires.ftc.teamcode._RobotCode.Archive.Schrodinger.MechanicalControllers.SchrodingerGripper;
-import org.firstinspires.ftc.teamcode.Orion.Odometry.DemoBotOdometry;
+import org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger.MechanicalControllers.SchrodingerArm;
+import org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger.MechanicalControllers.SchrodingerFoundationGrabbers;
+import org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger.MechanicalControllers.SchrodingerGripper;
 
 //The class used to control schrodinger. Autonomous functions, opmodes, and other scripts can call
 //methods in here to control the schrodinger.
@@ -24,9 +22,7 @@ public class SchrodingerControl extends MecanumBaseControl
     //Mechanical Components
     private SchrodingerArm arm;
     private SchrodingerGripper gripper;
-    private MotorizedIntake intake;
     private SchrodingerFoundationGrabbers grabbers;
-    private DemoBotOdometry odometry;
 
     //Sensors
     private RevTouchSensor armResetTouchSensor;
@@ -65,8 +61,6 @@ public class SchrodingerControl extends MecanumBaseControl
             gripper = new SchrodingerGripper(gripperR, gripperL, headingServo, rotationServoR, rotationServoL);
             grabbers = new SchrodingerFoundationGrabbers(grabberServoR, grabberServoL,TM);
 
-            intake = new MotorizedIntake();
-            intake.Init(new DcMotor[]{intakeMotorR, intakeMotorL}, new double[]{1,-1});
 
             armResetTouchSensor = currentOpMode.hardwareMap.get(RevTouchSensor.class, "armReset");
         }
@@ -75,7 +69,6 @@ public class SchrodingerControl extends MecanumBaseControl
         super.InitCoreRobotModules();
 
         if(USE_CHASSIS) {
-            odometry = new DemoBotOdometry(FR, FL);
         }
     }
 
@@ -103,7 +96,6 @@ public class SchrodingerControl extends MecanumBaseControl
     public void SwitchFoundationGrabberState(){grabbers.SwitchGrabberState();}
     public void Intake(double power) {
         //Runs the intake of the robot
-        intake.SetIntakePower(power);
     }
     public void CheckIfArmNeedsReset(){
         if(armResetTouchSensor.isPressed() && arm.armMotor.getCurrentPosition() != 0)arm.ResetArmMotor();
@@ -118,7 +110,5 @@ public class SchrodingerControl extends MecanumBaseControl
     //PUBLIC GETTERS
     public SchrodingerGripper GetGripper(){return gripper;}
     public SchrodingerArm GetArm(){return arm;}
-    public MotorizedIntake GetIntake(){return intake;}
     public SchrodingerFoundationGrabbers GetFoundationGrabbers(){return grabbers;}
-    public DemoBotOdometry GetOdometry() {return odometry;}
 }

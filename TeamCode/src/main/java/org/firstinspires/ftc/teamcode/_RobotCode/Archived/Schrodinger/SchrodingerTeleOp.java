@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Archive.Schrodinger;
+package org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -111,10 +111,6 @@ public class SchrodingerTeleOp extends OpMode implements ControllerInputListener
                 e.printStackTrace();
             }
         }*/
-        if(gamepad1.right_stick_button){
-            control.GetIntake().SetIntakePower(-1);
-        }
-        else control.GetIntake().SetIntakePower(0);
 
         if(gamepad1.dpad_left){
             control.ChangeArmExtension(1);
