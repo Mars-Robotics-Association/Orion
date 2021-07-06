@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Oppertunity;
+package org.firstinspires.ftc.teamcode._RobotCode.Archive.Oppertunity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
 //import org.firstinspires.ftc.teamcode.Robots.Curiosity.CuriosityUltimateGoalControl;
 
 import org.firstinspires.ftc.teamcode.Core.BaseRobots.MecanumBaseControl;
+import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
 
 @TeleOp(name = "Kenobi TeleOp", group = "Competition")
 @Config
@@ -88,7 +89,7 @@ public class OpportunityTeleOp extends OpMode implements ControllerInputListener
                   //  hardwareMap.servo.get("leftarm"),
                  //  hardwareMap.servo.get("rightarm")
             );
-            control = new MecanumBaseControl(this, true, true, false);
+            control = new MecanumBaseControl(this, new DefaultNavProfile(), true, true, false);
         control.InitCoreRobotModules();
 
 //>>>>>>> Stashed changes

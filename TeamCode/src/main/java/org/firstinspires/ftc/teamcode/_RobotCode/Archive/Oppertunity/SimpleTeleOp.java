@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Oppertunity;
+package org.firstinspires.ftc.teamcode._RobotCode.Archive.Oppertunity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
 //import org.firstinspires.ftc.teamcode.Robots.Curiosity.CuriosityUltimateGoalControl;
 
 import org.firstinspires.ftc.teamcode.Core.BaseRobots.MecanumBaseControl;
+import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
 
 //SimpleTeleOpKenobi (or whatever name is here) shows up on the phone
 @TeleOp(name = "SimpleTeleOpKenobi", group = "Competition")
@@ -95,7 +96,7 @@ public class SimpleTeleOp extends OpMode implements ControllerInputListener
         feedServo = hardwareMap.crservo.get("feedServo");
 
         //You must set these booleans to use the mecanum wheels: set useChassis to true, usePayload to false, useNavigator to false
-        control = new MecanumBaseControl(this, true, false, false);
+        control = new MecanumBaseControl(this, new DefaultNavProfile(), true, false, false);
         control.InitCoreRobotModules();
 
         controllerInput2 = new ControllerInput(gamepad2, 2);

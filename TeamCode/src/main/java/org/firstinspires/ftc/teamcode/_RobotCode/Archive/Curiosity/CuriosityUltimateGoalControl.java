@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
+package org.firstinspires.ftc.teamcode._RobotCode.Archive.Curiosity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
@@ -38,7 +38,7 @@ public class CuriosityUltimateGoalControl extends MecanumBaseControl
      * @param useNavigator whether to use Orion (webcams + odometry navigation)
      */
     public CuriosityUltimateGoalControl(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
-        super(setOpMode, useChassis, usePayload, useNavigator);
+        super(setOpMode, new CuriosityNavProfile(), useChassis, usePayload, useNavigator);
     }
 
     //SETUP METHODS//

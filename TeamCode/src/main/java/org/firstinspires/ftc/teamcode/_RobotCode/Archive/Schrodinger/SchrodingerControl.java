@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Schrodinger;
+package org.firstinspires.ftc.teamcode._RobotCode.Archive.Schrodinger;
 
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -7,9 +7,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.BaseRobots.MecanumBaseControl;
 import org.firstinspires.ftc.teamcode.MechanicalControl.MotorizedIntake;
-import org.firstinspires.ftc.teamcode._RobotCode.Schrodinger.MechanicalControllers.SchrodingerArm;
-import org.firstinspires.ftc.teamcode._RobotCode.Schrodinger.MechanicalControllers.SchrodingerFoundationGrabbers;
-import org.firstinspires.ftc.teamcode._RobotCode.Schrodinger.MechanicalControllers.SchrodingerGripper;
+import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
+import org.firstinspires.ftc.teamcode._RobotCode.Archive.Schrodinger.MechanicalControllers.SchrodingerArm;
+import org.firstinspires.ftc.teamcode._RobotCode.Archive.Schrodinger.MechanicalControllers.SchrodingerFoundationGrabbers;
+import org.firstinspires.ftc.teamcode._RobotCode.Archive.Schrodinger.MechanicalControllers.SchrodingerGripper;
 import org.firstinspires.ftc.teamcode.Orion.Odometry.DemoBotOdometry;
 
 //The class used to control schrodinger. Autonomous functions, opmodes, and other scripts can call
@@ -36,7 +37,7 @@ public class SchrodingerControl extends MecanumBaseControl
     private double armExtension = 0.5; //in meters
 
     public SchrodingerControl(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
-        super(setOpMode, useChassis, usePayload, useNavigator);
+        super(setOpMode, new DefaultNavProfile(), useChassis, usePayload, useNavigator);
     }
 
     //SETUP METHODS//
