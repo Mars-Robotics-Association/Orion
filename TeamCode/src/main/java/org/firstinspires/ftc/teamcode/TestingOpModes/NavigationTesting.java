@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Orion.OrionNavigator;
-import org.firstinspires.ftc.teamcode._RobotCode.Archive.Curiosity.CuriosityUltimateGoalControl;
+import org.firstinspires.ftc.teamcode._RobotCode.Archived.Curiosity.CuriosityUltimateGoalControl;
 
 //The class for controlling the robot in teleop. Includes basic drive movement, shooter operations,
 //and advanced autonomous functions.
