@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.StandardMecanumDriv
 public class SplineTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap);
+        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap, new DefaultNavProfile());
 
         waitForStart();
 

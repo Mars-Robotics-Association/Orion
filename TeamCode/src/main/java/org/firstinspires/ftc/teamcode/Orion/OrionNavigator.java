@@ -38,15 +38,15 @@ public class OrionNavigator
     }
 
 
-    public OrionNavigator(OpMode setOpMode, MecanumBaseControl setControl){
+    public OrionNavigator(OpMode setOpMode, MecanumBaseControl setControl, NavigationProfile setNavProfile){
         opMode = setOpMode;
         control = setControl;
-        //navigationProfile = setNavProfile;
+        navigationProfile = setNavProfile;
     }
 
     public void Init(){
         if(control.isUSE_CHASSIS()) {
-            rr = new RoadrunnerControl(opMode);
+            rr = new RoadrunnerControl(opMode, navigationProfile);
             rr.Init();
         }
         vuforiaFront = new VuMarkNavigation(opMode, "Webcam 1");

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.PIDController;
 import org.firstinspires.ftc.teamcode.MechanicalControl.MecanumChassis;
+import org.firstinspires.ftc.teamcode.Orion.NavigationProfile;
 import org.firstinspires.ftc.teamcode.Orion.OrionNavigator;
 import org.firstinspires.ftc.teamcode.Sensors.IMU;
 
@@ -30,6 +31,7 @@ public class MecanumBaseControl
     protected IMU imu;
     //Orion Navigator
     protected OrionNavigator orion;
+    protected NavigationProfile navigationProfile;
     //OpMode
     protected OpMode currentOpMode;
     //Drive Motors
@@ -52,12 +54,13 @@ public class MecanumBaseControl
 
 
     //Initializer
-    public MecanumBaseControl(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator)
+    public MecanumBaseControl(OpMode setOpMode, NavigationProfile setNavProfile, boolean useChassis, boolean usePayload, boolean useNavigator)
     {
         currentOpMode = setOpMode;
         USE_CHASSIS = useChassis;
         USE_PAYLOAD = usePayload;
         USE_NAVIGATOR = useNavigator;
+        navigationProfile = setNavProfile;
     }
 
     //TODO: Call this on Init()
@@ -68,7 +71,7 @@ public class MecanumBaseControl
 
         if(USE_NAVIGATOR) {
             //TODO: ===INIT ORION===
-            orion = new OrionNavigator(currentOpMode, this);
+            orion = new OrionNavigator(currentOpMode, this, navigationProfile);
             orion.Init();
         }
 

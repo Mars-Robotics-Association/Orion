@@ -85,8 +85,40 @@ public class StandardMecanumDrive extends MecanumDrive {
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
-    public StandardMecanumDrive(HardwareMap hardwareMap, NavigationProfile setNavProfile) {
-        super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
+    public StandardMecanumDrive(HardwareMap hardwareMap, NavigationProfile navProfile) {
+        //Apply nav profile values to the parent class
+        super(navProfile.kV(), navProfile.kA(), navProfile.kStatic(), navProfile.TRACK_WIDTH(), navProfile.TRACK_WIDTH(), navProfile.LATERAL_MULTIPLIER());
+
+        //Set StandardMecanumDrive()'s variables using nav profile
+        TRANSLATIONAL_PID = navProfile.TRANSLATIONAL_PID();
+        HEADING_PID = navProfile.HEADING_PID();
+        frontLeftName = navProfile.frontLeftName();
+        frontRightName = navProfile.frontRightName();
+        backRightName = navProfile.backRightName();
+        backLeftName = navProfile.backLeftName();
+        leftReversed = navProfile.leftReversed();
+        rightReversed = navProfile.rightReversed();
+        LATERAL_MULTIPLIER = navProfile.LATERAL_MULTIPLIER();
+        VX_WEIGHT = navProfile.VX_WEIGHT();
+        VY_WEIGHT = navProfile.VY_WEIGHT();
+        OMEGA_WEIGHT = navProfile.OMEGA_WEIGHT();
+
+        //Set DriveConstant()'s variables using nav profile
+        DriveConstants.TICKS_PER_REV = navProfile.TICKS_PER_REV();
+        DriveConstants.MAX_RPM = navProfile.MAX_RPM();
+        DriveConstants.RUN_USING_ENCODER = navProfile.RUN_USING_ENCODER();
+        DriveConstants.MOTOR_VELO_PID = navProfile.MOTOR_VELO_PID();
+        DriveConstants.WHEEL_RADIUS = navProfile.WHEEL_RADIUS_CHASSIS(); // in
+        DriveConstants.GEAR_RATIO = navProfile.GEAR_RATIO_CHASSIS(); // output (wheel) speed / input (motor) speed
+        DriveConstants.TRACK_WIDTH = navProfile.TRACK_WIDTH(); // in
+        DriveConstants.kV =  navProfile.kV(); //1.0 / rpmToVelocity(MAX_RPM)
+        DriveConstants.kA = navProfile.kA();
+        DriveConstants.kStatic = navProfile.kStatic();
+        DriveConstants.MAX_VEL = navProfile.MAX_VEL();
+        DriveConstants.MAX_ACCEL = navProfile.MAX_ACCEL();
+        DriveConstants.MAX_ANG_VEL = navProfile.MAX_ANG_VEL();
+        DriveConstants.MAX_ANG_ACCEL = navProfile.MAX_ANG_ACCEL();
+
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
@@ -144,7 +176,7 @@ public class StandardMecanumDrive extends MecanumDrive {
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, navProfile));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }

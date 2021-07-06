@@ -13,13 +13,15 @@ import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.StandardMecanumDrive;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.util.LoggingUtil;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.util.RegressionUtil;
+import org.firstinspires.ftc.teamcode._RobotCode.Testing.TestNavProfile;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_RPM;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.rpmToVelocity;
+import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_RPM;
+import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.rpmToVelocity;
+
 
 /*
  * Op mode for computing kV, kStatic, and kA from various drive routines. For the curious, here's an
@@ -46,7 +48,7 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap);
+        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap, new DefaultNavProfile());
 
         NanoClock clock = NanoClock.system();
 

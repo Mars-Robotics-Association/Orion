@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Orion;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 public abstract class NavigationProfile
 {
@@ -8,7 +9,7 @@ public abstract class NavigationProfile
     public abstract double TICKS_PER_REV () ;
     public abstract double MAX_RPM () ;
     public abstract boolean RUN_USING_ENCODER () ;
-    public abstract PIDCoefficients MOTOR_VELO_PID () ;
+    public abstract PIDFCoefficients MOTOR_VELO_PID () ;
     public abstract double WHEEL_RADIUS_CHASSIS () ; // in
     public abstract double GEAR_RATIO_CHASSIS () ; // output (wheel) speed / input (motor) speed
     public abstract double TRACK_WIDTH () ; // in
@@ -27,6 +28,17 @@ public abstract class NavigationProfile
 
     public abstract boolean leftReversed () ;
     public abstract boolean rightReversed () ;
+
+    public abstract double LATERAL_MULTIPLIER ();
+
+    public abstract double VX_WEIGHT ();
+    public abstract double VY_WEIGHT ();
+    public abstract double OMEGA_WEIGHT ();
+
+    public abstract double MAX_VEL ();
+    public abstract double MAX_ACCEL ();
+    public abstract double MAX_ANG_VEL ();
+    public abstract double MAX_ANG_ACCEL ();
 
     //Standard Tracking Wheel Localizer
     public abstract double WHEEL_RADIUS_DEAD_WHEELS () ; // in

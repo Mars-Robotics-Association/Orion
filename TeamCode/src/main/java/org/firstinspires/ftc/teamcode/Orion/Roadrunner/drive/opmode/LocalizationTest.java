@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.StandardMecanumDriv
 public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap);
+        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap, new DefaultNavProfile());
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 

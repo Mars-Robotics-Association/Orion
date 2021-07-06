@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.BaseRobots.MecanumBaseControl;
+import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
 import org.firstinspires.ftc.teamcode.Samples.MechanicalControl.IntakeSample;
 
 public class SampleRobot extends MecanumBaseControl
@@ -11,7 +12,7 @@ public class SampleRobot extends MecanumBaseControl
     public IntakeSample payload;
 
     public SampleRobot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
-        super(setOpMode, useChassis, usePayload, useNavigator);
+        super(setOpMode, new DefaultNavProfile(), useChassis, usePayload, useNavigator);
     }
 
     //SETUP METHODS//

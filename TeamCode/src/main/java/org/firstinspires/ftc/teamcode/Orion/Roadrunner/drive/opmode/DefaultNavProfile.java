@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Testing;
+package org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import org.firstinspires.ftc.teamcode.Orion.NavigationProfile;
 
 @Config
-public class TestNavProfile extends NavigationProfile {
+public class DefaultNavProfile extends NavigationProfile {
 
     //TODO: EDIT THESE VALUES TO MATCH CALIBRATED VALUES
 

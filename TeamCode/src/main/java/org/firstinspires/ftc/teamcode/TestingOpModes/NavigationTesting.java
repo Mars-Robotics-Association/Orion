@@ -3,14 +3,10 @@ package org.firstinspires.ftc.teamcode.TestingOpModes;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Core.Input.ControllerInput;
 import org.firstinspires.ftc.teamcode.Orion.OrionNavigator;
-import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.CuriosityUltimateGoalControl;
+import org.firstinspires.ftc.teamcode._RobotCode.Archive.Curiosity.CuriosityUltimateGoalControl;
 
 //The class for controlling the robot in teleop. Includes basic drive movement, shooter operations,
 //and advanced autonomous functions.
