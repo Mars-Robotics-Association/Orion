@@ -24,6 +24,7 @@ public class HermesTestingOpMode extends OpMode
     public void loop() {
         poseToSend = new RobotPose(Math.random(), Math.random(), Math.random());
         Object[] data = {poseToSend};
-        log.SendData(data);
+        log.AddData(data);
+        log.Update();
     }
 }
