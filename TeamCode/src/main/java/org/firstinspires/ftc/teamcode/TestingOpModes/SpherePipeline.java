@@ -7,15 +7,14 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 
-public class Pipeline extends OpenCvPipeline {
+public class SpherePipeline extends OpenCvPipeline {
     Mat grey = new Mat();
     Mat newmat = new Mat();
-    Scalar lowbgr = new Scalar(20,100,100);
-    Scalar highbgr = new Scalar(30, 255, 255);
+    Scalar highbgr = new Scalar(255,255,255);
+    Scalar lowbgr = new Scalar(230,230,230);
     @Override
     public Mat processFrame(Mat input) {
-        Imgproc.cvtColor(input, grey, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(grey, lowbgr,highbgr, newmat);
+        Core.inRange(input, lowbgr,highbgr, newmat);
 
         return newmat;
     }
