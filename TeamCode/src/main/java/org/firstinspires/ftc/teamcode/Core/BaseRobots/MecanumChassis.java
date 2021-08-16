@@ -101,6 +101,8 @@ public class MecanumChassis
         RobotTelemetry.addData("PID Offset ", headingPIDOffset);
 
         //set the powers of the motors with pid offset applied
+        //TODO remove line below
+        headingPIDOffset *= -1;
         SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
 /*        //Returns speed telemetry
         RobotTelemetry.addData("Speed FR ", speeds[0]+headingPIDOffset);
