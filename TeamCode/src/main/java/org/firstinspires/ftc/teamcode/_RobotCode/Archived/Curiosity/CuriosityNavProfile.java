@@ -1,13 +1,17 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Archived.Curiosity;
 
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-
-import org.firstinspires.ftc.teamcode.Orion.NavigationProfile;
+import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
+import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaChassisProfile;
+import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaOdometryProfile;
+import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaTuningProfile;
+import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaVisionProfile;
 
 class CuriosityNavProfile extends NavigationProfile
 {
-    //TODO: EDIT THESE VALUES TO MATCH CALIBRATED VALUES
+    public CuriosityNavProfile() {
+        super(new BelindaTuningProfile(), new BelindaChassisProfile(), new BelindaVisionProfile(), new BelindaOdometryProfile());
+    }
+    /*//TODO: EDIT THESE VALUES TO MATCH CALIBRATED VALUES
 
     //Drive Constants
     public static final double TICKS_PER_REV = 8192;
@@ -164,5 +168,5 @@ class CuriosityNavProfile extends NavigationProfile
     @Override
     public String LABEL_SECOND_ELEMENT() {return LABEL_SECOND_ELEMENT;}
     @Override
-    public double cameraXOffset() {return cameraXOffset;}
+    public double cameraXOffset() {return cameraXOffset;}*/
 }

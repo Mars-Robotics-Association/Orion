@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode;
+package org.firstinspires.ftc.teamcode._RobotCode.SoccerBots;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -24,8 +24,8 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
     ////Variables////
     //Tweaking Vars
-    public static double driveSpeed = 0.5;//used to change how fast robot drives
-    public static double turnSpeed = -0.5;//used to change how fast robot turns
+    public static double driveSpeed = 1;//used to change how fast robot drives
+    public static double turnSpeed = -1;//used to change how fast robot turns
 
     public static double autoSpeedModifier = 2; //used to change speed of automatic navigation
 
@@ -38,7 +38,7 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
     public static double shootH = 0.0;
     public static double shootBOffset = 0.0;
 
-    private double speedMultiplier = 1;
+    private double speedMultiplier = 0.5;
 
     private boolean busy = false;
     private double turnOffset = 0;
@@ -47,7 +47,7 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        control = new SoccerBotControl(this, true, false, false);
+        control = new SoccerBotControl(this, true, false, true);
         control.Init();
 
         controllerInput1 = new ControllerInput(gamepad1, 1);
@@ -132,10 +132,10 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void APressed(double controllerNumber) {
-        if(controllerNumber == 1) {
+        /*if(controllerNumber == 1) {
             if (speedMultiplier == 1) speedMultiplier = 0.5;
             else speedMultiplier = 1;
-        }
+        }*/
     }
 
     @Override

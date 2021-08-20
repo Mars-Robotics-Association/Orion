@@ -27,8 +27,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
-import org.firstinspires.ftc.teamcode.Orion.NavigationProfile;
-import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.StandardTrackingWheelLocalizer;
+import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.trajectorysequence.TrajectorySequenceRunner;
@@ -74,8 +73,8 @@ public class StandardMecanumDrive extends MecanumDrive {
 
     private TrajectorySequenceRunner trajectorySequenceRunner;
 
-    private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
-    private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
+    private static TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
+    private static TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
 
     private TrajectoryFollower follower;
 
@@ -87,37 +86,39 @@ public class StandardMecanumDrive extends MecanumDrive {
 
     public StandardMecanumDrive(HardwareMap hardwareMap, NavigationProfile navProfile) {
         //Apply nav profile values to the parent class
-        super(navProfile.kV(), navProfile.kA(), navProfile.kStatic(), navProfile.TRACK_WIDTH(), navProfile.TRACK_WIDTH(), navProfile.LATERAL_MULTIPLIER());
+        super(kV,kA,kStatic,TRACK_WIDTH,LATERAL_MULTIPLIER);
+        //super(navProfile.kV(), navProfile.kA(), navProfile.kStatic(), navProfile.TRACK_WIDTH(), navProfile.TRACK_WIDTH(), navProfile.LATERAL_MULTIPLIER());
 
-        //Set StandardMecanumDrive()'s variables using nav profile
-        TRANSLATIONAL_PID = navProfile.TRANSLATIONAL_PID();
-        HEADING_PID = navProfile.HEADING_PID();
-        frontLeftName = navProfile.frontLeftName();
-        frontRightName = navProfile.frontRightName();
-        backRightName = navProfile.backRightName();
-        backLeftName = navProfile.backLeftName();
-        leftReversed = navProfile.leftReversed();
-        rightReversed = navProfile.rightReversed();
-        LATERAL_MULTIPLIER = navProfile.LATERAL_MULTIPLIER();
-        VX_WEIGHT = navProfile.VX_WEIGHT();
-        VY_WEIGHT = navProfile.VY_WEIGHT();
-        OMEGA_WEIGHT = navProfile.OMEGA_WEIGHT();
+        //Set StandardMecanumDrive()'s variables using nav profile (NOT THE ISSUE)
+        TRANSLATIONAL_PID = navProfile.tuningProfile.TRANSLATIONAL_PID();
+        HEADING_PID = navProfile.tuningProfile.HEADING_PID();
+        frontLeftName = navProfile.chassisProfile.frontLeftName();
+        frontRightName = navProfile.chassisProfile.frontRightName();
+        backRightName = navProfile.chassisProfile.backRightName();
+        backLeftName = navProfile.chassisProfile.backLeftName();
+        leftReversed = navProfile.chassisProfile.leftReversed();
+        rightReversed = navProfile.chassisProfile.rightReversed();
+        LATERAL_MULTIPLIER = navProfile.tuningProfile.LATERAL_MULTIPLIER();
+        VX_WEIGHT = navProfile.tuningProfile.VX_WEIGHT();
+        VY_WEIGHT = navProfile.tuningProfile.VY_WEIGHT();
+        OMEGA_WEIGHT = navProfile.tuningProfile.OMEGA_WEIGHT();
 
         //Set DriveConstant()'s variables using nav profile
-        DriveConstants.TICKS_PER_REV = navProfile.TICKS_PER_REV();
-        DriveConstants.MAX_RPM = navProfile.MAX_RPM();
-        DriveConstants.RUN_USING_ENCODER = navProfile.RUN_USING_ENCODER();
-        DriveConstants.MOTOR_VELO_PID = navProfile.MOTOR_VELO_PID();
-        DriveConstants.WHEEL_RADIUS = navProfile.WHEEL_RADIUS_CHASSIS(); // in
-        DriveConstants.GEAR_RATIO = navProfile.GEAR_RATIO_CHASSIS(); // output (wheel) speed / input (motor) speed
-        DriveConstants.TRACK_WIDTH = navProfile.TRACK_WIDTH(); // in
-        DriveConstants.kV =  navProfile.kV(); //1.0 / rpmToVelocity(MAX_RPM)
-        DriveConstants.kA = navProfile.kA();
-        DriveConstants.kStatic = navProfile.kStatic();
-        DriveConstants.MAX_VEL = navProfile.MAX_VEL();
-        DriveConstants.MAX_ACCEL = navProfile.MAX_ACCEL();
-        DriveConstants.MAX_ANG_VEL = navProfile.MAX_ANG_VEL();
-        DriveConstants.MAX_ANG_ACCEL = navProfile.MAX_ANG_ACCEL();
+        DriveConstants.TICKS_PER_REV = navProfile.odometryProfile.TICKS_PER_REV();
+        DriveConstants.MAX_RPM = navProfile.chassisProfile.MAX_RPM();
+        DriveConstants.RUN_USING_ENCODER = navProfile.chassisProfile.RUN_USING_ENCODER();
+        DriveConstants.MOTOR_VELO_PID = navProfile.chassisProfile.MOTOR_VELO_PID();
+        DriveConstants.WHEEL_RADIUS = navProfile.chassisProfile.WHEEL_RADIUS_CHASSIS(); // in
+        DriveConstants.GEAR_RATIO = navProfile.chassisProfile.GEAR_RATIO_CHASSIS(); // output (wheel) speed / input (motor) speed
+        DriveConstants.TRACK_WIDTH = navProfile.chassisProfile.TRACK_WIDTH(); // in
+        DriveConstants.kV =  navProfile.tuningProfile.kV(); //1.0 / rpmToVelocity(MAX_RPM)
+        DriveConstants.kA = navProfile.tuningProfile.kA();
+        DriveConstants.kStatic = navProfile.tuningProfile.kStatic();
+
+        DriveConstants.MAX_VEL = navProfile.tuningProfile.MAX_VEL(); //problem
+        DriveConstants.MAX_ACCEL = navProfile.tuningProfile.MAX_ACCEL(); //problem
+        DriveConstants.MAX_ANG_VEL = navProfile.tuningProfile.MAX_ANG_VEL();
+        DriveConstants.MAX_ANG_ACCEL = navProfile.tuningProfile.MAX_ANG_ACCEL();
 
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,

@@ -4,7 +4,6 @@ package org.firstinspires.ftc.teamcode.Core.BaseRobots;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Sensors.IMU;
@@ -21,7 +20,7 @@ public class MecanumChassis
     ////Dependencies////
     private OpMode CurrentOpMode;
     private PIDController headingPIDController;
-    private PIDController driftPIDController;
+    private PIDController velocityPID;
     private IMU imu;
 
     ////Variables////
@@ -48,8 +47,8 @@ public class MecanumChassis
     public PIDController GetHeadingPID() {
         return headingPIDController;
     }
-    public PIDController GetDriftPID() {
-        return driftPIDController;
+    public PIDController GetVelocityPID() {
+        return velocityPID;
     }
 
     //Initializer
@@ -73,7 +72,7 @@ public class MecanumChassis
         dashboard.setTelemetryTransmissionInterval(25);
 
         headingPIDController = new PIDController(0,0,0);//Create the pid controller.
-        driftPIDController = new PIDController(0,0,0);//Create the pid controller.
+        velocityPID = new PIDController(0,0,0);//Create the pid controller.
     }
 
     ////CALLABLE METHODS////
@@ -85,8 +84,7 @@ public class MecanumChassis
         //Sets the mode so that robot can drive and record encoder values
         SetModeRunWithoutEncoders();
 
-        double robotDriftAngle = imu.CalculateDriftAngle();
-        double driftPIDOffset = driftPIDController.getOutput(robotDriftAngle, angle);
+        double velocityPIDOffset = velocityPID.getOutput(imu.GetVelocity(), speed);
 
         //Gets speeds for the motors
         double[] speeds = CalculateWheelSpeedsTurning(angle, speed, turnSpeed);
@@ -98,26 +96,17 @@ public class MecanumChassis
             headingPIDController.reset();
         }
         RobotTelemetry.addData("Angular Velocity ", imu.GetAngularVelocity());
-        RobotTelemetry.addData("PID Offset ", headingPIDOffset);
+        RobotTelemetry.addData("Angular PID Offset ", headingPIDOffset);
+        RobotTelemetry.addData("Velocity ", imu.GetVelocity());
+        RobotTelemetry.addData("PID Offset ", velocityPIDOffset);
 
         //set the powers of the motors with pid offset applied
         //TODO remove line below
         headingPIDOffset *= -1;
         SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
-/*        //Returns speed telemetry
-        RobotTelemetry.addData("Speed FR ", speeds[0]+headingPIDOffset);
-        RobotTelemetry.addData("Speed FL ", speeds[1]+headingPIDOffset);
-        RobotTelemetry.addData("Speed RR ", speeds[2]+headingPIDOffset);
-        RobotTelemetry.addData("Speed RL ", speeds[3]+headingPIDOffset);
-        RobotTelemetry.update();
-
-        TelemetryPacket packet = new TelemetryPacket();
-        Canvas fieldOverlay = packet.fieldOverlay();
-        packet.put("pid offset", headingPIDOffset);
-        dashboard.sendTelemetryPacket(packet);*/
 
         //Updates brake pos, as this is called continuously as robot is driving
-        UpdateBrakePos();
+        UpdateEncoderBrakePos();
     }
     public void SpotTurn(double speed)
     {
@@ -131,7 +120,7 @@ public class MecanumChassis
         SetMotorSpeeds(speed, speed, speed, speed);
 
         //Update the values for breaking
-        UpdateBrakePos();
+        UpdateEncoderBrakePos();
     }
 
     //Utility
@@ -191,22 +180,26 @@ public class MecanumChassis
         RR.setPower(rr);
         RL.setPower(rl);
     }
-    public void UpdateBrakePos(){
+    public void UpdateEncoderBrakePos(){
         //Update the values for breaking
         FRBrakePos = FR.getCurrentPosition();
         FLBrakePos = FL.getCurrentPosition();
         RRBrakePos = RR.getCurrentPosition();
         RLBrakePos = RL.getCurrentPosition();
     }
-    public void Brake(){
+    public void EncoderBrake(){
         //Stop the robot and hold position. Meant to be called once
-        UpdateBrakePos();
+        UpdateEncoderBrakePos();
         SetTargetEncoderPos(FRBrakePos, FLBrakePos, RRBrakePos, RLBrakePos);
         SetModeGoToEncoderPos();
         SetMotorSpeeds(0.5,0.5,0.5,0.5);
     }
+
     public void SetHeadingPID(double p, double i, double d){
         headingPIDController.setPID(p,i,d);
+    }
+    public void SetVelocityPID(double p, double i, double d){
+        velocityPID.setPID(p,i,d);
     }
 
     public double[] CalculateWheelSpeedsTurning(double degrees, double speed, double turnSpeed)

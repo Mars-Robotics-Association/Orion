@@ -65,6 +65,12 @@ public class IMU
     public double GetAngularVelocity(){
         return imu.getAngularVelocity().xRotationRate;
     }
+
+    public double GetVelocity(){
+        double velocityScalar = Math.sqrt(Math.pow(imu.getVelocity().xVeloc, 2)+Math.pow(imu.getVelocity().yVeloc, 2));
+        return velocityScalar;
+    }
+
     public Acceleration GetAcceleratioin(){
         return imu.getAcceleration();
     }

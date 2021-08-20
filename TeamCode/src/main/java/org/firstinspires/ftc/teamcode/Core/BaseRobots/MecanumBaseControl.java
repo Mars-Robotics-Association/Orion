@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.PIDController;
-import org.firstinspires.ftc.teamcode.Orion.NavigationProfile;
+import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
 import org.firstinspires.ftc.teamcode.Orion.OrionNavigator;
 import org.firstinspires.ftc.teamcode.Sensors.IMU;
 
@@ -121,7 +121,7 @@ public class MecanumBaseControl
     public void SwitchHeadlessMode(){headlessMode = !headlessMode;}
     public void Brake(){
         //Called once to brake the robot
-        chassis.Brake();
+        chassis.EncoderBrake();
     }
 
     public void MoveTowardsClosestDisc(){ orion.MoveTowardsDiscRaw(discMoveSpeed, discMoveCoefficient); }

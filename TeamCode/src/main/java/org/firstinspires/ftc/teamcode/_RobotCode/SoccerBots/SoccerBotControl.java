@@ -1,11 +1,7 @@
-package org.firstinspires.ftc.teamcode._RobotCode;
+package org.firstinspires.ftc.teamcode._RobotCode.SoccerBots;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.BaseRobots.MecanumBaseControl;
 

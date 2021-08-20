@@ -14,6 +14,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Core.BaseRobots.MecanumBaseControl;
+import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.RoadrunnerControl;
 import org.firstinspires.ftc.teamcode.Orion.Tensorflow.TensorFlowObjectDetector;
 import org.firstinspires.ftc.teamcode.Orion.Vuforia.VuMarkNavigation;
