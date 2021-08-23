@@ -20,7 +20,8 @@ public class MecanumChassis
     ////Dependencies////
     private OpMode CurrentOpMode;
     private PIDController headingPIDController;
-    private PIDController velocityPID;
+    private PIDController speedPID;
+    private PIDController directionPID;
     private IMU imu;
 
     ////Variables////
@@ -48,7 +49,7 @@ public class MecanumChassis
         return headingPIDController;
     }
     public PIDController GetVelocityPID() {
-        return velocityPID;
+        return speedPID;
     }
 
     //Initializer
@@ -72,7 +73,8 @@ public class MecanumChassis
         dashboard.setTelemetryTransmissionInterval(25);
 
         headingPIDController = new PIDController(0,0,0);//Create the pid controller.
-        velocityPID = new PIDController(0,0,0);//Create the pid controller.
+        speedPID = new PIDController(0,0,0);//Create the pid controller.
+        directionPID = new PIDController(0,0,0);//Create the pid controller.
     }
 
     ////CALLABLE METHODS////
@@ -84,26 +86,35 @@ public class MecanumChassis
         //Sets the mode so that robot can drive and record encoder values
         SetModeRunWithoutEncoders();
 
-        double velocityPIDOffset = velocityPID.getOutput(imu.GetVelocity(), speed);
-
-        //Gets speeds for the motors
-        double[] speeds = CalculateWheelSpeedsTurning(angle, speed, turnSpeed);
-
+        //HEADING PID//
         //Uses pid controller to correct for heading error using (currentAngle, targetAngle)
         double headingPIDOffset = headingPIDController.getOutput(turnSpeed, imu.GetAngularVelocity());
         //if the number is not real, reset pid controller
         if(!(headingPIDOffset > 0 || headingPIDOffset <= 0)){
             headingPIDController.reset();
         }
+
+        //TRANSLATIONAL PID//
+        double velocityMag = 0; //TODO: fill out
+        double velocityDir = 0; //TODO: fill out
+        double magPIDOffset = speedPID.getOutput(speed, velocityMag);
+        double dirPIDOffset = directionPID.getOutput(angle, velocityDir);
+
+
         RobotTelemetry.addData("Angular Velocity ", imu.GetAngularVelocity());
         RobotTelemetry.addData("Angular PID Offset ", headingPIDOffset);
-        RobotTelemetry.addData("Velocity ", imu.GetVelocity());
-        RobotTelemetry.addData("PID Offset ", velocityPIDOffset);
+        RobotTelemetry.addData("Velo X ", imu.GetVelocity().xVeloc + " m/s");
+        RobotTelemetry.addData("Velo Y ", imu.GetVelocity().yVeloc + " m/s");
+        RobotTelemetry.addData("Velo Z ", imu.GetVelocity().zVeloc + " m/s");
 
         //set the powers of the motors with pid offset applied
         //TODO remove line below
         headingPIDOffset *= -1;
-        SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
+
+        //Gets speeds for the motors
+        double[] speeds = CalculateWheelSpeedsTurning(angle, speed, turnSpeed+headingPIDOffset);
+        //SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
+        SetMotorSpeeds(speeds[0], speeds[1], speeds[2], speeds[3]);
 
         //Updates brake pos, as this is called continuously as robot is driving
         UpdateEncoderBrakePos();
@@ -198,8 +209,11 @@ public class MecanumChassis
     public void SetHeadingPID(double p, double i, double d){
         headingPIDController.setPID(p,i,d);
     }
-    public void SetVelocityPID(double p, double i, double d){
-        velocityPID.setPID(p,i,d);
+    public void SetSpeedPID(double p, double i, double d){
+        speedPID.setPID(p,i,d);
+    }
+    public void SetDirectionPID(double p, double i, double d){
+        directionPID.setPID(p,i,d);
     }
 
     public double[] CalculateWheelSpeedsTurning(double degrees, double speed, double turnSpeed)

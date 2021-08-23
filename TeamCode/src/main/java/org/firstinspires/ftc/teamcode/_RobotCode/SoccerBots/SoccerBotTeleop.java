@@ -47,7 +47,7 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        control = new SoccerBotControl(this, true, false, true);
+        control = new SoccerBotControl(this, true, false, false);
         control.Init();
 
         controllerInput1 = new ControllerInput(gamepad1, 1);
