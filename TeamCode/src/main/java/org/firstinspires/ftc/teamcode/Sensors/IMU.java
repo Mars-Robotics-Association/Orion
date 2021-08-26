@@ -41,8 +41,8 @@ public class IMU
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
-        //parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        parameters.accelerationIntegrationAlgorithm = new BasicAccelerationIntegrator();
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        //parameters.accelerationIntegrationAlgorithm = new BasicAccelerationIntegrator();
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",

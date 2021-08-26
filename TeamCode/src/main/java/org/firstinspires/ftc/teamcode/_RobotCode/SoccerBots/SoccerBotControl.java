@@ -23,6 +23,7 @@ public class SoccerBotControl extends MecanumBaseControl
 
     ////Variables////
     //Calibration
+    private double levelPitchThreshold = 5;
 
 
     /**@param setOpMode pass the opmode running this down to access hardware map
@@ -48,5 +49,13 @@ public class SoccerBotControl extends MecanumBaseControl
 
     public void Start(){
         super.StartCoreRobotModules();
+    }
+
+    public boolean IsRobotLevel(){
+        double pitch = imu.GetRawAngles().secondAngle;
+        currentOpMode.telemetry.addData("Robot pitch: ", pitch);
+
+        if(Math.abs(pitch)>5) return false;
+        else return true;
     }
 }

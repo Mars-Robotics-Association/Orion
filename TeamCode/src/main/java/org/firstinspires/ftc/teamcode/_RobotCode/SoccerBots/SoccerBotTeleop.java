@@ -38,7 +38,7 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
     public static double shootH = 0.0;
     public static double shootBOffset = 0.0;
 
-    private double speedMultiplier = 0.5;
+    private double speedMultiplier = 1;
 
     private boolean busy = false;
     private double turnOffset = 0;
@@ -83,9 +83,14 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
         control.Update();
 
+        //if robot isn't level, set speed to zero and exit loop
+        if(!control.IsRobotLevel()){
+            control.RawDrive(0,0,0);
+            return;
+        }
+
         if(!busy) {
             //Manage driving
-            //if(control.isUSE_NAVIGATOR()) ManageDrivingRoadrunner();
             control.SetDrivePID(turnP, turnI, turnD);
             ManageDriveMovementCustom();
 
@@ -223,7 +228,11 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LTHeld(double controllerNumber) {
-
+        //makeshift brake function
+        if(controllerNumber == 1){
+            control.RawDrive(180,0.1,0);//move backwards slightly
+            busy = true;
+        }
     }
 
     @Override
@@ -242,6 +251,7 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LTReleased(double controllerNumber) {
+        if(controllerNumber == 1) busy = false;
     }
 
     @Override
