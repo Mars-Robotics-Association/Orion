@@ -9,7 +9,7 @@ import fi.iki.elonen.NanoWSD;
  * WebSocket server that handles dashboard client connections.
  */
 public class DashboardWebSocketServer extends NanoWSD {
-    private static final int PORT = 8000;
+    private static final int PORT = 8001;
 
     private static DashboardWebSocketServer instance = null;
     private final List<DashboardWebSocket> sockets = new ArrayList<>();

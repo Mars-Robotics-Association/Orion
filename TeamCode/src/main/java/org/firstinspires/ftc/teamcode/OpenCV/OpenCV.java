@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.OpenCV;
 
+import android.graphics.Bitmap;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -13,7 +16,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Config
 
 public class OpenCV extends LinearOpMode {
-
+    private Pipeline pline;
+    private OpenCVFrameGenerator fgen;
     @Override
     public void runOpMode() {
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -22,9 +26,13 @@ public class OpenCV extends LinearOpMode {
         camera.openCameraDevice();
         camera.startStreaming(640,480, OpenCvCameraRotation.UPRIGHT);
         camera.setPipeline(new Pipeline());
+        Mat results = new Mat();
 
         waitForStart();
         while(opModeIsActive()){
+            int newresults = pline.GetResults();
+            telemetry.addData("value: ",newresults);
+            //Bitmap bmp = fgen.convertMatToBitMap(results);
 
         }
 
