@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
 
 //import org.firstinspires.ftc.teamcode.Robots.Curiosity.CuriosityUltimateGoalControl;
 
-import org.firstinspires.ftc.teamcode.Core.BaseRobots.MecanumBaseControl;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BaseRobots.MecanumBaseControl;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
 
 @TeleOp(name = "Kenobi TeleOp", group = "Competition")

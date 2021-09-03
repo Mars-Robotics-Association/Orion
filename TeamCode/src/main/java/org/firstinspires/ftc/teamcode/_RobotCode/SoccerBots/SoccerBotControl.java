@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.SoccerBots;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Core.BaseRobots.MecanumBaseControl;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BaseRobots.MecanumBaseControl;
 
 /**
  * Control class for the Belinda Robot. Controls payload.
