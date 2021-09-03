@@ -4,7 +4,6 @@ package org.firstinspires.ftc.teamcode.Core.BaseRobots;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Sensors.IMU;
@@ -21,7 +20,8 @@ public class MecanumChassis
     ////Dependencies////
     private OpMode CurrentOpMode;
     private PIDController headingPIDController;
-    private PIDController driftPIDController;
+    private PIDController speedPID;
+    private PIDController directionPID;
     private IMU imu;
 
     ////Variables////
@@ -48,8 +48,8 @@ public class MecanumChassis
     public PIDController GetHeadingPID() {
         return headingPIDController;
     }
-    public PIDController GetDriftPID() {
-        return driftPIDController;
+    public PIDController GetVelocityPID() {
+        return speedPID;
     }
 
     //Initializer
@@ -73,7 +73,8 @@ public class MecanumChassis
         dashboard.setTelemetryTransmissionInterval(25);
 
         headingPIDController = new PIDController(0,0,0);//Create the pid controller.
-        driftPIDController = new PIDController(0,0,0);//Create the pid controller.
+        speedPID = new PIDController(0,0,0);//Create the pid controller.
+        directionPID = new PIDController(0,0,0);//Create the pid controller.
     }
 
     ////CALLABLE METHODS////
@@ -85,39 +86,38 @@ public class MecanumChassis
         //Sets the mode so that robot can drive and record encoder values
         SetModeRunWithoutEncoders();
 
-        double robotDriftAngle = imu.CalculateDriftAngle();
-        double driftPIDOffset = driftPIDController.getOutput(robotDriftAngle, angle);
-
-        //Gets speeds for the motors
-        double[] speeds = CalculateWheelSpeedsTurning(angle, speed, turnSpeed);
-
+        //HEADING PID//
         //Uses pid controller to correct for heading error using (currentAngle, targetAngle)
         double headingPIDOffset = headingPIDController.getOutput(turnSpeed, imu.GetAngularVelocity());
         //if the number is not real, reset pid controller
         if(!(headingPIDOffset > 0 || headingPIDOffset <= 0)){
             headingPIDController.reset();
         }
+
+        //TRANSLATIONAL PID//
+        double velocityMag = 0; //TODO: fill out
+        double velocityDir = 0; //TODO: fill out
+        double magPIDOffset = speedPID.getOutput(speed, velocityMag);
+        double dirPIDOffset = directionPID.getOutput(angle, velocityDir);
+
+
         RobotTelemetry.addData("Angular Velocity ", imu.GetAngularVelocity());
-        RobotTelemetry.addData("PID Offset ", headingPIDOffset);
+        RobotTelemetry.addData("Angular PID Offset ", headingPIDOffset);
+        RobotTelemetry.addData("Velo X ", imu.GetVelocity().xVeloc + " m/s");
+        RobotTelemetry.addData("Velo Y ", imu.GetVelocity().yVeloc + " m/s");
+        RobotTelemetry.addData("Velo Z ", imu.GetVelocity().zVeloc + " m/s");
 
         //set the powers of the motors with pid offset applied
         //TODO remove line below
         headingPIDOffset *= -1;
-        SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
-/*        //Returns speed telemetry
-        RobotTelemetry.addData("Speed FR ", speeds[0]+headingPIDOffset);
-        RobotTelemetry.addData("Speed FL ", speeds[1]+headingPIDOffset);
-        RobotTelemetry.addData("Speed RR ", speeds[2]+headingPIDOffset);
-        RobotTelemetry.addData("Speed RL ", speeds[3]+headingPIDOffset);
-        RobotTelemetry.update();
 
-        TelemetryPacket packet = new TelemetryPacket();
-        Canvas fieldOverlay = packet.fieldOverlay();
-        packet.put("pid offset", headingPIDOffset);
-        dashboard.sendTelemetryPacket(packet);*/
+        //Gets speeds for the motors
+        double[] speeds = CalculateWheelSpeedsTurning(angle, speed, turnSpeed+headingPIDOffset);
+        //SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
+        SetMotorSpeeds(speeds[0], speeds[1], speeds[2], speeds[3]);
 
         //Updates brake pos, as this is called continuously as robot is driving
-        UpdateBrakePos();
+        UpdateEncoderBrakePos();
     }
     public void SpotTurn(double speed)
     {
@@ -131,7 +131,7 @@ public class MecanumChassis
         SetMotorSpeeds(speed, speed, speed, speed);
 
         //Update the values for breaking
-        UpdateBrakePos();
+        UpdateEncoderBrakePos();
     }
 
     //Utility
@@ -191,22 +191,29 @@ public class MecanumChassis
         RR.setPower(rr);
         RL.setPower(rl);
     }
-    public void UpdateBrakePos(){
+    public void UpdateEncoderBrakePos(){
         //Update the values for breaking
         FRBrakePos = FR.getCurrentPosition();
         FLBrakePos = FL.getCurrentPosition();
         RRBrakePos = RR.getCurrentPosition();
         RLBrakePos = RL.getCurrentPosition();
     }
-    public void Brake(){
+    public void EncoderBrake(){
         //Stop the robot and hold position. Meant to be called once
-        UpdateBrakePos();
+        UpdateEncoderBrakePos();
         SetTargetEncoderPos(FRBrakePos, FLBrakePos, RRBrakePos, RLBrakePos);
         SetModeGoToEncoderPos();
         SetMotorSpeeds(0.5,0.5,0.5,0.5);
     }
+
     public void SetHeadingPID(double p, double i, double d){
         headingPIDController.setPID(p,i,d);
+    }
+    public void SetSpeedPID(double p, double i, double d){
+        speedPID.setPID(p,i,d);
+    }
+    public void SetDirectionPID(double p, double i, double d){
+        directionPID.setPID(p,i,d);
     }
 
     public double[] CalculateWheelSpeedsTurning(double degrees, double speed, double turnSpeed)

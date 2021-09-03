@@ -1,29 +1,35 @@
-package org.firstinspires.ftc.teamcode._RobotCode;
+package org.firstinspires.ftc.teamcode._RobotCode.SoccerBots;
 
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-
-import org.firstinspires.ftc.teamcode.Orion.NavigationProfile;
+import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
+import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaChassisProfile;
+import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaOdometryProfile;
+import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaTuningProfile;
+import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaVisionProfile;
 
 class SoccerBotNavProfile extends NavigationProfile
 {
-    //TODO: EDIT THESE VALUES TO MATCH CALIBRATED VALUES
+    public SoccerBotNavProfile() {
+        super(new BelindaTuningProfile(), new BelindaChassisProfile(), new BelindaVisionProfile(), new BelindaOdometryProfile());
+    }
+
+
+    /*//
 
     //Drive Constants
     public static final double TICKS_PER_REV = 8192;
     public static final double MAX_RPM = 160.0;
     public static final boolean RUN_USING_ENCODER = false;
     public static final PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0, (32767 / (MAX_RPM / 60 * TICKS_PER_REV)));
-    public static double WHEEL_RADIUS_CHASSIS = 2.0; // in
-    public static double GEAR_RATIO_CHASSIS = 1.0; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 13.0; // in
-    public static double kV =  0.01494; //1.0 / rpmToVelocity(MAX_RPM)
-    public static double kA = 0.00004;
-    public static double kStatic = 0.04877; //0.06510
-    public static double MAX_VEL = 60.0;
-    public static double MAX_ACCEL = 40.0;
-    public static double MAX_ANG_VEL = 10.0;
-    public static double MAX_ANG_ACCEL = 5.0;
+    public static final double WHEEL_RADIUS_CHASSIS = 2.0; // in
+    public static final double GEAR_RATIO_CHASSIS = 1.0; // output (wheel) speed / input (motor) speed
+    public static final double TRACK_WIDTH = 13.0; // in
+    public static final double kV =  0.01494; //1.0 / rpmToVelocity(MAX_RPM)
+    public static final double kA = 0.00004;
+    public static final double kStatic = 0.04877; //0.06510
+    public static final double MAX_VEL = 60.0;
+    public static final double MAX_ACCEL = 40.0;
+    public static final double MAX_ANG_VEL = 10.0;
+    public static final double MAX_ANG_ACCEL = 5.0;
 
     //Sample Mecanum Drive
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8.0, 0, 0);
@@ -120,13 +126,13 @@ class SoccerBotNavProfile extends NavigationProfile
     @Override
     public double OMEGA_WEIGHT() {return OMEGA_WEIGHT;}
     @Override
-    public double MAX_VEL() {return MAX_VEL();}
+    public double MAX_VEL() {return MAX_VEL;}
     @Override
-    public double MAX_ACCEL() {return MAX_ACCEL();}
+    public double MAX_ACCEL() {return MAX_ACCEL;}
     @Override
-    public double MAX_ANG_VEL() {return MAX_ANG_VEL();}
+    public double MAX_ANG_VEL() {return MAX_ANG_VEL;}
     @Override
-    public double MAX_ANG_ACCEL() {return MAX_ANG_ACCEL();}
+    public double MAX_ANG_ACCEL() {return MAX_ANG_ACCEL;}
     @Override
     public double WHEEL_RADIUS_DEAD_WHEELS() {return WHEEL_RADIUS_DEAD_WHEELS;}
     @Override
@@ -164,5 +170,5 @@ class SoccerBotNavProfile extends NavigationProfile
     @Override
     public String LABEL_SECOND_ELEMENT() {return LABEL_SECOND_ELEMENT;}
     @Override
-    public double cameraXOffset() {return cameraXOffset;}
+    public double cameraXOffset() {return cameraXOffset;}*/
 }

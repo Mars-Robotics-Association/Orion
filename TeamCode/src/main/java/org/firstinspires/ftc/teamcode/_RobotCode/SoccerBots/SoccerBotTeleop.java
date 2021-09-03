@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode;
+package org.firstinspires.ftc.teamcode._RobotCode.SoccerBots;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -24,8 +24,8 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
     ////Variables////
     //Tweaking Vars
-    public static double driveSpeed = 0.5;//used to change how fast robot drives
-    public static double turnSpeed = -0.5;//used to change how fast robot turns
+    public static double driveSpeed = 1;//used to change how fast robot drives
+    public static double turnSpeed = -1;//used to change how fast robot turns
 
     public static double autoSpeedModifier = 2; //used to change speed of automatic navigation
 
@@ -83,9 +83,14 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
         control.Update();
 
+        //if robot isn't level, set speed to zero and exit loop
+        if(!control.IsRobotLevel()){
+            control.RawDrive(0,0,0);
+            return;
+        }
+
         if(!busy) {
             //Manage driving
-            //if(control.isUSE_NAVIGATOR()) ManageDrivingRoadrunner();
             control.SetDrivePID(turnP, turnI, turnD);
             ManageDriveMovementCustom();
 
@@ -132,10 +137,10 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void APressed(double controllerNumber) {
-        if(controllerNumber == 1) {
+        /*if(controllerNumber == 1) {
             if (speedMultiplier == 1) speedMultiplier = 0.5;
             else speedMultiplier = 1;
-        }
+        }*/
     }
 
     @Override
@@ -223,7 +228,11 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LTHeld(double controllerNumber) {
-
+        //makeshift brake function
+        if(controllerNumber == 1){
+            control.RawDrive(180,0.1,0);//move backwards slightly
+            busy = true;
+        }
     }
 
     @Override
@@ -242,6 +251,7 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LTReleased(double controllerNumber) {
+        if(controllerNumber == 1) busy = false;
     }
 
     @Override

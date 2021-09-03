@@ -1,11 +1,7 @@
-package org.firstinspires.ftc.teamcode._RobotCode;
+package org.firstinspires.ftc.teamcode._RobotCode.SoccerBots;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.BaseRobots.MecanumBaseControl;
 
@@ -27,6 +23,7 @@ public class SoccerBotControl extends MecanumBaseControl
 
     ////Variables////
     //Calibration
+    private double levelPitchThreshold = 5;
 
 
     /**@param setOpMode pass the opmode running this down to access hardware map
@@ -52,5 +49,13 @@ public class SoccerBotControl extends MecanumBaseControl
 
     public void Start(){
         super.StartCoreRobotModules();
+    }
+
+    public boolean IsRobotLevel(){
+        double pitch = imu.GetRawAngles().secondAngle;
+        currentOpMode.telemetry.addData("Robot pitch: ", pitch);
+
+        if(Math.abs(pitch)>5) return false;
+        else return true;
     }
 }
