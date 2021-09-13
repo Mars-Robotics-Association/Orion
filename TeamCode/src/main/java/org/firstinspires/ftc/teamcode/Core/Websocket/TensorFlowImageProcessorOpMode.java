@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -241,6 +242,23 @@ public class TensorFlowImageProcessorOpMode extends OpMode
 
                     Bitmap revised = Bitmap.createBitmap(cropped.width(), cropped.height(), Bitmap.Config.RGB_565);
                     Utils.matToBitmap(cropped, revised);
+
+                    int pixelcount = 0;
+
+                    for (int x = 0; x < dx; x++) {
+                        for (int y = 0; y < dy; y++) {
+                            double[] data = cropped.get(x, y); //Stores element in an array
+                            for (int k = 0; k < 3; k++) //Runs for the available number of channels
+                            {
+                                data[k] = data[k] * 2; //Pixel modification done here
+                            }
+                            if((data[0] >100 && data[0]<255)&&(data[1] >100 && data[1]<255)&&(data[2] >0 && data[2]<30)){
+                                pixelcount++;
+                            }
+                        }
+                    }
+                    float percent = pixelcount/area;
+                    telemetry.addData("percent yellow: ",percent);
 
                     EncodedImageRecognition cr = new EncodedImageRecognition(revised);
                     String msg = gson.toJson(cr);
