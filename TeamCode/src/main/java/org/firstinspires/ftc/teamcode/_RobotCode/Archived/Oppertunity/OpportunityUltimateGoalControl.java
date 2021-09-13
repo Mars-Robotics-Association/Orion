@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Archived.Oppertunity;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BaseRobots.MecanumBaseControl;
+import org.firstinspires.ftc.teamcode.Core.Websocket.HermesLog;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
 
 /**
@@ -28,7 +29,7 @@ public class OpportunityUltimateGoalControl extends MecanumBaseControl
      * @param useNavigator whether to use Orion (webcams + odometry navigation)
      */
     public OpportunityUltimateGoalControl(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
-        super(setOpMode, new DefaultNavProfile(), useChassis, usePayload, useNavigator);
+        super(setOpMode, new DefaultNavProfile(), new HermesLog("OppyUltGoalControl", 500, setOpMode), useChassis, usePayload, useNavigator);
     }
 
     //SETUP METHODS//

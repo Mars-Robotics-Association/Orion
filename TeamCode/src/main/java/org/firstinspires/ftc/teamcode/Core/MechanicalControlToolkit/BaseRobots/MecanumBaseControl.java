@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.PIDController;
+import org.firstinspires.ftc.teamcode.Core.Websocket.HermesLog;
+import org.firstinspires.ftc.teamcode.Core.Websocket.RobotPose;
 import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
 import org.firstinspires.ftc.teamcode.Orion.OrionNavigator;
 import org.firstinspires.ftc.teamcode.Sensors.IMU;
@@ -28,6 +30,7 @@ public class MecanumBaseControl
     //Core
     protected PIDController pidController; //Look here: https://github.com/tekdemo/MiniPID-Java for how to use it
     protected IMU imu;
+    protected HermesLog log;
     //Orion Navigator
     protected OrionNavigator orion;
     protected NavigationProfile navigationProfile;
@@ -53,13 +56,14 @@ public class MecanumBaseControl
 
 
     //Initializer
-    public MecanumBaseControl(OpMode setOpMode, NavigationProfile setNavProfile, boolean useChassis, boolean usePayload, boolean useNavigator)
+    public MecanumBaseControl(OpMode setOpMode, NavigationProfile setNavProfile, HermesLog setLog, boolean useChassis, boolean usePayload, boolean useNavigator)
     {
         currentOpMode = setOpMode;
         USE_CHASSIS = useChassis;
         USE_PAYLOAD = usePayload;
         USE_NAVIGATOR = useNavigator;
         navigationProfile = setNavProfile;
+        log = setLog;
     }
 
     //TODO: Call this on Init()
@@ -96,7 +100,11 @@ public class MecanumBaseControl
     //TODO: Call this on Loop()
     public void Update(){
 
-        if(isUSE_NAVIGATOR()) orion.Update();
+        if(isUSE_NAVIGATOR()) {
+            orion.Update();
+            log.AddData(new Object[]{new RobotPose(orion.GetPose().getX(), orion.GetPose().getY(), orion.GetPose().getHeading())});
+        }
+        log.Update();
     }
 
     //TODO: UNIVERSAL PUBLIC METHODS
