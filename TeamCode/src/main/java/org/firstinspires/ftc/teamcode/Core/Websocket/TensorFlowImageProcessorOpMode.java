@@ -243,22 +243,21 @@ public class TensorFlowImageProcessorOpMode extends OpMode
                     Bitmap revised = Bitmap.createBitmap(cropped.width(), cropped.height(), Bitmap.Config.RGB_565);
                     Utils.matToBitmap(cropped, revised);
 
-                    int pixelcount = 0;
+                    double pixelcount = 0.0;
 
                     for (int x = 0; x < dx; x++) {
                         for (int y = 0; y < dy; y++) {
-                            double[] data = cropped.get(x, y); //Stores element in an array
-                            for (int k = 0; k < 3; k++) //Runs for the available number of channels
-                            {
-                                data[k] = data[k] * 2; //Pixel modification done here
-                            }
-                            if((data[0] >100 && data[0]<255)&&(data[1] >100 && data[1]<255)&&(data[2] >0 && data[2]<30)){
+                            int color = revised.getPixel(x,y);
+                            int R = (color & 0xff0000) >> 16;
+                            int G = (color & 0xff00) >> 8;
+                            int B = color & 0xff;
+                            if((R >100 && R<255)&&(G >100 && G<255)&&(B >0 && B<30)){
                                 pixelcount++;
                             }
                         }
                     }
-                    float percent = pixelcount/area;
-                    telemetry.addData("percent yellow: ",percent);
+                    double percent = 100.0* (pixelcount/area);
+                    telemetry.addData("percent yellow: ",pixelcount+"/"+area);
 
                     EncodedImageRecognition cr = new EncodedImageRecognition(revised);
                     String msg = gson.toJson(cr);
