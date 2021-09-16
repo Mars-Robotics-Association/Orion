@@ -11,8 +11,7 @@ public class HermesTestingOpMode extends OpMode
 
     @Override
     public void init() {
-        log = new HermesLog();
-        log.Init("HERMES_TESTING", 500, this);
+        log = new HermesLog("HERMES TESTING", 500, this);
     }
 
     @Override

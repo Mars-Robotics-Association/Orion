@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BaseRobots.MecanumBaseControl;
+import org.firstinspires.ftc.teamcode.Core.Websocket.HermesLog;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger.MechanicalControllers.SchrodingerArm;
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger.MechanicalControllers.SchrodingerFoundationGrabbers;
@@ -33,7 +34,7 @@ public class SchrodingerControl extends MecanumBaseControl
     private double armExtension = 0.5; //in meters
 
     public SchrodingerControl(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
-        super(setOpMode, new DefaultNavProfile(), useChassis, usePayload, useNavigator);
+        super(setOpMode, new DefaultNavProfile(), new HermesLog("ShrodingerControl", 500, setOpMode), useChassis, usePayload, useNavigator);
     }
 
     //SETUP METHODS//

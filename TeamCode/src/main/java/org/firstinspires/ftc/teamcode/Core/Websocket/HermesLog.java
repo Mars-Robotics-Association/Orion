@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
     this. Then, make sure Update() is called every loop of the program.
 */
 
-class HermesLog
+public class HermesLog
 {
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -38,7 +38,7 @@ class HermesLog
     private double lastSendTime = 0;
     private OpMode opMode;
 
-    public void Init(String setTag, double updateTimeMs, OpMode currentOpMode){
+    public HermesLog(String setTag, double updateTimeMs, OpMode currentOpMode){
         //set variables
         tag = setTag;
         updateTime = updateTimeMs;

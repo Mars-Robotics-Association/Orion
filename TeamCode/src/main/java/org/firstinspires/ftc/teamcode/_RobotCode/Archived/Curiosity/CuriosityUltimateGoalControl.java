@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BaseRobots.MecanumBaseControl;
+import org.firstinspires.ftc.teamcode.Core.Websocket.HermesLog;
 
 /**
  * Control class for the Belinda Robot. Controls payload.
@@ -38,7 +39,7 @@ public class CuriosityUltimateGoalControl extends MecanumBaseControl
      * @param useNavigator whether to use Orion (webcams + odometry navigation)
      */
     public CuriosityUltimateGoalControl(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
-        super(setOpMode, new CuriosityNavProfile(), useChassis, usePayload, useNavigator);
+        super(setOpMode, new CuriosityNavProfile(), new HermesLog("Belinda", 500, setOpMode), useChassis, usePayload, useNavigator);
     }
 
     //SETUP METHODS//

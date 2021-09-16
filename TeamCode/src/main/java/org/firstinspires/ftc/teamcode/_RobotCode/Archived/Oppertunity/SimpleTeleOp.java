@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
 //import org.firstinspires.ftc.teamcode.Robots.Curiosity.CuriosityUltimateGoalControl;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BaseRobots.MecanumBaseControl;
+import org.firstinspires.ftc.teamcode.Core.Websocket.HermesLog;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
 
 //SimpleTeleOpKenobi (or whatever name is here) shows up on the phone
@@ -96,7 +97,7 @@ public class SimpleTeleOp extends OpMode implements ControllerInputListener
         feedServo = hardwareMap.crservo.get("feedServo");
 
         //You must set these booleans to use the mecanum wheels: set useChassis to true, usePayload to false, useNavigator to false
-        control = new MecanumBaseControl(this, new DefaultNavProfile(), true, false, false);
+        control = new MecanumBaseControl(this, new DefaultNavProfile(), new HermesLog("SimpleTeleOp", 500, this), true, false, false);
         control.InitCoreRobotModules();
 
         controllerInput2 = new ControllerInput(gamepad2, 2);

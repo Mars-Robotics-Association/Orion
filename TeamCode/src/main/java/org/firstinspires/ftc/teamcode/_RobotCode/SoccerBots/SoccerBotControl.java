@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BaseRobots.MecanumBaseControl;
+import org.firstinspires.ftc.teamcode.Core.Websocket.HermesLog;
 
 /**
  * Control class for the Belinda Robot. Controls payload.
@@ -32,7 +33,7 @@ public class SoccerBotControl extends MecanumBaseControl
      * @param useNavigator whether to use Orion (webcams + odometry navigation)
      */
     public SoccerBotControl(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
-        super(setOpMode, new SoccerBotNavProfile(), useChassis, usePayload, useNavigator);
+        super(setOpMode, new SoccerBotNavProfile(), new HermesLog("SoccerBot", 500, setOpMode), useChassis, usePayload, useNavigator);
     }
 
     //SETUP METHODS//
