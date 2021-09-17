@@ -245,19 +245,25 @@ public class TensorFlowImageProcessorOpMode extends OpMode
 
                     double pixelcount = 0.0;
 
-                    for (int x = 0; x < dx; x++) {
-                        for (int y = 0; y < dy; y++) {
+                    for (int x = 0; x <revised.getWidth(); x++) {
+                        for (int y = 0; y < revised.getHeight(); y++) {
                             int color = revised.getPixel(x,y);
                             int R = (color & 0xff0000) >> 16;
                             int G = (color & 0xff00) >> 8;
                             int B = color & 0xff;
-                            if((R >100 && R<255)&&(G >100 && G<255)&&(B >0 && B<30)){
+                            if((R != 0)&&(G != 0)&&(B != 0)){
                                 pixelcount++;
                             }
                         }
                     }
                     double percent = 100.0* (pixelcount/area);
-                    telemetry.addData("percent yellow: ",pixelcount+"/"+area);
+                    telemetry.addData("percent yellow: ",percent);
+                    float vconf = recognition.getConfidence();
+                    boolean iscube = false;
+                    if (vconf>=.5 && percent >= 50){
+                        iscube = true;
+                    }
+                    telemetry.addData("Recognition: ",iscube);
 
                     EncodedImageRecognition cr = new EncodedImageRecognition(revised);
                     String msg = gson.toJson(cr);
