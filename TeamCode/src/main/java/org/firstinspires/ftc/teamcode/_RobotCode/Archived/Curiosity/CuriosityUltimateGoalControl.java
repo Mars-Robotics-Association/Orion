@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BaseRobots.MecanumBaseControl;
-import org.firstinspires.ftc.teamcode.Core.Websocket.HermesLog;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 
 /**
  * Control class for the Belinda Robot. Controls payload.

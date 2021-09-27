@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.PIDController;
-import org.firstinspires.ftc.teamcode.Core.Websocket.HermesLog;
-import org.firstinspires.ftc.teamcode.Core.Websocket.RobotPose;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.RobotPose;
 import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
 import org.firstinspires.ftc.teamcode.Orion.OrionNavigator;
 import org.firstinspires.ftc.teamcode.Sensors.IMU;

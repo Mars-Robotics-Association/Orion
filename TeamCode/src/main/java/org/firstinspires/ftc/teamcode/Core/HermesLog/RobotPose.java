@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Core.Websocket;
+package org.firstinspires.ftc.teamcode.Core.HermesLog;
 
 public class RobotPose{
     public RobotPose(double xin, double yin, double hin) {

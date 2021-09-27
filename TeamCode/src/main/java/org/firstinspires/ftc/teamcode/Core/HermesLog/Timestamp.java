@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Core.Websocket;
+package org.firstinspires.ftc.teamcode.Core.HermesLog;
 
 public class Timestamp {
     Timestamp(double time){timestamp = time;}

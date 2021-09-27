@@ -1,12 +1,10 @@
-package org.firstinspires.ftc.teamcode.Core.Websocket;
+package org.firstinspires.ftc.teamcode.Core.HermesLog;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -20,7 +18,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.OpenCV.EncodedImageRecognition;
 import org.firstinspires.ftc.teamcode.OpenCV.Pipeline;
 import org.opencv.android.Utils;

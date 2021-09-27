@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BaseRobots.MecanumBaseControl;
-import org.firstinspires.ftc.teamcode.Core.Websocket.HermesLog;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger.MechanicalControllers.SchrodingerArm;
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger.MechanicalControllers.SchrodingerFoundationGrabbers;

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
 //import org.firstinspires.ftc.teamcode.Robots.Curiosity.CuriosityUltimateGoalControl;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BaseRobots.MecanumBaseControl;
-import org.firstinspires.ftc.teamcode.Core.Websocket.HermesLog;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
 
 //SimpleTeleOpKenobi (or whatever name is here) shows up on the phone
