@@ -8,7 +8,7 @@ public class HermesTestingOpMode extends OpMode
 {
     HermesLog log;
     RobotPose poseToSend;
-
+    imageTesting imgToSend;
     @Override
     public void init() {
         log = new HermesLog("HERMES TESTING", 500, this);
@@ -22,7 +22,8 @@ public class HermesTestingOpMode extends OpMode
     @Override
     public void loop() {
         poseToSend = new RobotPose(Math.random(), Math.random(), Math.random());
-        Object[] data = {poseToSend};
+        imgToSend = new imageTesting("eggs");
+        Object[] data = {poseToSend,imgToSend};
         log.AddData(data);
         log.Update();
     }
