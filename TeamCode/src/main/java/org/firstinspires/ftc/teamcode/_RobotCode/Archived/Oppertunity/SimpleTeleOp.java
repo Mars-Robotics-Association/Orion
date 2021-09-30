@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavPr
 //SimpleTeleOpKenobi (or whatever name is here) shows up on the phone
 @TeleOp(name = "SimpleTeleOpKenobi", group = "Competition")
 
-@Config
+//@Config
 //This name must match the file name
 public class SimpleTeleOp extends OpMode implements ControllerInputListener
 {

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Core.Websocket;
+package org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes;
 
 public class imageTesting {
     imageTesting(String imgIn) {

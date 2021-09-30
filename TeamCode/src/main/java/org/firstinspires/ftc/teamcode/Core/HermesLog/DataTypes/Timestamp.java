@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Core.HermesLog;
+package org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes;
 
 public class Timestamp {
     Timestamp(double time){timestamp = time;}

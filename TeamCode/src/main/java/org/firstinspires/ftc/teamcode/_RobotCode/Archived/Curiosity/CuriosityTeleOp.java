@@ -12,7 +12,7 @@ import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstan
 import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ANG_VEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_VEL_MOD;
 
-@TeleOp(name = "*CURIOSITY TELEOP*", group = "Curiosity")
+@TeleOp(name = "*BELINDA TELEOP*", group = "Curiosity")
 @Config
 public class CuriosityTeleOp extends OpMode implements ControllerInputListener
 {

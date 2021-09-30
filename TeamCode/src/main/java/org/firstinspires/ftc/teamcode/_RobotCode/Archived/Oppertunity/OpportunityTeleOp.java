@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
 
 @TeleOp(name = "Kenobi TeleOp", group = "Competition")
-@Config
+//@Config
 public class OpportunityTeleOp extends OpMode implements ControllerInputListener
 {
     ////Dependencies////

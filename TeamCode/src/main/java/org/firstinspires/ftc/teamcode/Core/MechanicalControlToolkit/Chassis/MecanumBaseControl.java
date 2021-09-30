@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.PIDController;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
-import org.firstinspires.ftc.teamcode.Core.HermesLog.RobotPose;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
 import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
 import org.firstinspires.ftc.teamcode.Orion.OrionNavigator;
 import org.firstinspires.ftc.teamcode.Sensors.IMU;
@@ -30,7 +30,7 @@ public class MecanumBaseControl
     //Core
     protected PIDController pidController; //Look here: https://github.com/tekdemo/MiniPID-Java for how to use it
     protected IMU imu;
-    protected HermesLog log;
+    public HermesLog log;
     //Orion Navigator
     protected OrionNavigator orion;
     protected NavigationProfile navigationProfile;

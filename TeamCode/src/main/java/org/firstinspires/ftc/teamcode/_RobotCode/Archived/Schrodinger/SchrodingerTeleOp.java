@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
 
 //@Config
 @TeleOp(name = "Scrodinger TeleOp")
-@Disabled
+//@Disabled
 public class SchrodingerTeleOp extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
