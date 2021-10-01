@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
 import org.firstinspires.ftc.teamcode.OpenCV.EncodedImageRecognition;
 import org.firstinspires.ftc.teamcode.OpenCV.Pipeline;
 import org.opencv.android.Utils;
@@ -69,6 +70,7 @@ public class TensorFlowImageProcessorOpMode extends OpMode
     private TFObjectDetector tfod;
     private Gson gson;
     private DashboardWebSocketServer server;
+    private HermesLog hermes;
 
 
     private void initTfod() {
@@ -113,6 +115,7 @@ public class TensorFlowImageProcessorOpMode extends OpMode
         initDashboard();
 
         gson = new GsonBuilder().create();
+        hermes = new HermesLog("TensorFlowImageProcessorOpMode",500,this);
 
         initVuforia();
         initTfod();
@@ -264,6 +267,11 @@ public class TensorFlowImageProcessorOpMode extends OpMode
 
                     EncodedImageRecognition cr = new EncodedImageRecognition(revised);
                     String msg = gson.toJson(cr);
+                    Base64Image base = new Base64Image(msg);
+                    Object[] data ={base};
+                    hermes.AddData(data);
+                    hermes.Update();
+
                     DashboardWebSocketServer.getInstance().send(msg);
 
                     telemetry.addData("left,top:  ", "%d, %d", left, top);
