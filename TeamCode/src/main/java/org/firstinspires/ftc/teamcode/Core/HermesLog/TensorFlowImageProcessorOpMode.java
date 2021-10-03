@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.Core.HermesLog;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ThreadPool;

@@ -66,6 +66,11 @@ public class FrameAnaylisHelp implements VuforiaLocalizer {
     }
 
     @Override
+    public void close() {
+
+    }
+
+    @Override
     public void enableConvertFrameToBitmap() {
 
     }
