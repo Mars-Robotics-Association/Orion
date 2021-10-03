@@ -91,7 +91,7 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
         if(!busy) {
             //Manage driving
-            control.SetDrivePID(turnP, turnI, turnD);
+            control.SetHeadingPID(turnP, turnI, turnD);
             ManageDriveMovementCustom();
 
         }
@@ -137,17 +137,14 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void APressed(double controllerNumber) {
-        /*if(controllerNumber == 1) {
+        if(controllerNumber == 1) {
             if (speedMultiplier == 1) speedMultiplier = 0.5;
             else speedMultiplier = 1;
-        }*/
+        }
     }
 
     @Override
     public void BPressed(double controllerNumber) {
-        /*if(controllerNumber == payloadControllerNumber){
-            control.ModifyForPowerShot();
-        }*/
         if(controllerNumber == 1) control.ResetGyro();
     }
 

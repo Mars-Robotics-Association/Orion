@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Core.PIDController;
-import org.firstinspires.ftc.teamcode.Sensors.IMU;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
 
 //@Config
 @TeleOp

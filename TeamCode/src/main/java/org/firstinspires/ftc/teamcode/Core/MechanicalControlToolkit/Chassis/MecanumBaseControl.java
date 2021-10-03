@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
 import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
 import org.firstinspires.ftc.teamcode.Orion.OrionNavigator;
-import org.firstinspires.ftc.teamcode.Sensors.IMU;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
 
 @Config
 public class MecanumBaseControl
@@ -146,7 +146,7 @@ public class MecanumBaseControl
     public OpMode GetOpMode(){return currentOpMode;}
 
     //TODO: SETTER METHODS
-    public void SetDrivePID(double p, double i, double d){
+    public void SetHeadingPID(double p, double i, double d){
         chassis.SetHeadingPID(p,i,d);
     }
 

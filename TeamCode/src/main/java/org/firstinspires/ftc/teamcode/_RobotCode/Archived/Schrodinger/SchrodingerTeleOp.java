@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -17,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
 //REQUIRED TO FUNCTION: Controllers
 
 //@Config
-@TeleOp(name = "Scrodinger TeleOp")
+@TeleOp(name = "Schrodinger TeleOp")
 //@Disabled
 public class SchrodingerTeleOp extends OpMode implements ControllerInputListener
 {
@@ -78,7 +77,7 @@ public class SchrodingerTeleOp extends OpMode implements ControllerInputListener
         }
         MangeDriveMovement();
 
-        control.SetDrivePID(headingP, headingI, headingD);
+        control.SetHeadingPID(headingP, headingI, headingD);
         telemetry.addData("angular vel ", control.GetImu().GetAngularVelocity());
         control.PrintTelemetry();
         telemetry.update();

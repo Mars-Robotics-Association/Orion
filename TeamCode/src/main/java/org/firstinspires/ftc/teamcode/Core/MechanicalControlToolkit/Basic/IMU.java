@@ -1,18 +1,16 @@
-package org.firstinspires.ftc.teamcode.Sensors;
+package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.bosch.NaiveAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.teamcode.Sensors.BasicAccelerationIntegrator;
 
 public class IMU
 {
@@ -23,7 +21,7 @@ public class IMU
     // Variables
     private Orientation angles;
     private Acceleration gravity;
-    private double Offset;
+    private double offset;
 
     public IMU (OpMode setOpMode) {
         opMode = setOpMode;
@@ -64,7 +62,7 @@ public class IMU
     }
     public double GetRobotAngle(){
         //return the firstangle from the imu with an offset applied from ResetGyro()
-        return GetRawAngles().firstAngle - Offset;
+        return GetRawAngles().firstAngle - offset;
     }
     public double GetAngularVelocity(){
         return imu.getAngularVelocity().xRotationRate;
@@ -96,6 +94,6 @@ public class IMU
 
     ////CALLABLE METHODS////
     public void ResetGyro(){
-        Offset = GetRawAngles().firstAngle;
+        offset = GetRawAngles().firstAngle;
     }
 }

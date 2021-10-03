@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Sensors.IMU;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
 import org.firstinspires.ftc.teamcode.Core.PIDController;
 
 //Class for controlling the chassis of the demobot. Includes basic turning and driving. NOTE: the

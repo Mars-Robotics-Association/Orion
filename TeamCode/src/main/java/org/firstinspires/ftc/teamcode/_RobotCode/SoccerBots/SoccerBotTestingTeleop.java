@@ -96,7 +96,7 @@ public class SoccerBotTestingTeleop extends OpMode implements ControllerInputLis
 
         if(!busy) {
             //Manage driving
-            control.SetDrivePID(turnP, turnI, turnD);
+            control.SetHeadingPID(turnP, turnI, turnD);
             ManageDriveMovementCustom();
 
         }

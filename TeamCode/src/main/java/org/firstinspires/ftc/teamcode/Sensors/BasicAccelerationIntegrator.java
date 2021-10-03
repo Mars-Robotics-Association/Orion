@@ -38,7 +38,7 @@ public class BasicAccelerationIntegrator implements BNO055IMU.AccelerationIntegr
     // Construction
     //------------------------------------------------------------------------------------------
 
-    BasicAccelerationIntegrator()
+    public BasicAccelerationIntegrator()
     {
         this.parameters = null;
         this.position = new Position();
