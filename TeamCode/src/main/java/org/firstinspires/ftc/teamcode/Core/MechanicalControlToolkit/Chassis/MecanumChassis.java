@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
 import org.firstinspires.ftc.teamcode.Core.PIDController;
 
 //Class for controlling the chassis of the demobot. Includes basic turning and driving. NOTE: the
@@ -30,8 +31,7 @@ public class MecanumChassis
     private DcMotor FL;
     private DcMotor RR;
     private DcMotor RL;
-    private boolean rightReversed = false;
-    private boolean leftReversed = false;
+    private MotorArray driveMotors;
 
     //Brake pos
     private int FRBrakePos = 0;
@@ -53,22 +53,22 @@ public class MecanumChassis
     }
 
     //Initializer
-    public MecanumChassis(IMU setImu, DcMotor fr, DcMotor fl, DcMotor rr, DcMotor rl, Telemetry telemetry, boolean reveseRight, boolean reverseLeft){
+    public MecanumChassis(IMU setImu, DcMotor fr, DcMotor fl, DcMotor rr, DcMotor rl, Telemetry telemetry, boolean useEncoders){
         imu = setImu;
+
         FR = fr;
         FL = fl;
         RR = rr;
         RL = rl;
-        RobotTelemetry = telemetry;
-        rightReversed = reveseRight;
-        leftReversed = reverseLeft;
-    }
+        driveMotors = new MotorArray(new DcMotor[]{fr,fl,rr,rl}, new double[]{1,1,1,1}, useEncoders);
 
-    ////STARTUP////
-    public void Init(){
-        SetMotorSpeeds(0,0,0,0);
-        StopAndResetEncoders();
-        SetModeRunWithoutEncoders();
+        RobotTelemetry = telemetry;
+
+        driveMotors.StopAndResetEncoders();
+        if(useEncoders) driveMotors.RunWithEncodersMode();
+        else driveMotors.RunWithoutEncodersMode();
+        driveMotors.SetMotorPowers(new double[]{0,0,0,0});
+
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
 
@@ -84,7 +84,7 @@ public class MecanumChassis
         //This is called continuously while the robot is driving.
 
         //Sets the mode so that robot can drive and record encoder values
-        SetModeRunWithoutEncoders();
+        driveMotors.RunWithoutEncodersMode();
 
         //HEADING PID//
         //Uses pid controller to correct for heading error using (currentAngle, targetAngle)
@@ -114,7 +114,7 @@ public class MecanumChassis
         //Gets speeds for the motors
         double[] speeds = CalculateWheelSpeedsTurning(angle, speed, turnSpeed+headingPIDOffset);
         //SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
-        SetMotorSpeeds(speeds[0], speeds[1], speeds[2], speeds[3]);
+        SetMotorSpeeds(speeds[0], -speeds[1], speeds[2], -speeds[3]);
 
         //Updates brake pos, as this is called continuously as robot is driving
         UpdateEncoderBrakePos();
@@ -125,71 +125,18 @@ public class MecanumChassis
         // Positive speed turns left, negative right.
 
         //Use motors and record encoder values
-        SetModeRunWithoutEncoders();
+        driveMotors.RunWithoutEncodersMode();
 
         //Set motor speeds all equal, as this causes it to do a spot turn
-        SetMotorSpeeds(speed, speed, speed, speed);
+        SetMotorSpeeds(speed, -speed, speed, -speed);
 
         //Update the values for breaking
         UpdateEncoderBrakePos();
     }
 
     //Utility
-    public void StopAndResetEncoders(){
-        //Stops motors and resets encoders to 0
-        FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-    public void SetModeRunUsingEncoders(){
-        //Sets motors to try and hold a velocity
-        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-    public void SetModeRunWithoutEncoders(){
-        //Sets motors to run like dc motors but record the encoder values
-        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        RR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        RL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-    public void SetModeGoToEncoderPos(){
-        //Tells motors to move to the target encoder values set in SetTargetEncoderPos()
-        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-    public void SetTargetEncoderPos(int FRPos, int FLPos, int RRPos, int RLPos){
-        //Sets the target encoder values on the drive motors. Motors will try to go there when SetModeGoToEncoderPos() is called
-        FR.setTargetPosition(FRPos);
-        FL.setTargetPosition(FLPos);
-        RR.setTargetPosition(RRPos);
-        RL.setTargetPosition(RLPos);
-    }
-    public void SetMotorSpeeds(double FRSpeed, double FLSpeed, double RRSpeed, double RLSpeed){
-        //Sets the speeds of the motors
-        double fr = FRSpeed;
-        double fl = FLSpeed;
-        double rr = RRSpeed;
-        double rl = RLSpeed;
-
-        if(rightReversed) {
-            fr *= -1;
-            rr *= -1;
-        }
-        if(leftReversed) {
-            fl *= -1;
-            rl *= -1;
-        }
-
-        FR.setPower(fr);
-        FL.setPower(fl);
-        RR.setPower(rr);
-        RL.setPower(rl);
+    public void SetMotorSpeeds(double fr, double fl, double rr, double rl){
+        driveMotors.SetMotorPowers(new double[]{fr, -fl, rr, -rl});
     }
     public void UpdateEncoderBrakePos(){
         //Update the values for breaking
@@ -201,9 +148,8 @@ public class MecanumChassis
     public void EncoderBrake(){
         //Stop the robot and hold position. Meant to be called once
         UpdateEncoderBrakePos();
-        SetTargetEncoderPos(FRBrakePos, FLBrakePos, RRBrakePos, RLBrakePos);
-        SetModeGoToEncoderPos();
-        SetMotorSpeeds(0.5,0.5,0.5,0.5);
+        driveMotors.SetTargetPositions(new int[] {FRBrakePos, FLBrakePos, RRBrakePos, RLBrakePos},true);
+        SetMotorSpeeds(0.5,-0.5,0.5,-0.5);
     }
 
     public void SetHeadingPID(double p, double i, double d){

@@ -15,13 +15,6 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
 public class MecanumBaseControl
 {
     ////Calibration////
-    //Movement Towards Discs
-    public static double discMoveCoefficient = -0.0015;
-    public static double discTurnCoefficient = -0.0015;
-    public static double discMoveSpeed = 0.2;
-    //Turn to Vumark
-    public static double vumarkTurnCoefficient = -0.05;
-    public static int targetVumarkID = 0;
 
 
     ////Dependencies////
@@ -36,11 +29,6 @@ public class MecanumBaseControl
     protected NavigationProfile navigationProfile;
     //OpMode
     protected OpMode currentOpMode;
-    //Drive Motors
-    protected DcMotor FR;
-    protected DcMotor FL;
-    protected DcMotor RR;
-    protected DcMotor RL;
 
     //Util
     protected double gyroOffset;
@@ -64,10 +52,7 @@ public class MecanumBaseControl
         USE_NAVIGATOR = useNavigator;
         navigationProfile = setNavProfile;
         log = setLog;
-    }
 
-    //TODO: Call this on Init()
-    public void InitCoreRobotModules(){
         //TODO: ==INIT CORE MODULES==
         imu = new IMU(currentOpMode);
         pidController = new PIDController(0,0,0);
@@ -80,15 +65,17 @@ public class MecanumBaseControl
 
         //TODO: ===INIT CHASSIS===
         if(USE_CHASSIS) {
-            FR = currentOpMode.hardwareMap.dcMotor.get("FR");
-            FL = currentOpMode.hardwareMap.dcMotor.get("FL");
-            RR = currentOpMode.hardwareMap.dcMotor.get("RR");
-            RL = currentOpMode.hardwareMap.dcMotor.get("RL");
+            DcMotor FR = currentOpMode.hardwareMap.dcMotor.get("FR");
+            DcMotor FL = currentOpMode.hardwareMap.dcMotor.get("FL");
+            DcMotor RR = currentOpMode.hardwareMap.dcMotor.get("RR");
+            DcMotor RL = currentOpMode.hardwareMap.dcMotor.get("RL");
+            chassis = new MecanumChassis(imu, FR, FL, RR, RL, currentOpMode.telemetry, false);//Create chassis instance w/ motors
         }
-        if(USE_CHASSIS) {
-            chassis = new MecanumChassis(imu, FR, FL, RR, RL, currentOpMode.telemetry, false, true);//Create chassis instance w/ motors
-            chassis.Init();
-        }
+    }
+
+    //TODO: Call this on Init()
+    public void InitCoreRobotModules(){
+
     }
 
     //TODO: Call this on Start()
@@ -131,12 +118,6 @@ public class MecanumBaseControl
         //Called once to brake the robot
         chassis.EncoderBrake();
     }
-
-    public void MoveTowardsClosestDisc(){ orion.MoveTowardsDiscRaw(discMoveSpeed, discMoveCoefficient); }
-    public double TurnTowardsClosestDiscSpeed(){return orion.TurnTowardsDiscSpeed(discTurnCoefficient);}
-
-    //public void TurnTowardsVuMark(){orion.TurnTowardsVuMark(1, targetVumarkID, vumarkTurnCoefficient, true);}
-    public void SetOriginToVumark(int vumarkIndex){ orion.SetOriginToVumark(vumarkIndex);}
 
     //TODO: UNIVERSAL GETTERS
     public OrionNavigator GetOrion(){return orion;}
