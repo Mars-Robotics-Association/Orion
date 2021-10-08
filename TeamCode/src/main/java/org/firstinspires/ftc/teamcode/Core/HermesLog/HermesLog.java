@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Core.HermesLog;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -77,8 +78,9 @@ public class HermesLog
     public void AddData(Object[] data){
         if(data == null) return;
 
-        for (Object obj:data) {
-            accumulatedData.add(obj);
+        for (int i=0; i<data.length; i++) {
+            Object thing = data[i];
+            accumulatedData.add(thing);
         }
     }
 

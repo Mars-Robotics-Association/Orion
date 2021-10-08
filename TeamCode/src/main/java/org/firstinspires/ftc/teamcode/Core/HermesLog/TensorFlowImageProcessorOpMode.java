@@ -271,10 +271,12 @@ public class TensorFlowImageProcessorOpMode extends OpMode
                     hermes.AddData(data);
                     hermes.Update();
 
+
                     DashboardWebSocketServer.getInstance().send(msg);
 
                     telemetry.addData("left,top:  ", "%d, %d", left, top);
                     telemetry.addData("dx,dy:  ", "%d, %d", dx, dy);
+                    telemetry.update();
                 }
             }
         }
