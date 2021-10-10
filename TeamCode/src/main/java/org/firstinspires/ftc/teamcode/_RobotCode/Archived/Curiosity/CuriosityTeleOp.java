@@ -146,14 +146,14 @@ public class CuriosityTeleOp extends OpMode implements ControllerInputListener
 
     @Override
     public void XPressed(double controllerNumber) {
-        if(controllerNumber == 1) control.SetOriginToVumark(0);
+        //if(controllerNumber == 1) control.SetOriginToVumark(0);
         if(controllerNumber == 2) control.Powershot();
     }
 
     @Override
     public void YPressed(double controllerNumber) {
         if(controllerNumber == payloadControllerNumber) {
-            control.SetOriginToVumark(0);
+            //control.SetOriginToVumark(0);
             control.ShootThree();
         }
     }
@@ -325,7 +325,7 @@ public class CuriosityTeleOp extends OpMode implements ControllerInputListener
             control.GetOrion().MoveLine(shootX, shootY, shootH);
             control.ShooterOn();
             control.GetOrion().Turn(control.GetOrion().GetVuforiaBearing(0)+shootBOffset);
-            control.SetOriginToVumark(0);
+            //control.SetOriginToVumark(0);
 
         }
         if(controllerNumber == 2) { //switch payload controllers at runtime
