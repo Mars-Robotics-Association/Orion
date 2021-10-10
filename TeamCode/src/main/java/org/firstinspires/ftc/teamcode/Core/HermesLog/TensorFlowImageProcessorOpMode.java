@@ -19,7 +19,6 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.ConfidenceLevel;
-import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.FullIMG;
 import org.firstinspires.ftc.teamcode.OpenCV.EncodedImageRecognition;
 import org.firstinspires.ftc.teamcode.OpenCV.Pipeline;
 import org.opencv.android.Utils;
