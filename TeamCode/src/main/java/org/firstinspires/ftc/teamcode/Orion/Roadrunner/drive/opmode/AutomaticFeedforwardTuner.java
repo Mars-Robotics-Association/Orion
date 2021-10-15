@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.StandardMecanumDrive;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.util.LoggingUtil;
 import org.firstinspires.ftc.teamcode.Orion.Roadrunner.util.RegressionUtil;
-import org.firstinspires.ftc.teamcode._RobotCode.Testing.TestNavProfile;
+import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 
 import java.util.ArrayList;
 import java.util.List;

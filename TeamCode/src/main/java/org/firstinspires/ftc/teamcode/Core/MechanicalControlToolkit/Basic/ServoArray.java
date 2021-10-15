@@ -7,6 +7,7 @@ public class ServoArray
     Servo[] servos;
     double[] positions;
 
+    //Provide an array of servos with an array of equal length containing start positions
     public ServoArray(Servo[] setServos, double[] setPositions){
         servos = setServos;
         SetPosArray(setPositions);

@@ -8,6 +8,7 @@ public class MotorArray
     double[] speedMultipliers;
     boolean useEncoders = false;
 
+    //Provide an array of motors with an array of equal length which contains speed multipliers
     public MotorArray(DcMotor[] setMotors, double[] setSpeedMultipliers, boolean isUseEncoders){
         motors = setMotors;
         speedMultipliers = setSpeedMultipliers;

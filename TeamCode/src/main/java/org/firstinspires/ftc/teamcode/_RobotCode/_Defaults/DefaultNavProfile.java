@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Testing;
+package org.firstinspires.ftc.teamcode._RobotCode._Defaults;
 
 import com.acmerobotics.dashboard.config.Config;
 
@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaTuningPro
 import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaVisionProfile;
 
 @Config
-public class TestNavProfile extends NavigationProfile {
-    public TestNavProfile() {
+public class DefaultNavProfile extends NavigationProfile {
+    public DefaultNavProfile() {
         super(new BelindaTuningProfile(), new BelindaChassisProfile(), new BelindaVisionProfile(), new BelindaOdometryProfile());
     }
 
