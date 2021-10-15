@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.ConfidenceLevel;
 import org.firstinspires.ftc.teamcode.OpenCV.EncodedImageRecognition;
 import org.firstinspires.ftc.teamcode.OpenCV.Pipeline;
 import org.opencv.android.Utils;
@@ -198,6 +199,9 @@ public class TensorFlowImageProcessorOpMode extends OpMode
     private void getRecognitions(Bitmap bitmap) {
         if (tfod != null && bitmap != null) {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+//            EncodedImageRecognition bt = new EncodedImageRecognition(bitmap);
+//            String bit = gson.toJson(bt);
+//            FullIMG img = new FullIMG(bit);
             if (updatedRecognitions != null) {
                 for (Recognition recognition : updatedRecognitions) {
 
@@ -267,7 +271,8 @@ public class TensorFlowImageProcessorOpMode extends OpMode
                     EncodedImageRecognition cr = new EncodedImageRecognition(revised);
                     String msg = gson.toJson(cr);
                     Base64Image base = new Base64Image(msg);
-                    Object[] data ={base};
+                    ConfidenceLevel conf = new ConfidenceLevel(percent);
+                    Object[] data ={base,conf};
                     hermes.AddData(data);
                     hermes.Update();
 
