@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Core.HermesLog;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -34,6 +33,7 @@ public class HermesLog
     private DashboardWebSocketServer server;
 
     private List<Object> accumulatedData = new ArrayList<Object>();
+    boolean accumulateData = false;
 
     private String tag = "LOG";
     private double updateTime = 500;
@@ -46,6 +46,7 @@ public class HermesLog
         updateTime = updateTimeMs;
         gson = new GsonBuilder().create();
         opMode = currentOpMode;
+        accumulateData = false;
 
         accumulatedData.clear();
 
@@ -71,7 +72,9 @@ public class HermesLog
         if(runtime.milliseconds() >= lastSendTime + updateTime) {
             lastSendTime = runtime.milliseconds();
             SendDataImmediate(accumulatedData.toArray());
+            accumulatedData.clear();
         }
+        if(!accumulateData) accumulatedData.clear();
     }
 
     //Adds data to be sent on the next update

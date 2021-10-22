@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.Input.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
-import org.firstinspires.ftc.teamcode._RobotCode.Testing.TestNavProfile;
+import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 
 import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ACCEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL_MOD;
@@ -27,7 +27,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     public void init() {
         controllerInput1 = new ControllerInput(gamepad1,1);
         controllerInput2 = new ControllerInput(gamepad2,2);
-        control = new Andrew(this, new TestNavProfile(),new HermesLog("do the andrew",500,this),true,false,false);
+        control = new Andrew(this, new DefaultNavProfile(),new HermesLog("do the andrew",500,this),true,false,false);
     }
         public void start(){control.Start();}
 
