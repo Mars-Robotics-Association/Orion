@@ -28,7 +28,7 @@ public class MecanumBaseControl
     protected OrionNavigator orion;
     protected NavigationProfile navigationProfile;
     //OpMode
-    protected OpMode currentOpMode;
+    protected OpMode opMode;
 
     //Util
     protected double gyroOffset;
@@ -46,7 +46,7 @@ public class MecanumBaseControl
     //Initializer
     public MecanumBaseControl(OpMode setOpMode, NavigationProfile setNavProfile, HermesLog setLog, boolean useChassis, boolean usePayload, boolean useNavigator)
     {
-        currentOpMode = setOpMode;
+        opMode = setOpMode;
         USE_CHASSIS = useChassis;
         USE_PAYLOAD = usePayload;
         USE_NAVIGATOR = useNavigator;
@@ -54,22 +54,22 @@ public class MecanumBaseControl
         log = setLog;
 
         //TODO: ==INIT CORE MODULES==
-        imu = new IMU(currentOpMode);
+        imu = new IMU(opMode);
         pidController = new PIDController(0,0,0);
 
         if(USE_NAVIGATOR) {
             //TODO: ===INIT ORION===
-            orion = new OrionNavigator(currentOpMode, this, navigationProfile);
+            orion = new OrionNavigator(opMode, this, navigationProfile);
             orion.Init();
         }
 
         //TODO: ===INIT CHASSIS===
         if(USE_CHASSIS) {
-            DcMotor FR = currentOpMode.hardwareMap.dcMotor.get("FR");
-            DcMotor FL = currentOpMode.hardwareMap.dcMotor.get("FL");
-            DcMotor RR = currentOpMode.hardwareMap.dcMotor.get("RR");
-            DcMotor RL = currentOpMode.hardwareMap.dcMotor.get("RL");
-            chassis = new MecanumChassis(imu, FR, FL, RR, RL, currentOpMode.telemetry, false);//Create chassis instance w/ motors
+            DcMotor FR = opMode.hardwareMap.dcMotor.get("FR");
+            DcMotor FL = opMode.hardwareMap.dcMotor.get("FL");
+            DcMotor RR = opMode.hardwareMap.dcMotor.get("RR");
+            DcMotor RL = opMode.hardwareMap.dcMotor.get("RL");
+            chassis = new MecanumChassis(imu, FR, FL, RR, RL, opMode.telemetry, false);//Create chassis instance w/ motors
         }
     }
 
@@ -98,8 +98,8 @@ public class MecanumBaseControl
     public void RawDrive(double inputAngle, double speed, double turnOffset){
         double finalAngle = inputAngle;
         if(headlessMode) finalAngle += imu.GetRobotAngle();
-        currentOpMode.telemetry.addData("ROBOT ANGLE ", imu.GetRobotAngle());
-        currentOpMode.telemetry.addData("FINAL ANGLE ", finalAngle);
+        opMode.telemetry.addData("ROBOT ANGLE ", imu.GetRobotAngle());
+        opMode.telemetry.addData("FINAL ANGLE ", finalAngle);
 
         chassis.MoveAtAngle(finalAngle, speed, turnOffset);
     }
@@ -124,7 +124,7 @@ public class MecanumBaseControl
     public IMU GetImu(){return imu;}
     public MecanumChassis GetChassis(){return chassis;}
     public PIDController GetPID(){return chassis.GetHeadingPID();}
-    public OpMode GetOpMode(){return currentOpMode;}
+    public OpMode GetOpMode(){return opMode;}
 
     //TODO: SETTER METHODS
     public void SetHeadingPID(double p, double i, double d){

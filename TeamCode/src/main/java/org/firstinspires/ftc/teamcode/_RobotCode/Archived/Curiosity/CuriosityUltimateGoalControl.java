@@ -46,15 +46,15 @@ public class CuriosityUltimateGoalControl extends MecanumBaseControl
     public void Init(){
         //TODO ===INIT PAYLOAD===
         if(USE_PAYLOAD) {
-            DcMotor shooterMotor1 = currentOpMode.hardwareMap.dcMotor.get("SM1");
-            DcMotor shooterMotor2 = currentOpMode.hardwareMap.dcMotor.get("SM2");
-            Servo intakeServo1 = currentOpMode.hardwareMap.servo.get("intakeServo1");
-            Servo intakeServo2 = currentOpMode.hardwareMap.servo.get("intakeServo2");
-            Servo starpathServo = currentOpMode.hardwareMap.servo.get("starpathServo");
+            DcMotor shooterMotor1 = opMode.hardwareMap.dcMotor.get("SM1");
+            DcMotor shooterMotor2 = opMode.hardwareMap.dcMotor.get("SM2");
+            Servo intakeServo1 = opMode.hardwareMap.servo.get("intakeServo1");
+            Servo intakeServo2 = opMode.hardwareMap.servo.get("intakeServo2");
+            Servo starpathServo = opMode.hardwareMap.servo.get("starpathServo");
 
-            DistanceSensor intakeSensor = currentOpMode.hardwareMap.get(Rev2mDistanceSensor.class, "intake sensor");
+            DistanceSensor intakeSensor = opMode.hardwareMap.get(Rev2mDistanceSensor.class, "intake sensor");
 
-            payload = new CuriosityPayloadController(currentOpMode, new DcMotor[]{shooterMotor1, shooterMotor2}, intakeServo1, intakeServo2, starpathServo, intakeSensor);
+            payload = new CuriosityPayloadController(opMode, new DcMotor[]{shooterMotor1, shooterMotor2}, intakeServo1, intakeServo2, starpathServo, intakeSensor);
         }
 
         //TODO ===INIT CORE ROBOT===

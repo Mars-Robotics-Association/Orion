@@ -41,29 +41,29 @@ public class SchrodingerControl extends MecanumBaseControl
     public void Init(){
         //TODO ===INIT PAYLOAD===
         if(USE_PAYLOAD) {
-            Servo gripperR = currentOpMode.hardwareMap.servo.get("gr");
-            Servo gripperL = currentOpMode.hardwareMap.servo.get("gl");
-            Servo headingServo = currentOpMode.hardwareMap.servo.get("gh");
-            Servo rotationServoR = currentOpMode.hardwareMap.servo.get("rr");
-            Servo rotationServoL = currentOpMode.hardwareMap.servo.get("rl");
+            Servo gripperR = opMode.hardwareMap.servo.get("gr");
+            Servo gripperL = opMode.hardwareMap.servo.get("gl");
+            Servo headingServo = opMode.hardwareMap.servo.get("gh");
+            Servo rotationServoR = opMode.hardwareMap.servo.get("rr");
+            Servo rotationServoL = opMode.hardwareMap.servo.get("rl");
 
-            Servo armServoR = currentOpMode.hardwareMap.servo.get("ar");
-            Servo armServoL = currentOpMode.hardwareMap.servo.get("al");
-            DcMotor armMotor = currentOpMode.hardwareMap.dcMotor.get("AM");
+            Servo armServoR = opMode.hardwareMap.servo.get("ar");
+            Servo armServoL = opMode.hardwareMap.servo.get("al");
+            DcMotor armMotor = opMode.hardwareMap.dcMotor.get("AM");
 
-            Servo grabberServoR = currentOpMode.hardwareMap.servo.get("fr");
-            Servo grabberServoL = currentOpMode.hardwareMap.servo.get("fl");
-            DcMotor TM = currentOpMode.hardwareMap.dcMotor.get("TM");
+            Servo grabberServoR = opMode.hardwareMap.servo.get("fr");
+            Servo grabberServoL = opMode.hardwareMap.servo.get("fl");
+            DcMotor TM = opMode.hardwareMap.dcMotor.get("TM");
 
-            DcMotor intakeMotorR = currentOpMode.hardwareMap.dcMotor.get("IR");
-            DcMotor intakeMotorL = currentOpMode.hardwareMap.dcMotor.get("IL");
+            DcMotor intakeMotorR = opMode.hardwareMap.dcMotor.get("IR");
+            DcMotor intakeMotorL = opMode.hardwareMap.dcMotor.get("IL");
 
             arm = new SchrodingerArm(armMotor, armServoR, armServoL);
             gripper = new SchrodingerGripper(gripperR, gripperL, headingServo, rotationServoR, rotationServoL);
             grabbers = new SchrodingerFoundationGrabbers(grabberServoR, grabberServoL,TM);
 
 
-            armResetTouchSensor = currentOpMode.hardwareMap.get(RevTouchSensor.class, "armReset");
+            armResetTouchSensor = opMode.hardwareMap.get(RevTouchSensor.class, "armReset");
         }
 
         //TODO ===INIT CORE ROBOT===
@@ -103,9 +103,9 @@ public class SchrodingerControl extends MecanumBaseControl
 
     }
     public void PrintTelemetry(){
-        gripper.PrintTelemetry(currentOpMode.telemetry);
-        grabbers.PrintTelemetry(currentOpMode.telemetry);
-        arm.PrintTelemetry(currentOpMode.telemetry);
+        gripper.PrintTelemetry(opMode.telemetry);
+        grabbers.PrintTelemetry(opMode.telemetry);
+        arm.PrintTelemetry(opMode.telemetry);
     }
 
     //PUBLIC GETTERS

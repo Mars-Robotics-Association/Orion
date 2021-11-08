@@ -54,7 +54,7 @@ public class SoccerBotControl extends MecanumBaseControl
 
     public boolean IsRobotLevel(){
         double pitch = imu.GetRawAngles().secondAngle;
-        currentOpMode.telemetry.addData("Robot pitch: ", pitch);
+        opMode.telemetry.addData("Robot pitch: ", pitch);
 
         if(Math.abs(pitch)>5) return false;
         else return true;

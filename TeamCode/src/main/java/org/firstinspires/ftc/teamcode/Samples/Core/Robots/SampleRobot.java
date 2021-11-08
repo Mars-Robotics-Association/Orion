@@ -20,8 +20,8 @@ public class SampleRobot extends MecanumBaseControl
     public void Init(){
         //TODO ===INIT PAYLOAD===
         if(USE_PAYLOAD) {
-            Servo rightIntakeServo = currentOpMode.hardwareMap.servo.get("intake right");
-            Servo leftIntakeServo = currentOpMode.hardwareMap.servo.get("intake left");
+            Servo rightIntakeServo = opMode.hardwareMap.servo.get("intake right");
+            Servo leftIntakeServo = opMode.hardwareMap.servo.get("intake left");
 
             payload = new IntakeSample(rightIntakeServo, leftIntakeServo);
         }

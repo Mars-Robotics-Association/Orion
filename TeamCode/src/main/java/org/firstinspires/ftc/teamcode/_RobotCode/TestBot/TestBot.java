@@ -1,7 +1,9 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
+package org.firstinspires.ftc.teamcode._RobotCode.TestBot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumBaseControl;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
@@ -18,10 +20,11 @@ import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 //REQUIRED TO RUN: Phones | REV Hub | Demobot Chassis | Shooter | Odometry Unit
 
 @Config
-public class CuriosityRobot extends MecanumBaseControl
+public class TestBot extends MecanumBaseControl
 {
     ////Dependencies////
     //Mechanical Components
+    ArmControl arm;
 
     ////Variables////
     //Calibration
@@ -33,8 +36,16 @@ public class CuriosityRobot extends MecanumBaseControl
      * @param usePayload whether to use the shooter/intake/lift of the robot
      * @param useNavigator whether to use Orion (webcams + odometry navigation)
      */
-    public CuriosityRobot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
+    public TestBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         super(setOpMode, new DefaultNavProfile(), new HermesLog("Curiosity", 500, setOpMode), useChassis, usePayload, useNavigator);
+
+
+        if(usePayload){
+            DcMotor armMotor = opMode.hardwareMap.dcMotor.get("Arm");
+            Servo spinnerServo = opMode.hardwareMap.servo.get("spinner");
+            arm = new ArmControl(opMode,armMotor,spinnerServo,false,true);
+            arm.ResetArmPos();
+        }
     }
 
     //SETUP METHODS//
@@ -52,6 +63,8 @@ public class CuriosityRobot extends MecanumBaseControl
     public void Start(){
         super.StartCoreRobotModules();
     }
+
+    public ArmControl Arm(){return arm;}
 
     public boolean IsRobotLevel(){
         double pitch = imu.GetRawAngles().secondAngle;
