@@ -41,6 +41,31 @@ public class motorServoTesting extends OpMode{
     @Override
     public void loop(){
         //Spin motor forwards/backwards using left trigger
+        if(gamepad1.dpad_up)
+        {
+            currentmotor+=1;
+        }
+        if(gamepad1.dpad_down){
+            currentmotor-=1;
+        }
+        if(gamepad1.dpad_right){
+            currentservo+=1;
+        }
+        if(gamepad1.dpad_left){
+            currentservo-=1;
+        }
+        if(currentmotor>4){
+            currentmotor=1;
+        }
+        if(currentservo>6){
+            currentservo=1;
+        }
+        if(currentmotor<1){
+            currentmotor=4;
+        }
+        if(currentservo<1){
+            currentservo=6;
+        }
         if (gamepad1.left_trigger > 0.1){
             switch(currentmotor){
                 case(1):
@@ -159,6 +184,8 @@ public class motorServoTesting extends OpMode{
         telemetry.addData("To spin motor: ","left and right triggers");
         telemetry.addData("To move servo to extremes: ","left and right bumpers");
         telemetry.addData("To move servo to middle position: ","a");
+        telemetry.addData("To switch motor: ","up and down on dpad");
+        telemetry.addData("To switch servo: ","left and right on dpad");
         telemetry.addData("Make sure you are using ","gamepad 1");
         telemetry.update();
 //
