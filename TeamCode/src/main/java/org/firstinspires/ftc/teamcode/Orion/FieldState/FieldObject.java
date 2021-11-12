@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Orion.FieldState;
 
+//used to store information about the position of objects on the field
 public class FieldObject
 {
     public String id;
@@ -13,5 +14,5 @@ public class FieldObject
     public double[] poseToRobot = {0,0,0};
     public double[] poseToGlobal = {0,0,0};
     public double poseToRobotCertainty = 1;
-
+    public double boundsRadius = 1;
 }
