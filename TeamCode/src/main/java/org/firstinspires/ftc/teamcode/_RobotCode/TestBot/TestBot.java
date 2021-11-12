@@ -25,6 +25,7 @@ public class TestBot extends MecanumBaseControl
     ////Dependencies////
     //Mechanical Components
     ArmControl arm;
+    TestBotNavCore navCore;
 
     ////Variables////
     //Calibration
@@ -38,7 +39,7 @@ public class TestBot extends MecanumBaseControl
      */
     public TestBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         super(setOpMode, new DefaultNavProfile(), new HermesLog("Curiosity", 500, setOpMode), useChassis, usePayload, useNavigator);
-
+        navCore = new TestBotNavCore(); //feed in nav modules here
 
         if(usePayload){
             DcMotor armMotor = opMode.hardwareMap.dcMotor.get("Arm");
