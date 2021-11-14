@@ -59,7 +59,7 @@ android {
         minSdkVersion 24 //If this broke anything, I am really sorry
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
-        multiDexEnabled !useProguard
+        multiDexEnabled true
 
         /**
          * We keep the versionCode and versionName of robot controller applications in sync with

@@ -12,6 +12,7 @@ buildscript {
     repositories {
         mavenCentral()
         google()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.3'
@@ -24,6 +25,7 @@ allprojects {
     repositories {
         mavenCentral()
         google()
+        jcenter()
     }
 }
 
@@ -36,12 +38,13 @@ repositories {
 }
 
 dependencies {
-    doc 'org.firstinspires.ftc:Hardware:7.0.0'   //-\
-    doc 'org.firstinspires.ftc:RobotCore:7.0.0'  //--\
-    doc 'org.firstinspires.ftc:FtcCommon:7.0.0'  //---Updated library versions to 7.0.0
-    doc 'org.firstinspires.ftc:OnBotJava:7.0.0'  //--/
-    doc 'org.firstinspires.ftc:Inspection:7.0.0' //-/
-    doc 'org.ftclib.ftclib:core:1.2.1' // FTCLib (includes Pure Pursuit)
+    doc 'org.firstinspires.ftc:Hardware:7.0.0'  // \
+    doc 'org.firstinspires.ftc:RobotCore:7.0.0' //  \
+    doc 'org.firstinspires.ftc:FtcCommon:7.0.0' //   Updated library versions to 7.0.0
+    doc 'org.firstinspires.ftc:OnBotJava:7.0.0' //  /
+    doc 'org.firstinspires.ftc:Inspection:7.0.0'// /
+    doc 'org.ftclib.ftclib:vision:1.2.0'        // FTCLib Vision
+    doc 'org.ftclib.ftclib:core:1.2.1'          // FTCLib Core
     doc 'org.openftc:opencv-repackaged:4.5.3-B' // OpenCV-Repackaged
 }
 

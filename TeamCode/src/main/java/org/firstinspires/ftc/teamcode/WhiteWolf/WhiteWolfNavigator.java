@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.WhiteWolf;
 
-import com.arcrobotics.ftclib.drivebase;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumBaseControl;
 
 /*
     ----WARNING-----
@@ -24,7 +24,6 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.Meca
 
 public class WhiteWolfNavigator
 {
-
     /*
         public WhiteWolfNavigator(OpMode setOpMode, DifferentialDrive diffDrive){
             opMode = setOpMode;
@@ -34,21 +33,22 @@ public class WhiteWolfNavigator
         // For Differential and Tank bases
     */
 
-    public WhiteWolfNavigator(OpMode setOpMode){
+    public WhiteWolfNavigator(HardwareMap setHardwareMap, final OpMode setOpMode){
         opMode = setOpMode;
-
+        hardwareMap = setHardwareMap
     }
 
     public void Init(){
-        mecDrive = new MecanumDrive(opMode.hardwareMap.dcMotor.get("fl"), opMode.hardwareMap.dcMotor.get("fr"),
-                opMode.hardwareMap.dcMotor.get("bl"), opMode.hardwareMap.dcMotor.get("br"));
+        mecDrive = new MecanumDrive(new Motor(hardwareMap, "motorOne"));
     }
 
     public void Update(){
 
     }
 
-    private OpMode opMode;
     private MecanumDrive mecDrive;
+
+    HardwareMap hardwareMap;
+    OpMode opMode;
 
 }
