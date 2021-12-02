@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Archived.Oppertunity;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Core.Input.ControllerInput;
-import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 //import org.firstinspires.ftc.teamcode.Robots.Curiosity.CuriosityUltimateGoalControl;
 

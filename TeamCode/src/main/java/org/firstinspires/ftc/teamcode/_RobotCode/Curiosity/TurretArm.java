@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class TurretArm
 {
-    public static double armMaxRots = 0.6;
+    public static double armMaxRots = 0.3;
     public static double armMinRots = 0;
-    public static double armGearRatio = 9;
+    public static double armGearRatio = 24;
     public static double armEncoderResolution = 537.7; //gobilda 19.2:1
     public static double armEncoderMultiplier = 1;
     public static boolean useArmEncoder = false;
@@ -49,8 +49,14 @@ public class TurretArm
         arm.setPower(1);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
+    //Goes to arm's extreme
+    public void SetArmToFurthestExtreme(){
+        SetArmRotation(armMaxRots);
+    }
     //Resets the arm's encoder
-    public void ResetArmPos(){arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);}
+    public void ResetArmRot(){arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);}
+    //Sets arm's extreme
+    public void ResetHighestRot(){armMaxRots = GetArmRotation();}
     //Locks the arm in place using the encoder
     public void LockArm(){
         arm.setTargetPosition(arm.getCurrentPosition());
@@ -59,13 +65,13 @@ public class TurretArm
     }
     //Sets the arms power and limits its position
     public void SetArmPower(double power){
-        opMode.telemetry.addData("ARM POSITION", GetArmPos());
-        if(power > 0 && GetArmPos() < armMinRots){
+        opMode.telemetry.addData("ARM POSITION", GetArmRotation());
+        if(power > 0 && GetArmRotation() < armMinRots){
             if(useArmEncoder) SetArmRotation(armMinRots * armEncoderResolution * armGearRatio);
             else arm.setPower(0);
             return;
         }
-        else if(power < 0 && GetArmPos() > armMaxRots){
+        else if(power < 0 && GetArmRotation() > armMaxRots){
             if(useArmEncoder) SetArmRotation(armMaxRots * armEncoderResolution * armGearRatio);
             else arm.setPower(0);
             return;
@@ -75,7 +81,7 @@ public class TurretArm
         arm.setPower(power);
     }
     //Returns the rotation of the arm
-    public double GetArmPos(){
+    public double GetArmRotation(){
         return arm.getCurrentPosition() * (armEncoderMultiplier / (armEncoderResolution * armGearRatio));
     }
 
@@ -83,7 +89,7 @@ public class TurretArm
     //Sets the turret to go to a target rotation
     public void SetTurretRotation(double pos){
         turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        turret.setTargetPosition((int)(turretEncoderResolution * clamp(pos,turretMinRots,turretMaxRots) * turretGearRatio));
+        turret.setTargetPosition((int)(turretEncoderResolution * clamp(pos,turretMinRots,turretMaxRots) * turretGearRatio / armEncoderMultiplier));
         turret.setPower(1);
         turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }

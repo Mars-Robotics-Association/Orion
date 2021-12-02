@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumBaseControl;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
@@ -22,6 +24,8 @@ public class CuriosityRobot extends MecanumBaseControl
 {
     ////Dependencies////
     //Mechanical Components
+    TurretArm arm;
+    DuckSpinner duckSpinner;
 
     ////Variables////
     //Calibration
@@ -35,6 +39,18 @@ public class CuriosityRobot extends MecanumBaseControl
      */
     public CuriosityRobot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         super(setOpMode, new DefaultNavProfile(), new HermesLog("Curiosity", 500, setOpMode), useChassis, usePayload, useNavigator);
+
+        if(usePayload){
+            DcMotor armMotor = opMode.hardwareMap.dcMotor.get("Arm");
+            DcMotor turretMotor = opMode.hardwareMap.dcMotor.get("Turret");
+            DcMotor duckMotor = opMode.hardwareMap.dcMotor.get("Duck");
+            Servo spinnerServo = opMode.hardwareMap.servo.get("spinner");
+
+            arm = new TurretArm(opMode,armMotor,turretMotor,spinnerServo,false,true,false,false);
+            arm.ResetArmRot();
+
+            duckSpinner = new DuckSpinner(duckMotor, 1);
+        }
     }
 
     //SETUP METHODS//
@@ -52,6 +68,10 @@ public class CuriosityRobot extends MecanumBaseControl
     public void Start(){
         super.StartCoreRobotModules();
     }
+
+    public TurretArm Arm(){return arm;}
+
+    public DuckSpinner DuckSpinner(){return duckSpinner;}
 
     public boolean IsRobotLevel(){
         double pitch = imu.GetRawAngles().secondAngle;

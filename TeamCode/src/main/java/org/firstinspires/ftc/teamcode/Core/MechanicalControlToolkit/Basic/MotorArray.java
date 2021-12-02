@@ -40,7 +40,7 @@ public class MotorArray
         }
     }
 
-    //Sets all servo positions to 0.5, stopping continuous rotation servos
+    //Stops the motors
     public void StopMotors(){
         SetMotorPowers(0);
     }

@@ -6,8 +6,8 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Core.Input.ControllerInput;
-import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 //The class for controlling the robot in teleop. Includes basic drive movement, shooter operations,
 //and advanced autonomous functions.

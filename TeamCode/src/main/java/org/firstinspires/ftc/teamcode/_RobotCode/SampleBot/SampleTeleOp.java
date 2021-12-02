@@ -6,9 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.Core.Input.ControllerInput;
-import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
-import org.firstinspires.ftc.teamcode.Samples.Core.Robots.SampleRobot;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ACCEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL_MOD;

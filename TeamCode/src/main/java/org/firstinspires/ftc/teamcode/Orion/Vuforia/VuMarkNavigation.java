@@ -76,7 +76,7 @@ public class VuMarkNavigation {
         trackables.activate();
     }
 
-    public double[] GetData(int vumarkIndex) {
+    public double[] GetPoseToCamera(int vumarkIndex) {
 
         double[] data = {0.0,0.0,0.0,0.0,0.0,0.0};
         VuforiaTrackable vumark = trackables.get(vumarkIndex);

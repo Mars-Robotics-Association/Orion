@@ -1,21 +1,11 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Opportunity;
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
-import org.firstinspires.ftc.teamcode.Core.Input.ControllerInput;
-import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
-
-import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ACCEL_MOD;
-import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL_MOD;
-import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ANG_VEL_MOD;
-import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_VEL_MOD;
-
-import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "Andrew TeleOp", group = "All")
 public class AndrewTeleop extends OpMode implements ControllerInputListener {

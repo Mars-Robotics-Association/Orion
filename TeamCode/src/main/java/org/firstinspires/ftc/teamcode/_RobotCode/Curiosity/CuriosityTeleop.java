@@ -5,15 +5,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.Core.Input.ControllerInput;
-import org.firstinspires.ftc.teamcode.Core.Input.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ACCEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ANG_VEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_VEL_MOD;
 
-@TeleOp(name = "*CURIOSITY BOT TELEOP*", group = "All")
+@TeleOp(name = "*CURIOSITY TELEOP*", group = "Curiosity")
 @Config
 public class CuriosityTeleop extends OpMode implements ControllerInputListener
 {
@@ -29,6 +29,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     public static double autoSpeedModifier = 2; //used to change speed of automatic navigation
 
+    public static double armSpeed = 1;
+    public static double spinnerSpeed = 1;
+
     public static double turnP = 0.005;
     public static double turnI = 0.0;
     public static double turnD = 0.01;
@@ -40,9 +43,11 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     public static int payloadControllerNumber = 1;
 
+    private double spinnerState = 0;
+
     @Override
     public void init() {
-        control = new CuriosityRobot(this, true, false, false);
+        control = new CuriosityRobot(this, true, true, false);
         control.Init();
 
         controllerInput1 = new ControllerInput(gamepad1, 1);
@@ -50,8 +55,10 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
 
-        hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
-        hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
+        //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
+        //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
+
+        hardwareMap.dcMotor.get("Arm").setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
@@ -88,6 +95,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             //Manage driving
             control.SetHeadingPID(turnP, turnI, turnD);
             ManageDriveMovementCustom();
+            //control.DriveWithGamepad(controllerInput1, driveSpeed, turnOffset, speedMultiplier);
 
         }
         //print telemetry
@@ -101,15 +109,6 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Payload Controller", payloadControllerNumber);
 
         telemetry.update();
-    }
-
-    ////DRIVING FUNCTIONS////
-
-    private void ManageDrivingRoadrunner() {
-        double moveX = -gamepad1.left_stick_y*driveSpeed*speedMultiplier;
-        double moveY = -gamepad1.left_stick_x*driveSpeed*speedMultiplier;
-        double turn = -gamepad1.right_stick_x*turnSpeed*speedMultiplier + turnOffset;
-        control.GetOrion().MoveRaw(moveX, moveY, turn);
     }
 
     private void ManageDriveMovementCustom() {
@@ -145,13 +144,15 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void XPressed(double controllerNumber) {
-
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.Arm().SetArmToFurthestExtreme();
+        }
     }
 
     @Override
     public void YPressed(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber) {
-
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.Arm().SetArmRotation(0);
         }
     }
 
@@ -193,10 +194,21 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LBPressed(double controllerNumber) {
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            if(spinnerState == 0) control.Arm().SetSpinnerSpeed(spinnerSpeed);
+            else if (spinnerState == 1) control.Arm().SetSpinnerSpeed(0);
+            else if (spinnerState == 2) control.Arm().SetSpinnerSpeed(-spinnerSpeed);
+            else if (spinnerState == 3) control.Arm().SetSpinnerSpeed(0);
+            spinnerState ++;
+            if(spinnerState > 3) spinnerState = 0;
+        }
     }
 
     @Override
     public void RBPressed(double controllerNumber) {
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.DuckSpinner().Forwards();
+        }
     }
 
     @Override
@@ -205,7 +217,6 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void RTPressed(double controllerNumber) {
-        if(controllerNumber == 1) speedMultiplier = 0.25;
     }
 
     @Override
@@ -220,16 +231,16 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LTHeld(double controllerNumber) {
-        //makeshift brake function
-        if(controllerNumber == 1){
-            control.RawDrive(180,0.1,0);//move backwards slightly
-            busy = true;
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.Arm().SetArmPower(armSpeed);
         }
     }
 
     @Override
     public void RTHeld(double controllerNumber) {
-
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.Arm().SetArmPower(-armSpeed);
+        }
     }
 
     @Override
@@ -239,16 +250,25 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void RBReleased(double controllerNumber) {
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.DuckSpinner().Stop();
+        }
     }
 
     @Override
     public void LTReleased(double controllerNumber) {
-        if(controllerNumber == 1) busy = false;
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.Arm().SetArmPower(0);
+            //control.Arm().LockArm();
+        }
     }
 
     @Override
     public void RTReleased(double controllerNumber) {
-        if(controllerNumber == 1) speedMultiplier = 1;
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.Arm().SetArmPower(0);
+            //control.Arm().LockArm();
+        }
     }
 
     @Override

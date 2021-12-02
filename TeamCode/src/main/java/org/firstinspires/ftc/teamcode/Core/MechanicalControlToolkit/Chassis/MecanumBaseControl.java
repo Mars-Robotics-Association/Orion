@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.PIDController;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
@@ -19,9 +20,8 @@ public class MecanumBaseControl
 
     ////Dependencies////
     //Mechanical Components
-    protected MecanumChassis chassis;
+    protected MecChassis chassis;
     //Core
-    protected PIDController pidController; //Look here: https://github.com/tekdemo/MiniPID-Java for how to use it
     protected IMU imu;
     public HermesLog log;
     //Orion Navigator
@@ -55,7 +55,6 @@ public class MecanumBaseControl
 
         //TODO: ==INIT CORE MODULES==
         imu = new IMU(opMode);
-        pidController = new PIDController(0,0,0);
 
         if(USE_NAVIGATOR) {
             //TODO: ===INIT ORION===
@@ -69,7 +68,7 @@ public class MecanumBaseControl
             DcMotor FL = opMode.hardwareMap.dcMotor.get("FL");
             DcMotor RR = opMode.hardwareMap.dcMotor.get("RR");
             DcMotor RL = opMode.hardwareMap.dcMotor.get("RL");
-            chassis = new MecanumChassis(imu, FR, FL, RR, RL, opMode.telemetry, false);//Create chassis instance w/ motors
+            chassis = new MecChassis(imu, FR, FL, RR, RL, opMode.telemetry, false);//Create chassis instance w/ motors
         }
     }
 
@@ -95,6 +94,21 @@ public class MecanumBaseControl
     }
 
     //TODO: UNIVERSAL PUBLIC METHODS
+    public void DriveWithGamepad(ControllerInput gamepad, double driveSpeed, double turnSpeed, double speedMultiplier) {
+        //MOVE if left joystick magnitude > 0.1
+        if (gamepad.CalculateLJSMag() > 0.1) {
+            RawDrive(gamepad.CalculateLJSAngle(), gamepad.CalculateLJSMag() * driveSpeed * speedMultiplier, gamepad.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
+            opMode.telemetry.addData("Moving at ", gamepad.CalculateLJSAngle());
+        }
+        //TURN if right joystick magnitude > 0.1 and not moving
+        else if (Math.abs(gamepad.GetRJSX()) > 0.1) {
+            RawTurn(gamepad.GetRJSX() * turnSpeed * speedMultiplier);//turns at speed according to rjs1
+            opMode.telemetry.addData("Turning", true);
+        }
+        else {
+            GetChassis().SetMotorSpeeds(0,0,0,0);
+        }
+    }
     public void RawDrive(double inputAngle, double speed, double turnOffset){
         double finalAngle = inputAngle;
         if(headlessMode) finalAngle += imu.GetRobotAngle();
@@ -122,7 +136,7 @@ public class MecanumBaseControl
     //TODO: UNIVERSAL GETTERS
     public OrionNavigator GetOrion(){return orion;}
     public IMU GetImu(){return imu;}
-    public MecanumChassis GetChassis(){return chassis;}
+    public MecChassis GetChassis(){return chassis;}
     public PIDController GetPID(){return chassis.GetHeadingPID();}
     public OpMode GetOpMode(){return opMode;}
 
