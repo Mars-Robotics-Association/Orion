@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumBaseControl;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 
 /**
@@ -20,7 +21,7 @@ import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 //REQUIRED TO RUN: Phones | REV Hub | Demobot Chassis | Shooter | Odometry Unit
 
 @Config
-public class CuriosityRobot extends MecanumBaseControl
+public class CuriosityRobot extends MecanumChassis
 {
     ////Dependencies////
     //Mechanical Components
@@ -38,7 +39,7 @@ public class CuriosityRobot extends MecanumBaseControl
      * @param useNavigator whether to use Orion (webcams + odometry navigation)
      */
     public CuriosityRobot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
-        super(setOpMode, new DefaultNavProfile(), new HermesLog("Curiosity", 500, setOpMode), useChassis, usePayload, useNavigator);
+        super(setOpMode, new CuriosityChassisProfile(), new HermesLog("Curiosity", 500, setOpMode), useChassis, usePayload, useNavigator);
 
         if(usePayload){
             DcMotor armMotor = opMode.hardwareMap.dcMotor.get("Arm");

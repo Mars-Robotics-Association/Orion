@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,9 +8,6 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
 import org.firstinspires.ftc.teamcode.Core.PIDController;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
-import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
-import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
-import org.firstinspires.ftc.teamcode.Orion.OrionNavigator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
 
 @Config
@@ -49,15 +45,18 @@ public class MecanumChassis
     public boolean isUSE_PAYLOAD(){return USE_PAYLOAD;}
     public boolean isUSE_NAVIGATOR(){return USE_NAVIGATOR;}
 
+    public ChassisProfile profile;
+
 
     //Initializer
-    public MecanumChassis(OpMode setOpMode, NavigationProfile setNavProfile, HermesLog setLog, boolean useChassis, boolean usePayload, boolean useNavigator, boolean useEncoders)
+    public MecanumChassis(OpMode setOpMode, ChassisProfile setProfile, HermesLog setLog, boolean useChassis, boolean usePayload, boolean useNavigator)
     {
         opMode = setOpMode;
         USE_CHASSIS = useChassis;
         USE_PAYLOAD = usePayload;
         USE_NAVIGATOR = useNavigator;
         log = setLog;
+        profile = setProfile;
 
         //TODO: ==INIT CORE MODULES==
         imu = new IMU(opMode);
@@ -68,20 +67,25 @@ public class MecanumChassis
 
         //TODO: ===INIT CHASSIS===
         if(USE_CHASSIS) {
-            FR = opMode.hardwareMap.dcMotor.get("FR");
-            FL = opMode.hardwareMap.dcMotor.get("FL");
-            RR = opMode.hardwareMap.dcMotor.get("RR");
-            RL = opMode.hardwareMap.dcMotor.get("RL");
-            driveMotors = new MotorArray(new DcMotor[]{FR,FL,RR,FL}, new double[]{1,1,1,1}, useEncoders);
+            FR = opMode.hardwareMap.dcMotor.get(profile.motorNames[0]);
+            FL = opMode.hardwareMap.dcMotor.get(profile.motorNames[1]);
+            RR = opMode.hardwareMap.dcMotor.get(profile.motorNames[2]);
+            RL = opMode.hardwareMap.dcMotor.get(profile.motorNames[3]);
+            driveMotors = new MotorArray(new DcMotor[]{FR,FL,RR,FL}, new double[]{1,1,1,1}, profile.useEncoders);
 
             driveMotors.StopAndResetEncoders();
-            if(useEncoders) driveMotors.RunWithEncodersMode();
+            if(profile.useEncoders) driveMotors.RunWithEncodersMode();
             else driveMotors.RunWithoutEncodersMode();
             driveMotors.SetMotorPowers(new double[]{0,0,0,0});
 
             headingPIDController = new PIDController(0,0,0);//Create the pid controller.
             speedPID = new PIDController(0,0,0);//Create the pid controller.
             directionPID = new PIDController(0,0,0);//Create the pid controller.
+
+            //Set PIDs to profile values
+            SetHeadingPID(profile.headingPID[0],profile.headingPID[1],profile.headingPID[2]);
+            SetSpeedPID(profile.speedPID[0],profile.speedPID[1],profile.speedPID[2]);
+            SetDirectionPID(profile.directionPID[0],profile.directionPID[1],profile.directionPID[2]);
         }
     }
 
@@ -105,15 +109,15 @@ public class MecanumChassis
     }
 
     //TODO: UNIVERSAL PUBLIC METHODS
-    public void DriveWithGamepad(ControllerInput gamepad, double driveSpeed, double turnSpeed, double speedMultiplier) {
+    public void DriveWithGamepad(ControllerInput controllerInput, double driveSpeed, double turnSpeed, double speedMultiplier) {
         //MOVE if left joystick magnitude > 0.1
-        if (gamepad.CalculateLJSMag() > 0.1) {
-            RawDrive(gamepad.CalculateLJSAngle(), gamepad.CalculateLJSMag() * driveSpeed * speedMultiplier, gamepad.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
-            opMode.telemetry.addData("Moving at ", gamepad.CalculateLJSAngle());
+        if (controllerInput.CalculateLJSMag() > 0.1) {
+            RawDrive(controllerInput.CalculateLJSAngle(), controllerInput.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
+            opMode.telemetry.addData("Moving at ", controllerInput.CalculateLJSAngle());
         }
         //TURN if right joystick magnitude > 0.1 and not moving
-        else if (Math.abs(gamepad.GetRJSX()) > 0.1) {
-            RawTurn(gamepad.GetRJSX() * turnSpeed * speedMultiplier);//turns at speed according to rjs1
+        else if (Math.abs(controllerInput.GetRJSX()) > 0.1) {
+            RawTurn(controllerInput.GetRJSX() * turnSpeed * speedMultiplier);//turns at speed according to rjs1
             opMode.telemetry.addData("Turning", true);
         }
         else {
@@ -148,8 +152,7 @@ public class MecanumChassis
 
 
         //set the powers of the motors with pid offset applied
-        //TODO remove line below
-        headingPIDOffset *= -1;
+        if(profile.flipIMU) headingPIDOffset *= -1;
 
         //Gets speeds for the motors
         double[] speeds = CalculateWheelSpeedsTurning(finalAngle, speed, turnOffset+headingPIDOffset);

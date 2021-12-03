@@ -94,14 +94,13 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         if(!busy) {
             //Manage driving
             control.SetHeadingPID(turnP, turnI, turnD);
-            ManageDriveMovementCustom();
-            //control.DriveWithGamepad(controllerInput1, driveSpeed, turnOffset, speedMultiplier);
+            control.DriveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
 
         }
         //print telemetry
         if(control.isUSE_NAVIGATOR()) {
-            control.GetOrion().PrintVuforiaTelemetry(0);
-            control.GetOrion().PrintTensorflowTelemetry();
+            //control.GetOrion().PrintVuforiaTelemetry(0);
+            //control.GetOrion().PrintTensorflowTelemetry();
         }
 
         telemetry.addLine("*TELEOP DATA*");
@@ -111,7 +110,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.update();
     }
 
-    private void ManageDriveMovementCustom() {
+/*    private void ManageDriveMovementCustom() {
         //MOVE if left joystick magnitude > 0.1
         if (controllerInput1.CalculateLJSMag() > 0.1) {
             control.RawDrive(controllerInput1.CalculateLJSAngle(), controllerInput1.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
@@ -123,9 +122,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             telemetry.addData("Turning", true);
         }
         else {
-            control.GetChassis().SetMotorSpeeds(0,0,0,0);
+            control.SetMotorSpeeds(0,0,0,0);
         }
-    }
+    }*/
 
     ////INPUT MAPPING////
 
