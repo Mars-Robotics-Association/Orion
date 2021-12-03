@@ -45,7 +45,7 @@ public class TurretArm
     //Sets the arm to go to a target rotation
     public void SetArmRotation(double pos){
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        arm.setTargetPosition((int)(armEncoderResolution * clamp(pos,armMinRots,armMaxRots) * armGearRatio));
+        arm.setTargetPosition((int)(armEncoderResolution * clamp(pos,armMinRots,armMaxRots) * armGearRatio * armEncoderMultiplier));
         arm.setPower(1);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }

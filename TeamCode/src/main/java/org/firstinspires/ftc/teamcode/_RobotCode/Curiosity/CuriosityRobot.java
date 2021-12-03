@@ -5,10 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumBaseControl;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
-import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 
 /**
  * Control class for the Belinda Robot. Controls payload.
@@ -44,13 +42,13 @@ public class CuriosityRobot extends MecanumChassis
         if(usePayload){
             DcMotor armMotor = opMode.hardwareMap.dcMotor.get("Arm");
             DcMotor turretMotor = opMode.hardwareMap.dcMotor.get("Turret");
-            DcMotor duckMotor = opMode.hardwareMap.dcMotor.get("Duck");
-            Servo spinnerServo = opMode.hardwareMap.servo.get("spinner");
+            Servo duckServo = opMode.hardwareMap.servo.get("duck");
+            Servo spinnerServo = opMode.hardwareMap.servo.get("intake");
 
             arm = new TurretArm(opMode,armMotor,turretMotor,spinnerServo,false,true,false,false);
             arm.ResetArmRot();
 
-            duckSpinner = new DuckSpinner(duckMotor, 1);
+            duckSpinner = new DuckSpinner(duckServo, 1);
         }
     }
 
