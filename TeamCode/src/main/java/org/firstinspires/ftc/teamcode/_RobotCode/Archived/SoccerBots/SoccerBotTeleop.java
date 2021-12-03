@@ -57,6 +57,8 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
 
         hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
         hardwareMap.dcMotor.get("RR").setDirection(DcMotorSimple.Direction.REVERSE);
+        hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
+        hardwareMap.dcMotor.get("RL").setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
@@ -84,21 +86,22 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
         control.Update();
 
         //if robot isn't level, set speed to zero and exit loop
-        if(!control.IsRobotLevel()){
+        /*if(!control.IsRobotLevel()){
             control.RawDrive(0,0,0);
             return;
-        }
+        }*/
 
         if(!busy) {
             //Manage driving
             control.SetHeadingPID(turnP, turnI, turnD);
-            ManageDriveMovementCustom();
+            control.DriveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+            //ManageDriveMovementCustom();
 
         }
         //print telemetry
         if(control.isUSE_NAVIGATOR()) {
-            control.GetOrion().PrintVuforiaTelemetry(0);
-            control.GetOrion().PrintTensorflowTelemetry();
+            //control.GetOrion().PrintVuforiaTelemetry(0);
+            //control.GetOrion().PrintTensorflowTelemetry();
         }
 
         telemetry.addLine("*TELEOP DATA*");
@@ -114,7 +117,7 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
         double moveX = -gamepad1.left_stick_y*driveSpeed*speedMultiplier;
         double moveY = -gamepad1.left_stick_x*driveSpeed*speedMultiplier;
         double turn = -gamepad1.right_stick_x*turnSpeed*speedMultiplier + turnOffset;
-        control.GetOrion().MoveRaw(moveX, moveY, turn);
+        //control.GetOrion().MoveRaw(moveX, moveY, turn);
     }
 
     private void ManageDriveMovementCustom() {
@@ -129,7 +132,7 @@ public class SoccerBotTeleop extends OpMode implements ControllerInputListener
             telemetry.addData("Turning", true);
         }
         else {
-            control.GetChassis().SetMotorSpeeds(0,0,0,0);
+            control.SetMotorSpeeds(0,0,0,0);
         }
     }
 

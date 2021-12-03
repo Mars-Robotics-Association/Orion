@@ -102,8 +102,8 @@ public class SoccerBotTestingTeleop extends OpMode implements ControllerInputLis
         }
         //print telemetry
         if(control.isUSE_NAVIGATOR()) {
-            control.GetOrion().PrintVuforiaTelemetry(0);
-            control.GetOrion().PrintTensorflowTelemetry();
+            //control.GetOrion().PrintVuforiaTelemetry(0);
+            //control.GetOrion().PrintTensorflowTelemetry();
         }
 
         telemetry.addLine("*TELEOP DATA*");
@@ -119,7 +119,7 @@ public class SoccerBotTestingTeleop extends OpMode implements ControllerInputLis
         double moveX = -gamepad1.left_stick_y*driveSpeed*speedMultiplier;
         double moveY = -gamepad1.left_stick_x*driveSpeed*speedMultiplier;
         double turn = -gamepad1.right_stick_x*turnSpeed*speedMultiplier + turnOffset;
-        control.GetOrion().MoveRaw(moveX, moveY, turn);
+        //control.GetOrion().MoveRaw(moveX, moveY, turn);
     }
 
     private void ManageDriveMovementCustom() {
@@ -134,7 +134,7 @@ public class SoccerBotTestingTeleop extends OpMode implements ControllerInputLis
             telemetry.addData("Turning", true);
         }
         else {
-            control.GetChassis().SetMotorSpeeds(0,0,0,0);
+            control.SetMotorSpeeds(0,0,0,0);
         }
     }
 

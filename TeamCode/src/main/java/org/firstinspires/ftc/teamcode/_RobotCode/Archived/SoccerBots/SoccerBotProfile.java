@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
+package org.firstinspires.ftc.teamcode._RobotCode.Archived.SoccerBots;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.ChassisProfile;
 
-class CuriosityChassisProfile implements ChassisProfile
+class SoccerBotProfile implements ChassisProfile
 {
-    public CuriosityChassisProfile(){
-/*        flipIMU = false;
+    public SoccerBotProfile(){
+/*        flipIMU = true;
         motorNames = new String[]{"FR", "FL", "RR", "RL"};
         headingPID = new double[]{0, 0, 0};
         speedPID = new double[]{0, 0, 0};
@@ -21,8 +21,10 @@ class CuriosityChassisProfile implements ChassisProfile
     public double[] headingPID() { return new double[]{0, 0, 0}; }
     @Override
     public double[] speedPID() { return new double[]{0, 0, 0}; }
+
     @Override
     public double[] directionPID() { return new double[]{0, 0, 0}; }
+
     @Override
     public boolean useEncoders() { return false; }
 }

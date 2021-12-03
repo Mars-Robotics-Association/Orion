@@ -67,14 +67,14 @@ public class MecanumChassis
 
         //TODO: ===INIT CHASSIS===
         if(USE_CHASSIS) {
-            FR = opMode.hardwareMap.dcMotor.get(profile.motorNames[0]);
-            FL = opMode.hardwareMap.dcMotor.get(profile.motorNames[1]);
-            RR = opMode.hardwareMap.dcMotor.get(profile.motorNames[2]);
-            RL = opMode.hardwareMap.dcMotor.get(profile.motorNames[3]);
-            driveMotors = new MotorArray(new DcMotor[]{FR,FL,RR,FL}, new double[]{1,1,1,1}, profile.useEncoders);
+            FR = opMode.hardwareMap.dcMotor.get(profile.motorNames()[0]);
+            FL = opMode.hardwareMap.dcMotor.get(profile.motorNames()[1]);
+            RR = opMode.hardwareMap.dcMotor.get(profile.motorNames()[2]);
+            RL = opMode.hardwareMap.dcMotor.get(profile.motorNames()[3]);
+            driveMotors = new MotorArray(new DcMotor[]{FR,FL,RR,RL}, new double[]{1,1,1,1}, profile.useEncoders());
 
             driveMotors.StopAndResetEncoders();
-            if(profile.useEncoders) driveMotors.RunWithEncodersMode();
+            if(profile.useEncoders()) driveMotors.RunWithEncodersMode();
             else driveMotors.RunWithoutEncodersMode();
             driveMotors.SetMotorPowers(new double[]{0,0,0,0});
 
@@ -83,9 +83,9 @@ public class MecanumChassis
             directionPID = new PIDController(0,0,0);//Create the pid controller.
 
             //Set PIDs to profile values
-            SetHeadingPID(profile.headingPID[0],profile.headingPID[1],profile.headingPID[2]);
-            SetSpeedPID(profile.speedPID[0],profile.speedPID[1],profile.speedPID[2]);
-            SetDirectionPID(profile.directionPID[0],profile.directionPID[1],profile.directionPID[2]);
+            SetHeadingPID(profile.headingPID()[0],profile.headingPID()[1],profile.headingPID()[2]);
+            SetSpeedPID(profile.speedPID()[0],profile.speedPID()[1],profile.speedPID()[2]);
+            SetDirectionPID(profile.directionPID()[0],profile.directionPID()[1],profile.directionPID()[2]);
         }
     }
 
@@ -152,7 +152,7 @@ public class MecanumChassis
 
 
         //set the powers of the motors with pid offset applied
-        if(profile.flipIMU) headingPIDOffset *= -1;
+        if(profile.flipIMU()) headingPIDOffset *= -1;
 
         //Gets speeds for the motors
         double[] speeds = CalculateWheelSpeedsTurning(finalAngle, speed, turnOffset+headingPIDOffset);

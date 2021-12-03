@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumBaseControl;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 
 /**
  * Control class for the Belinda Robot. Controls payload.
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 //REQUIRED TO RUN: Phones | REV Hub | Demobot Chassis | Shooter | Odometry Unit
 
 @Config
-public class SoccerBotControl extends MecanumBaseControl
+public class SoccerBotControl extends MecanumChassis
 {
     ////Dependencies////
     //Mechanical Components
@@ -33,7 +34,7 @@ public class SoccerBotControl extends MecanumBaseControl
      * @param useNavigator whether to use Orion (webcams + odometry navigation)
      */
     public SoccerBotControl(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
-        super(setOpMode, new SoccerBotNavProfile(), new HermesLog("SoccerBot", 500, setOpMode), useChassis, usePayload, useNavigator);
+        super(setOpMode, new SoccerBotProfile(), new HermesLog("SoccerBot", 500, setOpMode), useChassis, usePayload, useNavigator);
     }
 
     //SETUP METHODS//
