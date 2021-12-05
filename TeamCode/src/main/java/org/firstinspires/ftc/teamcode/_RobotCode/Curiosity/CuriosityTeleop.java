@@ -30,7 +30,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public static double autoSpeedModifier = 2; //used to change speed of automatic navigation
 
     public static double armSpeed = 1;
-    public static double spinnerSpeed = 1;
+    public static double intakeSpeed = 1;
 
     public static double turnP = 0.005;
     public static double turnI = 0.0;
@@ -43,7 +43,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     public static int payloadControllerNumber = 1;
 
-    private double spinnerState = 0;
+
 
     @Override
     public void init() {
@@ -76,7 +76,11 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     }
 
     @Override
-    public void start(){control.Start();}
+    public void start(){
+        control.Start();
+        control.ResetGyro();
+        control.SetHeadlessMode(true);
+    }
 
     @Override
     public void loop() {
@@ -110,22 +114,6 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.update();
     }
 
-/*    private void ManageDriveMovementCustom() {
-        //MOVE if left joystick magnitude > 0.1
-        if (controllerInput1.CalculateLJSMag() > 0.1) {
-            control.RawDrive(controllerInput1.CalculateLJSAngle(), controllerInput1.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
-            telemetry.addData("Moving at ", controllerInput1.CalculateLJSAngle());
-        }
-        //TURN if right joystick magnitude > 0.1 and not moving
-        else if (Math.abs(controllerInput1.GetRJSX()) > 0.1) {
-            control.RawTurn(controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//turns at speed according to rjs1
-            telemetry.addData("Turning", true);
-        }
-        else {
-            control.SetMotorSpeeds(0,0,0,0);
-        }
-    }*/
-
     ////INPUT MAPPING////
 
     @Override
@@ -144,14 +132,14 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void XPressed(double controllerNumber) {
         if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
-            control.Arm().SetArmToFurthestExtreme();
+            control.Arm().GoToMax();
         }
     }
 
     @Override
     public void YPressed(double controllerNumber) {
         if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
-            control.Arm().SetArmRotation(0);
+            control.Arm().GoToPosition(0);
         }
     }
 
@@ -194,12 +182,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void LBPressed(double controllerNumber) {
         if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
-            if(spinnerState == 0) control.Arm().SetSpinnerSpeed(spinnerSpeed);
-            else if (spinnerState == 1) control.Arm().SetSpinnerSpeed(0);
-            else if (spinnerState == 2) control.Arm().SetSpinnerSpeed(-spinnerSpeed);
-            else if (spinnerState == 3) control.Arm().SetSpinnerSpeed(0);
-            spinnerState ++;
-            if(spinnerState > 3) spinnerState = 0;
+            control.TurretArm().CycleIntakeState(intakeSpeed);
         }
     }
 
@@ -231,14 +214,14 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void LTHeld(double controllerNumber) {
         if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
-            control.Arm().SetArmPower(armSpeed);
+            control.Arm().SetPowerClamped(armSpeed);
         }
     }
 
     @Override
     public void RTHeld(double controllerNumber) {
         if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
-            control.Arm().SetArmPower(-armSpeed);
+            control.Arm().SetPowerClamped(-armSpeed);
         }
     }
 
@@ -257,7 +240,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void LTReleased(double controllerNumber) {
         if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
-            control.Arm().SetArmPower(0);
+            control.Arm().SetPowerClamped(0);
             //control.Arm().LockArm();
         }
     }
@@ -265,7 +248,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void RTReleased(double controllerNumber) {
         if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
-            control.Arm().SetArmPower(0);
+            control.Arm().SetPowerClamped(0);
             //control.Arm().LockArm();
         }
     }

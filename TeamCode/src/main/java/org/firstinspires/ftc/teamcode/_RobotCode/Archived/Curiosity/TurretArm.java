@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
+package org.firstinspires.ftc.teamcode._RobotCode.Archived.Curiosity;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
