@@ -52,13 +52,13 @@ public class TankChassis
 
     //Function for normal driving. Speed is generally y-axis input on joystick and turnFactor is x-axis, both between -1 and 1
     public void DriveNormal(double speed, double turnFactor){
-        driveMotors.SetMotorPowers(new double[]{speed+turnFactor, speed-turnFactor});
+        driveMotors.SetPowers(new double[]{speed+turnFactor, speed-turnFactor});
     }
 
     //Function for headless movement. Takes in a target direction and speed as well as a spot turn value for static turning
     public void DriveHeadless(double speed, double targetHeading, double spotTurnFactor, double sweepTurnFactor){
         if(speed < 0.05){ //only do a spot turn and return
-            driveMotors.SetMotorPowers(new double[]{spotTurnFactor, -spotTurnFactor});
+            driveMotors.SetPowers(new double[]{spotTurnFactor, -spotTurnFactor});
             return;
         }
         //if the speed is greater than the threshold, do lateral movement
@@ -78,7 +78,7 @@ public class TankChassis
         telemetry.addData("R speed", speed+headingPIDOffset+sweepTurnFactor);
         telemetry.addData("L speed", speed-headingPIDOffset-sweepTurnFactor);
 
-        driveMotors.SetMotorPowers(new double[]{speed+headingPIDOffset+sweepTurnFactor, speed-headingPIDOffset-sweepTurnFactor});
+        driveMotors.SetPowers(new double[]{speed+headingPIDOffset+sweepTurnFactor, speed-headingPIDOffset-sweepTurnFactor});
     }
 
 }

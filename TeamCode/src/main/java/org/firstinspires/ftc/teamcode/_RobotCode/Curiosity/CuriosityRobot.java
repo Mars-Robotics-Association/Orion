@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 
 /**
@@ -23,7 +24,7 @@ public class CuriosityRobot extends MecanumChassis
 {
     ////Dependencies////
     //Mechanical Components
-    TurretArm arm;
+    CuriosityTurretArm turretArm;
     DuckSpinner duckSpinner;
 
     ////Variables////
@@ -45,8 +46,8 @@ public class CuriosityRobot extends MecanumChassis
             Servo duckServo = opMode.hardwareMap.servo.get("duck");
             Servo spinnerServo = opMode.hardwareMap.servo.get("intake");
 
-            arm = new TurretArm(opMode,armMotor,turretMotor,spinnerServo,false,true,false,false);
-            arm.ResetArmRot();
+            turretArm = new CuriosityTurretArm(opMode, new ArmProfile(armMotor), new TurretProfile(turretMotor), spinnerServo,false);
+            turretArm.Arm().ResetToZero();
 
             duckSpinner = new DuckSpinner(duckServo, 1);
         }
@@ -68,7 +69,9 @@ public class CuriosityRobot extends MecanumChassis
         super.StartCoreRobotModules();
     }
 
-    public TurretArm Arm(){return arm;}
+    public CuriosityTurretArm TurretArm(){return turretArm;}
+    public EncoderActuator Turret(){return turretArm.Turret();}
+    public EncoderActuator Arm(){return turretArm.Arm();}
 
     public DuckSpinner DuckSpinner(){return duckSpinner;}
 

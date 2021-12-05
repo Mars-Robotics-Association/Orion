@@ -76,7 +76,7 @@ public class MecanumChassis
             driveMotors.StopAndResetEncoders();
             if(profile.useEncoders()) driveMotors.RunWithEncodersMode();
             else driveMotors.RunWithoutEncodersMode();
-            driveMotors.SetMotorPowers(new double[]{0,0,0,0});
+            driveMotors.SetPowers(new double[]{0,0,0,0});
 
             headingPIDController = new PIDController(0,0,0);//Create the pid controller.
             speedPID = new PIDController(0,0,0);//Create the pid controller.
@@ -181,6 +181,7 @@ public class MecanumChassis
         imu.ResetGyro();
     }
     public void SwitchHeadlessMode(){headlessMode = !headlessMode;}
+    public void SetHeadlessMode(boolean set){headlessMode = set;}
 
     //TODO: UNIVERSAL GETTERS
     public IMU GetImu(){return imu;}
@@ -195,7 +196,7 @@ public class MecanumChassis
     //TODO: PRIVATE METHODS
     //Utility
     public void SetMotorSpeeds(double fr, double fl, double rr, double rl){
-        driveMotors.SetMotorPowers(new double[]{fr, -fl, rr, -rl});
+        driveMotors.SetPowers(new double[]{fr, -fl, rr, -rl});
     }
     public void UpdateEncoderBrakePos(){
         //Update the values for breaking

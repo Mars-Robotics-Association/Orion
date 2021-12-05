@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MotorArray
 {
     DcMotor[] motors;
@@ -23,7 +26,7 @@ public class MotorArray
     }
 
     //Sets the powers of the motors based off an array using the speedMultipliers array
-    public void SetMotorPowers(double[] setSpeeds){
+    public void SetPowers(double[] setSpeeds){
         int i = 0;
         for (DcMotor m: motors) {
             m.setPower(setSpeeds[i]*speedMultipliers[i]);
@@ -32,7 +35,7 @@ public class MotorArray
     }
 
     //Sets the powers of the motors to the same value
-    public void SetMotorPowers(double speed){
+    public void SetPowers(double speed){
         int i = 0;
         for (DcMotor m: motors) {
             m.setPower(speed*speedMultipliers[i]);
@@ -42,7 +45,7 @@ public class MotorArray
 
     //Stops the motors
     public void StopMotors(){
-        SetMotorPowers(0);
+        SetPowers(0);
     }
 
     public void SetTargetPositions(int[] positions, boolean runToPositionsImmediate){
@@ -52,18 +55,30 @@ public class MotorArray
             m.setTargetPosition(positions[i]);
             i++;
         }
-        if(runToPositionsImmediate) RunToPositionMode();
+        if(runToPositionsImmediate) {
+            SetPowers(1);
+            RunToPositionMode();
+        }
     }
-
-    public void SetTargetPositions(int[] positions, boolean runToPositionsImmediate, boolean resetEncoders){
+    public void SetTargetPosition(int position, boolean runToPositionImmediate){
         if(!useEncoders) return;
-        if(resetEncoders) StopAndResetEncoders();
         int i = 0;
         for (DcMotor m: motors) {
-            m.setTargetPosition(positions[i]);
+            m.setTargetPosition(position);
             i++;
         }
-        if(runToPositionsImmediate) RunToPositionMode();
+        if(runToPositionImmediate) {
+            SetPowers(1);
+            RunToPositionMode();
+        }
+    }
+
+    public int[] GetMotorPositions(){
+        List<Integer> positions = new ArrayList<Integer>();
+        for(DcMotor m : motors) positions.add(m.getCurrentPosition());
+        int[] array = new int[positions.size()];
+        for(int i = 0; i < positions.size(); i++) array[i] = positions.get(i);
+        return array;
     }
 
     //Mode setting

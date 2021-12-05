@@ -67,7 +67,7 @@ public class MecChassis
         driveMotors.StopAndResetEncoders();
         if(useEncoders) driveMotors.RunWithEncodersMode();
         else driveMotors.RunWithoutEncodersMode();
-        driveMotors.SetMotorPowers(new double[]{0,0,0,0});
+        driveMotors.SetPowers(new double[]{0,0,0,0});
 
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
@@ -136,7 +136,7 @@ public class MecChassis
 
     //Utility
     public void SetMotorSpeeds(double fr, double fl, double rr, double rl){
-        driveMotors.SetMotorPowers(new double[]{fr, -fl, rr, -rl});
+        driveMotors.SetPowers(new double[]{fr, -fl, rr, -rl});
     }
     public void UpdateEncoderBrakePos(){
         //Update the values for breaking
