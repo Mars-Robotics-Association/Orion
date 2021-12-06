@@ -30,7 +30,11 @@ class Camera
     public VuforiaLocalizer GetVuforia() {return vuforia;}
 
     private int cameraMonitorViewID;
-    final String VLK = "AeZ+Eyv/////AAABmfcFKgZ5NkXfgqEeyUnIJMIHuzBJhNTY+sbZO+ChF7mbo1evegC5fObZ830PRBTGTM6jbp+1XXCzx3XhY1kaZevEQXNpAKhXU9We0AMlp1mhnAUjGI2sprJZqJIfFGxkK598u8Bj3qQy4+PlCrk+Od/tAGs8dqAAsZPp4KpczFQttxMBC5JZNeIbIFP57InXOeJgyeH1sXK+R2i6nPfOFRvHJjdQaLWdAasv7i3b0RH5ctG7Ky7J9g9BPYI03kkChCJkbPg03XnoqCcC7rEpAk3n8a9CqtwTUu57Sy0jCDUd2O6X9kHjZ5ZmS0I3O0YSzX3Jp2ppTE2kDS2I9zBYEmuEqkMjItxd52oES0Ij0rZm";
+    private static final String VLK = "AeZ+Eyv/////AAABmfcFKgZ5NkXfgqEeyUnIJMIHuzBJhNTY+sbZO+ChF7mbo1evegC5fO" +
+            "bZ830PRBTGTM6jbp+1XXCzx3XhY1kaZevEQXNpAKhXU9We0AMlp1mhnAUjGI2sprJZqJIfFGxkK598u8Bj3qQy4+P" +
+            "lCrk+Od/tAGs8dqAAsZPp4KpczFQttxMBC5JZNeIbIFP57InXOeJgyeH1sXK+R2i6nPfOFRvHJjdQaLWdAasv7i3" +
+            "b0RH5ctG7Ky7J9g9BPYI03kkChCJkbPg03XnoqCcC7rEpAk3n8a9CqtwTUu57Sy0jCDUd2O6X9kHjZ5ZmS0I" +
+            "3O0YSzX3Jp2ppTE2kDS2I9zBYEmuEqkMjItxd52oES0Ij0rZm";
 
 
     public Camera(OpMode opMode, String webCam) {
@@ -131,7 +135,7 @@ class Camera
                 double rY = rot.secondAngle;
                 double rZ = rot.thirdAngle;
 
-                double dist = Math.sqrt(Math.pow(Math.abs(tX),2)+Math.pow(Math.abs(tY),2));//tX use to by tY, this was switched because the camera uses portrait mode
+                double dist = Math.sqrt(Math.pow(Math.abs(tX),2)+Math.pow(Math.abs(tY),2));//tX use to be tY, this was switched because the camera uses portrait mode
                 double rZreal = Math.toDegrees(Math.atan(tX/tZ));
                 //opMode.telemetry.addData("Vumark",dist + " milimeters away");
                 //opMode.telemetry.addData("Vumark",-1*tX+" milimeters high");
@@ -152,5 +156,31 @@ class Camera
     }
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+    }
+
+    public double[] GetClosestFrieght(){ //Find object by its y distance from the robot
+        List<Recognition> objs = GetRecognitions(); //find all objects
+        double x = 0;
+        double y = 0;
+        double width = 0;
+        if(objs != null) {
+            for (Recognition obj : objs) {
+                if (obj.getLabel() == "Cube" || obj.getLabel() == "Ball") { //accept all freight
+                    //Find x and y of disc
+                    double discX = (obj.getRight() + obj.getLeft()) / 2;
+                    discX += -400;
+                    double discY = (obj.getTop() + obj.getBottom()) / 2;
+                    double discWidth = obj.getWidth();
+                    //if current dist is less than highest dist or if its the first loop
+                    if(discY < y || y==0){
+                        //set lowest values as these
+                        x = discX;
+                        y = discY;
+                        width = discWidth;
+                    }
+                }
+            }
+        }
+        return new double[] {x,y,width};
     }
 }
