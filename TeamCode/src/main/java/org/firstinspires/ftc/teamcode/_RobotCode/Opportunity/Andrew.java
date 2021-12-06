@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.MecanumBaseControl;
-import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
+import org.firstinspires.ftc.teamcode.Orion.Archive.NavProfiles.NavigationProfile;
 
 @Config
 public class Andrew extends MecanumBaseControl

@@ -8,10 +8,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
-import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ACCEL_MOD;
-import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL_MOD;
-import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_ANG_VEL_MOD;
-import static org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.DriveConstants.MAX_VEL_MOD;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ACCEL_MOD;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL_MOD;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_VEL_MOD;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_VEL_MOD;
 
 @TeleOp(name = "*CURIOSITY TELEOP*", group = "Curiosity")
 @Config

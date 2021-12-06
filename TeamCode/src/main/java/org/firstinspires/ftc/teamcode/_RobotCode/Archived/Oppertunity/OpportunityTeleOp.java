@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.MecanumBaseControl;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
-import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.opmode.DefaultNavProfile;
 
 @TeleOp(name = "Kenobi TeleOp", group = "Competition")
 //@Config

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis;
 
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
-import org.firstinspires.ftc.teamcode.Orion.NavProfiles.ChassisProfile;
+import org.firstinspires.ftc.teamcode.Orion.Archive.NavProfiles.ChassisProfile;
 
 public class BelindaChassisProfile extends ChassisProfile
 {

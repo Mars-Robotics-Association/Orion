@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis;
 
-import org.firstinspires.ftc.teamcode.Orion.NavProfiles.OdometryProfile;
+import org.firstinspires.ftc.teamcode.Orion.Archive.NavProfiles.OdometryProfile;
 
 public class BelindaOdometryProfile extends OdometryProfile
 {

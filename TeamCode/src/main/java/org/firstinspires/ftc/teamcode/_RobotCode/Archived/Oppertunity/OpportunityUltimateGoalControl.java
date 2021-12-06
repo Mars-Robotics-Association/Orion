@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.MecanumBaseControl;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
-import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.opmode.DefaultNavProfile;
 
 /**
  * Control class for the Kenobi Robot. Controls payload.
