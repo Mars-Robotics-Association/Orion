@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
-import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
 
 public class TankChassisControl
 {

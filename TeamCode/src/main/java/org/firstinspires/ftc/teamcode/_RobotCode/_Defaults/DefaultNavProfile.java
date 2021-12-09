@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode._RobotCode._Defaults;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
+import org.firstinspires.ftc.teamcode.Orion.Archive.NavProfiles.NavigationProfile;
 import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaChassisProfile;
 import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaOdometryProfile;
 import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaTuningProfile;

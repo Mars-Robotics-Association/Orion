@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis;
 
-import org.firstinspires.ftc.teamcode.Orion.NavProfiles.VisionProfile;
+import org.firstinspires.ftc.teamcode.Orion.Archive.NavProfiles.VisionProfile;
 
 public class BelindaVisionProfile extends VisionProfile
 {

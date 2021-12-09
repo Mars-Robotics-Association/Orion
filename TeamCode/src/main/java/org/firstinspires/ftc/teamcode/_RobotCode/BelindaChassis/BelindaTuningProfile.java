@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 
-import org.firstinspires.ftc.teamcode.Orion.NavProfiles.TuningProfile;
+import org.firstinspires.ftc.teamcode.Orion.Archive.NavProfiles.TuningProfile;
 
 public class BelindaTuningProfile extends TuningProfile
 {

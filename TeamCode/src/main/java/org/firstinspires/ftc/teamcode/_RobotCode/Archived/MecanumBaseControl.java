@@ -8,8 +8,8 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.PIDController;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
-import org.firstinspires.ftc.teamcode.Orion.NavProfiles.NavigationProfile;
-import org.firstinspires.ftc.teamcode.Orion.OrionNavigator;
+import org.firstinspires.ftc.teamcode.Orion.Archive.NavProfiles.NavigationProfile;
+import org.firstinspires.ftc.teamcode.Orion.Archive.OrionNavigator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
 
 @Config

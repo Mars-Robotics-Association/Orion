@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.MecanumBaseControl;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
-import org.firstinspires.ftc.teamcode.Orion.Roadrunner.drive.opmode.DefaultNavProfile;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.opmode.DefaultNavProfile;
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger.MechanicalControllers.SchrodingerArm;
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger.MechanicalControllers.SchrodingerFoundationGrabbers;
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger.MechanicalControllers.SchrodingerGripper;
