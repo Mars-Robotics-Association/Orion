@@ -22,11 +22,11 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
-public class OpenCVMethods {
+public class OpenCV {
     private OpMode opmode;
     private TFObjectDetector tfod;
 
-    public OpenCVMethods(OpMode opMode){
+    public OpenCV(OpMode opMode){
         opmode = opMode;
     }
 

@@ -13,7 +13,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @TeleOp(name = "*OpenCV*", group = "Curiosity")
 @Config
 
-public class OpenCV extends LinearOpMode {
+public class OpenCVTest extends LinearOpMode {
     private Pipeline pline;
     private OpenCVFrameGenerator fgen;
     @Override
