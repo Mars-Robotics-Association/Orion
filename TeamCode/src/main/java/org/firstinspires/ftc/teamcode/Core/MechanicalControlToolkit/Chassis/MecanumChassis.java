@@ -239,5 +239,14 @@ public class MecanumChassis
         return vals;
     }
 
+    public double[] getMotorTicks(){
+        double[] returnVal = new double[4]; //I'm sorry
+        returnVal[0] = FL.getCurrentPosition();
+        returnVal[1] = FR.getCurrentPosition();
+        returnVal[2] = RL.getCurrentPosition();
+        returnVal[3] = RR.getCurrentPosition();
+        return returnVal;
+    }
+
 
 }
