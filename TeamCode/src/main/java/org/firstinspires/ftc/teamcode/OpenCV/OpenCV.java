@@ -124,4 +124,52 @@ public class OpenCV {
         }
         return bmp;
     }
+
+    //takes a Mat and isolates the color yellow
+    public Mat IsolateYellow(Mat input){
+        Scalar lowbgr = new Scalar(0,100,100);
+        Scalar highbgr = new Scalar(30, 255, 255);
+        Mat result;
+        Mat hsv = new Mat();
+        Mat mask = new Mat();
+        Mat last = new Mat();
+        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
+        Core.inRange(hsv, lowbgr,highbgr, mask);
+        Core.bitwise_and(input, input, last, mask);
+        result = last;
+        return result;
+    }
+
+    //takes a Mat and isolates the color white
+    public Mat IsolateWhite(Mat input){
+        Scalar highbgr = new Scalar(255,255,255);
+        Scalar lowbgr = new Scalar(230,230,230);
+        Mat result;
+        Mat hsv = new Mat();
+        Mat mask = new Mat();
+        Mat last = new Mat();
+        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
+        Core.inRange(hsv, lowbgr,highbgr, mask);
+        Core.bitwise_and(input, input, last, mask);
+        result = last;
+        return result;
+    }
+
+    //for determining nonwhite pixels
+    public int countPixels(Bitmap input){
+        int pixelcount = 0;
+
+        for (int x = 0; x <input.getWidth(); x++) {
+            for (int y = 0; y < input.getHeight(); y++) {
+                int color = input.getPixel(x,y);
+                int R = (color & 0xff0000) >> 16;
+                int G = (color & 0xff00) >> 8;
+                int B = color & 0xff;
+                if((R != 0)&&(G != 0)&&(B != 0)){
+                    pixelcount++;
+                }
+            }
+        }
+        return pixelcount;
+    }
 }
