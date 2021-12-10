@@ -328,7 +328,7 @@ class Camera
         return result;
     }
 
-    //for determining nonwhite pixels
+    //for determining nonwhite pixels in a cropped image
     public int countPixels(Bitmap input){
         int pixelcount = 0;
 
@@ -344,5 +344,18 @@ class Camera
             }
         }
         return pixelcount;
+    }
+
+    //Remove a color from a mat
+    public Mat removeColor(Mat input, Scalar highbgr, Scalar lowbgr){
+        Mat result;
+        Mat hsv = new Mat();
+        Mat mask = new Mat();
+        Mat last = new Mat();
+        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
+        Core.inRange(hsv, lowbgr,highbgr, mask);
+        Core.bitwise_and(input, input, last, mask);
+        result = last;
+        return result;
     }
 }
