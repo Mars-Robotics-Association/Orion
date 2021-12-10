@@ -34,7 +34,7 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
-class Camera
+public class Camera
 {
     private OpMode opmode;
     private WebcamName webcamname;
@@ -357,5 +357,10 @@ class Camera
         Core.bitwise_and(input, input, last, mask);
         result = last;
         return result;
+    }
+
+    public void test(){
+        opmode.telemetry.addData("test is","successful");
+        opmode.telemetry.update();
     }
 }
