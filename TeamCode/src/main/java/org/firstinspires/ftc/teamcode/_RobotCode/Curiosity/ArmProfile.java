@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;

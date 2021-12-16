@@ -48,7 +48,7 @@ public class OrionNavigator
     public void Init(){
         if(control.isUSE_CHASSIS()) {
             rr = new RoadrunnerControl(opMode, navigationProfile);
-            rr.Init();
+            //rr.Init();
         }
         vuforiaFront = new VuMarkNavigation(opMode, "Webcam 1");
         tf = new TensorFlowObjectDetector(opMode, vuforiaFront.GetVuforia(), new double[]{0,0,0});
