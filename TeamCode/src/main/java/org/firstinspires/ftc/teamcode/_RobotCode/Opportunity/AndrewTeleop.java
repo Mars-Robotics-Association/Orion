@@ -1,42 +1,154 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Opportunity;
+
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
-import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 
-@TeleOp(name = "Andrew TeleOp", group = "All")
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ACCEL_MOD;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL_MOD;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_VEL_MOD;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_VEL_MOD;
+
+@TeleOp(name = "*SOCCER BOT TELEOP*", group = "All")
+@Config
 public class AndrewTeleop extends OpMode implements ControllerInputListener {
-    private Andrew control;
+
+    ////Dependencies////
+    private Andrew conTroll;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
 
+    ////Variables////
+    //Tweaking Vars
+    public static double driveSpeed = 1;//used to change how fast robot drives
+    public static double turnSpeed = -1;//used to change how fast robot turns
 
+    public static double autoSpeedModifier = 2; //used to change speed of automatic navigation
+
+    public static double turnP = 0.005;
+    public static double turnI = 0.0;
+    public static double turnD = 0.01;
+
+    public static double shootX = 75.0;
+    public static double shootY = -10.0;
+    public static double shootH = 0.0;
+    public static double shootBOffset = 0.0;
+
+    private double speedMultiplier = 1;
+
+    private boolean busy = false;
+    private double turnOffset = 0;
+
+    public static int payloadControllerNumber = 1;
+
+    @Override
     public void init() {
-        controllerInput1 = new ControllerInput(gamepad1,1);
-        controllerInput2 = new ControllerInput(gamepad2,2);
-        control = new Andrew(this, new DefaultNavProfile(),new HermesLog("do the andrew",500,this),true,false,false);
+        conTroll = new Andrew(this, true, false, false);
+        control.Init();
+
+        controllerInput1 = new ControllerInput(gamepad1, 1);
+        controllerInput1.addListener(this);
+        controllerInput2 = new ControllerInput(gamepad2, 2);
+        controllerInput2.addListener(this);
+
+        hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
+        hardwareMap.dcMotor.get("RR").setDirection(DcMotorSimple.Direction.REVERSE);
+        hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
+        hardwareMap.dcMotor.get("RL").setDirection(DcMotorSimple.Direction.REVERSE);
+
+        telemetry.addData("Speed Multiplier", speedMultiplier);
+        telemetry.update();
+
+
+        msStuckDetectLoop = 15000;
+
+        //set roadrunner speed modifiers
+        if(control.isUSE_NAVIGATOR()){
+            MAX_VEL_MOD  = autoSpeedModifier;
+            MAX_ACCEL_MOD  = autoSpeedModifier;
+            MAX_ANG_VEL_MOD  = autoSpeedModifier;
+            MAX_ANG_ACCEL_MOD = autoSpeedModifier;
+        }
     }
-        public void start(){control.Start();}
 
+    @Override
+    public void start(){control.Start();}
 
-        public void loop(){
-            controllerInput1.Loop();
-            controllerInput2.Loop();
+    @Override
+    public void loop() {
+        controllerInput1.Loop();
+        controllerInput2.Loop();
 
+        control.Update();
+
+        //if robot isn't level, set speed to zero and exit loop
+        /*if(!control.IsRobotLevel()){
+            control.RawDrive(0,0,0);
+            return;
+        }*/
+
+        if(!busy) {
+            //Manage driving
+            control.SetHeadingPID(turnP, turnI, turnD);
+            control.DriveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+            //ManageDriveMovementCustom();
 
         }
+        //print telemetry
+        if(control.isUSE_NAVIGATOR()) {
+            //control.GetOrion().PrintVuforiaTelemetry(0);
+            //control.GetOrion().PrintTensorflowTelemetry();
+        }
+
+        telemetry.addLine("*TELEOP DATA*");
+        telemetry.addData("Speed Modifier", speedMultiplier);
+        telemetry.addData("Payload Controller", payloadControllerNumber);
+
+        telemetry.update();
+    }
+
+    ////DRIVING FUNCTIONS////
+
+    private void ManageDrivingRoadrunner() {
+        double moveX = -gamepad1.left_stick_y*driveSpeed*speedMultiplier;
+        double moveY = -gamepad1.left_stick_x*driveSpeed*speedMultiplier;
+        double turn = -gamepad1.right_stick_x*turnSpeed*speedMultiplier + turnOffset;
+        //control.GetOrion().MoveRaw(moveX, moveY, turn);
+    }
+
+    private void ManageDriveMovementCustom() {
+        //MOVE if left joystick magnitude > 0.1
+        if (controllerInput1.CalculateLJSMag() > 0.1) {
+            control.RawDrive(controllerInput1.CalculateLJSAngle(), controllerInput1.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
+            telemetry.addData("Moving at ", controllerInput1.CalculateLJSAngle());
+        }
+        //TURN if right joystick magnitude > 0.1 and not moving
+        else if (Math.abs(controllerInput1.GetRJSX()) > 0.1) {
+            control.RawTurn(controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//turns at speed according to rjs1
+            telemetry.addData("Turning", true);
+        }
+        else {
+            control.SetMotorSpeeds(0,0,0,0);
+        }
+    }
+
+    ////INPUT MAPPING////
 
     @Override
     public void APressed(double controllerNumber) {
-        control.RawDrive(90,0.25,0);
+        if(controllerNumber == 1) {
+            if (speedMultiplier == 1) speedMultiplier = 0.5;
+            else speedMultiplier = 1;
+        }
     }
 
     @Override
     public void BPressed(double controllerNumber) {
-
+        if(controllerNumber == 1) control.ResetGyro();
     }
 
     @Override
@@ -46,7 +158,9 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
     @Override
     public void YPressed(double controllerNumber) {
+        if(controllerNumber == payloadControllerNumber) {
 
+        }
     }
 
     @Override
@@ -61,27 +175,23 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
     @Override
     public void XHeld(double controllerNumber) {
-
     }
 
     @Override
     public void YHeld(double controllerNumber) {
-
     }
 
     @Override
     public void AReleased(double controllerNumber) {
-        control.RawDrive(90,0,0);
+
     }
 
     @Override
-    public void BReleased(double controllerNumber) {
-
+    public void BReleased(double controllerNumber)  {
     }
 
     @Override
     public void XReleased(double controllerNumber) {
-
     }
 
     @Override
@@ -91,22 +201,19 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
     @Override
     public void LBPressed(double controllerNumber) {
-
     }
 
     @Override
     public void RBPressed(double controllerNumber) {
-
     }
 
     @Override
     public void LTPressed(double controllerNumber) {
-
     }
 
     @Override
     public void RTPressed(double controllerNumber) {
-
+        if(controllerNumber == 1) speedMultiplier = 0.25;
     }
 
     @Override
@@ -121,7 +228,11 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
     @Override
     public void LTHeld(double controllerNumber) {
-
+        //makeshift brake function
+        if(controllerNumber == 1){
+            control.RawDrive(180,0.1,0);//move backwards slightly
+            busy = true;
+        }
     }
 
     @Override
@@ -136,27 +247,28 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
     @Override
     public void RBReleased(double controllerNumber) {
-
     }
 
     @Override
     public void LTReleased(double controllerNumber) {
-
+        if(controllerNumber == 1) busy = false;
     }
 
     @Override
     public void RTReleased(double controllerNumber) {
-
+        if(controllerNumber == 1) speedMultiplier = 1;
     }
 
     @Override
     public void DUpPressed(double controllerNumber) {
-
+        if(controllerNumber == payloadControllerNumber){
+        }
     }
 
     @Override
     public void DDownPressed(double controllerNumber) {
-
+        if(controllerNumber == payloadControllerNumber){
+        }
     }
 
     @Override
@@ -211,12 +323,16 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
     @Override
     public void LJSPressed(double controllerNumber) {
-
+        if(controllerNumber == 2) { //switch payload controllers at runtime
+            if(payloadControllerNumber == 1) payloadControllerNumber = 2;
+            else payloadControllerNumber = 1;
+        }
     }
 
     @Override
     public void RJSPressed(double controllerNumber) {
-
+        if(controllerNumber == 1) control.SwitchHeadlessMode();
+        //if(controllerNumber == 1) control.TurnToZero();
     }
 
     @Override
@@ -239,4 +355,3 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
     }
 }
-
