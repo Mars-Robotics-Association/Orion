@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Opportunity;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
@@ -20,6 +21,10 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private DcMotor FL;
     private DcMotor RR;
     private DcMotor RL;
+    private CRServo duckyServo;
+    private boolean backWasDown = false;
+
+    private double speed = 1;
 
 
     public void init() {
@@ -29,6 +34,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
         FL = this.hardwareMap.dcMotor.get("FL");
         RR = this.hardwareMap.dcMotor.get("RR");
         RL = this.hardwareMap.dcMotor.get("RL");
+        duckyServo = this.hardwareMap.crservo.get("duckyServo");
     }
         public void start(){
 
@@ -42,11 +48,29 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             double stickDir = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
             double stickDist = Math.sqrt(Math.pow(gamepad1.left_stick_x,2)+Math.pow(gamepad1.left_stick_y,2));
             double[] newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(stickDir*180/3.14-90,stickDist,0-gamepad1.right_stick_x);
+            for(int i = 0; i<4; i++)
+                newSpeeds[i]*=speed;
 
             FR.setPower(newSpeeds[0]);
             FL.setPower(newSpeeds[1]);
             RR.setPower(newSpeeds[2]);
             RL.setPower(newSpeeds[3]);
+
+            if(gamepad1.x)
+                duckyServo.setPower(0-speed);
+            else if(gamepad1.b)
+                duckyServo.setPower(speed);
+            else
+                duckyServo.setPower(0);
+            
+
+            if(gamepad1.back&&!backWasDown){
+                if(speed==1)
+                    speed = 0.5;
+                else
+                    speed=1;
+            }
+            backWasDown = gamepad1.back;
 
         }
 
