@@ -218,7 +218,7 @@ public class MecanumChassis
         directionPID.setPID(p,i,d);
     }
 
-    public double[] CalculateWheelSpeedsTurning(double degrees, double speed, double turnSpeed)
+    public static double[] CalculateWheelSpeedsTurning(double degrees, double speed, double turnSpeed)
     {
         //Returns the speeds the motors need to move at to move. A negative turn speed turns right, a positive left.
 
