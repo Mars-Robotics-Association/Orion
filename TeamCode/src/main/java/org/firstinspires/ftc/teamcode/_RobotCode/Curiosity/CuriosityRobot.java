@@ -1,13 +1,19 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
+import android.text.method.Touch;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.DriveWheelOdometry;
 
 /**
  * Control class for the Belinda Robot. Controls payload.
@@ -26,6 +32,10 @@ public class CuriosityRobot extends MecanumChassis
     //Mechanical Components
     CuriosityTurretArm turretArm;
     DuckSpinner duckSpinner;
+    DistanceSensor distToWallSensor;
+
+    //Nav Modules
+    public DriveWheelOdometry odometry;
 
     ////Variables////
     //Calibration
@@ -46,10 +56,18 @@ public class CuriosityRobot extends MecanumChassis
             Servo duckServo = opMode.hardwareMap.servo.get("duck");
             Servo spinnerServo = opMode.hardwareMap.servo.get("intake");
 
-            turretArm = new CuriosityTurretArm(opMode, new ArmProfile(armMotor), new TurretProfile(turretMotor), spinnerServo,false);
+            distToWallSensor = (DistanceSensor) opMode.hardwareMap.get("wallDist");
+            DistanceSensor intakeDistSensor = (DistanceSensor) opMode.hardwareMap.get("intakeDist");
+            TouchSensor armTouch = (TouchSensor) opMode.hardwareMap.get("armTouch");
+
+            turretArm = new CuriosityTurretArm(opMode, new ArmProfile(armMotor), new TurretProfile(turretMotor), spinnerServo, intakeDistSensor,armTouch,false);
             turretArm.Arm().ResetToZero();
 
             duckSpinner = new DuckSpinner(duckServo, 1);
+        }
+
+        if(useNavigator){
+            odometry = new DriveWheelOdometry(this);
         }
     }
 
@@ -74,6 +92,8 @@ public class CuriosityRobot extends MecanumChassis
     public EncoderActuator Arm(){return turretArm.Arm();}
 
     public DuckSpinner DuckSpinner(){return duckSpinner;}
+
+    public double GetDistToWallCM(){return distToWallSensor.getDistance(DistanceUnit.CM);}
 
     public boolean IsRobotLevel(){
         double pitch = imu.GetRawAngles().secondAngle;

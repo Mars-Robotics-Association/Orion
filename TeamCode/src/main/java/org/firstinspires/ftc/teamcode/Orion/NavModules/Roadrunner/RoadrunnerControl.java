@@ -17,11 +17,9 @@ public class RoadrunnerControl
     public RoadrunnerControl(OpMode setOpMode, NavigationProfile setNavProfile){
         opMode = setOpMode;
         navigationProfile = setNavProfile;
-    }
-
-    public void Init(){
         drive = new StandardMecanumDrive(opMode.hardwareMap, navigationProfile);
     }
+
     public void Update(){drive.update();}
 
     public void MoveSpline(double x, double y, double tangent, boolean reverse){ //moves using fancy splines

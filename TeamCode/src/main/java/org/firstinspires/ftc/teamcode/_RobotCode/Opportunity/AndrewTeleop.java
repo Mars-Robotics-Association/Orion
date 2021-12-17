@@ -1,37 +1,60 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Opportunity;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 
 @TeleOp(name = "Andrew TeleOp", group = "All")
 public class AndrewTeleop extends OpMode implements ControllerInputListener {
-    private Andrew control;
+
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
+    private MecanumChassis mecanumChassis;
+
+    private DcMotor FR;
+    private DcMotor FL;
+    private DcMotor RR;
+    private DcMotor RL;
 
 
     public void init() {
         controllerInput1 = new ControllerInput(gamepad1,1);
         controllerInput2 = new ControllerInput(gamepad2,2);
-        control = new Andrew(this, new DefaultNavProfile(),new HermesLog("do the andrew",500,this),true,false,false);
+        FR = this.hardwareMap.dcMotor.get("FR");
+        FL = this.hardwareMap.dcMotor.get("FL");
+        RR = this.hardwareMap.dcMotor.get("RR");
+        RL = this.hardwareMap.dcMotor.get("RL");
     }
-        public void start(){control.Start();}
+        public void start(){
+
+        }
 
 
         public void loop(){
             controllerInput1.Loop();
             controllerInput2.Loop();
 
+            double stickDir = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
+            double stickDist = Math.sqrt(Math.pow(gamepad1.left_stick_x,2)+Math.pow(gamepad1.left_stick_y,2));
+            double[] newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(stickDir*180/3.14-90,stickDist,0-gamepad1.right_stick_x);
+
+            FR.setPower(newSpeeds[0]);
+            FL.setPower(newSpeeds[1]);
+            RR.setPower(newSpeeds[2]);
+            RL.setPower(newSpeeds[3]);
 
         }
 
+
+
     @Override
     public void APressed(double controllerNumber) {
-        control.RawDrive(90,0.25,0);
+
     }
 
     @Override
@@ -71,7 +94,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
     @Override
     public void AReleased(double controllerNumber) {
-        control.RawDrive(90,0,0);
+
     }
 
     @Override
@@ -238,5 +261,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     public void RJSReleased(double controllerNumber) {
 
     }
+
+
 }
 

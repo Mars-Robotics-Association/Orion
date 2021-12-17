@@ -317,9 +317,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LJSPressed(double controllerNumber) {
-        if(controllerNumber == 2) { //switch payload controllers at runtime
-            if(payloadControllerNumber == 1) payloadControllerNumber = 2;
-            else payloadControllerNumber = 1;
+        if(controllerNumber == payloadControllerNumber) { //switch payload controllers at runtime
+            control.TurretArm().IntakeRoutine(40);
         }
     }
 

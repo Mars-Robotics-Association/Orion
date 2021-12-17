@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments;
 
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
 
 public interface EncoderActuatorProfile

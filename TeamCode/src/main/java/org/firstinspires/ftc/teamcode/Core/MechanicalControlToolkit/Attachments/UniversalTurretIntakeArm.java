@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 //Class for controlling an arm with the potential of having a turret, arm, and servo intake
 //Sensors Used:
@@ -14,13 +18,17 @@ public class UniversalTurretIntakeArm
     EncoderActuator arm;
     EncoderActuatorProfile turretProfile;
     EncoderActuator turret;
+    DistanceSensor intakeSensor;
+    TouchSensor bottomSensor;
     public static double intakeMultiplier = 1;
     private double intakeState = 0;
 
     private OpMode opMode;
     private Servo intake;
+    enum ArmState {Intaking, Storage, Placing}
+    ArmState armState = ArmState.Storage;
 
-    public UniversalTurretIntakeArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo setIntake, boolean reverseIntake){
+    public UniversalTurretIntakeArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo setIntake, DistanceSensor setIntakeDetector, TouchSensor setBottomSensor, boolean reverseIntake){
         opMode = setOpMode;
 
         armProfile = setArmProfile;
@@ -29,6 +37,9 @@ public class UniversalTurretIntakeArm
 
         arm = new EncoderActuator(opMode, armProfile);
         turret = new EncoderActuator(opMode, turretProfile);
+
+        intakeSensor = setIntakeDetector;
+        bottomSensor = setBottomSensor;
 
         if(reverseIntake) intakeMultiplier = -1;
         else intakeMultiplier = 1;
@@ -40,6 +51,37 @@ public class UniversalTurretIntakeArm
     public void GoToZero(){
         arm.GoToPosition(0);
         turret.GoToPosition(0);
+    }
+
+    public boolean ResetArmToTouchSensor(double power){
+        if(bottomSensor.isPressed()){
+            return true;
+        }
+        else{
+            arm.SetPowerRaw(power);
+            return false;
+        }
+    }
+
+    public boolean IntakeRoutine(double intakeDistanceMM){
+        if(armState == ArmState.Intaking){
+            SetIntakeSpeed(1);
+            if(intakeSensor.getDistance(DistanceUnit.MM) < intakeDistanceMM){
+                armState = ArmState.Storage;
+                SetIntakeSpeed(0);
+                GoToMax();
+                return true;
+            }
+        }
+        else if(armState == ArmState.Storage){
+            return true;
+        }
+        else if(armState == ArmState.Placing){
+            armState = ArmState.Intaking;
+            GoToZero();
+            SetIntakeSpeed(1);
+        }
+        return false;
     }
 
     public void GoToMax(){

@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
@@ -24,8 +26,8 @@ class CuriosityTurretArm extends UniversalTurretIntakeArm
     double armTopPos = 0.25;
     double armCapPos = 0.3;
 
-    public CuriosityTurretArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo intake, boolean reverseIntake) {
-        super(setOpMode, setArmProfile, setTurretProfile, intake, reverseIntake);
+    public CuriosityTurretArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo intake, DistanceSensor intakeSensor, TouchSensor armTouch, boolean reverseIntake) {
+        super(setOpMode, setArmProfile, setTurretProfile, intake, intakeSensor, armTouch, reverseIntake);
     }
 
     public void GoToHubTier(Tier tier){
