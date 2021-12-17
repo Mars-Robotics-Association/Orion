@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
-@Autonomous(name = "*SIMPLE CURIOSITY AUTO*", group = "Curiosity")
-public class DirtSimpleCuriosityAutonomous extends LinearOpMode
+@Autonomous(name = "*RED SIMPLE CURIOSITY AUTO*", group = "Curiosity")
+public class SimpleCuriosityAutonomousRED extends LinearOpMode
 {
     CuriosityRobot robot;
 
@@ -50,7 +50,7 @@ public class DirtSimpleCuriosityAutonomous extends LinearOpMode
         //move to park
         double parkStartTime = getRuntime();
         while (getRuntime() < parkStartTime + moveToParkTime){
-            robot.RawDrive(90,sideMultiplier*0.5,0);
+            robot.RawDrive(90+(sideMultiplier*10),sideMultiplier*0.5,0); //TODO: check this
             if(!opModeIsActive()) return;
         }
         robot.RawDrive(0,0,0);

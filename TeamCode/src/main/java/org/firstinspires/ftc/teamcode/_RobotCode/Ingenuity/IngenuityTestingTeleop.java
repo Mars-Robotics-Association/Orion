@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.D
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_VEL_MOD;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 @TeleOp(name = "*INGENUITY TESTING TELEOP*", group = "All")
+@Disabled
 @Config
 public class IngenuityTestingTeleop extends OpMode implements ControllerInputListener
 {

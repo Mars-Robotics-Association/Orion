@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.TestBot;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -13,6 +14,7 @@ import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.D
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_VEL_MOD;
 
 @TeleOp(name = "*TEST BOT TELEOP*", group = "Test")
+@Disabled
 @Config
 public class TestBotTeleop extends OpMode implements ControllerInputListener
 {

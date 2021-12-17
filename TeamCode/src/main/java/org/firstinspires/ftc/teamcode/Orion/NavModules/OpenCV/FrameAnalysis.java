@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Orion.NavModules.OpenCV;
 import android.graphics.Bitmap;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.vuforia.Image;
@@ -12,8 +13,9 @@ import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
-@TeleOp(name = "*FrameAnalysis  *", group = "Curiosity")
+@TeleOp(name = "Frame Analysis", group = "Testing")
 @Config
+@Disabled
 
 public class FrameAnalysis extends LinearOpMode {
     private VuforiaLocalizer vuforia;
