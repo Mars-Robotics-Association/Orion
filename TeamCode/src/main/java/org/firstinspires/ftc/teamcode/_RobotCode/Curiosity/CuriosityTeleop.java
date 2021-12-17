@@ -58,13 +58,11 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
         //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
 
-        hardwareMap.dcMotor.get("Arm").setDirection(DcMotorSimple.Direction.REVERSE);
-
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
 
 
-        msStuckDetectLoop = 15000;
+        msStuckDetectLoop = 5000;
 
         //set roadrunner speed modifiers
         if(control.isUSE_NAVIGATOR()){
@@ -131,15 +129,15 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void XPressed(double controllerNumber) {
-        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
-            control.Arm().GoToMax();
+        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
+            control.Arm().GoToPosition(0);
         }
     }
 
     @Override
     public void YPressed(double controllerNumber) {
-        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
-            control.Arm().GoToPosition(0);
+        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
+            control.Arm().GoToPosition(0.2);
         }
     }
 
@@ -181,14 +179,14 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LBPressed(double controllerNumber) {
-        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
             control.TurretArm().CycleIntakeState(intakeSpeed);
         }
     }
 
     @Override
     public void RBPressed(double controllerNumber) {
-        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
             control.DuckSpinner().Forwards();
         }
     }
@@ -213,15 +211,17 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LTHeld(double controllerNumber) {
-        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
             control.Arm().SetPowerClamped(armSpeed);
+            //control.Arm().SetPowerRaw(armSpeed);
         }
     }
 
     @Override
     public void RTHeld(double controllerNumber) {
-        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
             control.Arm().SetPowerClamped(-armSpeed);
+            //control.Arm().SetPowerRaw(-armSpeed);
         }
     }
 
@@ -232,31 +232,33 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void RBReleased(double controllerNumber) {
-        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
             control.DuckSpinner().Stop();
         }
     }
 
     @Override
     public void LTReleased(double controllerNumber) {
-        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
-            control.Arm().SetPowerClamped(0);
+        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
+            //control.Arm().SetPowerClamped(0);
+            control.Arm().SetPowerRaw(0);
             //control.Arm().LockArm();
         }
     }
 
     @Override
     public void RTReleased(double controllerNumber) {
-        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
-            control.Arm().SetPowerClamped(0);
+        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
+            //control.Arm().SetPowerClamped(0);
+            control.Arm().SetPowerRaw(0);
             //control.Arm().LockArm();
         }
     }
 
     @Override
     public void DUpPressed(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber){
-        }
+        if(payloadControllerNumber == 1) payloadControllerNumber = 2;
+        else payloadControllerNumber = 1;
     }
 
     @Override
@@ -317,9 +319,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LJSPressed(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber) { //switch payload controllers at runtime
-            control.TurretArm().IntakeRoutine(40);
-        }
+
     }
 
     @Override
@@ -330,7 +330,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LJSHeld(double controllerNumber) {
-
+        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()) { //do intake routine
+            control.TurretArm().IntakeRoutine(6);
+        }
     }
 
     @Override

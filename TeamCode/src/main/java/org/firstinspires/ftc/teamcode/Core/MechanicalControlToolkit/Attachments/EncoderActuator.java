@@ -58,6 +58,7 @@ public class EncoderActuator
     //Sets the motors power and limits its position
     public void SetPowerClamped(double power){
         opMode.telemetry.addData("MOTOR POSITION", GetFinalPosition());
+        opMode.telemetry.addData("MOTOR POWER", power);
         if(power > 0 && GetFinalPosition() < minRots){
             if(useEncoder) GoToPosition(minRots * encoderResolution * gearRatio);
             else motors.SetPowers(0);
@@ -68,6 +69,8 @@ public class EncoderActuator
             else motors.SetPowers(0);
             return;
         }
+
+        opMode.telemetry.addData("ADDING POWER", true);
 
         motors.RunWithEncodersMode();
         motors.SetPowers(power);

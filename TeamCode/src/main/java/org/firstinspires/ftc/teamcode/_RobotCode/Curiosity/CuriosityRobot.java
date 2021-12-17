@@ -5,6 +5,7 @@ import android.text.method.Touch;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -35,7 +36,7 @@ public class CuriosityRobot extends MecanumChassis
     DistanceSensor distToWallSensor;
 
     //Nav Modules
-    public DriveWheelOdometry odometry;
+    //public DriveWheelOdometry odometry;
 
     ////Variables////
     //Calibration
@@ -50,15 +51,16 @@ public class CuriosityRobot extends MecanumChassis
     public CuriosityRobot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         super(setOpMode, new CuriosityChassisProfile(), new HermesLog("Curiosity", 500, setOpMode), useChassis, usePayload, useNavigator);
 
-        if(usePayload){
+        if(USE_PAYLOAD){
             DcMotor armMotor = opMode.hardwareMap.dcMotor.get("Arm");
+            armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             DcMotor turretMotor = opMode.hardwareMap.dcMotor.get("Turret");
             Servo duckServo = opMode.hardwareMap.servo.get("duck");
             Servo spinnerServo = opMode.hardwareMap.servo.get("intake");
 
-            distToWallSensor = (DistanceSensor) opMode.hardwareMap.get("wallDist");
-            DistanceSensor intakeDistSensor = (DistanceSensor) opMode.hardwareMap.get("intakeDist");
-            TouchSensor armTouch = (TouchSensor) opMode.hardwareMap.get("armTouch");
+            distToWallSensor = opMode.hardwareMap.get(DistanceSensor.class, "wallDist");
+            DistanceSensor intakeDistSensor = opMode.hardwareMap.get(DistanceSensor.class, "intakeDist");
+            TouchSensor armTouch = opMode.hardwareMap.get(TouchSensor.class, "armTouch");
 
             turretArm = new CuriosityTurretArm(opMode, new ArmProfile(armMotor), new TurretProfile(turretMotor), spinnerServo, intakeDistSensor,armTouch,false);
             turretArm.Arm().ResetToZero();
@@ -67,7 +69,7 @@ public class CuriosityRobot extends MecanumChassis
         }
 
         if(useNavigator){
-            odometry = new DriveWheelOdometry(this);
+            //odometry = new DriveWheelOdometry(this);
         }
     }
 
@@ -88,7 +90,7 @@ public class CuriosityRobot extends MecanumChassis
     }
 
     public CuriosityTurretArm TurretArm(){return turretArm;}
-    public EncoderActuator Turret(){return turretArm.Turret();}
+    //public EncoderActuator Turret(){return turretArm.Turret();}
     public EncoderActuator Arm(){return turretArm.Arm();}
 
     public DuckSpinner DuckSpinner(){return duckSpinner;}

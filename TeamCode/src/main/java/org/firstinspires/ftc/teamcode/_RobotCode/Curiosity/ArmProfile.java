@@ -10,8 +10,8 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorA
 
 class ArmProfile implements EncoderActuatorProfile
 {
-    DcMotor MOTOR;
-    double MAX_ROTS = 0.3;
+    MotorArray MOTORS;
+    double MAX_ROTS = 0.35;
     double MIN_ROTS = 0;
     double GEAR_RATIO = 24;
     double ENCODER_RESOLUTION = 537.7; //gobilda 19.2:1
@@ -19,11 +19,11 @@ class ArmProfile implements EncoderActuatorProfile
     boolean USE_ENCODER = true;
 
     public ArmProfile(DcMotor motor){
-        MOTOR = motor;
+        MOTORS = new MotorArray(new DcMotor[]{motor}, new double[]{1},USE_ENCODER);
     }
 
     @Override
-    public MotorArray motors() {return new MotorArray(new DcMotor[]{MOTOR}, new double[]{1}, USE_ENCODER);}
+    public MotorArray motors() {return MOTORS;}
 
     @Override
     public double maxRots() {return MAX_ROTS;}

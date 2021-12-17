@@ -30,7 +30,18 @@ class CuriosityTurretArm extends UniversalTurretIntakeArm
         super(setOpMode, setArmProfile, setTurretProfile, intake, intakeSensor, armTouch, reverseIntake);
     }
 
-    public void GoToHubTier(Tier tier){
-
+    public void GoToTier(Tier tier){
+        if(tier == Tier.BOTTOM){
+            Arm().GoToPosition(armBottomPos);
+        }
+        if(tier == Tier.MIDDLE){
+            Arm().GoToPosition(armMiddlePos);
+        }
+        if(tier == Tier.TOP){
+            Arm().GoToPosition(armTopPos);
+        }
+        if(tier == Tier.CAP){
+            Arm().GoToPosition(armCapPos);
+        }
     }
 }
