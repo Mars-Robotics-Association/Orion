@@ -81,7 +81,7 @@ public class Camera
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfodParameters.minResultConfidence = 0.8f;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset("FreightFrenzy.tflite", "Ball", "Cube");
+        tfod.loadModelFromAsset("UltimateGoal.tflite", "Ball", "Cube");
         tfod.setZoom(2, 16.0/9.0);
     }
 
@@ -357,10 +357,5 @@ public class Camera
         Core.bitwise_and(input, input, last, mask);
         result = last;
         return result;
-    }
-
-    public void test(){
-        opmode.telemetry.addData("test is","successful");
-        opmode.telemetry.update();
     }
 }
