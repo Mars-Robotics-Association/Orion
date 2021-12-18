@@ -16,8 +16,8 @@ public class UniversalTurretIntakeArm
 {
     EncoderActuatorProfile armProfile;
     EncoderActuator arm;
-    EncoderActuatorProfile turretProfile;
-    EncoderActuator turret;
+    //EncoderActuatorProfile turretProfile;
+    //EncoderActuator turret;
     DistanceSensor intakeSensor;
     TouchSensor bottomSensor;
     public static double intakeMultiplier = 1;
@@ -32,11 +32,11 @@ public class UniversalTurretIntakeArm
         opMode = setOpMode;
 
         armProfile = setArmProfile;
-        turretProfile = setTurretProfile;
+        //turretProfile = setTurretProfile;
         intake = setIntake;
 
         arm = new EncoderActuator(opMode, armProfile);
-        turret = new EncoderActuator(opMode, turretProfile);
+        //turret = new EncoderActuator(opMode, turretProfile);
 
         intakeSensor = setIntakeDetector;
         bottomSensor = setBottomSensor;
@@ -46,11 +46,11 @@ public class UniversalTurretIntakeArm
     }
 
     public EncoderActuator Arm(){return arm;}
-    public EncoderActuator Turret(){return turret;}
+    //public EncoderActuator Turret(){return turret;}
 
     public void GoToZero(){
         arm.GoToPosition(0);
-        turret.GoToPosition(0);
+        //turret.GoToPosition(0);
     }
 
     public boolean ResetArmToTouchSensor(double power){
@@ -63,10 +63,18 @@ public class UniversalTurretIntakeArm
         }
     }
 
-    public boolean IntakeRoutine(double intakeDistanceMM){
-        if(armState == ArmState.Intaking){
+    public boolean IntakeRoutine(double intakeDistanceCM){
+        opMode.telemetry.addData("ArmDist Sensor", intakeSensor.getDistance(DistanceUnit.CM));
+        if(intakeSensor.getDistance(DistanceUnit.CM) < intakeDistanceCM){
+            armState = ArmState.Storage;
+            SetIntakeSpeed(0);
+            GoToMax();
+            return true;
+        }
+        else return false;
+        /*if(armState == ArmState.Intaking){
             SetIntakeSpeed(1);
-            if(intakeSensor.getDistance(DistanceUnit.MM) < intakeDistanceMM){
+            if(intakeSensor.getDistance(DistanceUnit.CM) < intakeDistanceCM){
                 armState = ArmState.Storage;
                 SetIntakeSpeed(0);
                 GoToMax();
@@ -81,12 +89,13 @@ public class UniversalTurretIntakeArm
             GoToZero();
             SetIntakeSpeed(1);
         }
-        return false;
+        return false;*/
     }
 
     public void GoToMax(){
         arm.GoToMax();
-        turret.GoToMax();
+        //turret.GoToMax();
+        armState = ArmState.Storage;
     }
 
     public void SetIntakeSpeed(double speed){
@@ -96,6 +105,7 @@ public class UniversalTurretIntakeArm
     }
 
     public void CycleIntakeState(double intakeSpeed){
+        opMode.telemetry.addLine("CYCLING INTAKE");
         if(intakeState == 0) SetIntakeSpeed(intakeSpeed);
         else if (intakeState == 1) SetIntakeSpeed(0);
         else if (intakeState == 2) SetIntakeSpeed(-intakeSpeed);

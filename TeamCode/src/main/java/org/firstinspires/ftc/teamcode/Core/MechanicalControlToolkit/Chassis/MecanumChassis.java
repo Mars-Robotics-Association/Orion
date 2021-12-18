@@ -236,11 +236,11 @@ public class MecanumChassis
     }
 
     public double[] getMotorTicks(){
-        double[] returnVal = new double[4]; //I'm sorry
-        returnVal[0] = FL.getCurrentPosition();
-        returnVal[1] = FR.getCurrentPosition();
-        returnVal[2] = RL.getCurrentPosition();
-        returnVal[3] = RR.getCurrentPosition();
+        double[] returnVal = new double[4]; //I'm sorry (You had better be sorry... - Owen)
+        returnVal[0] = driveMotors.GetMotorPositions()[0];
+        returnVal[1] = driveMotors.GetMotorPositions()[1];
+        returnVal[2] = driveMotors.GetMotorPositions()[2];
+        returnVal[3] = driveMotors.GetMotorPositions()[3];
         return returnVal;
     }
 
