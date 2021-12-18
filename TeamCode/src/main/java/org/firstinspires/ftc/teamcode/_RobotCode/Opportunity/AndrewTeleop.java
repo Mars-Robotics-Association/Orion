@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 
@@ -21,6 +22,8 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private DcMotor FL;
     private DcMotor RR;
     private DcMotor RL;
+    private IMU imu;
+    private AndrewIMU andrewIMU;
     private CRServo duckyServo;
     private boolean backWasDown = false;
 
@@ -35,19 +38,21 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
         RR = this.hardwareMap.dcMotor.get("RR");
         RL = this.hardwareMap.dcMotor.get("RL");
         duckyServo = this.hardwareMap.crservo.get("duckyServo");
+        imu = new IMU(this);
+        andrewIMU = new AndrewIMU(imu);
     }
         public void start(){
-
+            imu.Start();
         }
 
 
         public void loop(){
             controllerInput1.Loop();
             controllerInput2.Loop();
-
-            double stickDir = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
+            andrewIMU.loop();
+            double stickDir = Math.atan2(gamepad1.left_stick_y, 0-gamepad1.left_stick_x);
             double stickDist = Math.sqrt(Math.pow(gamepad1.left_stick_x,2)+Math.pow(gamepad1.left_stick_y,2));
-            double[] newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(stickDir*180/3.14-90,stickDist,0-gamepad1.right_stick_x);
+            double[] newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning((stickDir+0)*180/3.14,stickDist,0-gamepad1.right_stick_x);
             for(int i = 0; i<4; i++)
                 newSpeeds[i]*=speed;
 
@@ -57,12 +62,11 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             RL.setPower(newSpeeds[3]);
 
             if(gamepad1.x)
-                duckyServo.setPower(0-speed);
+                duckyServo.setPower(1);
             else if(gamepad1.b)
-                duckyServo.setPower(speed);
+                duckyServo.setPower(0-1);
             else
                 duckyServo.setPower(0);
-            
 
             if(gamepad1.back&&!backWasDown){
                 if(speed==1)
