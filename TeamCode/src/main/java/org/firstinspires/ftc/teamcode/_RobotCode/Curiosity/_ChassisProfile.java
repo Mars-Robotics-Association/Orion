@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.ChassisProfile;
 
-class CuriosityChassisProfile implements ChassisProfile
+class _ChassisProfile implements ChassisProfile
 {
-    public CuriosityChassisProfile(){
+    public _ChassisProfile(){
 /*        flipIMU = false;
         motorNames = new String[]{"FR", "FL", "RR", "RL"};
         headingPID = new double[]{0, 0, 0};

@@ -1,5 +1,17 @@
 package org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive;
 
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.kV;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -28,6 +40,8 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.teamcode.Orion.Archive.NavProfiles.NavigationProfile;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.RoadrunnerRobotProfile;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.RoadrunnerTuningProfile;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.trajectorysequence.TrajectorySequenceRunner;
@@ -36,18 +50,6 @@ import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.util.LynxModul
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.kV;
 
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
@@ -61,9 +63,6 @@ public class StandardMecanumDrive extends MecanumDrive {
     public static String frontLeftName = "FL";
     public static String backRightName = "RR";
     public static String backLeftName = "RL";
-
-    public static boolean leftReversed = false;
-    public static boolean rightReversed = true;
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -86,41 +85,40 @@ public class StandardMecanumDrive extends MecanumDrive {
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
-    public StandardMecanumDrive(HardwareMap hardwareMap, NavigationProfile navProfile) {
+    public StandardMecanumDrive(HardwareMap hardwareMap, RoadrunnerRobotProfile robotProfile, RoadrunnerTuningProfile tuningProfile) {
         //Apply nav profile values to the parent class
         super(kV,kA,kStatic,TRACK_WIDTH,LATERAL_MULTIPLIER);
         //super(navProfile.kV(), navProfile.kA(), navProfile.kStatic(), navProfile.TRACK_WIDTH(), navProfile.TRACK_WIDTH(), navProfile.LATERAL_MULTIPLIER());
 
         //Set StandardMecanumDrive()'s variables using nav profile (NOT THE ISSUE)
-        TRANSLATIONAL_PID = navProfile.tuningProfile.TRANSLATIONAL_PID();
-        HEADING_PID = navProfile.tuningProfile.HEADING_PID();
-        frontLeftName = navProfile.chassisProfile.frontLeftName();
-        frontRightName = navProfile.chassisProfile.frontRightName();
-        backRightName = navProfile.chassisProfile.backRightName();
-        backLeftName = navProfile.chassisProfile.backLeftName();
-        leftReversed = navProfile.chassisProfile.leftReversed();
-        rightReversed = navProfile.chassisProfile.rightReversed();
-        LATERAL_MULTIPLIER = navProfile.tuningProfile.LATERAL_MULTIPLIER();
-        VX_WEIGHT = navProfile.tuningProfile.VX_WEIGHT();
-        VY_WEIGHT = navProfile.tuningProfile.VY_WEIGHT();
-        OMEGA_WEIGHT = navProfile.tuningProfile.OMEGA_WEIGHT();
+        TRANSLATIONAL_PID = tuningProfile.TRANSLATIONAL_PID();
+        HEADING_PID = tuningProfile.HEADING_PID();
+        frontLeftName = robotProfile.frontLeftName();
+        frontRightName = robotProfile.frontRightName();
+        backRightName = robotProfile.backRightName();
+        backLeftName = robotProfile.backLeftName();
+        LATERAL_MULTIPLIER = tuningProfile.LATERAL_MULTIPLIER();
+        VX_WEIGHT = tuningProfile.VX_WEIGHT();
+        VY_WEIGHT = tuningProfile.VY_WEIGHT();
+        OMEGA_WEIGHT = tuningProfile.OMEGA_WEIGHT();
+        useDriveWheelEncoders = robotProfile.RUN_USING_ENCODER();
 
         //Set DriveConstant()'s variables using nav profile
-        DriveConstants.TICKS_PER_REV = navProfile.odometryProfile.TICKS_PER_REV();
-        DriveConstants.MAX_RPM = navProfile.chassisProfile.MAX_RPM();
-        DriveConstants.RUN_USING_ENCODER = navProfile.chassisProfile.RUN_USING_ENCODER();
-        DriveConstants.MOTOR_VELO_PID = navProfile.chassisProfile.MOTOR_VELO_PID();
-        DriveConstants.WHEEL_RADIUS = navProfile.chassisProfile.WHEEL_RADIUS_CHASSIS(); // in
-        DriveConstants.GEAR_RATIO = navProfile.chassisProfile.GEAR_RATIO_CHASSIS(); // output (wheel) speed / input (motor) speed
-        DriveConstants.TRACK_WIDTH = navProfile.chassisProfile.TRACK_WIDTH(); // in
-        DriveConstants.kV =  navProfile.tuningProfile.kV(); //1.0 / rpmToVelocity(MAX_RPM)
-        DriveConstants.kA = navProfile.tuningProfile.kA();
-        DriveConstants.kStatic = navProfile.tuningProfile.kStatic();
+        DriveConstants.TICKS_PER_REV = robotProfile.TICKS_PER_REV();
+        DriveConstants.MAX_RPM = robotProfile.MAX_RPM();
+        DriveConstants.RUN_USING_ENCODER = robotProfile.RUN_USING_ENCODER();
+        DriveConstants.MOTOR_VELO_PID = robotProfile.MOTOR_VELO_PID();
+        DriveConstants.WHEEL_RADIUS = robotProfile.WHEEL_RADIUS_CHASSIS(); // in
+        DriveConstants.GEAR_RATIO = robotProfile.GEAR_RATIO_CHASSIS(); // output (wheel) speed / input (motor) speed
+        DriveConstants.TRACK_WIDTH = robotProfile.TRACK_WIDTH(); // in
+        DriveConstants.kV =  tuningProfile.kV(); //1.0 / rpmToVelocity(MAX_RPM)
+        DriveConstants.kA = tuningProfile.kA();
+        DriveConstants.kStatic = tuningProfile.kStatic();
 
-        DriveConstants.MAX_VEL = navProfile.tuningProfile.MAX_VEL(); //problem
-        DriveConstants.MAX_ACCEL = navProfile.tuningProfile.MAX_ACCEL(); //problem
-        DriveConstants.MAX_ANG_VEL = navProfile.tuningProfile.MAX_ANG_VEL();
-        DriveConstants.MAX_ANG_ACCEL = navProfile.tuningProfile.MAX_ANG_ACCEL();
+        DriveConstants.MAX_VEL = tuningProfile.MAX_VEL(); //problem
+        DriveConstants.MAX_ACCEL = tuningProfile.MAX_ACCEL(); //problem
+        DriveConstants.MAX_ANG_VEL = tuningProfile.MAX_ANG_VEL();
+        DriveConstants.MAX_ANG_ACCEL = tuningProfile.MAX_ANG_ACCEL();
 
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
@@ -167,7 +165,7 @@ public class StandardMecanumDrive extends MecanumDrive {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
-        // TODO: reverse any motors using DcMotor.setDirection()
+        /*// TODO: reverse any motors using DcMotor.setDirection()
         if(leftReversed) {
             leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
             leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -175,11 +173,11 @@ public class StandardMecanumDrive extends MecanumDrive {
         if(rightReversed) {
             rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
             rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        }
+        }*/
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-        if(!useDriveWheelEncoders) setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, navProfile));
+        if(!useDriveWheelEncoders) setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
         //else setLocalizer(new (hardwareMap, navProfile));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);

@@ -12,9 +12,19 @@ public class FieldObject
         PROBABILITY//object might exist, only on list when detected, deleted whenever not seen
     }
     public ObjectType objectType;
-    public double[] poseToRobot = {0,0,0};
-    public double[] poseToGlobal = {0,0,0};
-    public double poseToRobotCertainty = 1;
+    public Pose poseToRobot;
+    public Pose poseToGlobal;
+    public double poseCertainty = 1;
     public double boundsRadius = 1;
     public int timeUpdated = 0;
+
+    public FieldObject(String set_id, String set_category, ObjectType set_objectType, Pose set_poseToRobot, Pose set_poseToGlobal, double set_poseCertainty, double set_boundsRadius){
+        id = set_id;
+        category = set_category;
+        objectType = set_objectType;
+        poseToRobot = set_poseToRobot;
+        poseToGlobal = set_poseToGlobal;
+        poseCertainty = set_poseCertainty;
+        boundsRadius = set_boundsRadius;
+    }
 }

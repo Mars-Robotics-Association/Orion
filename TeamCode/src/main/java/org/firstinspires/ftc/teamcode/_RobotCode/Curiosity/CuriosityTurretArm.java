@@ -22,9 +22,15 @@ class CuriosityTurretArm extends UniversalTurretIntakeArm
 
     //arm positions for each of the levels
     double armBottomPos = 0.1;
-    double armMiddlePos = 0.175;
-    double armTopPos = 0.25;
-    double armCapPos = 0.3;
+    double armMiddlePos = 0.2;
+    double armTopPos = 0.3;
+    double armCapPos = 0.34;
+
+    public static double armIntakeDist = 6;
+
+    int currentAutoIntakeTeir = 1; //what level to send the arm to when intaking
+
+
 
     public CuriosityTurretArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo intake, DistanceSensor intakeSensor, TouchSensor armTouch, boolean reverseIntake) {
         super(setOpMode, setArmProfile, setTurretProfile, intake, intakeSensor, armTouch, reverseIntake);
@@ -44,4 +50,31 @@ class CuriosityTurretArm extends UniversalTurretIntakeArm
             Arm().GoToPosition(armCapPos);
         }
     }
+
+    //Automatically intakes taking to account tiers
+    public void UpdateIntakeTiered(){
+        if(currentAutoIntakeTeir == 0) {
+            UpdateIntake(armIntakeDist,armBottomPos);
+            opMode.telemetry.addData("Intake Tier", "BOTTOM");
+        }
+        else if(currentAutoIntakeTeir == 1) {
+            UpdateIntake(armIntakeDist,armMiddlePos);
+            opMode.telemetry.addData("Intake Tier", "MIDDLE");
+
+        }
+        else if(currentAutoIntakeTeir == 2) {
+            UpdateIntake(armIntakeDist,armTopPos);
+            opMode.telemetry.addData("Intake Tier", "TOP");
+
+        }
+    }
+    public void AutoIntakeTierUp(){
+        if(currentAutoIntakeTeir>=2) return;
+        else currentAutoIntakeTeir++;
+    }
+    public void AutoIntakeTierDown(){
+        if(currentAutoIntakeTeir<=0) return;
+        else currentAutoIntakeTeir--;
+    }
+
 }

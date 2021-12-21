@@ -3,10 +3,8 @@ package org.firstinspires.ftc.teamcode.Orion.NavModules;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Orion.FieldState.Pose;
-import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.RoadrunnerControl;
 
 @Config
 public class DriveWheelOdometry
@@ -18,7 +16,6 @@ public class DriveWheelOdometry
     public Pose currentPose;
     public int[] lastEncoderTicks;
 
-    private RoadrunnerControl roadrunner;
 
     public DriveWheelOdometry(MecanumChassis setChassis){
         chassis = setChassis;

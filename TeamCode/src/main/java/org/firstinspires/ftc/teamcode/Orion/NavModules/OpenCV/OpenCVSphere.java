@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Orion.NavModules.OpenCV;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,6 +12,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @TeleOp(name = "*OpenCVSphere*", group = "Curiosity")
 @Config
+@Disabled
 
 public class OpenCVSphere extends LinearOpMode {
 
