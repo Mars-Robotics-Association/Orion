@@ -12,16 +12,18 @@ public class AndrewIMU {
     }
     public void loop(){
     double thisAngle = imu.GetRobotAngle();
+    double adjustedAngle = thisAngle+180;
 
-    if(thisAngle<-100&&lastAngle>100){
-        absoluteAngle+= Math.abs(thisAngle%180);
-    }else if(thisAngle>100&&lastAngle<-100){
-        absoluteAngle-=Math.abs(thisAngle%180);
+    if(adjustedAngle<100&&lastAngle>260){
+        absoluteAngle +=adjustedAngle;
+    }else if(adjustedAngle>260&&lastAngle<100){
+        absoluteAngle+= 360-adjustedAngle;
     }else{
-        absoluteAngle+=thisAngle-lastAngle;
+        absoluteAngle+= thisAngle-lastAngle; //maybe reverse that
     }
 
-    lastAngle = thisAngle;
+
+    lastAngle = adjustedAngle;
     }
     public double getRotation(){
        return absoluteAngle;
