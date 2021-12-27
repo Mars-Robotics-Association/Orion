@@ -18,6 +18,9 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private ControllerInput controllerInput2;
     private MecanumChassis mecanumChassis;
 
+    private String[] david = "version 1... And you may find yourself living in a shotgun shack;And you may find yourself in another part of the world;And you may find yourself behind the wheel of a large automobile;And you may find yourself in a beautiful house, with a beautiful wife;And you may ask yourself, \"Well, how did I get here?\";Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again after the money's gone;Once in a lifetime, water flowing underground;And you may ask yourself, \"How do I work this?\";And you may ask yourself, \"Where is that large automobile?\";And you may tell yourself, \"This is not my beautiful house\";And you may tell yourself, \"This is not my beautiful wife\";Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again after the money's gone;Once in a lifetime, water flowing underground;Same as it ever was, same as it ever was;Same as it ever was, same as it ever was;Same as it ever was, same as it ever was;Same as it ever was, same as it ever was;Water dissolving and water removing;There is water at the bottom of the ocean;Under the water, carry the water;Remove the water at the bottom of the ocean;Water dissolving and water removing;Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again, into the silent water;Under the rocks and stones, there is water underground;Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again after the money's gone;Once in a lifetime, water flowing underground;You may ask yourself, \"What is that beautiful house?\";You may ask yourself, \"Where does that highway go to?\";And you may ask yourself, \"Am I right? Am I wrong?\";And you may say to yourself, \"My God! What have I done?\";Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again, into the slent water;Under the rocks and stones, there is water underground;Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again after the money's gone;Once in a lifetime, water flowing underground;Same as it ever was, same as it ever was;Same as it ever was and look where my hand was;Time isn't holding up, time isn't after us;Same as it ever was, same as it ever was;Same as it ever was, same as it ever was;Same as it ever was, same as it ever was;Letting the days go by, same as it ever was;Here a twister comes, here comes the twister;Same as it ever was, same as it ever was (Letting the days go by);Same as it ever was, same as it ever was (Letting the days go by);Once in a lifetime (Let the water hold me down);Letting the days go by (Water flowing underground);Into the blue again".split(";");
+    private int davidIndex = 0;
+
     private DcMotor FR;
     private DcMotor FL;
     private DcMotor RR;
@@ -26,6 +29,10 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private AndrewIMU andrewIMU;
     private CRServo duckyServo;
     private boolean backWasDown = false;
+    private boolean startWasDown = false;
+    private boolean lBumperWasDown = false;
+
+    private boolean doFunnyLockThing = false;
 
     private double speed = 1;
 
@@ -47,12 +54,21 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
 
         public void loop(){
+
+
             controllerInput1.Loop();
             controllerInput2.Loop();
             andrewIMU.loop();
+
+            telemetry.addData("angle",andrewIMU.getRotation());
+
             double stickDir = Math.atan2(gamepad1.left_stick_y, 0-gamepad1.left_stick_x);
             double stickDist = Math.sqrt(Math.pow(gamepad1.left_stick_x,2)+Math.pow(gamepad1.left_stick_y,2));
-            double[] newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning((stickDir+0)*180/3.14,stickDist,0-gamepad1.right_stick_x);
+
+            double moveAngle = stickDir*180/3.14;
+            if(doFunnyLockThing) moveAngle = (stickDir*180/3.14)- andrewIMU.getRotation();
+            double[] newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(moveAngle,stickDist,0-gamepad1.right_stick_x);
+
             for(int i = 0; i<4; i++)
                 newSpeeds[i]*=speed;
 
@@ -75,6 +91,22 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
                     speed=1;
             }
             backWasDown = gamepad1.back;
+
+
+            if(gamepad1.start&&!startWasDown){
+                doFunnyLockThing = !doFunnyLockThing;
+                andrewIMU.resetRotation();
+            }
+            startWasDown = gamepad1.start;
+
+            if(gamepad2.left_bumper&&!lBumperWasDown){
+                if(davidIndex>=david.length)
+                    davidIndex = 0;
+                telemetry.speak(""+david[davidIndex]);
+                davidIndex++;
+            }
+
+            lBumperWasDown = gamepad2.left_bumper;
 
         }
 

@@ -21,6 +21,10 @@ public class MecanumChassis
     private PIDController directionPID;
     protected OpMode opMode;
     //Motors
+    private DcMotor FR;
+    private DcMotor FL;
+    private DcMotor RR;
+    private DcMotor RL;
     public MotorArray driveMotors;
 
     //Brake pos
@@ -63,10 +67,10 @@ public class MecanumChassis
 
         //TODO: ===INIT CHASSIS===
         if(USE_CHASSIS) {
-            DcMotor FR = opMode.hardwareMap.dcMotor.get(profile.motorNames()[0]);
-            DcMotor FL = opMode.hardwareMap.dcMotor.get(profile.motorNames()[1]);
-            DcMotor RR = opMode.hardwareMap.dcMotor.get(profile.motorNames()[2]);
-            DcMotor RL = opMode.hardwareMap.dcMotor.get(profile.motorNames()[3]);
+            FR = opMode.hardwareMap.dcMotor.get(profile.motorNames()[0]);
+            FL = opMode.hardwareMap.dcMotor.get(profile.motorNames()[1]);
+            RR = opMode.hardwareMap.dcMotor.get(profile.motorNames()[2]);
+            RL = opMode.hardwareMap.dcMotor.get(profile.motorNames()[3]);
             driveMotors = new MotorArray(new DcMotor[]{FR,FL,RR,RL}, new double[]{1,1,1,1}, profile.useEncoders());
 
             driveMotors.StopAndResetEncoders();
@@ -156,7 +160,7 @@ public class MecanumChassis
         SetMotorSpeeds(speeds[0], -speeds[1], speeds[2], -speeds[3]);
 
         //Updates brake pos, as this is called continuously as robot is driving
-        //UpdateEncoderBrakePos();
+        UpdateEncoderBrakePos();
     }
     public void RawTurn(double speed){
         //Used continuously in teleop to turn the robot
@@ -169,7 +173,7 @@ public class MecanumChassis
         SetMotorSpeeds(speed, -speed, speed, -speed);
 
         //Update the values for breaking
-        //UpdateEncoderBrakePos();
+        UpdateEncoderBrakePos();
     }
     public void ResetGyro(){
         //Offsets the gryo so the current heading can be zero with GetRobotAngle()
@@ -194,19 +198,19 @@ public class MecanumChassis
     public void SetMotorSpeeds(double fr, double fl, double rr, double rl){
         driveMotors.SetPowers(new double[]{fr, -fl, rr, -rl});
     }
-/*    public void UpdateEncoderBrakePos(){
+    public void UpdateEncoderBrakePos(){
         //Update the values for breaking
-        FRBrakePos = driveMotors.getCurrentPosition();
+        FRBrakePos = FR.getCurrentPosition();
         FLBrakePos = FL.getCurrentPosition();
         RRBrakePos = RR.getCurrentPosition();
         RLBrakePos = RL.getCurrentPosition();
-    }*/
-/*    public void EncoderBrake(){
+    }
+    public void EncoderBrake(){
         //Stop the robot and hold position. Meant to be called once
-        //UpdateEncoderBrakePos();
+        UpdateEncoderBrakePos();
         driveMotors.SetTargetPositions(new int[] {FRBrakePos, FLBrakePos, RRBrakePos, RLBrakePos},true);
         SetMotorSpeeds(0.5,-0.5,0.5,-0.5);
-    }*/
+    }
 
     public void SetHeadingPID(double p, double i, double d){
         headingPIDController.setPID(p,i,d);
