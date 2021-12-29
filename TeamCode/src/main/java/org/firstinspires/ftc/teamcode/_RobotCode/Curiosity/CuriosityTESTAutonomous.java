@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.RoadrunnerModule;
 
@@ -15,10 +16,11 @@ public class CuriosityTESTAutonomous extends LinearOpMode
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new CuriosityRobot(this, true, true, false);
+
+        robot = new CuriosityRobot(this, true, true, true);
         robot.Init();
 
-        nav = robot.Roadrunner();
+        //nav = robot.Roadrunner();
 
         waitForStart();
         robot.Start();

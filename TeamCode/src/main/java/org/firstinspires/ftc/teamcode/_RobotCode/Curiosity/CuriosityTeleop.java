@@ -131,7 +131,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void YPressed(double controllerNumber) {
         if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.TurretArm().GoToTier(CuriosityTurretArm.Tier.MIDDLE);
+            control.TurretArm().GoToAutoTier();
         }
     }
 

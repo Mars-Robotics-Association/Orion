@@ -68,6 +68,14 @@ class CuriosityTurretArm extends UniversalTurretIntakeArm
 
         }
     }
+
+    //Goes to the auto intake tier manually
+    public void GoToAutoTier(){
+        if(currentAutoIntakeTeir == 0) GoToTier(Tier.BOTTOM);
+        if(currentAutoIntakeTeir == 1) GoToTier(Tier.MIDDLE);
+        if(currentAutoIntakeTeir == 2) GoToTier(Tier.TOP);
+    }
+
     public void AutoIntakeTierUp(){
         if(currentAutoIntakeTeir>=2) return;
         else currentAutoIntakeTeir++;
