@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Archived.SoccerBots;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -16,6 +17,7 @@ import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.D
 
 @TeleOp(name = "*SOCCER BOT TESTING TELEOP*", group = "All")
 @Config
+@Disabled
 public class SoccerBotTestingTeleop extends OpMode implements ControllerInputListener
 {
     ////Dependencies////

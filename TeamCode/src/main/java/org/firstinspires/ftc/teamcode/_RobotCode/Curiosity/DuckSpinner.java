@@ -6,21 +6,32 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class DuckSpinner
 {
     double speedMultipler = 1;
-    Servo spinner;
+    DcMotor spinner;
+    int duckSpinnerState = 0;
 
     //initializer
-    public DuckSpinner(Servo setSpinner, double setSpeedMultipler){
+    public DuckSpinner(DcMotor setSpinner, double setSpeedMultipler){
         speedMultipler = setSpeedMultipler;
         spinner = setSpinner;
+        spinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     //Set the speed of the motor with the multiplier
-    public void SetSpeed(double speed){spinner.setPosition(speed);}
+    public void SetSpeed(double speed){spinner.setPower(speed);}
     //Spin at full speed forwards
-    public void Forwards(){SetSpeed(1);}
+    public void Blue(){SetSpeed(1);}
     //Cut power to the motor
-    public void Stop(){SetSpeed(0.5);}
+    public void Stop(){SetSpeed(0);}
     //Spine at full speed backwards
-    public void Reverse(){SetSpeed(0);}
+    public void Red(){SetSpeed(-1);}
+    //Toggle
+    public void CycleSpinning(){
+        if(duckSpinnerState > 3) duckSpinnerState = 0;
+        if(duckSpinnerState==0) Blue();
+        else if(duckSpinnerState==1) Stop();
+        else if(duckSpinnerState==2) Red();
+        else Stop();
+        duckSpinnerState++;
+    }
 
 }

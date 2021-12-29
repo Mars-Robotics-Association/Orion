@@ -8,17 +8,17 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
 
-class ArmProfile implements EncoderActuatorProfile
+class _ArmProfile implements EncoderActuatorProfile
 {
     MotorArray MOTORS;
-    double MAX_ROTS = 0.35;
+    double MAX_ROTS = 0.33;
     double MIN_ROTS = 0;
     double GEAR_RATIO = 24;
     double ENCODER_RESOLUTION = 537.7; //gobilda 19.2:1
     boolean REVERSE_ENCODER = true;
     boolean USE_ENCODER = true;
 
-    public ArmProfile(DcMotor motor){
+    public _ArmProfile(DcMotor motor){
         MOTORS = new MotorArray(new DcMotor[]{motor}, new double[]{1},USE_ENCODER);
     }
 

@@ -13,16 +13,16 @@ package org.firstinspires.ftc.teamcode.Orion.Archive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.RoadrunnerModule;
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.MecanumBaseControl;
 import org.firstinspires.ftc.teamcode.Orion.Archive.NavProfiles.NavigationProfile;
-import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.RoadrunnerControl;
 import org.firstinspires.ftc.teamcode.Orion.Archive.Tensorflow.TensorFlowObjectDetector;
 import org.firstinspires.ftc.teamcode.Orion.Archive.Vuforia.VuMarkNavigation;
 
 public class OrionNavigator
 {
     //TODO ====REFERENCES====
-    private RoadrunnerControl rr;
+    private RoadrunnerModule rr;
     private VuMarkNavigation vuforiaFront;
     private TensorFlowObjectDetector tf;
     private RobotTransformSystem cs;
@@ -47,7 +47,7 @@ public class OrionNavigator
 
     public void Init(){
         if(control.isUSE_CHASSIS()) {
-            rr = new RoadrunnerControl(opMode, navigationProfile);
+            //rr = new RoadrunnerModule(opMode, navigationProfile); //TODO: re-add
             //rr.Init();
         }
         vuforiaFront = new VuMarkNavigation(opMode, "Webcam 1");

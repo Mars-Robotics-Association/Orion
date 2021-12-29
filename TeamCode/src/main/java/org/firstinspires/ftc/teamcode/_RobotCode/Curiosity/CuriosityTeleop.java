@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
@@ -86,12 +85,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         controllerInput2.Loop();
 
         control.Update();
-
-        //if robot isn't level, set speed to zero and exit loop
-        /*if(!control.IsRobotLevel()){
-            control.RawDrive(0,0,0);
-            return;
-        }*/
+        control.TurretArm().UpdateIntakeTiered();
 
         if(!busy) {
             //Manage driving
@@ -130,14 +124,14 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void XPressed(double controllerNumber) {
         if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.Arm().GoToPosition(0);
+            control.TurretArm().ReturnToHomeAndIntake(intakeSpeed);
         }
     }
 
     @Override
     public void YPressed(double controllerNumber) {
         if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.Arm().GoToPosition(0.2);
+            control.TurretArm().GoToAutoTier();
         }
     }
 
@@ -186,8 +180,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void RBPressed(double controllerNumber) {
+        //toggle between duck spinner states
         if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.DuckSpinner().Forwards();
+            control.DuckSpinner().CycleSpinning();
         }
     }
 
@@ -232,9 +227,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void RBReleased(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.DuckSpinner().Stop();
-        }
+
     }
 
     @Override
@@ -257,14 +250,12 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void DUpPressed(double controllerNumber) {
-        if(payloadControllerNumber == 1) payloadControllerNumber = 2;
-        else payloadControllerNumber = 1;
+        control.TurretArm().AutoIntakeTierUp();
     }
 
     @Override
     public void DDownPressed(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber){
-        }
+        control.TurretArm().AutoIntakeTierDown();
     }
 
     @Override
@@ -330,9 +321,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LJSHeld(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()) { //do intake routine
-            control.TurretArm().IntakeRoutine(6);
-        }
+
     }
 
     @Override

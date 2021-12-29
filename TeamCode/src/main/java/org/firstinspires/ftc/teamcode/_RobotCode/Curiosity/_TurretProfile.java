@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
 
-class TurretProfile implements EncoderActuatorProfile
+class _TurretProfile implements EncoderActuatorProfile
 {
     DcMotor MOTOR;
     double MAX_ROTS = 0.5;
@@ -18,7 +18,7 @@ class TurretProfile implements EncoderActuatorProfile
     boolean REVERSE_ENCODER = false;
     boolean USE_ENCODER = true;
 
-    public TurretProfile(DcMotor motor){
+    public _TurretProfile(DcMotor motor){
         MOTOR = motor;
     }
 

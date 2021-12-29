@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Archived.TankDriveBot;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.Tank
 
 @TeleOp(name = "TankDriveTeleop", group = "ALL")
 @Config
+@Disabled
 public class TankDriveTeleop extends OpMode implements ControllerInputListener
 {
     ////Dependencies////

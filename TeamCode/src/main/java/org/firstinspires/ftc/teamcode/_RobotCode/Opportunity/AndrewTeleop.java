@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Opportunity;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.Meca
 import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 
 @TeleOp(name = "Andrew TeleOp", group = "All")
+@Disabled
 public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
     private ControllerInput controllerInput1;

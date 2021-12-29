@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
 
-class FieldStateWrapper
+public class FieldStateWrapper
 {
     OpMode opMode;
     FileInputStream fieldStateIn;

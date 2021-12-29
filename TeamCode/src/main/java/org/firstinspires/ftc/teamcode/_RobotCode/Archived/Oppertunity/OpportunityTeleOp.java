@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Archived.Oppertunity;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.opmode.DefaultNavProfile;
 
 @TeleOp(name = "Kenobi TeleOp", group = "Competition")
+@Disabled
 //@Config
 public class OpportunityTeleOp extends OpMode implements ControllerInputListener
 {

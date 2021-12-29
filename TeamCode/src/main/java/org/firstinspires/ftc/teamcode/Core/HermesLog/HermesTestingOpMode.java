@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Core.HermesLog;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -7,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
 
 @TeleOp(name="Hermes Testing", group="Testing")
+@Disabled
 public class HermesTestingOpMode extends OpMode
 {
     HermesLog log;

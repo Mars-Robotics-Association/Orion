@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Archived.Oppertunity;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.opmode.D
 
 //SimpleTeleOpKenobi (or whatever name is here) shows up on the phone
 @TeleOp(name = "SimpleTeleOpKenobi", group = "Competition")
+@Disabled
 
 //@Config
 //This name must match the file name

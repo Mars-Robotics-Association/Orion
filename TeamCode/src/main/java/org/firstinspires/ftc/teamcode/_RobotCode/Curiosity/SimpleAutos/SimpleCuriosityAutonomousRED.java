@@ -1,17 +1,20 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
+package org.firstinspires.ftc.teamcode._RobotCode.Curiosity.SimpleAutos;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.CuriosityRobot;
+
 @Config
-@Autonomous(name = "*SIMPLE CURIOSITY AUTO*", group = "Curiosity")
-public class DirtSimpleCuriosityAutonomous extends LinearOpMode
+@Autonomous(name = "*RED SIMPLE CURIOSITY AUTO*", group = "Curiosity")
+public class SimpleCuriosityAutonomousRED extends LinearOpMode
 {
     CuriosityRobot robot;
 
     public static double distanceFromWallToStopCM = 36;
-    public static double moveToParkTime = 2;
+    public static double moveToParkTime = 1.8;
+    public static double distanceToWallPark = 14;
     public static double spinTime = 20;
     public static boolean redSide = true;
     double sideMultiplier = 1;
@@ -29,8 +32,8 @@ public class DirtSimpleCuriosityAutonomous extends LinearOpMode
         else sideMultiplier = -1;
 
         //Start the spinner
-        if(redSide) robot.DuckSpinner().Reverse();
-        else robot.DuckSpinner().Forwards();
+        if(redSide) robot.DuckSpinner().Red();
+        else robot.DuckSpinner().Blue();
 
         //Go to the duck spinner
         while (robot.GetDistToWallCM() > distanceFromWallToStopCM){ //while not in range of the wall to spin ducks, move towards it
@@ -50,7 +53,11 @@ public class DirtSimpleCuriosityAutonomous extends LinearOpMode
         //move to park
         double parkStartTime = getRuntime();
         while (getRuntime() < parkStartTime + moveToParkTime){
-            robot.RawDrive(90,sideMultiplier*0.5,0);
+            robot.RawDrive(90+(sideMultiplier*10),sideMultiplier*0.5,0); //TODO: check this
+            if(!opModeIsActive()) return;
+        }
+        while (robot.GetDistToWallCM() > distanceToWallPark){ //while not in range of the wall to spin ducks, move towards it
+            robot.RawDrive(0, 0.5, 0); //add slight turn into the wall
             if(!opModeIsActive()) return;
         }
         robot.RawDrive(0,0,0);

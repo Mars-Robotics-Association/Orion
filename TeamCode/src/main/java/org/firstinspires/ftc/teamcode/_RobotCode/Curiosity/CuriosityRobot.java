@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
-import android.text.method.Touch;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -14,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
-import org.firstinspires.ftc.teamcode.Orion.NavModules.DriveWheelOdometry;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.FreightFrenzy.FreightFrenzyNavigation;
 
 /**
  * Control class for the Belinda Robot. Controls payload.
@@ -33,10 +32,10 @@ public class CuriosityRobot extends MecanumChassis
     //Mechanical Components
     CuriosityTurretArm turretArm;
     DuckSpinner duckSpinner;
-    DistanceSensor distToWallSensor;
+    DistanceSensor duckDist;
 
     //Nav Modules
-    //public DriveWheelOdometry odometry;
+    FreightFrenzyNavigation navigation;
 
     ////Variables////
     //Calibration
@@ -49,27 +48,31 @@ public class CuriosityRobot extends MecanumChassis
      * @param useNavigator whether to use Orion (webcams + odometry navigation)
      */
     public CuriosityRobot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
-        super(setOpMode, new CuriosityChassisProfile(), new HermesLog("Curiosity", 500, setOpMode), useChassis, usePayload, useNavigator);
+        super(setOpMode, new _ChassisProfile(), new HermesLog("Curiosity", 500, setOpMode), useChassis, usePayload, useNavigator);
+
+        duckDist = opMode.hardwareMap.get(DistanceSensor.class, "duckDist");
+        DistanceSensor intakeDist = opMode.hardwareMap.get(DistanceSensor.class, "intakeDist");
 
         if(USE_PAYLOAD){
             DcMotor armMotor = opMode.hardwareMap.dcMotor.get("Arm");
             armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             DcMotor turretMotor = opMode.hardwareMap.dcMotor.get("Turret");
-            Servo duckServo = opMode.hardwareMap.servo.get("duck");
+            DcMotor duckMotor = opMode.hardwareMap.dcMotor.get("Duck");
             Servo spinnerServo = opMode.hardwareMap.servo.get("intake");
 
-            distToWallSensor = opMode.hardwareMap.get(DistanceSensor.class, "wallDist");
-            DistanceSensor intakeDistSensor = opMode.hardwareMap.get(DistanceSensor.class, "intakeDist");
             TouchSensor armTouch = opMode.hardwareMap.get(TouchSensor.class, "armTouch");
 
-            turretArm = new CuriosityTurretArm(opMode, new ArmProfile(armMotor), new TurretProfile(turretMotor), spinnerServo, intakeDistSensor,armTouch,false);
+            turretArm = new CuriosityTurretArm(opMode, new _ArmProfile(armMotor), new _TurretProfile(turretMotor), spinnerServo, intakeDist,armTouch,false);
             turretArm.Arm().ResetToZero();
 
-            duckSpinner = new DuckSpinner(duckServo, 1);
+            duckSpinner = new DuckSpinner(duckMotor, 1);
         }
 
         if(useNavigator){
-            //odometry = new DriveWheelOdometry(this);
+            TouchSensor portTouch = opMode.hardwareMap.touchSensor.get("portTouch");
+            TouchSensor starboardTouch = opMode.hardwareMap.touchSensor.get("starboardTouch");
+            ColorSensor colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
+            navigation = new FreightFrenzyNavigation(opMode, new _NavTuningProfile(turretArm, duckSpinner, duckDist, intakeDist, portTouch, starboardTouch, colorSensor));
         }
     }
 
@@ -89,13 +92,20 @@ public class CuriosityRobot extends MecanumChassis
         super.StartCoreRobotModules();
     }
 
+    public void Update(){
+        if(USE_NAVIGATOR){
+        }
+    }
+
     public CuriosityTurretArm TurretArm(){return turretArm;}
     //public EncoderActuator Turret(){return turretArm.Turret();}
     public EncoderActuator Arm(){return turretArm.Arm();}
 
     public DuckSpinner DuckSpinner(){return duckSpinner;}
 
-    public double GetDistToWallCM(){return distToWallSensor.getDistance(DistanceUnit.CM);}
+    public FreightFrenzyNavigation Navigation(){return navigation;}
+
+    public double GetDistToWallCM(){return duckDist.getDistance(DistanceUnit.CM);}
 
     public boolean IsRobotLevel(){
         double pitch = imu.GetRawAngles().secondAngle;
