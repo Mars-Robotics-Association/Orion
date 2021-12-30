@@ -45,6 +45,7 @@ public class TestBotTeleop extends OpMode implements ControllerInputListener
     public static int payloadControllerNumber = 1;
 
     private double spinnerState = 0;
+    private double armHigh = 0 ;  // Specific to rotating arm - Notes the high (release) position of the arm
 
     @Override
     public void init() {
@@ -151,7 +152,12 @@ public class TestBotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void XPressed(double controllerNumber) {
-
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()) {
+            control.Arm().SetArmRotation(armHigh);
+            telemetry.addLine("Arm to high position");
+            control.Arm().SetSpinnerSpeed(0);
+            spinnerState = 0;
+        }
     }
 
     @Override
@@ -315,7 +321,13 @@ public class TestBotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void DUpReleased(double controllerNumber) {
-
+        if(controllerNumber == payloadControllerNumber){
+            if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+                armHigh = control.Arm().GetArmPos() ;
+                //control.Arm().SetSpinnerSpeed(0) ;
+                telemetry.addData("Arm High Pos: ", armHigh);
+            }
+        }
     }
 
     @Override

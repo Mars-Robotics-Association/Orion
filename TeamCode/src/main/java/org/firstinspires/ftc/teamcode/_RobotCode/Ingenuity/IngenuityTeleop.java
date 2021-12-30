@@ -27,6 +27,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     //Accessory Classes
     private LiftController lift;
     private IntakeController intake;
+    private IngenuityDuckController duckController;
 
     ////Variables////
     //Tweaking Vars
@@ -48,22 +49,27 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        control = new IngenuityControl(this, true, false, false);
+        control = new IngenuityControl(this, true, true, false);
         control.Init();
 
         lift = new LiftController(100, 200, 100);
         lift.Init(this,"liftMotor");
 
-        lift = new LiftController(100, 200, 100);
-        lift.Init(this,"liftMotor");
+        intake = new IntakeController();
+        intake.Init(this,"intakeMotor");
+
+        duckController = new IngenuityDuckController(hardwareMap.servo.get("duckController"));
 
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
 
+        //reversing the motors so that it is easier to drive
         hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
         hardwareMap.dcMotor.get("RR").setDirection(DcMotorSimple.Direction.REVERSE);
+        hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
+        hardwareMap.dcMotor.get("RL").setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
@@ -89,12 +95,6 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         controllerInput2.Loop();
 
         control.Update();
-
-        //if robot isn't level, set speed to zero and exit loop
-        if(!control.IsRobotLevel()){
-            control.RawDrive(0,0,0);
-            return;
-        }
 
         if(!busy) {
             //Manage driving
@@ -174,11 +174,13 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void BHeld(double controllerNumber) {
+        duckController.RedSide();
 
     }
 
     @Override
     public void XHeld(double controllerNumber) {
+        duckController.BlueSide();
     }
 
     @Override
@@ -217,50 +219,48 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void RTPressed(double controllerNumber) {
-        if(controllerNumber == 1) speedMultiplier = 0.25;
+        //if(controllerNumber == 1) speedMultiplier = 0.25;
     }
 
     @Override
     public void LBHeld(double controllerNumber) {
-
+        intake.on(0.9);
     }
 
     @Override
     public void RBHeld(double controllerNumber) {
-
+        intake.on(-0.9);
     }
 
     @Override
     public void LTHeld(double controllerNumber) {
-        //makeshift brake function
-        if(controllerNumber == 1){
-            control.RawDrive(180,0.1,0);//move backwards slightly
-            busy = true;
-        }
+        lift.go(-0.2);
     }
 
     @Override
     public void RTHeld(double controllerNumber) {
-
+        lift.go(0.2);
     }
 
     @Override
     public void LBReleased(double controllerNumber) {
-
+        intake.off();
     }
 
     @Override
     public void RBReleased(double controllerNumber) {
+        intake.off();
+
     }
 
     @Override
     public void LTReleased(double controllerNumber) {
-        if(controllerNumber == 1) busy = false;
+        lift.LockArm();
     }
 
     @Override
     public void RTReleased(double controllerNumber) {
-        if(controllerNumber == 1) speedMultiplier = 1;
+        lift.LockArm();
     }
 
     @Override
@@ -317,12 +317,12 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void DLeftReleased(double controllerNumber) {
-
+        duckController.Stop();
     }
 
     @Override
     public void DRightReleased(double controllerNumber) {
-
+        duckController.Stop();
     }
 
     @Override

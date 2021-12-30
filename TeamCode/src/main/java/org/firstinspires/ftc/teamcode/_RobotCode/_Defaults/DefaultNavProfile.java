@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaOdometryP
 import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaTuningProfile;
 import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaVisionProfile;
 
+
 @Config
 public class DefaultNavProfile extends NavigationProfile {
     public DefaultNavProfile() {
