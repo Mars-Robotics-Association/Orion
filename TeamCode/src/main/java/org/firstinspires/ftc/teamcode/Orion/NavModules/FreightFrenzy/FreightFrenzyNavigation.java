@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
 import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.DuckSpinner;
 
-public class FreightFrenzyNavigation
+public class FreightFrenzyNavigation implements Runnable
 {
     //relevant sensors and controllers
     private UniversalTurretIntakeArm arm;
@@ -27,6 +27,18 @@ public class FreightFrenzyNavigation
     ShippingHubChoice currentHubChoice = ShippingHubChoice.ALLIANCE;
     Tier currentTier = Tier.MIDDLE;
 
+    //function running in thread variables
+    boolean startSpinDucks = false;
+    boolean startParkWarehouse = false;
+    boolean startParkDepot = false;
+    boolean startScanBarcode = false;
+    boolean startPlaceFreight = false;
+    boolean startCollectFreight = false;
+
+    int currentNumberOfSpinCycles = 1;
+    boolean currentParkFurtherIn = false;
+    boolean currentStartAtDucks = false;
+
     public FreightFrenzyNavigation(OpMode setOpMode, FreightFrenzyNavTuningProfile profile){
         arm = profile.arm();
         spinner = profile.spinner();
@@ -37,9 +49,47 @@ public class FreightFrenzyNavigation
         colorSensor = profile.colorSensor();
     }
 
-    ////MAJOR FUNCTIONS////
+    ////THREAD CODE////
+
+    @Override
+    public void run() {
+        if(startSpinDucks) SpinDucksLinear(currentNumberOfSpinCycles);
+        if(startParkWarehouse) ParkInWarehouseLinear(currentParkFurtherIn);
+        if(startParkDepot) ParkInDepotLinear(currentStartAtDucks);
+        if(startScanBarcode) ScanBarcodeLinear();
+        if(startPlaceFreight) PlaceFreightLinear();
+        if(startCollectFreight) CollectFreightLinear();
+
+        startSpinDucks = false;
+        startParkWarehouse = false;
+        startParkDepot = false;
+        startScanBarcode = false;
+        startPlaceFreight = false;
+        startCollectFreight = false;
+    }
+
+    ////MAJOR CALLABLE FUNCTIONS////
 
     public void SpinDucks(int numberOfCycles){
+        currentNumberOfSpinCycles = numberOfCycles;
+        startSpinDucks = true;
+    }
+    public void ParkInWarehouse(boolean parkFurtherIn){
+        currentParkFurtherIn = parkFurtherIn;
+        startParkWarehouse = true;
+    }
+    public void ParkInDepot(boolean startAtDucks){
+        currentStartAtDucks = startAtDucks;
+        startParkDepot = true;
+    }
+    public void ScanBarcode(){startScanBarcode = true;}
+    public void PlaceFreight(){startPlaceFreight = true;}
+    public void CollectFreight(){startCollectFreight = true;}
+
+
+    ////MAJOR INTERNAL FUNCTIONS////
+
+    private void SpinDucksLinear(int numberOfCycles){
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already (might need to turn? don't worry about it for now)
         //wallFollow() until wallDist is close to north wall and wheel has contact with duck spinner
@@ -47,14 +97,14 @@ public class FreightFrenzyNavigation
         //rampSpinDuck() for numberOfCycles
     }
 
-    public void ParkInWarehouse(double parkFurtherIn){
+    private void ParkInWarehouseLinear(boolean parkFurtherIn){
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already
         //wallFollow() until totally past white line
         //go towards the center a bit if parkFurtherIn
     }
 
-    public void ParkInDepot(boolean startsAtDucks){
+    private void ParkInDepotLinear(boolean startsAtDucks){
         //should start along side wall north of warehouse with intake facing south
         //if startsAtDucks, skip next two steps
         //goToWall() if not already at it
@@ -63,7 +113,7 @@ public class FreightFrenzyNavigation
         //Go north until against the north wall
     }
 
-    public void ScanBarcode(){
+    private void ScanBarcodeLinear(){
         //should start at constant point along a side wall north of warehouse with intake facing south
         //start moving arm so intake faces barcode
         //break away from the wall and move towards the center of the field for time
@@ -73,7 +123,7 @@ public class FreightFrenzyNavigation
         //raise arm to appropriate height and reverse intake
     }
 
-    public void PlaceFreight(){
+    private void PlaceFreightLinear(){
         //should start in the depot with the intake side facing away from hub (can start on white line)
         //goToWall()
         //wallFollowToWhite() from the south
@@ -86,7 +136,7 @@ public class FreightFrenzyNavigation
         //wallFollowToWhite() from the north
     }
 
-    public void CollectFreight(){
+    private void CollectFreightLinear(){
         //should start north of white line along wall or at it
         //goToWall()
         //wallFollowToWhite() from the north
@@ -98,6 +148,16 @@ public class FreightFrenzyNavigation
     }
 
     ////MINOR FUNCTIONS////
+
+    //Drive for a period of time
+    public void DriveForTime(double angle, double speed, double turnOffset, double time){
+
+    }
+
+    //Wait for a period of time
+    public void Wait(double time){
+
+    }
 
     //Goes to the wall at an angle. Stops when in contact with wall
     public void GoToWall(double angle, double speed){

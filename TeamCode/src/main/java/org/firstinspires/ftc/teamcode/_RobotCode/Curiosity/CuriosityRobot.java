@@ -73,6 +73,8 @@ public class CuriosityRobot extends MecanumChassis
             TouchSensor starboardTouch = opMode.hardwareMap.touchSensor.get("starboardTouch");
             ColorSensor colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
             navigation = new FreightFrenzyNavigation(opMode, new _NavTuningProfile(turretArm, duckSpinner, duckDist, intakeDist, portTouch, starboardTouch, colorSensor));
+            Thread thread = new Thread(navigation);
+            thread.start();
         }
     }
 
