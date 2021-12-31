@@ -346,8 +346,8 @@ public class Camera
         return pixelcount;
     }
 
-    //Remove a color from a mat
-    public Mat removeColor(Mat input, Scalar highbgr, Scalar lowbgr){
+    //isolate a color from a mat
+    public Mat isolateColor(Mat input, Scalar highbgr, Scalar lowbgr){
         Mat result;
         Mat hsv = new Mat();
         Mat mask = new Mat();

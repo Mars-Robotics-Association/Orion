@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.Orion.NavModules.FreightFrenzy.FreightFrenzyAutoMethods;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.FreightFrenzy.FreightFrenzyNavigation;
 
 public class DuckSpinner
 {
@@ -24,6 +28,19 @@ public class DuckSpinner
     public void Stop(){SetSpeed(0);}
     //Spine at full speed backwards
     public void Red(){SetSpeed(-1);}
+    //gradual increase
+    public void GradSpin(boolean isBlue, double multiplier, double maxSpeed, OpMode opmode){
+        int m = 1;
+        if(!isBlue)m=-1;
+        double startTime = opmode.getRuntime();
+        double speed = 0;
+        while(speed<maxSpeed){
+            speed = (opmode.getRuntime()-startTime)*multiplier;
+            if (speed>1)speed=1;
+            if(speed>maxSpeed)speed = maxSpeed;
+            SetSpeed(speed*m);
+        }
+    }
     //Toggle
     public void CycleSpinning(){
         if(duckSpinnerState > 3) duckSpinnerState = 0;
