@@ -56,13 +56,14 @@ public class FreightFrenzyAutoMethods {
         GoToWall(45,1);
         WallFollow(1);
         double start = opmode.getRuntime();
+        if(side == AllianceSide.BLUE) {
+            spinner.GradSpin(true,0.1,1,opmode);
+        }
+        else{
+            spinner.GradSpin(false,0.1,1,opmode);
+        }
         while(opmode.getRuntime()<start+(3*numberOfCycles)){
-            if(side == AllianceSide.BLUE) {
-                spinner.Blue();
-            }
-            else{
-                spinner.Red();
-            }
+            opmode.telemetry.addData("waiting","");
         }
         spinner.Stop();
     }
@@ -102,16 +103,23 @@ public class FreightFrenzyAutoMethods {
         //Go diagonal back towards middle of field for a time
         //Go north until against the north wall
         if(side==AllianceSide.BLUE) {
-            GoToWall(45,1);
-            WallFollow(1);
-            while (!(colorSensor.red() >= 240 && colorSensor.green() <= 10 && colorSensor.blue() <= 10)) {
+            if(!startsAtDucks) {
+                GoToWall(45, 1);
+                WallFollow(1);
             }
+            while (!(colorSensor.red() >= 240 && colorSensor.green() <= 10 && colorSensor.blue() <= 10)) {
+                chassis.RawDrive(100,0.5,0);
+            }
+            chassis.RawDrive(0,0,0);
         }else{
-
-            GoToWall(-45,1);
-            WallFollow(1);
-            while (!(colorSensor.red() >= 240 && colorSensor.green() <= 10 && colorSensor.blue() <= 10)) {
+            if(!startsAtDucks) {
+                GoToWall(-45, 1);
+                WallFollow(1);
             }
+            while (!(colorSensor.red() >= 240 && colorSensor.green() <= 10 && colorSensor.blue() <= 10)) {
+                chassis.RawDrive(80,-0.5,0);
+            }
+            chassis.RawDrive(0,0,0);
         }
     }
 
