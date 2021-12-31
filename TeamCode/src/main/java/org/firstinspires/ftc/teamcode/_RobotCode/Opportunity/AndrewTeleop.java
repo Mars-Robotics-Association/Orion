@@ -3,11 +3,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 
@@ -18,13 +22,19 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private ControllerInput controllerInput2;
     private MecanumChassis mecanumChassis;
 
-    private String[] david = "version 1... And you may find yourself living in a shotgun shack;And you may find yourself in another part of the world;And you may find yourself behind the wheel of a large automobile;And you may find yourself in a beautiful house, with a beautiful wife;And you may ask yourself, \"Well, how did I get here?\";Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again after the money's gone;Once in a lifetime, water flowing underground;And you may ask yourself, \"How do I work this?\";And you may ask yourself, \"Where is that large automobile?\";And you may tell yourself, \"This is not my beautiful house\";And you may tell yourself, \"This is not my beautiful wife\";Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again after the money's gone;Once in a lifetime, water flowing underground;Same as it ever was, same as it ever was;Same as it ever was, same as it ever was;Same as it ever was, same as it ever was;Same as it ever was, same as it ever was;Water dissolving and water removing;There is water at the bottom of the ocean;Under the water, carry the water;Remove the water at the bottom of the ocean;Water dissolving and water removing;Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again, into the silent water;Under the rocks and stones, there is water underground;Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again after the money's gone;Once in a lifetime, water flowing underground;You may ask yourself, \"What is that beautiful house?\";You may ask yourself, \"Where does that highway go to?\";And you may ask yourself, \"Am I right? Am I wrong?\";And you may say to yourself, \"My God! What have I done?\";Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again, into the slent water;Under the rocks and stones, there is water underground;Letting the days go by, let the water hold me down;Letting the days go by, water flowing underground;Into the blue again after the money's gone;Once in a lifetime, water flowing underground;Same as it ever was, same as it ever was;Same as it ever was and look where my hand was;Time isn't holding up, time isn't after us;Same as it ever was, same as it ever was;Same as it ever was, same as it ever was;Same as it ever was, same as it ever was;Letting the days go by, same as it ever was;Here a twister comes, here comes the twister;Same as it ever was, same as it ever was (Letting the days go by);Same as it ever was, same as it ever was (Letting the days go by);Once in a lifetime (Let the water hold me down);Letting the days go by (Water flowing underground);Into the blue again".split(";");
-    private int davidIndex = 0;
+    private int armPosIndex = 0;
+    private double[] armPositions = {-0.15,0,0.5,1,1.25};
 
     private DcMotor FR;
     private DcMotor FL;
     private DcMotor RR;
     private DcMotor RL;
+    private DcMotor armPos;
+
+    private TouchSensor armZeroTouchSensor;
+   // private TouchSensor armTouch;
+    private DigitalChannel armTouch;
+
     private IMU imu;
     private AndrewIMU andrewIMU;
     private CRServo duckyServo;
@@ -36,6 +46,11 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
     private double speed = 1;
 
+    private double armSpeed = 0.5;
+
+    private double armAngle = 0;
+    private AndrewArm andrewArm;
+
 
     public void init() {
         controllerInput1 = new ControllerInput(gamepad1,1);
@@ -44,12 +59,19 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
         FL = this.hardwareMap.dcMotor.get("FL");
         RR = this.hardwareMap.dcMotor.get("RR");
         RL = this.hardwareMap.dcMotor.get("RL");
+        armPos = this.hardwareMap.dcMotor.get("armPosition");
         duckyServo = this.hardwareMap.crservo.get("duckyServo");
+        //armTouch = this.hardwareMap.get(TouchSensor.class,"armTouch");
+
+        armTouch = hardwareMap.get(DigitalChannel.class, "armTouch");
+        armTouch.setMode(DigitalChannel.Mode.INPUT);
+
         imu = new IMU(this);
         andrewIMU = new AndrewIMU(imu);
     }
         public void start(){
             imu.Start();
+            andrewArm = new AndrewArm(armPos);
         }
 
 
@@ -59,8 +81,9 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             controllerInput1.Loop();
             controllerInput2.Loop();
             andrewIMU.loop();
+            andrewArm.loop();
 
-            telemetry.addData("angle",andrewIMU.getRotation());
+
 
             double stickDir = Math.atan2(gamepad1.left_stick_y, 0-gamepad1.left_stick_x);
             double stickDist = Math.sqrt(Math.pow(gamepad1.left_stick_x,2)+Math.pow(gamepad1.left_stick_y,2));
@@ -99,14 +122,40 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             }
             startWasDown = gamepad1.start;
 
-            if(gamepad2.left_bumper&&!lBumperWasDown){
-                if(davidIndex>=david.length)
-                    davidIndex = 0;
-                telemetry.speak(""+david[davidIndex]);
-                davidIndex++;
+
+
+            if(gamepad2.a){
+                andrewArm.setTarget(0.5,1,0.03);
+            }
+            if(gamepad2.b){
+                andrewArm.setTarget(0,1,0.03);
+            }
+            if(gamepad2.x){
+                andrewArm.setRawPower(0.5);
+            }
+            if(gamepad2.y){
+                andrewArm.setRawPower(-0.5);
+            }
+            if(gamepad2.start){
+                andrewArm.setRawPower(0);
+            }
+            if(gamepad2.back){
+                andrewArm.zeroArm();
             }
 
-            lBumperWasDown = gamepad2.left_bumper;
+            armAngle = andrewArm.getAngle();
+
+            telemetry.addData("Arm angle",andrewArm.getAngle());
+            telemetry.addData("Arm target",andrewArm.getTarget());
+
+            if(!armTouch.getState()){
+                andrewArm.zeroArm();
+                andrewArm.setTarget(0,0.4,0.02);
+            }
+
+          //  telemetry.update();
+
+
 
         }
 
