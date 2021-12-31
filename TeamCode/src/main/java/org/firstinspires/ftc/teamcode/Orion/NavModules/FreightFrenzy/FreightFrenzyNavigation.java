@@ -6,18 +6,22 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.DuckSpinner;
 
 public class FreightFrenzyNavigation implements Runnable
 {
     //relevant sensors and controllers
+    private OpMode opMode;
     private UniversalTurretIntakeArm arm;
     private DuckSpinner spinner;
     private DistanceSensor duckDistance, intakeDistance;
     private TouchSensor portTouch, starboardTouch;
     private ColorSensor colorSensor;
+    private MecanumChassis chassis;
 
     //configuration variables
+    protected double whiteThreshold = 0.8;
 
     //configuration enums
     public enum AllianceSide {RED, BLUE}
@@ -40,6 +44,7 @@ public class FreightFrenzyNavigation implements Runnable
     boolean currentStartAtDucks = false;
 
     public FreightFrenzyNavigation(OpMode setOpMode, FreightFrenzyNavTuningProfile profile){
+        opMode = setOpMode;
         arm = profile.arm();
         spinner = profile.spinner();
         duckDistance = profile.duckDistance();
@@ -151,26 +156,51 @@ public class FreightFrenzyNavigation implements Runnable
 
     //Drive for a period of time
     public void DriveForTime(double angle, double speed, double turnOffset, double time){
-
+        double startTime = opMode.getRuntime();
+        while (opMode.getRuntime()<startTime+time){
+            chassis.RawDrive(angle,speed,turnOffset);
+        }
+        chassis.RawDrive(0,0,0);
     }
 
     //Wait for a period of time
     public void Wait(double time){
+        double startTime = opMode.getRuntime();
+        while (opMode.getRuntime()<startTime+time){}
 
     }
 
     //Goes to the wall at an angle. Stops when in contact with wall
     public void GoToWall(double angle, double speed){
-
+        while (portTouch.isPressed() || starboardTouch.isPressed()) {
+            chassis.RawDrive(angle, speed, 0);
+        }
+        chassis.RawDrive(0,0,0);
     }
 
     //Wall follows at specified speed, which also determines direction.
-    public void WallFollow(double speed){
+    public void WallFollowForTime(double speed, double time){
+        double turnOffset = 0;
+        if(side == AllianceSide.BLUE) turnOffset = -0.04*speed;
+        if(side == AllianceSide.RED) turnOffset = 0.04*speed;
 
+        double startTime = opMode.getRuntime();
+        while (opMode.getRuntime()<startTime+time){
+            chassis.RawDrive(0,speed,turnOffset);
+        }
+        chassis.RawDrive(0,0,0);
     }
 
     //Wall follows until white is detected by colorSensor. Must be called every loop().
     public void WallFollowToWhite(double speed){
+        double turnOffset = 0;
+        if(side == AllianceSide.BLUE) turnOffset = -0.04*speed;
+        if(side == AllianceSide.RED) turnOffset = 0.04*speed;
+
+        while (colorSensor.alpha() < whiteThreshold){
+            chassis.RawDrive(0,speed,turnOffset);
+        }
+        chassis.RawDrive(0,0,0);
 
     }
 
