@@ -23,6 +23,7 @@ public class FreightFrenzyAutoMethods {
     private OpMode opmode;
 
     //configuration variables
+    protected double whiteThreshold = 0.8;
 
     //configuration enums
     public enum AllianceSide {RED, BLUE}
@@ -54,7 +55,7 @@ public class FreightFrenzyAutoMethods {
         //apply constant pressure towards the wall
         //rampSpinDuck() for numberOfCycles
         GoToWall(45,1);
-        WallFollow(1);
+        WallFollowForTime(1,3);
         double start = opmode.getRuntime();
         if(side == AllianceSide.BLUE) {
             spinner.GradSpin(true,0.1,1,opmode);
@@ -62,9 +63,7 @@ public class FreightFrenzyAutoMethods {
         else{
             spinner.GradSpin(false,0.1,1,opmode);
         }
-        while(opmode.getRuntime()<start+(3*numberOfCycles)){
-            opmode.telemetry.addData("waiting","");
-        }
+        Wait(3*numberOfCycles);
         spinner.Stop();
     }
 
@@ -76,21 +75,13 @@ public class FreightFrenzyAutoMethods {
         if(side == AllianceSide.BLUE) {
             GoToWall(45,1);
             WallFollowToWhite(-1);
-            double oldrun = opmode.getRuntime();
-            while(opmode.getRuntime()<oldrun+parkFurtherIn)
-            {
-                 chassis.RawDrive(0,-1,0);
-            }
+            DriveForTime(0,-1,0,parkFurtherIn);
             chassis.RawDrive(0,0,0);
         }else{
 
             GoToWall(-45,1);
             WallFollowToWhite(-1);
-            double oldrun = opmode.getRuntime();
-            while(opmode.getRuntime()<oldrun+parkFurtherIn)
-            {
-                chassis.RawDrive(0,-1,0);
-            }
+            DriveForTime(0,-1,0,parkFurtherIn);
             chassis.RawDrive(0,0,0);
         }
     }
@@ -105,7 +96,7 @@ public class FreightFrenzyAutoMethods {
         if(side==AllianceSide.BLUE) {
             if(!startsAtDucks) {
                 GoToWall(45, 1);
-                WallFollow(1);
+                WallFollowForTime(1,3);
             }
             while (!(colorSensor.red() >= 240 && colorSensor.green() <= 10 && colorSensor.blue() <= 10)) {
                 chassis.RawDrive(100,0.5,0);
@@ -114,7 +105,7 @@ public class FreightFrenzyAutoMethods {
         }else{
             if(!startsAtDucks) {
                 GoToWall(-45, 1);
-                WallFollow(1);
+                WallFollowForTime(1,3);
             }
             while (!(colorSensor.red() >= 240 && colorSensor.green() <= 10 && colorSensor.blue() <= 10)) {
                 chassis.RawDrive(80,-0.5,0);
@@ -131,6 +122,7 @@ public class FreightFrenzyAutoMethods {
         //use intakeDist to record the time from start of sweep at which it detected the freight
         //determine barcode configuration off of time
         //raise arm to appropriate height and reverse intake
+
     }
 
     public void PlaceFreight(){
@@ -159,23 +151,53 @@ public class FreightFrenzyAutoMethods {
 
     ////MINOR FUNCTIONS////
 
-    //Goes to the wall at an angle. Stops when in contact with wall
-    public void GoToWall(double angle, double speed){
+    //Drive for a period of time
+    public void DriveForTime(double angle, double speed, double turnOffset, double time){
+        double startTime = opmode.getRuntime();
+        while (opmode.getRuntime()<startTime+time){
+            chassis.RawDrive(angle,speed,turnOffset);
+        }
+        chassis.RawDrive(0,0,0);
+    }
+
+    //Wait for a period of time
+    public void Wait(double time){
+        double startTime = opmode.getRuntime();
+        while (opmode.getRuntime()<startTime+time){}
 
     }
 
-    //Wall follows at specified speed, which also determines direction.
-    public void WallFollow(double speed){
+    //Goes to the wall at an angle. Stops when in contact with wall
+    public void GoToWall(double angle, double speed){
+        while (portTouch.isPressed() || starboardTouch.isPressed()) {
+            chassis.RawDrive(angle, speed, 0);
+        }
+        chassis.RawDrive(0,0,0);
+    }
 
+    //Wall follows at specified speed, which also determines direction.
+    public void WallFollowForTime(double speed, double time){
+        double turnOffset = 0;
+        if(side == FreightFrenzyAutoMethods.AllianceSide.BLUE) turnOffset = -0.04*speed;
+        if(side == FreightFrenzyAutoMethods.AllianceSide.RED) turnOffset = 0.04*speed;
+
+        double startTime = opmode.getRuntime();
+        while (opmode.getRuntime()<startTime+time){
+            chassis.RawDrive(0,speed,turnOffset);
+        }
+        chassis.RawDrive(0,0,0);
     }
 
     //Wall follows until white is detected by colorSensor. Must be called every loop().
     public void WallFollowToWhite(double speed){
+        double turnOffset = 0;
+        if(side == FreightFrenzyAutoMethods.AllianceSide.BLUE) turnOffset = -0.04*speed;
+        if(side == FreightFrenzyAutoMethods.AllianceSide.RED) turnOffset = 0.04*speed;
 
-    }
-
-    //Uses the webcam to zero in on specified tfObject. Takes into account the bearing of the arm/webcam.
-    public void ZeroIn(int objectID){
+        while (colorSensor.alpha() < whiteThreshold){
+            chassis.RawDrive(0,speed,turnOffset);
+        }
+        chassis.RawDrive(0,0,0);
 
     }
 }
