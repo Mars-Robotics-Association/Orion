@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.opmode;
 
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.kV;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -15,14 +21,10 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.StandardMecanumDrive;
 import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
+import org.firstinspires.ftc.teamcode._RobotCode._Defaults._DefaultRRRobotProfile;
+import org.firstinspires.ftc.teamcode._RobotCode._Defaults._DefaultRRTuningProfile;
 
 import java.util.List;
-
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.kV;
 
 /*
  * This routine is designed to tune the PID coefficients used by the REV Expansion Hubs for closed-
@@ -73,7 +75,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap, new DefaultNavProfile());
+        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap, new _DefaultRRRobotProfile(), new _DefaultRRTuningProfile());
 
         Mode mode = Mode.TUNING_MODE;
 

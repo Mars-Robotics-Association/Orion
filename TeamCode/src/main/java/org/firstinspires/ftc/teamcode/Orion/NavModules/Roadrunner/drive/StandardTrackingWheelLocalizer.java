@@ -53,19 +53,19 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
 
-    public StandardTrackingWheelLocalizer(HardwareMap hardwareMap, NavigationProfile navProfile) {
+    public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) { //TODO: re-add profile
         /*super(Arrays.asList(
                 new Pose2d(0, LATERAL_DISTANCE / 2, Math.toRadians(ROT_LEFT)), // left
                 new Pose2d(0, -LATERAL_DISTANCE / 2, Math.toRadians(ROT_RIGHT)), // right
                 new Pose2d(FORWARD_OFFSET, 0, Math.toRadians(ROT_FRONT)) // front
         ));*/
         super(Arrays.asList(
-                new Pose2d(0, navProfile.odometryProfile.LATERAL_DISTANCE() / 2, Math.toRadians(navProfile.odometryProfile.ROT_LEFT())), // left
+                /*new Pose2d(0, navProfile.odometryProfile.LATERAL_DISTANCE() / 2, Math.toRadians(navProfile.odometryProfile.ROT_LEFT())), // left
                 new Pose2d(0, -navProfile.odometryProfile.LATERAL_DISTANCE() / 2, Math.toRadians(navProfile.odometryProfile.ROT_RIGHT())), // right
-                new Pose2d(navProfile.odometryProfile.FORWARD_OFFSET(), 0, Math.toRadians(navProfile.odometryProfile.ROT_FRONT())) // front
+                new Pose2d(navProfile.odometryProfile.FORWARD_OFFSET(), 0, Math.toRadians(navProfile.odometryProfile.ROT_FRONT())) // front*/
         ));
 
-        TICKS_PER_REV = navProfile.odometryProfile.TICKS_PER_REV();
+        /*TICKS_PER_REV = navProfile.odometryProfile.TICKS_PER_REV();
         WHEEL_RADIUS = navProfile.odometryProfile.WHEEL_RADIUS_DEAD_WHEELS();
         GEAR_RATIO = navProfile.odometryProfile.GEAR_RATIO_DEAD_WHEELS();
         LATERAL_DISTANCE = navProfile.odometryProfile.LATERAL_DISTANCE();
@@ -77,7 +77,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
         ROT_FRONT = navProfile.odometryProfile.ROT_FRONT();
         LEFT_ENCODER_NAME = navProfile.odometryProfile.LEFT_ENCODER_NAME();
         RIGHT_ENCODER_NAME = navProfile.odometryProfile.RIGHT_ENCODER_NAME();
-        FRONT_ENCODER_NAME = navProfile.odometryProfile.FRONT_ENCODER_NAME();
+        FRONT_ENCODER_NAME = navProfile.odometryProfile.FRONT_ENCODER_NAME();*/
 
         leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LEFT_ENCODER_NAME));
         rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, RIGHT_ENCODER_NAME));

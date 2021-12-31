@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Archived.Curiosity;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -14,6 +15,7 @@ import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.D
 
 @TeleOp(name = "*BELINDA TELEOP*", group = "Curiosity")
 @Config
+@Disabled
 public class CuriosityTeleOp extends OpMode implements ControllerInputListener
 {
     ////Dependencies////

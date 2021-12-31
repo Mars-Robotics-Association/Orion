@@ -6,21 +6,28 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Orion.Archive.NavProfiles.NavigationProfile;
+import org.firstinspires.ftc.teamcode.Orion.FieldState.FieldObject;
+import org.firstinspires.ftc.teamcode.Orion.FieldState.FieldStateWrapper;
+import org.firstinspires.ftc.teamcode.Orion.FieldState.Pose;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.StandardMecanumDrive;
 
-public class RoadrunnerControl
+public class RoadrunnerModule
 {
     private OpMode opMode;
     private StandardMecanumDrive drive;
-    private NavigationProfile navigationProfile;
+    private FieldStateWrapper fieldState;
 
-    public RoadrunnerControl(OpMode setOpMode, NavigationProfile setNavProfile){
+    public RoadrunnerModule(OpMode setOpMode, RoadrunnerRobotProfile setRobotProfile, RoadrunnerTuningProfile setTuningProfile, FieldStateWrapper setFieldState){
         opMode = setOpMode;
-        navigationProfile = setNavProfile;
-        drive = new StandardMecanumDrive(opMode.hardwareMap, navigationProfile);
+        drive = new StandardMecanumDrive(opMode.hardwareMap, setRobotProfile, setTuningProfile);
+        fieldState = setFieldState;
     }
 
-    public void Update(){drive.update();}
+    public void Update(){
+        drive.update();
+        FieldObject robotFieldObject = new FieldObject("rr_robot_pose", "odometry", FieldObject.ObjectType.SEMISTATIC, new Pose(0,0,0), new Pose(GetCurrentPose().getX(), GetCurrentPose().getY(), GetCurrentPose().getHeading()), 0.8, 0);
+        fieldState.AddObjects(new FieldObject[]{robotFieldObject}, opMode);
+    }
 
     public void MoveSpline(double x, double y, double tangent, boolean reverse){ //moves using fancy splines
         Trajectory traj = drive.trajectoryBuilder(GetCurrentPose(), reverse)

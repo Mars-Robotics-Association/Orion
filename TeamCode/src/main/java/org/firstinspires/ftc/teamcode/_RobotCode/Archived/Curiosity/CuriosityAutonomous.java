@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Archived.Curiosity;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Orion.Archive.OrionNavigator;
@@ -14,6 +15,7 @@ import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.D
 
 @Config
 @Autonomous(name = "*CURIOSITY AUTO*", group = "Curiosity")
+@Disabled
 public class CuriosityAutonomous extends LinearOpMode {
     private CuriosityUltimateGoalControl control;
     private OrionNavigator orion;

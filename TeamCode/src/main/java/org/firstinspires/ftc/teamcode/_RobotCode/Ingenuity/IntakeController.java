@@ -23,10 +23,18 @@ class IntakeController {
         active = true;
     }
 
+    public void on(double myPower){
+        intake.setPower(myPower);
+        active = true;
+    }
+
     public void off(){
-        intake.setPower(power);
+        intake.setPower(0);
         active = false;
     }
+
+
+
 
     public void toggle(){
        if(active){
@@ -34,6 +42,10 @@ class IntakeController {
        } else {
            on();
        }
+    }
+
+    public void setPowerOrion(double newPower) {
+        power = newPower ;
     }
 
     public void setPower(double spower) throws BruhException {

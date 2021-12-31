@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TestingOpModes;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Orion.Archive.OrionNavigator;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode._RobotCode.Archived.Curiosity.CuriosityUlt
 
 @Config
 @Autonomous(name = "*Testing OpMode*")
+@Disabled
 public class NavigationTesting extends LinearOpMode {
     private CuriosityUltimateGoalControl control;
     private OrionNavigator orion;

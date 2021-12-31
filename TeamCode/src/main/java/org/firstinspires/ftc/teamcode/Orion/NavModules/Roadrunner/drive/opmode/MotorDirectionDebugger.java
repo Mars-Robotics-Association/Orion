@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.StandardMecanumDrive;
+import org.firstinspires.ftc.teamcode._RobotCode._Defaults._DefaultRRRobotProfile;
+import org.firstinspires.ftc.teamcode._RobotCode._Defaults._DefaultRRTuningProfile;
 
 /**
  * This is a simple teleop routine for debugging your motor configuration.
@@ -48,7 +50,7 @@ public class MotorDirectionDebugger extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap, new DefaultNavProfile());
+        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap, new _DefaultRRRobotProfile(), new _DefaultRRTuningProfile());
 
         telemetry.addLine("Press play to begin the debugging opmode");
         telemetry.update();

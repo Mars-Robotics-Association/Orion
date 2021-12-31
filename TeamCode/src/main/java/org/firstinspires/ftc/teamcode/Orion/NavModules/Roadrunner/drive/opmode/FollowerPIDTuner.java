@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.StandardMecanumDrive;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode._RobotCode._Defaults._DefaultRRRobotProfile;
+import org.firstinspires.ftc.teamcode._RobotCode._Defaults._DefaultRRTuningProfile;
 
 /*
  * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base
@@ -28,7 +30,7 @@ public class FollowerPIDTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap, new DefaultNavProfile());
+        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap, new _DefaultRRRobotProfile(), new _DefaultRRTuningProfile());
 
         Pose2d startPose = new Pose2d(-DISTANCE / 2, -DISTANCE / 2, 0);
 

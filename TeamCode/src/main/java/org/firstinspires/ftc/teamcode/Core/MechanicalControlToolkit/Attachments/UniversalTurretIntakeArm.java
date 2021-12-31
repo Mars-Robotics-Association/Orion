@@ -23,7 +23,7 @@ public class UniversalTurretIntakeArm
     public static double intakeMultiplier = 1;
     private double intakeState = 0;
 
-    private OpMode opMode;
+    protected OpMode opMode;
     private Servo intake;
     enum ArmState {Intaking, Storage, Placing}
     ArmState armState = ArmState.Storage;
@@ -63,33 +63,13 @@ public class UniversalTurretIntakeArm
         }
     }
 
-    public boolean IntakeRoutine(double intakeDistanceCM){
+    public void UpdateIntake(double intakeDistanceCM, double intakedPosition){
         opMode.telemetry.addData("ArmDist Sensor", intakeSensor.getDistance(DistanceUnit.CM));
-        if(intakeSensor.getDistance(DistanceUnit.CM) < intakeDistanceCM){
-            armState = ArmState.Storage;
+        if(intakeState == 1 && intakeSensor.getDistance(DistanceUnit.CM) < intakeDistanceCM){ //if intaking AND something is detected
             SetIntakeSpeed(0);
-            GoToMax();
-            return true;
+            intakeState = 2;
+            Arm().GoToPosition(intakedPosition);
         }
-        else return false;
-        /*if(armState == ArmState.Intaking){
-            SetIntakeSpeed(1);
-            if(intakeSensor.getDistance(DistanceUnit.CM) < intakeDistanceCM){
-                armState = ArmState.Storage;
-                SetIntakeSpeed(0);
-                GoToMax();
-                return true;
-            }
-        }
-        else if(armState == ArmState.Storage){
-            return true;
-        }
-        else if(armState == ArmState.Placing){
-            armState = ArmState.Intaking;
-            GoToZero();
-            SetIntakeSpeed(1);
-        }
-        return false;*/
     }
 
     public void GoToMax(){
@@ -102,6 +82,12 @@ public class UniversalTurretIntakeArm
         double clampedSpeed = clamp(speed, -1,1);
         double servoSpeed = (clampedSpeed * 0.5) + 0.5;
         intake.setPosition(servoSpeed);
+    }
+
+    public void ReturnToHomeAndIntake(double intakeSpeed){
+        GoToZero();
+        SetIntakeSpeed(intakeSpeed);
+        intakeState = 1;
     }
 
     public void CycleIntakeState(double intakeSpeed){

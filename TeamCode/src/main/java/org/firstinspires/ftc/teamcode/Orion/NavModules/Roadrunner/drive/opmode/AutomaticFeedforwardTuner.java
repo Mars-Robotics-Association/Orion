@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.opmode;
 
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_RPM;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.rpmToVelocity;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -14,13 +18,11 @@ import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.Standard
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.util.LoggingUtil;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.util.RegressionUtil;
 import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
+import org.firstinspires.ftc.teamcode._RobotCode._Defaults._DefaultRRRobotProfile;
+import org.firstinspires.ftc.teamcode._RobotCode._Defaults._DefaultRRTuningProfile;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_RPM;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.rpmToVelocity;
 
 
 /*
@@ -48,7 +50,7 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap, new DefaultNavProfile());
+        StandardMecanumDrive drive = new StandardMecanumDrive(hardwareMap, new _DefaultRRRobotProfile(), new _DefaultRRTuningProfile());
 
         NanoClock clock = NanoClock.system();
 

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Archived.Schrodinger;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 //@Config
 @TeleOp(name = "Schrodinger TeleOp")
-//@Disabled
+@Disabled
 public class SchrodingerTeleOp extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
