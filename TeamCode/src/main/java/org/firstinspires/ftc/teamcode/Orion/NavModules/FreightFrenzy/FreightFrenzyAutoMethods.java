@@ -48,70 +48,47 @@ public class FreightFrenzyAutoMethods {
 
     ////MAJOR FUNCTIONS////
 
-    public void SpinDucks(int numberOfCycles){
+    public void SpinDucks(int numberOfCycles, double angle, double speed, double time, int speedMultiplier){
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already (might need to turn? don't worry about it for now)
         //wallFollow() until wallDist is close to north wall and wheel has contact with duck spinner
         //apply constant pressure towards the wall
         //rampSpinDuck() for numberOfCycles
-        GoToWall(45,1);
-        WallFollowForTime(1,3);
+        GoToWall(angle,speed);
+        WallFollowForTime(speed,time);
         double start = opmode.getRuntime();
-        if(side == AllianceSide.BLUE) {
-            spinner.GradSpin(true,0.1,1,opmode);
+        for(int i = 0;i<numberOfCycles;i++) {
+            spinner.GradSpin(true, speedMultiplier, 1, opmode);
         }
-        else{
-            spinner.GradSpin(false,0.1,1,opmode);
-        }
-        Wait(3*numberOfCycles);
         spinner.Stop();
     }
 
-    public void ParkInWarehouse(double parkFurtherIn){
+    public void ParkInWarehouse(double parkFurtherIn,double angle,double speed){
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already
         //wallFollow() until totally past white line
         //go towards the center a bit if parkFurtherIn
-        if(side == AllianceSide.BLUE) {
-            GoToWall(45,1);
-            WallFollowToWhite(-1);
-            DriveForTime(0,-1,0,parkFurtherIn);
-            chassis.RawDrive(0,0,0);
-        }else{
-
-            GoToWall(-45,1);
-            WallFollowToWhite(-1);
-            DriveForTime(0,-1,0,parkFurtherIn);
-            chassis.RawDrive(0,0,0);
-        }
+        GoToWall(angle,speed);
+        WallFollowToWhite(speed);
+        DriveForTime(angle,speed,0,parkFurtherIn);
+        chassis.RawDrive(0,0,0);
     }
 
-    public void ParkInDepot(boolean startsAtDucks){
+    public void ParkInDepot(boolean startsAtDucks, double followAngle, double depotAngle, double speed, double time){
         //should start along side wall north of warehouse with intake facing south
         //if startsAtDucks, skip next two steps
         //goToWall() if not already at it
         //wallFollow() to ducks on north wall
         //Go diagonal back towards middle of field for a time
         //Go north until against the north wall
-        if(side==AllianceSide.BLUE) {
-            if(!startsAtDucks) {
-                GoToWall(45, 1);
-                WallFollowForTime(1,3);
-            }
-            while (!(colorSensor.red() >= 240 && colorSensor.green() <= 10 && colorSensor.blue() <= 10)) {
-                chassis.RawDrive(100,0.5,0);
-            }
-            chassis.RawDrive(0,0,0);
-        }else{
-            if(!startsAtDucks) {
-                GoToWall(-45, 1);
-                WallFollowForTime(1,3);
-            }
-            while (!(colorSensor.red() >= 240 && colorSensor.green() <= 10 && colorSensor.blue() <= 10)) {
-                chassis.RawDrive(80,-0.5,0);
-            }
-            chassis.RawDrive(0,0,0);
+        if(!startsAtDucks) {
+            GoToWall(followAngle, speed);
+            WallFollowForTime(speed,time);
         }
+        while (!(colorSensor.red() >= 240 && colorSensor.green() <= 10 && colorSensor.blue() <= 10)) {
+            chassis.RawDrive(depotAngle,speed,0);
+        }
+        chassis.RawDrive(0,0,0);
     }
 
     public void ScanBarcode(){
@@ -136,6 +113,10 @@ public class FreightFrenzyAutoMethods {
         //when close enough, reverse intake
         //when no freight is detected by intakeDist, goToWall() at a diagonal
         //wallFollowToWhite() from the north
+        GoToWall(90,1);
+        WallFollowToWhite(1);
+
+
     }
 
     public void CollectFreight(){
