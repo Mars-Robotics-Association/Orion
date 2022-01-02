@@ -40,7 +40,7 @@ public class FreightFrenzyNavigation implements Runnable
     boolean startCollectFreight = false;
 
     int currentNumberOfSpinCycles = 1;
-    boolean currentParkFurtherIn = false;
+    double currentParkFurtherInTime = 2;
     boolean currentStartAtDucks = false;
 
     public FreightFrenzyNavigation(OpMode setOpMode, FreightFrenzyNavTuningProfile profile){
@@ -58,9 +58,9 @@ public class FreightFrenzyNavigation implements Runnable
 
     @Override
     public void run() {
-        if(startSpinDucks) SpinDucksLinear(currentNumberOfSpinCycles);
-        if(startParkWarehouse) ParkInWarehouseLinear(currentParkFurtherIn);
-        if(startParkDepot) ParkInDepotLinear(currentStartAtDucks);
+        if(startSpinDucks) SpinDucksLinear(currentNumberOfSpinCycles,20,1,5,0.1);
+        if(startParkWarehouse) ParkInWarehouseLinear(currentParkFurtherInTime,20,1);
+        if(startParkDepot) ParkInDepotLinear(currentStartAtDucks,20,20,1,2,10);
         if(startScanBarcode) ScanBarcodeLinear();
         if(startPlaceFreight) PlaceFreightLinear();
         if(startCollectFreight) CollectFreightLinear();
@@ -76,70 +76,58 @@ public class FreightFrenzyNavigation implements Runnable
 
     ////MAJOR FUNCTIONS////
 
-    public void SpinDucksLinear(int numberOfCycles){
+    public void SpinDucksLinear(int numberOfCycles, double angle, double speed, double time, double speedMultiplier){
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already (might need to turn? don't worry about it for now)
         //wallFollow() until wallDist is close to north wall and wheel has contact with duck spinner
         //apply constant pressure towards the wall
         //rampSpinDuck() for numberOfCycles
-        GoToWall(45,1);
-        WallFollowForTime(1,3);
+        GoToWall(angle,speed);
+        WallFollowForTime(speed,time);
         double start = opMode.getRuntime();
-        if(side == AllianceSide.BLUE) {
-            spinner.GradSpin(true,0.1,1,opMode);
+        for(int i = 0;i<numberOfCycles;i++) {
+            if(side == AllianceSide.BLUE) {
+                spinner.GradSpin(true,0.1,1,opMode);
+            } else{
+                spinner.GradSpin(false,0.1,1,opMode);
+            }
         }
-        else{
-            spinner.GradSpin(false,0.1,1,opMode);
-        }
-        Wait(3*numberOfCycles);
         spinner.Stop();
     }
 
-    public void ParkInWarehouseLinear(boolean parkFurtherIn){
+
+    public void ParkInWarehouseLinear(double extraTime,double angle,double speed){
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already
         //wallFollow() until totally past white line
         //go towards the center a bit if parkFurtherIn
-        if(side == AllianceSide.BLUE) {
-            GoToWall(45,1);
-            WallFollowToWhite(-1);
-            DriveForTime(0,-1,0,1);
-            chassis.RawDrive(0,0,0);
-        }else{
-
-            GoToWall(-45,1);
-            WallFollowToWhite(-1);
-            DriveForTime(0,-1,0,1);
-            chassis.RawDrive(0,0,0);
-        }
+        GoToWall(angle,speed);
+        WallFollowToWhite(speed);
+        DriveForTime(angle,speed,0,extraTime+1);
+        chassis.RawDrive(0,0,0);
     }
 
-    public void ParkInDepotLinear(boolean startsAtDucks){
+    public void ParkInDepotLinear(boolean startsAtDucks, double followAngle, double depotAngle, double speed, double time, int thresh){
         //should start along side wall north of warehouse with intake facing south
         //if startsAtDucks, skip next two steps
         //goToWall() if not already at it
         //wallFollow() to ducks on north wall
         //Go diagonal back towards middle of field for a time
         //Go north until against the north wall
-        if(side== AllianceSide.BLUE) {
-            if(!startsAtDucks) {
-                GoToWall(45, 1);
-                WallFollowForTime(1,3);
-            }
-            while (!(colorSensor.red() >= 240 && colorSensor.green() <= 10 && colorSensor.blue() <= 10)) {
-                chassis.RawDrive(100,0.5,0);
-            }
-            chassis.RawDrive(0,0,0);
-        }else{
-            if(!startsAtDucks) {
-                GoToWall(-45, 1);
-                WallFollowForTime(1,3);
-            }
-            while (!(colorSensor.red() >= 240 && colorSensor.green() <= 10 && colorSensor.blue() <= 10)) {
-                chassis.RawDrive(80,-0.5,0);
-            }
-            chassis.RawDrive(0,0,0);
+        if(!startsAtDucks) {
+            GoToWall(followAngle, speed);
+            WallFollowForTime(speed,time);
         }
+        if(side == FreightFrenzyNavigation.AllianceSide.RED){
+            while (!(colorSensor.red() >= 255-thresh && colorSensor.green() <= thresh && colorSensor.blue() <= thresh)) {
+                chassis.RawDrive(depotAngle,speed,0);
+            }
+        }else{
+            while (!(colorSensor.blue() >= 255-thresh && colorSensor.green() <= thresh && colorSensor.red() <= thresh)) {
+                chassis.RawDrive(depotAngle,speed,0);
+            }
+        }
+        chassis.RawDrive(0,0,0);
     }
 
     public void ScanBarcodeLinear(){
