@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Camera;
@@ -21,7 +22,7 @@ public class FreightFrenzyNavigation implements Runnable
     private UniversalTurretIntakeArm arm;
     private DuckSpinner spinner;
     private DistanceSensor duckDistance, intakeDistance;
-    private TouchSensor portTouch, starboardTouch;
+    private DistanceSensor portTouch, starboardTouch;
     private ColorSensor colorSensor;
     private MecanumChassis chassis;
     private Camera camera;
@@ -50,16 +51,15 @@ public class FreightFrenzyNavigation implements Runnable
     double currentParkFurtherInTime = 2;
     boolean currentStartAtDucks = false;
 
-    public FreightFrenzyNavigation(OpMode setOpMode, FreightFrenzyNavTuningProfile profile){
+    public FreightFrenzyNavigation(OpMode setOpMode, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor){
         opMode = setOpMode;
-        arm = profile.arm();
-        spinner = profile.spinner();
-        duckDistance = profile.duckDistance();
-        intakeDistance = profile.intakeDistance();
-        portTouch = profile.portTouch();
-        starboardTouch = profile.starboardTouch();
-        colorSensor = profile.colorSensor();
-        camera = new Camera(opMode,"Webcam 1");
+        arm = setArm;
+        spinner = setSpinner;
+        duckDistance = setDuckDist;
+        intakeDistance = setIntakeDist;
+        portTouch = setPortDist;
+        starboardTouch = setStarboardDist;
+        colorSensor = setColorSensor;
     }
 
     ////THREAD CODE////
@@ -217,7 +217,7 @@ public class FreightFrenzyNavigation implements Runnable
 
     //Goes to the wall at an angle. Stops when in contact with wall
     public void GoToWall(double angle, double speed){
-        while (portTouch.isPressed() || starboardTouch.isPressed()) {
+        while (portTouch.getDistance(DistanceUnit.CM) < 6 || starboardTouch.getDistance(DistanceUnit.CM)<6) {
             chassis.RawDrive(angle, speed, 0);
         }
         chassis.RawDrive(0,0,0);

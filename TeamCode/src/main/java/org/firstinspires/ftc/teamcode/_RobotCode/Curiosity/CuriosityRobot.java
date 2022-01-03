@@ -69,10 +69,10 @@ public class CuriosityRobot extends MecanumChassis
         }
 
         if(useNavigator){
-            TouchSensor portTouch = opMode.hardwareMap.touchSensor.get("portTouch");
-            TouchSensor starboardTouch = opMode.hardwareMap.touchSensor.get("starboardTouch");
+            DistanceSensor portDist = opMode.hardwareMap.get(DistanceSensor.class, "distancePort");
+            DistanceSensor starboardDist = opMode.hardwareMap.get(DistanceSensor.class, "distanceStarboard");
             ColorSensor colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
-            navigation = new FreightFrenzyNavigation(opMode, new _NavTuningProfile(turretArm, duckSpinner, duckDist, intakeDist, portTouch, starboardTouch, colorSensor));
+            navigation = new CuriosityNavigator(opMode, turretArm, duckSpinner, duckDist, intakeDist, portDist, starboardDist, colorSensor);
             Thread thread = new Thread(navigation);
             thread.start();
         }
