@@ -168,9 +168,19 @@ public class FreightFrenzyNavigation implements Runnable
         Bitmap first = camera.convertMatToBitMap(firstMat);
         Bitmap second = camera.convertMatToBitMap(secondMat);
         Bitmap third = camera.convertMatToBitMap(thirdMat);
-        if(camera.countPixels(first)>camera.countPixels(second)&&camera.countPixels(first)>camera.countPixels(third)) pos=DuckPos.FIRST;
-        if(camera.countPixels(second)>camera.countPixels(first)&&camera.countPixels(second)>camera.countPixels(third)) pos=DuckPos.SECOND;
-        if(camera.countPixels(third)>camera.countPixels(second)&&camera.countPixels(third)>camera.countPixels(first)) pos=DuckPos.THIRD;
+        if(camera.countPixels(first)>camera.countPixels(second)&&camera.countPixels(first)>camera.countPixels(third)){
+            pos=DuckPos.FIRST;
+            opMode.telemetry.addData("Element in position","1");
+        }
+        if(camera.countPixels(second)>camera.countPixels(first)&&camera.countPixels(second)>camera.countPixels(third)){
+            pos=DuckPos.SECOND;
+            opMode.telemetry.addData("Element in position","2");
+        }
+        if(camera.countPixels(third)>camera.countPixels(second)&&camera.countPixels(third)>camera.countPixels(first)){
+            pos=DuckPos.THIRD;
+            opMode.telemetry.addData("Element in position","3");
+        }
+        opMode.telemetry.update();
     }
 
     public void PlaceFreightLinear(){
