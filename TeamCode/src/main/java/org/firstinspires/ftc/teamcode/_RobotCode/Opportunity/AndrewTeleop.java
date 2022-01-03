@@ -17,15 +17,15 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.Meca
 import org.firstinspires.ftc.teamcode._RobotCode._Defaults.DefaultNavProfile;
 
 @TeleOp(name = "Andrew TeleOp", group = "All")
-@Disabled
+//@Disabled
 public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
     private MecanumChassis mecanumChassis;
 
-    private int armPosIndex = 0;
-    private double[] armPositions = {-0.15,0,0.5,1,1.25};
+    private int armPosIndex = 1;
+    private double[] armPositions = {-0.15,0,0.5,0.7,1,1.1,1.3};
 
     private DcMotor FR;
     private DcMotor FL;
@@ -43,6 +43,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private boolean backWasDown = false;
     private boolean startWasDown = false;
     private boolean lBumperWasDown = false;
+    private boolean dpad2WasDown = false;
 
     private boolean doFunnyLockThing = false;
 
@@ -125,34 +126,73 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             startWasDown = gamepad1.start;
 
 
-
-            if(gamepad2.a){
-                andrewArm.setTarget(0.5,1,0.03);
-            }
-            if(gamepad2.b){
-                andrewArm.setTarget(0,1,0.03);
-            }
             if(gamepad2.x){
                 andrewArm.setRawPower(0.5);
             }
             if(gamepad2.y){
                 andrewArm.setRawPower(-0.5);
             }
-            if(gamepad2.start){
-                andrewArm.setRawPower(0);
+            /*
+            if(gamepad2.a){
+                andrewArm.setTarget(0.5,1,0.03);
+            }
+            if(gamepad2.b){
+                andrewArm.setTarget(0,1,0.03);
             }
             if(gamepad2.back){
                 andrewArm.zeroArm();
             }
+            */
+
+            boolean indexWasChanged = false;
+
+            if(gamepad2.dpad_left&&!dpad2WasDown){
+                armPosIndex--;
+                indexWasChanged= true;
+            }
+            if(gamepad2.dpad_right&&!dpad2WasDown){
+                armPosIndex++;
+                indexWasChanged= true;
+            }
+            if(gamepad2.dpad_up&&!dpad2WasDown){
+                armPosIndex = armPositions.length-1;
+                indexWasChanged= true;
+            }
+            if(gamepad2.dpad_down&&!dpad2WasDown){
+                armPosIndex = 0;
+                indexWasChanged= true;
+            }
+if(armPosIndex>=armPositions.length) armPosIndex = armPositions.length-1;
+if(armPosIndex<0) armPosIndex = 0;
+
+
+
+
+            dpad2WasDown = gamepad2.dpad_up||gamepad2.dpad_down||gamepad2.dpad_left||gamepad2.dpad_right;
+            if(dpad2WasDown)  andrewArm.setTarget(armPositions[armPosIndex],1,0.03);
+
+            if(gamepad2.start){
+                andrewArm.setRawPower(0);
+            }
+
+            if(!armTouch.getState()){
+                andrewArm.zeroArm();
+                andrewArm.setTarget(0,0.4,0.02);
+                armPosIndex = 1;
+            }
+
 
             armAngle = andrewArm.getAngle();
 
             telemetry.addData("Arm angle",andrewArm.getAngle());
             telemetry.addData("Arm target",andrewArm.getTarget());
+            telemetry.addData("TargetSetCount" , andrewArm.targetCount);
+            telemetry.addData("left_stick_y",gamepad2.left_stick_y);
 
-            if(!armTouch.getState()){
-                andrewArm.zeroArm();
-                andrewArm.setTarget(0,0.4,0.02);
+            if(Math.abs(gamepad2.left_stick_y)>0.1){
+                andrewArm.setAdjustmentSpeed(0-gamepad2.left_stick_y);
+            }else{
+                andrewArm.setAdjustmentSpeed(0);
             }
 
           //  telemetry.update();

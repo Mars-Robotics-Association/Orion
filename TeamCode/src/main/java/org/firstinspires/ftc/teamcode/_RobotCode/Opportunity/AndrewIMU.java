@@ -19,7 +19,7 @@ public class AndrewIMU {
     }else if(adjustedAngle>260&&lastAngle<100){
         absoluteAngle+= 360-adjustedAngle;
     }else{
-        absoluteAngle+= thisAngle-lastAngle; //maybe reverse that
+        absoluteAngle+= lastAngle-thisAngle; //maybe reverse that
     }
 
 
