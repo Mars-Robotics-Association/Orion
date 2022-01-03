@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Orion.NavModules.FreightFrenzy;
 
+import android.graphics.Bitmap;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -7,7 +9,10 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.Camera;
 import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.DuckSpinner;
+import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 
 public class FreightFrenzyNavigation implements Runnable
 {
@@ -19,6 +24,7 @@ public class FreightFrenzyNavigation implements Runnable
     private TouchSensor portTouch, starboardTouch;
     private ColorSensor colorSensor;
     private MecanumChassis chassis;
+    private Camera camera;
 
     //configuration variables
     protected double whiteThreshold = 0.8;
@@ -27,6 +33,7 @@ public class FreightFrenzyNavigation implements Runnable
     public enum AllianceSide {RED, BLUE}
     public enum ShippingHubChoice {ALLIANCE, SHARED}
     public enum Tier {BOTTOM, MIDDLE, TOP}
+    public enum DuckPos {FIRST,SECOND,THIRD};
     AllianceSide side = AllianceSide.BLUE;
     ShippingHubChoice currentHubChoice = ShippingHubChoice.ALLIANCE;
     Tier currentTier = Tier.MIDDLE;
@@ -52,6 +59,7 @@ public class FreightFrenzyNavigation implements Runnable
         portTouch = profile.portTouch();
         starboardTouch = profile.starboardTouch();
         colorSensor = profile.colorSensor();
+        camera = new Camera(opMode,"Webcam 1");
     }
 
     ////THREAD CODE////
@@ -139,6 +147,30 @@ public class FreightFrenzyNavigation implements Runnable
         //determine barcode configuration off of time
         //raise arm to appropriate height and reverse intake
 
+    }
+
+    public void ScanBarcodeOpenCV(){
+        //get camera input and convert to mat
+        //divide image into three sections
+        //find section with most yellow
+        DuckPos pos;
+        Bitmap in = camera.GetImage();
+        Mat img = camera.convertBitmapToMat(in);
+        Rect firstRect = new Rect(0,0,img.width()/3,img.height());
+        Rect secondRect = new Rect(img.width()/3,0,img.width()/3,img.height());
+        Rect thirdRect = new Rect(2*img.width()/3,0,img.width()/3,img.height());
+        Mat firstMat = new Mat(img,firstRect);
+        Mat secondMat = new Mat(img,secondRect);
+        Mat thirdMat = new Mat(img,thirdRect);
+        firstMat = camera.IsolateYellow(firstMat);
+        secondMat = camera.IsolateYellow(secondMat);
+        thirdMat = camera.IsolateYellow(thirdMat);
+        Bitmap first = camera.convertMatToBitMap(firstMat);
+        Bitmap second = camera.convertMatToBitMap(secondMat);
+        Bitmap third = camera.convertMatToBitMap(thirdMat);
+        if(camera.countPixels(first)>camera.countPixels(second)&&camera.countPixels(first)>camera.countPixels(third)) pos=DuckPos.FIRST;
+        if(camera.countPixels(second)>camera.countPixels(first)&&camera.countPixels(second)>camera.countPixels(third)) pos=DuckPos.SECOND;
+        if(camera.countPixels(third)>camera.countPixels(second)&&camera.countPixels(third)>camera.countPixels(first)) pos=DuckPos.THIRD;
     }
 
     public void PlaceFreightLinear(){

@@ -6,6 +6,7 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.function.Consumer;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.robotcore.internal.collections.EvictingBlockingQueue;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DashboardWebSocketServer;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.ConfidenceLevel;
@@ -31,8 +33,10 @@ import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.android.Utils;
 
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class Camera
 {
@@ -41,6 +45,7 @@ public class Camera
     private VuforiaLocalizer vuforia;
     private VuforiaTrackables trackables;
     private TFObjectDetector tfod;
+    private EvictingBlockingQueue<Bitmap> frameQueue;
 
     public VuforiaLocalizer GetVuforia() {return vuforia;}
 
@@ -69,6 +74,7 @@ public class Camera
         opMode.telemetry.update();
 
         trackables.activate();
+        initializeFrameQueue(2);
 
         //Init
         initTfod();
@@ -298,6 +304,12 @@ public class Camera
         return bmp;
     }
 
+    public Mat convertBitmapToMat(Bitmap input){
+        Mat mat = new Mat();
+        Utils.bitmapToMat(input,mat);
+        return mat;
+    }
+
     //takes a Mat and isolates the color yellow
     public Mat IsolateYellow(Mat input){
         Scalar lowbgr = new Scalar(0,100,100);
@@ -357,5 +369,23 @@ public class Camera
         Core.bitwise_and(input, input, last, mask);
         result = last;
         return result;
+    }
+
+    public Bitmap GetImage(){
+        Bitmap bmp = frameQueue.poll();
+        return bmp;
+    }
+
+
+    private void initializeFrameQueue(int capacity) {
+        /** The frame queue will automatically throw away bitmap frames if they are not processed
+         * quickly by the OpMode. This avoids a buildup of frames in memory */
+        frameQueue = new EvictingBlockingQueue<Bitmap>(new ArrayBlockingQueue<Bitmap>(capacity));
+        frameQueue.setEvictAction(new Consumer<Bitmap>() {
+            @Override public void accept(Bitmap frame) {
+                // RobotLog.ii(TAG, "frame recycled w/o processing");
+                frame.recycle(); // not strictly necessary, but helpful
+            }
+        });
     }
 }
