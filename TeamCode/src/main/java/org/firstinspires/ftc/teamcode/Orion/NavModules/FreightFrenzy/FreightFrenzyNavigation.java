@@ -40,7 +40,7 @@ public class FreightFrenzyNavigation implements Runnable
     boolean startCollectFreight = false;
 
     int currentNumberOfSpinCycles = 1;
-    boolean currentParkFurtherIn = false;
+    double currentParkFurtherInTime = 2;
     boolean currentStartAtDucks = false;
 
     public FreightFrenzyNavigation(OpMode setOpMode, FreightFrenzyNavTuningProfile profile){
@@ -58,9 +58,9 @@ public class FreightFrenzyNavigation implements Runnable
 
     @Override
     public void run() {
-        if(startSpinDucks) SpinDucksLinear(currentNumberOfSpinCycles);
-        if(startParkWarehouse) ParkInWarehouseLinear(currentParkFurtherIn);
-        if(startParkDepot) ParkInDepotLinear(currentStartAtDucks);
+        if(startSpinDucks) SpinDucksLinear(currentNumberOfSpinCycles,20,1,5,0.1);
+        if(startParkWarehouse) ParkInWarehouseLinear(currentParkFurtherInTime,20,1);
+        if(startParkDepot) ParkInDepotLinear(currentStartAtDucks,20,20,1,2,10);
         if(startScanBarcode) ScanBarcodeLinear();
         if(startPlaceFreight) PlaceFreightLinear();
         if(startCollectFreight) CollectFreightLinear();
@@ -73,52 +73,64 @@ public class FreightFrenzyNavigation implements Runnable
         startCollectFreight = false;
     }
 
-    ////MAJOR CALLABLE FUNCTIONS////
 
-    public void SpinDucks(int numberOfCycles){
-        currentNumberOfSpinCycles = numberOfCycles;
-        startSpinDucks = true;
-    }
-    public void ParkInWarehouse(boolean parkFurtherIn){
-        currentParkFurtherIn = parkFurtherIn;
-        startParkWarehouse = true;
-    }
-    public void ParkInDepot(boolean startAtDucks){
-        currentStartAtDucks = startAtDucks;
-        startParkDepot = true;
-    }
-    public void ScanBarcode(){startScanBarcode = true;}
-    public void PlaceFreight(){startPlaceFreight = true;}
-    public void CollectFreight(){startCollectFreight = true;}
+    ////MAJOR FUNCTIONS////
 
-
-    ////MAJOR INTERNAL FUNCTIONS////
-
-    private void SpinDucksLinear(int numberOfCycles){
+    public void SpinDucksLinear(int numberOfCycles, double angle, double speed, double time, double speedMultiplier){
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already (might need to turn? don't worry about it for now)
         //wallFollow() until wallDist is close to north wall and wheel has contact with duck spinner
         //apply constant pressure towards the wall
         //rampSpinDuck() for numberOfCycles
+        GoToWall(angle,speed);
+        WallFollowForTime(speed,time);
+        double start = opMode.getRuntime();
+        for(int i = 0;i<numberOfCycles;i++) {
+            if(side == AllianceSide.BLUE) {
+                spinner.GradSpin(true,0.1,1,opMode);
+            } else{
+                spinner.GradSpin(false,0.1,1,opMode);
+            }
+        }
+        spinner.Stop();
     }
 
-    private void ParkInWarehouseLinear(boolean parkFurtherIn){
+
+    public void ParkInWarehouseLinear(double extraTime,double angle,double speed){
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already
         //wallFollow() until totally past white line
         //go towards the center a bit if parkFurtherIn
+        GoToWall(angle,speed);
+        WallFollowToWhite(speed);
+        DriveForTime(angle,speed,0,extraTime+1);
+        chassis.RawDrive(0,0,0);
     }
 
-    private void ParkInDepotLinear(boolean startsAtDucks){
+    public void ParkInDepotLinear(boolean startsAtDucks, double followAngle, double depotAngle, double speed, double time, int thresh){
         //should start along side wall north of warehouse with intake facing south
         //if startsAtDucks, skip next two steps
         //goToWall() if not already at it
         //wallFollow() to ducks on north wall
         //Go diagonal back towards middle of field for a time
         //Go north until against the north wall
+        if(!startsAtDucks) {
+            GoToWall(followAngle, speed);
+            WallFollowForTime(speed,time);
+        }
+        if(side == FreightFrenzyNavigation.AllianceSide.RED){
+            while (!(colorSensor.red() >= 255-thresh && colorSensor.green() <= thresh && colorSensor.blue() <= thresh)) {
+                chassis.RawDrive(depotAngle,speed,0);
+            }
+        }else{
+            while (!(colorSensor.blue() >= 255-thresh && colorSensor.green() <= thresh && colorSensor.red() <= thresh)) {
+                chassis.RawDrive(depotAngle,speed,0);
+            }
+        }
+        chassis.RawDrive(0,0,0);
     }
 
-    private void ScanBarcodeLinear(){
+    public void ScanBarcodeLinear(){
         //should start at constant point along a side wall north of warehouse with intake facing south
         //start moving arm so intake faces barcode
         //break away from the wall and move towards the center of the field for time
@@ -126,9 +138,10 @@ public class FreightFrenzyNavigation implements Runnable
         //use intakeDist to record the time from start of sweep at which it detected the freight
         //determine barcode configuration off of time
         //raise arm to appropriate height and reverse intake
+
     }
 
-    private void PlaceFreightLinear(){
+    public void PlaceFreightLinear(){
         //should start in the depot with the intake side facing away from hub (can start on white line)
         //goToWall()
         //wallFollowToWhite() from the south
@@ -141,7 +154,7 @@ public class FreightFrenzyNavigation implements Runnable
         //wallFollowToWhite() from the north
     }
 
-    private void CollectFreightLinear(){
+    public void CollectFreightLinear(){
         //should start north of white line along wall or at it
         //goToWall()
         //wallFollowToWhite() from the north
@@ -205,7 +218,7 @@ public class FreightFrenzyNavigation implements Runnable
     }
 
     //Uses the webcam to zero in on specified tfObject. Takes into account the bearing of the arm/webcam.
-    public void ZeroIn(int objectID){
+    public void ZeroIn(int objectID, double armRotation){
 
     }
 }
