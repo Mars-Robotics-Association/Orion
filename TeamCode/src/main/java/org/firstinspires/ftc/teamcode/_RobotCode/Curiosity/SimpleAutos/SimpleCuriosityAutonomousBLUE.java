@@ -32,8 +32,8 @@ public class SimpleCuriosityAutonomousBLUE extends LinearOpMode
         else sideMultiplier = -1;
 
         //Start the spinner
-        if(redSide) robot.DuckSpinner().Red();
-        else robot.DuckSpinner().Blue();
+        if(redSide) robot.GetDuckSpinner().Red();
+        else robot.GetDuckSpinner().Blue();
 
         //Go to the duck spinner
         while (robot.GetDistToWallCM() > distanceFromWallToStopCM){ //while not in range of the wall to spin ducks, move towards it
@@ -48,7 +48,7 @@ public class SimpleCuriosityAutonomousBLUE extends LinearOpMode
             if(!opModeIsActive()) return;
         }
 
-        robot.DuckSpinner().Stop();
+        robot.GetDuckSpinner().Stop();
 
         //move to park
         double parkStartTime = getRuntime();

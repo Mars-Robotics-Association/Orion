@@ -36,6 +36,7 @@ public class DuckSpinner
             if(speed>maxSpeed)speed = maxSpeed;
             SetSpeed(speed*m);
         }
+        SetSpeed(0);
     }
     //Toggle
     public void CycleSpinning(){

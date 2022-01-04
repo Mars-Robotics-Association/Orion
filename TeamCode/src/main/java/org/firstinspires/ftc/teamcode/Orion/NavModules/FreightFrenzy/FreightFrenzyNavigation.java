@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
@@ -20,17 +19,39 @@ public class FreightFrenzyNavigation implements Runnable
     //relevant sensors and controllers
     private OpMode opMode;
     private UniversalTurretIntakeArm arm;
-    private DuckSpinner spinner;
+    private DuckSpinner duckSpinner;
     private DistanceSensor duckDistance, intakeDistance;
     private DistanceSensor portTouch, starboardTouch;
     private ColorSensor colorSensor;
     private MecanumChassis chassis;
     private Camera camera;
 
-    //configuration variables
+    ////configuration variables////
+    //Basic
     protected double whiteThreshold = 0.8;
+    protected double wallStopDistance = 5;
+    protected double timePastLineToWarehouse = 0.5;
+    protected double timePastLineToHub = 0.5;
 
-    //configuration enums
+    //Ducks
+    protected double duckStopDistance = 36;
+
+    //Park Depot
+    protected double depotParkAngle = 10;
+    protected double depotStopDistance = 14;
+    protected double depotParkTime = 1.8;
+
+    //Park Warehouse
+    protected double parkFurtherInWarehouseTime = 0.5;
+    protected double parkFurtherInWarehouseAngle = 120;
+
+    //Scan Barcode
+
+    //Place
+
+    //Collect
+
+    ////configuration enums////
     public enum AllianceSide {RED, BLUE}
     public enum ShippingHubChoice {ALLIANCE, SHARED}
     public enum Tier {BOTTOM, MIDDLE, TOP}
@@ -47,31 +68,45 @@ public class FreightFrenzyNavigation implements Runnable
     boolean startPlaceFreight = false;
     boolean startCollectFreight = false;
 
+    boolean navigatorRunning = true;
+
     int currentNumberOfSpinCycles = 1;
     double currentParkFurtherInTime = 2;
     boolean currentStartAtDucks = false;
+    boolean currentParkFurtherInWarehouse = false;
+    double currentRobotSpeed = 0.5;
 
-    public FreightFrenzyNavigation(OpMode setOpMode, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor){
+    public double sideMultiplier = 1;
+
+    public FreightFrenzyNavigation(OpMode setOpMode, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor, AllianceSide setSide){
         opMode = setOpMode;
         arm = setArm;
-        spinner = setSpinner;
+        duckSpinner = setSpinner;
         duckDistance = setDuckDist;
         intakeDistance = setIntakeDist;
         portTouch = setPortDist;
         starboardTouch = setStarboardDist;
         colorSensor = setColorSensor;
+
+        side = setSide;
+
+        if(side == AllianceSide.RED) sideMultiplier = 1;
+        else sideMultiplier = -1;
     }
 
     ////THREAD CODE////
 
     @Override
     public void run() {
-        if(startSpinDucks) SpinDucksLinear(currentNumberOfSpinCycles,20,1,5,0.1);
-        if(startParkWarehouse) ParkInWarehouseLinear(currentParkFurtherInTime,20,1);
-        if(startParkDepot) ParkInDepotLinear(currentStartAtDucks,20,20,1,2,10);
+        if(startSpinDucks) SpinDucksLinear(currentNumberOfSpinCycles,currentRobotSpeed);
+        if(startParkWarehouse) ParkInWarehouseLinear(currentRobotSpeed,currentParkFurtherInWarehouse);
+        if(startParkDepot) ParkInDepotLinear(currentStartAtDucks,currentRobotSpeed);
         if(startScanBarcode) ScanBarcodeLinear();
         if(startPlaceFreight) PlaceFreightLinear();
         if(startCollectFreight) CollectFreightLinear();
+
+        opMode.telemetry.addLine("Nav Thread Running!");
+
 
         startSpinDucks = false;
         startParkWarehouse = false;
@@ -83,50 +118,70 @@ public class FreightFrenzyNavigation implements Runnable
 
 
     ////MAJOR FUNCTIONS////
+    public void StopNavigator(){navigatorRunning = false;}
+    public void StartNavigator(){navigatorRunning = true;}
 
-    public void SpinDucksLinear(int numberOfCycles, double angle, double speed, double time, double speedMultiplier){
+    public void StartSpinDucks(){startSpinDucks = true;}
+    public void StartParkWarehouse(){startParkWarehouse = true;}
+    public void StartParkDepot(){startParkDepot = true;}
+    public void StartScanBarcode(){startScanBarcode = true;}
+    public void StartPlaceFreight(){startPlaceFreight = true;}
+    public void StartCollectFreight(){startSpinDucks = true;}
+
+    public void SpinDucksLinear(int numberOfCycles, double speed){
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already (might need to turn? don't worry about it for now)
+        GoToWall(90*sideMultiplier,speed);
         //wallFollow() until wallDist is close to north wall and wheel has contact with duck spinner
-        //apply constant pressure towards the wall
+        WallFollowForDuckDistance(speed,duckStopDistance);
         //rampSpinDuck() for numberOfCycles
-        GoToWall(angle,speed);
-        WallFollowForTime(speed,time);
-        double start = opMode.getRuntime();
         for(int i = 0;i<numberOfCycles;i++) {
-            if(side == AllianceSide.BLUE) {
-                spinner.GradSpin(true,0.1,1,opMode);
-            } else{
-                spinner.GradSpin(false,0.1,1,opMode);
-            }
+            //press against duck carousel
+            DriveForTime(0, 0.5, 0.02*sideMultiplier, 0.2);
+            //spin depending on side
+            if(side == AllianceSide.BLUE) duckSpinner.GradSpin(true,0.5,1,opMode);
+            else duckSpinner.GradSpin(false,0.5,1,opMode);
         }
-        spinner.Stop();
+        //Stop
+        duckSpinner.Stop();
+        chassis.Stop();
     }
 
 
-    public void ParkInWarehouseLinear(double extraTime,double angle,double speed){
+    public void ParkInWarehouseLinear(double speed, boolean parkFurtherIn){
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already
+        GoToWall(90*sideMultiplier,speed);
         //wallFollow() until totally past white line
+        WallFollowToWhite(-speed);
+        WallFollowForTime(-speed,timePastLineToWarehouse);
         //go towards the center a bit if parkFurtherIn
-        GoToWall(angle,speed);
-        WallFollowToWhite(speed);
-        DriveForTime(angle,speed,0,extraTime+1);
-        chassis.RawDrive(0,0,0);
+        if(parkFurtherIn) DriveForTime(parkFurtherInWarehouseAngle,speed,0, parkFurtherInWarehouseTime);
+        //stop
+        chassis.Stop();
     }
 
-    public void ParkInDepotLinear(boolean startsAtDucks, double followAngle, double depotAngle, double speed, double time, int thresh){
+    public void ParkInDepotLinear(boolean startsAtDucks, double speed){
         //should start along side wall north of warehouse with intake facing south
         //if startsAtDucks, skip next two steps
-        //goToWall() if not already at it
-        //wallFollow() to ducks on north wall
+        if(!startsAtDucks) {
+            //goToWall() if not already at it
+            GoToWall(90*sideMultiplier, speed);
+            //wallFollow() to ducks on north wall
+            WallFollowForDuckDistance(speed,duckStopDistance);
+        }
         //Go diagonal back towards middle of field for a time
         //Go north until against the north wall
-        if(!startsAtDucks) {
-            GoToWall(followAngle, speed);
-            WallFollowForTime(speed,time);
-        }
-        if(side == FreightFrenzyNavigation.AllianceSide.RED){
+
+        duckSpinner.Stop();
+
+        //move to park
+        DriveForTime(90+(sideMultiplier*depotParkAngle),sideMultiplier*0.5,0,depotParkTime);
+
+        DriveForDuckSensorDistance(0,0.5,0,depotStopDistance);
+        chassis.RawDrive(0,0,0);
+
+        /*if(side == FreightFrenzyNavigation.AllianceSide.RED){
             while (!(colorSensor.red() >= 255-thresh && colorSensor.green() <= thresh && colorSensor.blue() <= thresh)) {
                 chassis.RawDrive(depotAngle,speed,0);
             }
@@ -135,7 +190,7 @@ public class FreightFrenzyNavigation implements Runnable
                 chassis.RawDrive(depotAngle,speed,0);
             }
         }
-        chassis.RawDrive(0,0,0);
+        chassis.RawDrive(0,0,0);*/
     }
 
     public void ScanBarcodeLinear(){
@@ -218,6 +273,14 @@ public class FreightFrenzyNavigation implements Runnable
         chassis.RawDrive(0,0,0);
     }
 
+    //Drive until duck sensor detects distance
+    public void DriveForDuckSensorDistance(double angle, double speed, double turnOffset, double distance){
+        while (duckDistance.getDistance(DistanceUnit.CM)>distance){
+            chassis.RawDrive(angle,speed,turnOffset);
+        }
+        chassis.RawDrive(0,0,0);
+    }
+
     //Wait for a period of time
     public void Wait(double time){
         double startTime = opMode.getRuntime();
@@ -241,6 +304,18 @@ public class FreightFrenzyNavigation implements Runnable
 
         double startTime = opMode.getRuntime();
         while (opMode.getRuntime()<startTime+time){
+            chassis.RawDrive(0,speed,turnOffset);
+        }
+        chassis.RawDrive(0,0,0);
+    }
+
+    //Wall follows at specified speed, which also determines direction .
+    public void WallFollowForDuckDistance(double speed, double distance){
+        double turnOffset = 0;
+        if(side == AllianceSide.BLUE) turnOffset = -0.04*speed;
+        if(side == AllianceSide.RED) turnOffset = 0.04*speed;
+
+        while (duckDistance.getDistance(DistanceUnit.CM)>distance){
             chassis.RawDrive(0,speed,turnOffset);
         }
         chassis.RawDrive(0,0,0);

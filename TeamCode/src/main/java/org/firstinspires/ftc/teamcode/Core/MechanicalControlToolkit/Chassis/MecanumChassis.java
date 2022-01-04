@@ -162,6 +162,7 @@ public class MecanumChassis
         //Updates brake pos, as this is called continuously as robot is driving
         UpdateEncoderBrakePos();
     }
+    public void Stop(){RawDrive(0,0,0);}
     public void RawTurn(double speed){
         //Used continuously in teleop to turn the robot
         //Enter speed for turn- positive speed turns left, negative right
