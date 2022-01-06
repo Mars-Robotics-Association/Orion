@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.Orion.NavModules.FreightFrenzy.FreightFren
 class CuriosityNavigator extends FreightFrenzyNavigation
 {
 
-    public CuriosityNavigator(OpMode setOpMode, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor) {
-        super(setOpMode, setArm, setSpinner, setDuckDist, setIntakeDist, setPortDist, setStarboardDist, setColorSensor);
+    public CuriosityNavigator(OpMode setOpMode, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor, AllianceSide side) {
+        super(setOpMode, setArm, setSpinner, setDuckDist, setIntakeDist, setPortDist, setStarboardDist, setColorSensor, side);
 
         //CONFIGURATION
         

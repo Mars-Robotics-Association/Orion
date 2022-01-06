@@ -78,6 +78,9 @@ public class FreightFrenzyNavigation implements Runnable
 
     public double sideMultiplier = 1;
 
+    Thread thread;
+    boolean threadRunning = false;
+
     public FreightFrenzyNavigation(OpMode setOpMode, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor, AllianceSide setSide){
         opMode = setOpMode;
         arm = setArm;
@@ -96,8 +99,14 @@ public class FreightFrenzyNavigation implements Runnable
 
     ////THREAD CODE////
 
+    public void SetThread(Thread setThread) {thread=setThread;}
+
+    //Runs in seperate thread
     @Override
     public void run() {
+        opMode.telemetry.addLine("Nav Thread Start!");
+        threadRunning = true;
+
         if(startSpinDucks) SpinDucksLinear(currentNumberOfSpinCycles,currentRobotSpeed);
         if(startParkWarehouse) ParkInWarehouseLinear(currentRobotSpeed,currentParkFurtherInWarehouse);
         if(startParkDepot) ParkInDepotLinear(currentStartAtDucks,currentRobotSpeed);
@@ -105,8 +114,7 @@ public class FreightFrenzyNavigation implements Runnable
         if(startPlaceFreight) PlaceFreightLinear();
         if(startCollectFreight) CollectFreightLinear();
 
-        opMode.telemetry.addLine("Nav Thread Running!");
-
+        opMode.telemetry.addLine("Nav Thread End!");
 
         startSpinDucks = false;
         startParkWarehouse = false;
@@ -114,19 +122,43 @@ public class FreightFrenzyNavigation implements Runnable
         startScanBarcode = false;
         startPlaceFreight = false;
         startCollectFreight = false;
+
+        threadRunning = false;
     }
+    public boolean IsThreadRunning(){return threadRunning;}
 
 
     ////MAJOR FUNCTIONS////
     public void StopNavigator(){navigatorRunning = false;}
-    public void StartNavigator(){navigatorRunning = true;}
+    public void StartNavigator(){
+        navigatorRunning = true;
+        thread.start();
+    }
 
-    public void StartSpinDucks(){startSpinDucks = true;}
-    public void StartParkWarehouse(){startParkWarehouse = true;}
-    public void StartParkDepot(){startParkDepot = true;}
-    public void StartScanBarcode(){startScanBarcode = true;}
-    public void StartPlaceFreight(){startPlaceFreight = true;}
-    public void StartCollectFreight(){startSpinDucks = true;}
+    public void StartSpinDucks(){
+        startSpinDucks = true;
+        thread.start();
+    }
+    public void StartParkWarehouse(){
+        startParkWarehouse = true;
+        thread.start();
+    }
+    public void StartParkDepot(){
+        startParkDepot = true;
+        thread.start();
+    }
+    public void StartScanBarcode(){
+        startScanBarcode = true;
+        thread.start();
+    }
+    public void StartPlaceFreight(){
+        startPlaceFreight = true;
+        thread.start();
+    }
+    public void StartCollectFreight(){
+        startSpinDucks = true;
+        thread.start();
+    }
 
     public void SpinDucksLinear(int numberOfCycles, double speed){
         //should start along side wall north of warehouse with intake facing south

@@ -72,9 +72,8 @@ public class CuriosityRobot extends MecanumChassis
             DistanceSensor portDist = opMode.hardwareMap.get(DistanceSensor.class, "portDist");
             DistanceSensor starboardDist = opMode.hardwareMap.get(DistanceSensor.class, "starboardDist");
             ColorSensor colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
-            navigation = new CuriosityNavigator(opMode, turretArm, duckSpinner, duckDist, intakeDist, portDist, starboardDist, colorSensor);
-            Thread thread = new Thread(navigation);
-            thread.start();
+            navigation = new CuriosityNavigator(opMode, turretArm, duckSpinner, duckDist, intakeDist, portDist, starboardDist, colorSensor, FreightFrenzyNavigation.AllianceSide.BLUE);
+            navigation.SetThread(new Thread(navigation));
         }
     }
 
