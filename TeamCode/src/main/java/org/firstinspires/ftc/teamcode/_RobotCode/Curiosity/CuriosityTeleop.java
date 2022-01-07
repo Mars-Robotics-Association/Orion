@@ -182,7 +182,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void RBPressed(double controllerNumber) {
         //toggle between duck spinner states
         if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.GetDuckSpinner().GradSpin(true,0.5,1,this);
+            control.SpinDucksLinear();
         }
     }
 
@@ -310,7 +310,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LJSPressed(double controllerNumber) {
-
+        if(controllerNumber == 1) control.isBlue = !control.isBlue;
     }
 
     @Override
