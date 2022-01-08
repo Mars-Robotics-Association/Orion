@@ -19,8 +19,7 @@ public class CuriosityTESTAutonomous extends LinearOpMode
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new CuriosityRobot(this, true, true, false);
-        cam = new Camera(this,"Webcam 1");
+        robot = new CuriosityRobot(this, true, true, true);
         nav = robot.navigation;
         robot.Init();
         //nav = robot.Roadrunner();

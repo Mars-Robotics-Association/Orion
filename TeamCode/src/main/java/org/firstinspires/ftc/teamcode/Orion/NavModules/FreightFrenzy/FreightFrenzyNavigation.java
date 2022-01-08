@@ -55,7 +55,7 @@ public class FreightFrenzyNavigation implements Runnable
     public enum AllianceSide {RED, BLUE}
     public enum ShippingHubChoice {ALLIANCE, SHARED}
     public enum Tier {BOTTOM, MIDDLE, TOP}
-    public enum DuckPos {FIRST,SECOND,THIRD};
+    public enum DuckPos {FIRST,SECOND,THIRD,NULL}
     AllianceSide side = AllianceSide.BLUE;
     ShippingHubChoice currentHubChoice = ShippingHubChoice.ALLIANCE;
     Tier currentTier = Tier.MIDDLE;
@@ -90,6 +90,7 @@ public class FreightFrenzyNavigation implements Runnable
         portTouch = setPortDist;
         starboardTouch = setStarboardDist;
         colorSensor = setColorSensor;
+        camera = new Camera(opMode,"Webcam 1");
 
         side = setSide;
 
@@ -244,7 +245,7 @@ public class FreightFrenzyNavigation implements Runnable
         //get camera input and convert to mat
         //divide image into three sections
         //find section with most yellow
-        DuckPos pos;
+        DuckPos pos= DuckPos.NULL;
         Bitmap in = camera.GetImage();
         Mat img = camera.convertBitmapToMat(in);
         Rect firstRect = new Rect(0,0,img.width()/3,img.height());
@@ -270,6 +271,9 @@ public class FreightFrenzyNavigation implements Runnable
         if(camera.countPixels(third)>camera.countPixels(second)&&camera.countPixels(third)>camera.countPixels(first)){
             pos=DuckPos.THIRD;
             opMode.telemetry.addData("Element in position","3");
+        }
+        if(pos==DuckPos.NULL) {
+            opMode.telemetry.addData("Element in position", "null");
         }
         opMode.telemetry.update();
     }
