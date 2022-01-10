@@ -3,7 +3,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -33,13 +35,16 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private DcMotor RL;
     private DcMotor armPos;
 
+    private ColorSensor colorSensor1;
+
     private TouchSensor armZeroTouchSensor;
    // private TouchSensor armTouch;
     private DigitalChannel armTouch;
 
     private IMU imu;
     private AndrewIMU andrewIMU;
-    private CRServo duckyServo;
+   // private CRServo duckyServo;
+    private DcMotor duckyMotor;
     private boolean backWasDown = false;
     private boolean startWasDown = false;
     private boolean lBumperWasDown = false;
@@ -62,8 +67,15 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
         FL = this.hardwareMap.dcMotor.get("FL");
         RR = this.hardwareMap.dcMotor.get("RR");
         RL = this.hardwareMap.dcMotor.get("RL");
+
+        colorSensor1 = hardwareMap.colorSensor.get("color1");
+    //    RL.setDirection(DcMotorSimple.Direction.REVERSE); //uncomment this too
+    //    FR.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
         armPos = this.hardwareMap.dcMotor.get("armPosition");
-        duckyServo = this.hardwareMap.crservo.get("duckyServo");
+    //    duckyServo = this.hardwareMap.crservo.get("duckyServo");
+        duckyMotor = this.hardwareMap.dcMotor.get("duckyMotor");
         //armTouch = this.hardwareMap.get(TouchSensor.class,"armTouch");
 
         armTouch = hardwareMap.get(DigitalChannel.class, "armTouch");
@@ -92,23 +104,43 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             double stickDist = Math.sqrt(Math.pow(gamepad1.left_stick_x,2)+Math.pow(gamepad1.left_stick_y,2));
 
             double moveAngle = stickDir*180/3.14;
-            if(doFunnyLockThing) moveAngle = (stickDir*180/3.14)- andrewIMU.getRotation();
-            double[] newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(moveAngle,stickDist,0-gamepad1.right_stick_x);
-
+            if(doFunnyLockThing) moveAngle = ((stickDir*180/3.14)- andrewIMU.getRotation());
+            double[] newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(moveAngle,stickDist,gamepad1.right_stick_x);
+            telemetry.addData("driveAngle",moveAngle);
             for(int i = 0; i<4; i++)
                 newSpeeds[i]*=speed;
 
-            FR.setPower(newSpeeds[0]);
-            FL.setPower(newSpeeds[1]);
-            RR.setPower(newSpeeds[2]);
+            FR.setPower(newSpeeds[0]); //uncoment this!!
+            FL.setPower(newSpeeds[2]);
+            RR.setPower(newSpeeds[1]);
             RL.setPower(newSpeeds[3]);
 
+//            if(gamepad1.a)
+//                FR.setPower(1);
+//            else
+//                FR.setPower(0);
+//
+//            if(gamepad1.b)
+//                FL.setPower(1);
+//            else
+//                FL.setPower(0);
+//
+//            if(gamepad1.x)
+//                RR.setPower(1);
+//            else
+//                RR.setPower(0);
+//
+//            if(gamepad1.y)
+//                RL.setPower(1);
+//            else
+//                RL.setPower(0);
+
             if(gamepad1.x)
-                duckyServo.setPower(1);
+                duckyMotor.setPower(1);
             else if(gamepad1.b)
-                duckyServo.setPower(0-1);
+                duckyMotor.setPower(0-1);
             else
-                duckyServo.setPower(0);
+                duckyMotor.setPower(0);
 
             if(gamepad1.back&&!backWasDown){
                 if(speed==1)
@@ -195,7 +227,15 @@ if(armPosIndex<0) armPosIndex = 0;
                 andrewArm.setAdjustmentSpeed(0);
             }
 
+            telemetry.addData("FR",FR.getCurrentPosition());
+            telemetry.addData("FL",FL.getCurrentPosition());
+            telemetry.addData("RR",RR.getCurrentPosition());
+            telemetry.addData("RL",RL.getCurrentPosition());
           //  telemetry.update();
+
+            telemetry.addData("red",colorSensor1.red());
+            telemetry.addData("green",colorSensor1.green());
+            telemetry.addData("blue",colorSensor1.blue());
 
 
 
