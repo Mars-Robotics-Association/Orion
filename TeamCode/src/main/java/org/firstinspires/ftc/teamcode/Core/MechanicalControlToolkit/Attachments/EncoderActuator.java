@@ -31,6 +31,7 @@ public class EncoderActuator
         if(profile.reverseEncoder()) encoderMultiplier = -1;
         else encoderMultiplier = 1;
         useEncoder = profile.useEncoder();
+        ResetToZero();
     }
 
     //Sets the motor to go to a target rotation
@@ -59,12 +60,12 @@ public class EncoderActuator
     public void SetPowerClamped(double power){
         opMode.telemetry.addData("MOTOR POSITION", GetFinalPosition());
         opMode.telemetry.addData("MOTOR POWER", power);
-        if(power > 0 && GetFinalPosition() < minRots){
+        if(power*encoderMultiplier < 0 && GetFinalPosition() < minRots){
             if(useEncoder) GoToPosition(minRots * encoderResolution * gearRatio);
             else motors.SetPowers(0);
             return;
         }
-        else if(power < 0 && GetFinalPosition() > maxRots){
+        else if(power*encoderMultiplier > 0 && GetFinalPosition() > maxRots){
             if(useEncoder) GoToPosition(maxRots * encoderResolution * gearRatio);
             else motors.SetPowers(0);
             return;

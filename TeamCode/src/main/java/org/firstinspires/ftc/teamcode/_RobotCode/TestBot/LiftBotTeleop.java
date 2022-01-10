@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
+package org.firstinspires.ftc.teamcode._RobotCode.TestBot;
 
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ACCEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL_MOD;
@@ -9,21 +9,18 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
-@TeleOp(name = "*INGENUITY TELEOP*", group = "Ingenuity")
+@TeleOp(name = "*LIFT BOT TELEOP*", group = "Test")
 @Config
-public class IngenuityTeleop extends OpMode implements ControllerInputListener
+public class LiftBotTeleop extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
-    private IngenuityControl control;
+    private LiftBot control;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
-
-
 
     ////Variables////
     //Tweaking Vars
@@ -31,6 +28,9 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     public static double turnSpeed = -1;//used to change how fast robot turns
 
     public static double autoSpeedModifier = 2; //used to change speed of automatic navigation
+
+    public static double liftSpeed = 0.5;
+    public static double intakeSpeed = 0.5;
 
     public static double turnP = 0.005;
     public static double turnI = 0.0;
@@ -43,23 +43,21 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     public static int payloadControllerNumber = 1;
 
+    private double intakeState = 0;
+    private double liftHighPosition = 0 ;  // Specific to rotating arm - Notes the high (release) position of the arm
+
     @Override
     public void init() {
-        control = new IngenuityControl(this, true, true, false);
+        control = new LiftBot(this, true, true, false);
         control.Init();
-
-
 
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
 
-        //reversing the motors so that it is easier to drive
-        hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
-        hardwareMap.dcMotor.get("RR").setDirection(DcMotorSimple.Direction.REVERSE);
-        hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
-        hardwareMap.dcMotor.get("RL").setDirection(DcMotorSimple.Direction.REVERSE);
+        //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
+        //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
@@ -86,49 +84,29 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
         control.Update();
 
+        //if robot isn't level, set speed to zero and exit loop
+        /*if(!control.IsRobotLevel()){
+            control.RawDrive(0,0,0);
+            return;
+        }*/
+
         if(!busy) {
             //Manage driving
             control.SetHeadingPID(turnP, turnI, turnD);
-            ManageDriveMovementCustom();
-
+            control.DriveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
         }
         //print telemetry
         if(control.isUSE_NAVIGATOR()) {
-            control.GetOrion().PrintVuforiaTelemetry(0);
-            control.GetOrion().PrintTensorflowTelemetry();
         }
 
         telemetry.addLine("*TELEOP DATA*");
         telemetry.addData("Speed Modifier", speedMultiplier);
         telemetry.addData("Payload Controller", payloadControllerNumber);
-
         telemetry.update();
     }
 
     ////DRIVING FUNCTIONS////
 
-    private void ManageDrivingRoadrunner() {
-        double moveX = -gamepad1.left_stick_y*driveSpeed*speedMultiplier;
-        double moveY = -gamepad1.left_stick_x*driveSpeed*speedMultiplier;
-        double turn = -gamepad1.right_stick_x*turnSpeed*speedMultiplier + turnOffset;
-        control.GetOrion().MoveRaw(moveX, moveY, turn);
-    }
-
-    private void ManageDriveMovementCustom() {
-        //MOVE if left joystick magnitude > 0.1
-        if (controllerInput1.CalculateLJSMag() > 0.1) {
-            control.RawDrive(controllerInput1.CalculateLJSAngle(), controllerInput1.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
-            telemetry.addData("Moving at ", controllerInput1.CalculateLJSAngle());
-        }
-        //TURN if right joystick magnitude > 0.1 and not moving
-        else if (Math.abs(controllerInput1.GetRJSX()) > 0.1) {
-            control.RawTurn(controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//turns at speed according to rjs1
-            telemetry.addData("Turning", true);
-        }
-        else {
-            control.GetChassis().SetMotorSpeeds(0,0,0,0);
-        }
-    }
 
     ////INPUT MAPPING////
 
@@ -147,30 +125,22 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void XPressed(double controllerNumber) {
-
     }
 
     @Override
     public void YPressed(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber) {
-
-        }
     }
 
     @Override
     public void AHeld(double controllerNumber) {
-
     }
 
     @Override
     public void BHeld(double controllerNumber) {
-        control.GetDuck().RedSide();
-
     }
 
     @Override
     public void XHeld(double controllerNumber) {
-        control.GetDuck().BlueSide();
     }
 
     @Override
@@ -179,7 +149,6 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void AReleased(double controllerNumber) {
-
     }
 
     @Override
@@ -197,6 +166,14 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LBPressed(double controllerNumber) {
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            if(intakeState == 0) control.setIntakePower(intakeSpeed);
+            else if (intakeState == 1) control.setIntakePower(0);
+            else if (intakeState == 2) control.setIntakePower(-intakeSpeed);
+            else if (intakeState == 3) control.setIntakePower(0);
+            intakeState ++;
+            if(intakeState > 3) intakeState = 0;
+        }
     }
 
     @Override
@@ -209,48 +186,56 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void RTPressed(double controllerNumber) {
-        //if(controllerNumber == 1) speedMultiplier = 0.25;
     }
 
     @Override
     public void LBHeld(double controllerNumber) {
-        control.GetIntake().on(0.9);
+
     }
 
     @Override
     public void RBHeld(double controllerNumber) {
-        control.GetIntake().on(-0.9);
+
     }
 
     @Override
     public void LTHeld(double controllerNumber) {
-        control.GetLift().SetPowerClamped(-0.2);
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.setLiftPower(liftSpeed);
+        }
     }
 
     @Override
     public void RTHeld(double controllerNumber) {
-        control.GetLift().SetPowerClamped(0.2);
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.setLiftPower(-liftSpeed);
+        }
     }
 
     @Override
     public void LBReleased(double controllerNumber) {
-        control.GetIntake().off();
+
     }
 
     @Override
     public void RBReleased(double controllerNumber) {
-        control.GetIntake().off();
 
     }
 
     @Override
     public void LTReleased(double controllerNumber) {
-        control.GetLift().Lock();
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.setLiftPower(0);
+            //control.Arm().LockArm();
+        }
     }
 
     @Override
     public void RTReleased(double controllerNumber) {
-        control.GetLift().Lock();
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.setLiftPower(0);
+            //control.Arm().LockArm();
+        }
     }
 
     @Override
@@ -267,37 +252,37 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void DLeftPressed(double controllerNumber) {
-
     }
 
     @Override
     public void DRightPressed(double controllerNumber) {
-
     }
 
     @Override
     public void DUpHeld(double controllerNumber) {
-
     }
 
     @Override
     public void DDownHeld(double controllerNumber) {
-
     }
 
     @Override
     public void DLeftHeld(double controllerNumber) {
-
     }
 
     @Override
     public void DRightHeld(double controllerNumber) {
-
     }
 
     @Override
     public void DUpReleased(double controllerNumber) {
-
+        if(controllerNumber == payloadControllerNumber){
+            if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+                liftHighPosition = control.getLiftPosition() ;
+                //control.Arm().SetSpinnerSpeed(0) ;
+                telemetry.addData("Arm High Pos: ", liftHighPosition);
+            }
+        }
     }
 
     @Override
@@ -307,18 +292,19 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void DLeftReleased(double controllerNumber) {
-        control.GetDuck().Stop();
+
     }
 
     @Override
     public void DRightReleased(double controllerNumber) {
-        control.GetDuck().Stop();
+
     }
 
     @Override
     public void LJSPressed(double controllerNumber) {
-        if(controllerNumber == 1) { //switch payload controllers at runtime
-            control.ResetGyro();
+        if(controllerNumber == 2) { //switch payload controllers at runtime
+            if(payloadControllerNumber == 1) payloadControllerNumber = 2;
+            else payloadControllerNumber = 1;
         }
     }
 

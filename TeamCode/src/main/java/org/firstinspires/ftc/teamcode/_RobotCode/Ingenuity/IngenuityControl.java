@@ -21,6 +21,9 @@ public class IngenuityControl extends MecanumBaseControl
 {
     ////Dependencies////
     //Mechanical Components
+    private IngenuityLift lift;
+    private IntakeController intake;
+    private IngenuityDuckController duckController;
 
     ////Variables////
     //Calibration
@@ -41,7 +44,13 @@ public class IngenuityControl extends MecanumBaseControl
         super.InitCoreRobotModules();
 
 
-        if(USE_NAVIGATOR) {
+        if(USE_PAYLOAD) {
+            lift = new IngenuityLift(opMode,opMode.hardwareMap.dcMotor.get("liftMotor"));
+
+            intake = new IntakeController();
+            intake.Init(opMode,"intakeMotor");
+
+            duckController = new IngenuityDuckController(opMode.hardwareMap.servo.get("duckController"));
         }
     }
 
@@ -55,4 +64,8 @@ public class IngenuityControl extends MecanumBaseControl
 
         return !(Math.abs(pitch) > 5);
     }
+
+    public IngenuityLift GetLift() {return lift;}
+    public IntakeController GetIntake() {return intake;}
+    public IngenuityDuckController GetDuck() {return duckController;}
 }
