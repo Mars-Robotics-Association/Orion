@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Camera;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.FreightFrenzy.FreightFrenzyNavigation;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.RoadrunnerModule;
 
 @Autonomous(name = "TEST Curiosity Auto", group = "Curiosity")
@@ -13,13 +14,13 @@ import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.RoadrunnerModu
 public class CuriosityTESTAutonomous extends LinearOpMode
 {
     CuriosityRobot robot;
-    RoadrunnerModule nav;
     Camera cam;
+    FreightFrenzyNavigation nav;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new CuriosityRobot(this, true, true, false);
-        cam = new Camera(this,"Webcam 1");
+        robot = new CuriosityRobot(this, true, true, true);
+        nav = robot.navigation;
         robot.Init();
         //nav = robot.Roadrunner();
 
@@ -27,12 +28,9 @@ public class CuriosityTESTAutonomous extends LinearOpMode
         robot.Start();
 
 
-        //detect duck
-
 
         //test some things
-        nav.MoveLine(10,10,0);
-        nav.Turn(90);
+        nav.ScanBarcodeOpenCV();
 
     }
 }

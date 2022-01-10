@@ -38,7 +38,7 @@ public class TestBot extends MecanumBaseControl
      * @param useNavigator whether to use Orion (webcams + odometry navigation)
      */
     public TestBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
-        super(setOpMode, new DefaultNavProfile(), new HermesLog("Curiosity", 500, setOpMode), useChassis, usePayload, useNavigator);
+        super(setOpMode, new DefaultNavProfile(), new HermesLog("TestBot", 500, setOpMode), useChassis, usePayload, useNavigator);
         navCore = new TestBotNavCore(); //feed in nav modules here
 
         if(usePayload){

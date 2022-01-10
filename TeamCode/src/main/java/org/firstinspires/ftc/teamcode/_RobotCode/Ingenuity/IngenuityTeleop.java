@@ -15,7 +15,6 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 @TeleOp(name = "*INGENUITY TELEOP*", group = "Ingenuity")
-@Disabled
 @Config
 public class IngenuityTeleop extends OpMode implements ControllerInputListener
 {
@@ -24,10 +23,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
 
-    //Accessory Classes
-    private LiftController lift;
-    private IntakeController intake;
-    private IngenuityDuckController duckController;
+
 
     ////Variables////
     //Tweaking Vars
@@ -52,13 +48,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         control = new IngenuityControl(this, true, true, false);
         control.Init();
 
-        lift = new LiftController(100, 200, 100);
-        lift.Init(this,"liftMotor");
 
-        intake = new IntakeController();
-        intake.Init(this,"intakeMotor");
-
-        duckController = new IngenuityDuckController(hardwareMap.servo.get("duckController"));
 
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
@@ -174,13 +164,13 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void BHeld(double controllerNumber) {
-        duckController.RedSide();
+        control.GetDuck().RedSide();
 
     }
 
     @Override
     public void XHeld(double controllerNumber) {
-        duckController.BlueSide();
+        control.GetDuck().BlueSide();
     }
 
     @Override
@@ -224,43 +214,43 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LBHeld(double controllerNumber) {
-        intake.on(0.9);
+        control.GetIntake().on(0.9);
     }
 
     @Override
     public void RBHeld(double controllerNumber) {
-        intake.on(-0.9);
+        control.GetIntake().on(-0.9);
     }
 
     @Override
     public void LTHeld(double controllerNumber) {
-        lift.go(-0.2);
+        control.GetLift().SetPowerClamped(-0.2);
     }
 
     @Override
     public void RTHeld(double controllerNumber) {
-        lift.go(0.2);
+        control.GetLift().SetPowerClamped(0.2);
     }
 
     @Override
     public void LBReleased(double controllerNumber) {
-        intake.off();
+        control.GetIntake().off();
     }
 
     @Override
     public void RBReleased(double controllerNumber) {
-        intake.off();
+        control.GetIntake().off();
 
     }
 
     @Override
     public void LTReleased(double controllerNumber) {
-        lift.LockArm();
+        control.GetLift().Lock();
     }
 
     @Override
     public void RTReleased(double controllerNumber) {
-        lift.LockArm();
+        control.GetLift().Lock();
     }
 
     @Override
@@ -317,19 +307,18 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void DLeftReleased(double controllerNumber) {
-        duckController.Stop();
+        control.GetDuck().Stop();
     }
 
     @Override
     public void DRightReleased(double controllerNumber) {
-        duckController.Stop();
+        control.GetDuck().Stop();
     }
 
     @Override
     public void LJSPressed(double controllerNumber) {
-        if(controllerNumber == 2) { //switch payload controllers at runtime
-            if(payloadControllerNumber == 1) payloadControllerNumber = 2;
-            else payloadControllerNumber = 1;
+        if(controllerNumber == 1) { //switch payload controllers at runtime
+            control.ResetGyro();
         }
     }
 

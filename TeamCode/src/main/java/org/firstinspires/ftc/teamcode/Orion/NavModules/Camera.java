@@ -291,16 +291,7 @@ public class Camera
     //takes a Mat image and converts it to a Bitmap
     public Bitmap convertMatToBitMap(Mat input){
         Bitmap bmp = null;
-        Mat rgb = new Mat();
-        Imgproc.cvtColor(input, rgb, Imgproc.COLOR_BGR2RGB);
-
-        try {
-            bmp = Bitmap.createBitmap(rgb.cols(), rgb.rows(), Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(rgb, bmp);
-        }
-        catch (CvException e){
-            opmode.telemetry.addData("Exception",e.getMessage());
-        }
+        Utils.matToBitmap(input,bmp);
         return bmp;
     }
 

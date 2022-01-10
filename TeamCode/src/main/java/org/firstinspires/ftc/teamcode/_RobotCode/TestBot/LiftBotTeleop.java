@@ -1,23 +1,24 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
-
-import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
-import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+package org.firstinspires.ftc.teamcode._RobotCode.TestBot;
 
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ACCEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_VEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_VEL_MOD;
 
-@TeleOp(name = "*CURIOSITY TELEOP*", group = "Curiosity")
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+
+@TeleOp(name = "*LIFT BOT TELEOP*", group = "Test")
 @Config
-public class CuriosityTeleop extends OpMode implements ControllerInputListener
+public class LiftBotTeleop extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
-    private CuriosityRobot control;
+    private LiftBot control;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
 
@@ -28,8 +29,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     public static double autoSpeedModifier = 2; //used to change speed of automatic navigation
 
-    public static double armSpeed = 1;
-    public static double intakeSpeed = 1;
+    public static double liftSpeed = 0.5;
+    public static double intakeSpeed = 0.5;
 
     public static double turnP = 0.005;
     public static double turnI = 0.0;
@@ -42,11 +43,12 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     public static int payloadControllerNumber = 1;
 
-
+    private double intakeState = 0;
+    private double liftHighPosition = 0 ;  // Specific to rotating arm - Notes the high (release) position of the arm
 
     @Override
     public void init() {
-        control = new CuriosityRobot(this, true, true, false);
+        control = new LiftBot(this, true, true, false);
         control.Init();
 
         controllerInput1 = new ControllerInput(gamepad1, 1);
@@ -61,7 +63,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.update();
 
 
-        msStuckDetectLoop = 5000;
+        msStuckDetectLoop = 15000;
 
         //set roadrunner speed modifiers
         if(control.isUSE_NAVIGATOR()){
@@ -73,11 +75,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     }
 
     @Override
-    public void start(){
-        control.Start();
-        control.ResetGyro();
-        control.SetHeadlessMode(true);
-    }
+    public void start(){control.Start();}
 
     @Override
     public void loop() {
@@ -85,26 +83,30 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         controllerInput2.Loop();
 
         control.Update();
-        control.TurretArm().UpdateIntakeTiered();
+
+        //if robot isn't level, set speed to zero and exit loop
+        /*if(!control.IsRobotLevel()){
+            control.RawDrive(0,0,0);
+            return;
+        }*/
 
         if(!busy) {
             //Manage driving
             control.SetHeadingPID(turnP, turnI, turnD);
             control.DriveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
-
         }
         //print telemetry
         if(control.isUSE_NAVIGATOR()) {
-            //control.GetOrion().PrintVuforiaTelemetry(0);
-            //control.GetOrion().PrintTensorflowTelemetry();
         }
 
         telemetry.addLine("*TELEOP DATA*");
         telemetry.addData("Speed Modifier", speedMultiplier);
         telemetry.addData("Payload Controller", payloadControllerNumber);
-
         telemetry.update();
     }
+
+    ////DRIVING FUNCTIONS////
+
 
     ////INPUT MAPPING////
 
@@ -123,26 +125,18 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void XPressed(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.TurretArm().ReturnToHomeAndIntake(intakeSpeed);
-        }
     }
 
     @Override
     public void YPressed(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.TurretArm().GoToAutoTier();
-        }
     }
 
     @Override
     public void AHeld(double controllerNumber) {
-
     }
 
     @Override
     public void BHeld(double controllerNumber) {
-
     }
 
     @Override
@@ -155,7 +149,6 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void AReleased(double controllerNumber) {
-
     }
 
     @Override
@@ -173,17 +166,18 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LBPressed(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.TurretArm().CycleIntakeState(intakeSpeed);
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            if(intakeState == 0) control.setIntakePower(intakeSpeed);
+            else if (intakeState == 1) control.setIntakePower(0);
+            else if (intakeState == 2) control.setIntakePower(-intakeSpeed);
+            else if (intakeState == 3) control.setIntakePower(0);
+            intakeState ++;
+            if(intakeState > 3) intakeState = 0;
         }
     }
 
     @Override
     public void RBPressed(double controllerNumber) {
-        //toggle between duck spinner states
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.SpinDucksLinear();
-        }
     }
 
     @Override
@@ -206,17 +200,15 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LTHeld(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.Arm().SetPowerClamped(armSpeed);
-            //control.Arm().SetPowerRaw(armSpeed);
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.setLiftPower(liftSpeed);
         }
     }
 
     @Override
     public void RTHeld(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.Arm().SetPowerClamped(-armSpeed);
-            //control.Arm().SetPowerRaw(-armSpeed);
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.setLiftPower(-liftSpeed);
         }
     }
 
@@ -232,65 +224,65 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LTReleased(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            //control.Arm().SetPowerClamped(0);
-            control.Arm().SetPowerRaw(0);
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.setLiftPower(0);
             //control.Arm().LockArm();
         }
     }
 
     @Override
     public void RTReleased(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            //control.Arm().SetPowerClamped(0);
-            control.Arm().SetPowerRaw(0);
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.setLiftPower(0);
             //control.Arm().LockArm();
         }
     }
 
     @Override
     public void DUpPressed(double controllerNumber) {
-        control.TurretArm().AutoIntakeTierUp();
+        if(controllerNumber == payloadControllerNumber){
+        }
     }
 
     @Override
     public void DDownPressed(double controllerNumber) {
-        control.TurretArm().AutoIntakeTierDown();
+        if(controllerNumber == payloadControllerNumber){
+        }
     }
 
     @Override
     public void DLeftPressed(double controllerNumber) {
-
     }
 
     @Override
     public void DRightPressed(double controllerNumber) {
-
     }
 
     @Override
     public void DUpHeld(double controllerNumber) {
-
     }
 
     @Override
     public void DDownHeld(double controllerNumber) {
-
     }
 
     @Override
     public void DLeftHeld(double controllerNumber) {
-
     }
 
     @Override
     public void DRightHeld(double controllerNumber) {
-
     }
 
     @Override
     public void DUpReleased(double controllerNumber) {
-
+        if(controllerNumber == payloadControllerNumber){
+            if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+                liftHighPosition = control.getLiftPosition() ;
+                //control.Arm().SetSpinnerSpeed(0) ;
+                telemetry.addData("Arm High Pos: ", liftHighPosition);
+            }
+        }
     }
 
     @Override
@@ -310,7 +302,10 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LJSPressed(double controllerNumber) {
-        if(controllerNumber == 1) control.isBlue = !control.isBlue;
+        if(controllerNumber == 2) { //switch payload controllers at runtime
+            if(payloadControllerNumber == 1) payloadControllerNumber = 2;
+            else payloadControllerNumber = 1;
+        }
     }
 
     @Override

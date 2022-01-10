@@ -37,6 +37,8 @@ public class CuriosityRobot extends MecanumChassis
     //Nav Modules
     FreightFrenzyNavigation navigation;
 
+    public boolean isBlue = true;
+
     ////Variables////
     //Calibration
     private double levelPitchThreshold = 5;
@@ -103,6 +105,7 @@ public class CuriosityRobot extends MecanumChassis
     public EncoderActuator Arm(){return turretArm.Arm();}
 
     public DuckSpinner GetDuckSpinner(){return duckSpinner;}
+    public void SpinDucksLinear(){GetDuckSpinner().GradSpin(isBlue,0.5,1,opMode);}
 
     public FreightFrenzyNavigation Navigation(){return navigation;}
 
