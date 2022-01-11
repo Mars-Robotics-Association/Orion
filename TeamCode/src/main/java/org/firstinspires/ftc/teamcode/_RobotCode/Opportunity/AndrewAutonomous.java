@@ -25,6 +25,7 @@ public class AndrewAutonomous extends LinearOpMode
     private AndrewIMU andrewIMU;
     private DcMotor duckyMotor;
     private ColorSensor colorSensor1;
+    private ColorSensor colorSensor2;
 
 
     @Override
@@ -35,6 +36,7 @@ public class AndrewAutonomous extends LinearOpMode
         RL = this.hardwareMap.dcMotor.get("RL");
 
         colorSensor1 = hardwareMap.colorSensor.get("color1");
+        colorSensor2 = hardwareMap.colorSensor.get("color2");
 
         duckyMotor = this.hardwareMap.dcMotor.get("duckyMotor");
         imu = new IMU(this);
@@ -42,6 +44,9 @@ public class AndrewAutonomous extends LinearOpMode
         imu.Start();
         waitForStart();
     andrewIMU.resetRotation();
+
+    andrewIMU.loop();
+    double initialRotation = andrewIMU.getRotation();
 
         int FRStart = FR.getCurrentPosition();
         int FLStart = FL.getCurrentPosition();
@@ -62,6 +67,7 @@ public class AndrewAutonomous extends LinearOpMode
             telemetry.addData("FL",FL.getCurrentPosition()-FLStart);
             telemetry.update();
             andrewIMU.loop();
+            initialRotation = andrewIMU.getRotation();
         }
 
         FR.setPower(0);
@@ -101,7 +107,7 @@ public class AndrewAutonomous extends LinearOpMode
         FRStart = FR.getCurrentPosition();
         FLStart = FL.getCurrentPosition();
 
-        duckyMotor.setPower(0-1);
+        duckyMotor.setPower(-0.5);
 
         startTime = getRuntime();
         newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(0,0.3,0);
@@ -121,7 +127,7 @@ public class AndrewAutonomous extends LinearOpMode
         startTime = getRuntime();
         while(getRuntime()<startTime+4){
             if(!opModeIsActive()) return;
-            duckyMotor.setPower(0-1);
+            duckyMotor.setPower(-0.7);
         }
 
         FR.setPower(0);
@@ -160,23 +166,32 @@ public class AndrewAutonomous extends LinearOpMode
 //            telemetry.update();
 //        }
 
+
+
+//        startTime = getRuntime();
+//        while(getRuntime()<startTime+15){
+//            if(!opModeIsActive()) return;
+//            telemetry.addData("angle",andrewIMU.getRotation());
+//            telemetry.addData("start",initialRotation);
+//            telemetry.update();
+//            andrewIMU.loop();
+//        }
+
+
+        boolean turnRight = false;
         startTime = getRuntime();
 
-        if(andrewIMU.getRotation()>0&&getRuntime()<startTime+3){
-            newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(0,0,0.3);
-            while(andrewIMU.getRotation()>0){
+        andrewIMU.loop();
+        if(Math.abs(andrewIMU.getRotation())>10){
+            turnRight = andrewIMU.getRotation()>initialRotation;
+            while(andrewIMU.getRotation()>initialRotation==turnRight){
                 if(!opModeIsActive()) return;
                 andrewIMU.loop();
-                FR.setPower(newSpeeds[0]);
-                FL.setPower(newSpeeds[2]);
-                RR.setPower(newSpeeds[1]);
-                RL.setPower(newSpeeds[3]);
-            }
-        }else{
-            newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(0,0,-0.3);
-            while(andrewIMU.getRotation()<0&&getRuntime()<startTime+3){
-                if(!opModeIsActive()) return;
-                andrewIMU.loop();
+                if(turnRight)
+                    newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(0,0,0.2);
+                else
+                    newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(0,0,-0.2);
+
                 FR.setPower(newSpeeds[0]);
                 FL.setPower(newSpeeds[2]);
                 RR.setPower(newSpeeds[1]);
@@ -195,13 +210,15 @@ public class AndrewAutonomous extends LinearOpMode
 
 
 
-        newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(90,0.5,0);
-        while((FR.getCurrentPosition()-FRStart)-(FL.getCurrentPosition()-FLStart)<1000*2){
+        newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(90,0.2,0);
+        while((FR.getCurrentPosition()-FRStart)-(FL.getCurrentPosition()-FLStart)<2000*2){
             if(!opModeIsActive()) return;
             FR.setPower(newSpeeds[0]);
             FL.setPower(newSpeeds[2]);
             RR.setPower(newSpeeds[1]);
             RL.setPower(newSpeeds[3]);
+            if(colorSensor2.green()>60)
+                break;
         }
 
 
