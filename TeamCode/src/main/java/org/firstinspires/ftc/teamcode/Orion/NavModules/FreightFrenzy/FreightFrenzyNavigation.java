@@ -272,7 +272,7 @@ public class FreightFrenzyNavigation implements Runnable
         //get camera input and convert to mat
         //divide image into three sections
         //find section with most yellow
-        /*DuckPos pos= DuckPos.NULL;
+        DuckPos pos= DuckPos.NULL;
         Bitmap in = camera.GetImage();
         Mat img = camera.convertBitmapToMat(in);
         Rect firstRect = new Rect(0,0,img.width()/3,img.height());
@@ -284,11 +284,11 @@ public class FreightFrenzyNavigation implements Runnable
         FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(firstMat));
         firstMat = camera.IsolateYellow(firstMat);
         secondMat = camera.IsolateYellow(secondMat);
-        thirdMat = camera.IsolateYellow(thirdMat);*/
-        /*Bitmap first = camera.convertMatToBitMap(firstMat);
+        thirdMat = camera.IsolateYellow(thirdMat);
+        Bitmap first = camera.convertMatToBitMap(firstMat);
         Bitmap second = camera.convertMatToBitMap(secondMat);
-        Bitmap third = camera.convertMatToBitMap(thirdMat);*/
-        /*if(camera.countPixels(first)>camera.countPixels(second)&&camera.countPixels(first)>camera.countPixels(third)){
+        Bitmap third = camera.convertMatToBitMap(thirdMat);
+        if(camera.countPixels(first)>camera.countPixels(second)&&camera.countPixels(first)>camera.countPixels(third)){
             pos=DuckPos.FIRST;
             opMode.telemetry.addData("Element in position","1");
         }
@@ -302,7 +302,8 @@ public class FreightFrenzyNavigation implements Runnable
         }
         if(pos==DuckPos.NULL) {
             opMode.telemetry.addData("Element in position", "null");
-        }*/
+        }
+        opMode.telemetry.update();
         return DuckPos.FIRST;
     }
 
