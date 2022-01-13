@@ -68,7 +68,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
         RR = this.hardwareMap.dcMotor.get("RR");
         RL = this.hardwareMap.dcMotor.get("RL");
 
-        colorSensor1 = hardwareMap.colorSensor.get("color1");
+        colorSensor1 = hardwareMap.colorSensor.get("color2");
     //    RL.setDirection(DcMotorSimple.Direction.REVERSE); //uncomment this too
     //    FR.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -87,6 +87,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
         public void start(){
             imu.Start();
             andrewArm = new AndrewArm(armPos);
+            andrewIMU.resetRotation();
         }
 
 
@@ -97,8 +98,6 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             controllerInput2.Loop();
             andrewIMU.loop();
             andrewArm.loop();
-
-
 
             double stickDir = Math.atan2(gamepad1.left_stick_y, 0-gamepad1.left_stick_x);
             double stickDist = Math.sqrt(Math.pow(gamepad1.left_stick_x,2)+Math.pow(gamepad1.left_stick_y,2));
