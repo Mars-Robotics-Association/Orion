@@ -84,8 +84,8 @@ public class UniversalTurretIntakeArm
         intake.setPosition(servoSpeed);
     }
 
-    public void ReturnToHomeAndIntake(double intakeSpeed){
-        GoToZero();
+    public void ReturnToHomeAndIntake(double rotation, double intakeSpeed){
+        Arm().GoToPosition(rotation);
         SetIntakeSpeed(intakeSpeed);
         intakeState = 1;
     }

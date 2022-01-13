@@ -96,4 +96,5 @@ public class IMU
     public void ResetGyro(){
         offset = GetRawAngles().firstAngle;
     }
+    public void OffsetGyro(double offsetDegrees){offset+=offsetDegrees;}
 }

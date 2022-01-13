@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorA
 class _ArmProfile implements EncoderActuatorProfile
 {
     MotorArray MOTORS;
-    double MAX_ROTS = 0.33;
+    double MAX_ROTS = 0.34;
     double MIN_ROTS = 0;
     double GEAR_RATIO = 24;
     double ENCODER_RESOLUTION = 537.7; //gobilda 19.2:1

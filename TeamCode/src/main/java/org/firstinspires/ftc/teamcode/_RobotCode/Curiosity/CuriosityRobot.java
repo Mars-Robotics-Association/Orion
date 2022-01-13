@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -9,7 +10,9 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
@@ -33,6 +36,8 @@ public class CuriosityRobot extends MecanumChassis
     CuriosityTurretArm turretArm;
     DuckSpinner duckSpinner;
     DistanceSensor duckDist;
+    TextCycler text;
+    FtcDashboard dashboard;
 
     //Nav Modules
     FreightFrenzyNavigation navigation;
@@ -55,6 +60,10 @@ public class CuriosityRobot extends MecanumChassis
         duckDist = opMode.hardwareMap.get(DistanceSensor.class, "duckDist");
         DistanceSensor intakeDist = opMode.hardwareMap.get(DistanceSensor.class, "intakeDist");
 
+        text = new TextCycler(opMode);
+        dashboard = FtcDashboard.getInstance();
+
+
         if(USE_PAYLOAD){
             DcMotor armMotor = opMode.hardwareMap.dcMotor.get("Arm");
             armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -74,7 +83,7 @@ public class CuriosityRobot extends MecanumChassis
             DistanceSensor portDist = opMode.hardwareMap.get(DistanceSensor.class, "portDist");
             DistanceSensor starboardDist = opMode.hardwareMap.get(DistanceSensor.class, "starboardDist");
             ColorSensor colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
-            navigation = new CuriosityNavigator(opMode, turretArm, duckSpinner, duckDist, intakeDist, portDist, starboardDist, colorSensor, FreightFrenzyNavigation.AllianceSide.BLUE);
+            navigation = new CuriosityNavigator(opMode, this, turretArm, duckSpinner, duckDist, intakeDist, portDist, starboardDist, colorSensor, FreightFrenzyNavigation.AllianceSide.BLUE);
             navigation.SetThread(new Thread(navigation));
         }
     }
@@ -96,6 +105,7 @@ public class CuriosityRobot extends MecanumChassis
     }
 
     public void Update(){
+        text.Update();
         if(USE_NAVIGATOR){
         }
     }
@@ -105,7 +115,6 @@ public class CuriosityRobot extends MecanumChassis
     public EncoderActuator Arm(){return turretArm.Arm();}
 
     public DuckSpinner GetDuckSpinner(){return duckSpinner;}
-    public void SpinDucksLinear(){GetDuckSpinner().GradSpin(isBlue,0.5,1,opMode);}
 
     public FreightFrenzyNavigation Navigation(){return navigation;}
 

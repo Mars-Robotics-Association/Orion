@@ -46,7 +46,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        control = new CuriosityRobot(this, true, true, false);
+        control = new CuriosityRobot(this, true, true, true);
         control.Init();
 
         controllerInput1 = new ControllerInput(gamepad1, 1);
@@ -61,7 +61,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.update();
 
 
-        msStuckDetectLoop = 5000;
+        msStuckDetectLoop = 15000;
+
 
         //set roadrunner speed modifiers
         if(control.isUSE_NAVIGATOR()){
@@ -76,6 +77,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void start(){
         control.Start();
         control.ResetGyro();
+        //control.GetImu().OffsetGyro(-90);//apply offset to robot's gyro at start of match
+        control.SetInputOffset(90);
         control.SetHeadlessMode(true);
     }
 
@@ -86,6 +89,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
         control.Update();
         control.TurretArm().UpdateIntakeTiered();
+
+        control.navigation.PrintSensorTelemetry();
 
         if(!busy) {
             //Manage driving
@@ -118,13 +123,16 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void BPressed(double controllerNumber) {
-        if(controllerNumber == 1) control.ResetGyro();
+
+        if(controllerNumber == 1) {
+            control.navigation.CollectFreightLinear();
+        }
     }
 
     @Override
     public void XPressed(double controllerNumber) {
         if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.TurretArm().ReturnToHomeAndIntake(intakeSpeed);
+            control.TurretArm().ReturnToHomeAndIntake(0.02,intakeSpeed);
         }
     }
 
@@ -182,7 +190,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void RBPressed(double controllerNumber) {
         //toggle between duck spinner states
         if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.SpinDucksLinear();
+            control.navigation.SpinDucks(0.5,1);
         }
     }
 
@@ -310,12 +318,17 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LJSPressed(double controllerNumber) {
-        if(controllerNumber == 1) control.isBlue = !control.isBlue;
+        if(controllerNumber == 1) {
+            control.navigation.ToggleAllianceSide();
+        }
     }
 
     @Override
     public void RJSPressed(double controllerNumber) {
-        if(controllerNumber == 1) control.SwitchHeadlessMode();
+        if(controllerNumber == 1) {
+            control.ResetGyro();
+            control.SwitchHeadlessMode();
+        }
         //if(controllerNumber == 1) control.TurnToZero();
     }
 

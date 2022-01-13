@@ -33,6 +33,8 @@ public class MecanumChassis
     private int RRBrakePos = 0;
     private int RLBrakePos = 0;
 
+    private double inputOffset = 0;
+
     //Util
     protected double gyroOffset;
     protected boolean headlessMode = false;
@@ -112,7 +114,7 @@ public class MecanumChassis
     public void DriveWithGamepad(ControllerInput controllerInput, double driveSpeed, double turnSpeed, double speedMultiplier) {
         //MOVE if left joystick magnitude > 0.1
         if (controllerInput.CalculateLJSMag() > 0.1) {
-            RawDrive(controllerInput.CalculateLJSAngle(), controllerInput.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
+            RawDrive(controllerInput.CalculateLJSAngle()+inputOffset, controllerInput.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
             opMode.telemetry.addData("Moving at ", controllerInput.CalculateLJSAngle());
         }
         //TURN if right joystick magnitude > 0.1 and not moving
@@ -124,6 +126,7 @@ public class MecanumChassis
             SetMotorSpeeds(0,0,0,0);
         }
     }
+    public void SetInputOffset(double offset) {inputOffset = offset;}
 
     //Tells robot to raw move at any angle. Turn speed variable causes it to sweep turn / corkscrew.
     //This is called continuously while the robot is driving.
@@ -175,6 +178,24 @@ public class MecanumChassis
 
         //Update the values for breaking
         UpdateEncoderBrakePos();
+    }
+    public void TurnTowardsAngle(double targetHeading, double speed, double coefficient){
+        //fix angle
+        if(targetHeading > 180) targetHeading = -360+targetHeading;
+        else if(targetHeading < -180) targetHeading = 360+targetHeading;
+        //calculate error and turn speed
+        double error = targetHeading - imu.GetRobotAngle();
+        double turnSpeed = (error*coefficient*speed) + 0.2*(error/Math.abs(error));
+        RawTurn(turnSpeed);
+    }
+    public boolean InWithinRangeOfAngle(double targetHeading, double threshold){
+        //fix angle
+        if(targetHeading > 180) targetHeading = -360+targetHeading;
+        else if(targetHeading < -180) targetHeading = 360+targetHeading;
+        //calculate if within range
+        double error = targetHeading - imu.GetRobotAngle();
+        if(Math.abs(error)<threshold) return true;
+        else return false;
     }
     public void ResetGyro(){
         //Offsets the gryo so the current heading can be zero with GetRobotAngle()

@@ -3,7 +3,12 @@ package org.firstinspires.ftc.teamcode.Orion.NavModules;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.vuforia.Frame;
+import com.vuforia.Image;
+import com.vuforia.PIXEL_FORMAT;
+import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.function.Consumer;
@@ -18,6 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.internal.collections.EvictingBlockingQueue;
@@ -25,6 +31,7 @@ import org.firstinspires.ftc.teamcode.Core.HermesLog.DashboardWebSocketServer;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.ConfidenceLevel;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.OpenCV.EncodedImageRecognition;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.OpenCV.Pipeline;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
@@ -34,6 +41,9 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.android.Utils;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -46,6 +56,7 @@ public class Camera
     private VuforiaTrackables trackables;
     private TFObjectDetector tfod;
     private EvictingBlockingQueue<Bitmap> frameQueue;
+    private FtcDashboard dashboard;
 
     public VuforiaLocalizer GetVuforia() {return vuforia;}
 
@@ -64,6 +75,11 @@ public class Camera
         cameraMonitorViewID = opmode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", opmode.hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewID);
 
+        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamname, cameraMonitorViewID);
+        camera.openCameraDevice();
+        camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
+        camera.setPipeline(new Pipeline());
+
         parameters.vuforiaLicenseKey = VLK;
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         parameters.cameraName = webcamname;
@@ -79,6 +95,10 @@ public class Camera
         //Init
         initTfod();
         if (tfod != null)tfod.activate();
+
+        dashboard = FtcDashboard.getInstance();
+
+        dashboard.startCameraStream(vuforia,0);
     }
 
     private void initTfod() {
@@ -88,7 +108,7 @@ public class Camera
         tfodParameters.minResultConfidence = 0.8f;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset("UltimateGoal.tflite", "Ball", "Cube");
-        tfod.setZoom(2, 16.0/9.0);
+        tfod.setZoom(1, 16.0/9.0);
     }
 
     public void stopTfod(){
@@ -362,8 +382,26 @@ public class Camera
         return result;
     }
 
-    public Bitmap GetImage(){
-        Bitmap bmp = frameQueue.poll();
+    public Bitmap GetImage() throws InterruptedException {
+        vuforia.enableConvertFrameToBitmap();
+        Bitmap bmp = vuforia.convertFrameToBitmap(vuforia.getFrameQueue().take());
+        /*VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
+        long numImages = frame.getNumImages();
+        Image rgb = null;
+
+        for(int i=0; i<numImages; i++){
+            if(frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565){
+                rgb = frame.getImage(i);
+                break;
+            }
+        }
+
+        Bitmap bmp = Bitmap.createBitmap(rgb.getWidth(),rgb.getHeight(), Bitmap.Config.RGB_565);
+        bmp.copyPixelsFromBuffer(rgb.getPixels());
+
+        frame.close();*/
+
+        //Bitmap bmp = frameQueue.poll();
         return bmp;
     }
 
