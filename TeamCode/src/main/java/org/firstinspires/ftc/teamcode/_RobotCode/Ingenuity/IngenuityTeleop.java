@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 @TeleOp(name = "*INGENUITY TELEOP*", group = "Ingenuity")
 @Config
+@Disabled
 public class IngenuityTeleop extends OpMode implements ControllerInputListener
 {
     ////Dependencies////

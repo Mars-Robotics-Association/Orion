@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
 @Autonomous(name = "*Ingenuity Red Duck*", group = "Ingenuity")
+@Disabled
 public class IngenuityRedDucks extends LinearOpMode
 {
     IngenuityControl robot;

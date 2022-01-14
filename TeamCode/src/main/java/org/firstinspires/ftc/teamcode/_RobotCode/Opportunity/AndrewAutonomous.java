@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Opportunity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.Meca
 
 @Config
 @Autonomous(name = "Andrew auto", group = "All")
+@Disabled
 public class AndrewAutonomous extends LinearOpMode
 {
     private DcMotor FR;
