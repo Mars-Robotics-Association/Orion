@@ -10,9 +10,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
@@ -101,13 +99,19 @@ public class CuriosityRobot extends MecanumChassis
     }
 
     public void Start(){
+
         super.StartCoreRobotModules();
+        navigation.NavigatorOn();
     }
 
     public void Update(){
         text.Update();
         if(USE_NAVIGATOR){
         }
+    }
+
+    public void Stop(){
+        navigation.StopNavigator();
     }
 
     public CuriosityTurretArm TurretArm(){return turretArm;}

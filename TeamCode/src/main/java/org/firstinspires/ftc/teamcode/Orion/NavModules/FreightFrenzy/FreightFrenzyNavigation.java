@@ -109,7 +109,7 @@ public class FreightFrenzyNavigation implements Runnable
         portDist = setPortDist;
         starboardDist = setStarboardDist;
         colorSensor = setColorSensor;
-        camera = new Camera(opMode,"Webcam 1");
+        //camera = new Camera(opMode,"Webcam 1");
 
         side = setSide;
 
@@ -126,6 +126,7 @@ public class FreightFrenzyNavigation implements Runnable
     public void run() {
         opMode.telemetry.addLine("Nav Thread Start!");
         threadRunning = true;
+        NavigatorOn();
 
         if(startSpinDucks) {
             startSpinDucks = false;
@@ -162,9 +163,8 @@ public class FreightFrenzyNavigation implements Runnable
 
     ////MAJOR FUNCTIONS////
     public void StopNavigator(){navigatorRunning = false;}
-    public void StartNavigator(){
+    public void NavigatorOn(){
         navigatorRunning = true;
-        thread.start();
     }
 
     public void StartSpinDucks(){
@@ -188,7 +188,7 @@ public class FreightFrenzyNavigation implements Runnable
         thread.start();
     }
     public void StartCollectFreight(){
-        startSpinDucks = true;
+        startCollectFreight = true;
         thread.start();
     }
 
@@ -318,6 +318,14 @@ public class FreightFrenzyNavigation implements Runnable
         //when close enough, reverse intake
         //when no freight is detected by intakeDist, goToWall() at a diagonal
         //wallFollowToWhite() from the north
+
+        TurnToAngle(0,0.8);
+        TurnToAngle(0,0.2);
+        GoToWall(1);
+        WallFollowToWhite(0.5,0);
+        WallFollowForTime(1,0.25);
+        DriveForTime(45*sideMultiplier,1,0,0.65);
+        TurnToAngle(75*sideMultiplier,0.5);
     }
 
     public void CollectFreightLinear(){
@@ -330,8 +338,10 @@ public class FreightFrenzyNavigation implements Runnable
         //once freight is collected, goToWall() at a diagonal
         //wallFollowToWhite() from the south
 
-        GoToWall(90*(-sideMultiplier), 1);
-        WallFollowToWhite(0.5,90+(90*(-sideMultiplier)));
+        TurnToAngle(0,0.4);
+        GoToWall(1);
+        arm.ReturnToHomeAndIntake(0.02,1);
+        WallFollowToWhite(0.5,180);
     }
 
     ////MINOR FUNCTIONS////
@@ -339,7 +349,7 @@ public class FreightFrenzyNavigation implements Runnable
     //Drive for a period of time
     public void DriveForTime(double angle, double speed, double turnOffset, double time){
         double startTime = opMode.getRuntime();
-        while (opMode.getRuntime()<startTime+time){
+        while (opMode.getRuntime()<startTime+time && navigatorRunning){
             chassis.RawDrive(angle,speed,turnOffset);
         }
         chassis.RawDrive(0,0,0);
@@ -347,7 +357,7 @@ public class FreightFrenzyNavigation implements Runnable
 
     //Drive until duck sensor detects distance
     public void DriveForDuckSensorDistance(double angle, double speed, double turnOffset, double distance){
-        while (duckDistance.getDistance(DistanceUnit.CM)>distance){
+        while (duckDistance.getDistance(DistanceUnit.CM)>distance && navigatorRunning){
             chassis.RawDrive(angle,speed,turnOffset);
         }
         chassis.RawDrive(0,0,0);
@@ -356,13 +366,13 @@ public class FreightFrenzyNavigation implements Runnable
     //Wait for a period of time
     public void Wait(double time){
         double startTime = opMode.getRuntime();
-        while (opMode.getRuntime()<startTime+time){}
+        while (opMode.getRuntime()<startTime+time && navigatorRunning){}
 
     }
 
     //Goes to the wall at an angle. Stops when in contact with wall
     public void GoToWall(double angle, double speed){
-        while (!CheckDistance(portDist,wallStopDistance) && !CheckDistance(starboardDist,wallStopDistance)) {
+        while (!CheckDistance(portDist,wallStopDistance) && !CheckDistance(starboardDist,wallStopDistance) && navigatorRunning) {
             chassis.RawDrive(angle, speed, 0);
         }
         chassis.RawDrive(0,0,0);
@@ -378,7 +388,7 @@ public class FreightFrenzyNavigation implements Runnable
         if(side == AllianceSide.RED) turnOffset = 0.02*speed;
 
         double startTime = opMode.getRuntime();
-        while (opMode.getRuntime()<startTime+time){
+        while (opMode.getRuntime()<startTime+time && navigatorRunning){
             chassis.RawDrive(0,speed,turnOffset);
         }
         chassis.RawDrive(0,0,0);
@@ -390,7 +400,7 @@ public class FreightFrenzyNavigation implements Runnable
         if(side == AllianceSide.BLUE) turnOffset = -0.02*speed;
         if(side == AllianceSide.RED) turnOffset = 0.02*speed;
 
-        while (!CheckDistance(duckDistance,distance)){
+        while (!CheckDistance(duckDistance,distance) && navigatorRunning){
             chassis.RawDrive(0,speed,turnOffset);
         }
         chassis.RawDrive(0,0,0);
@@ -401,7 +411,7 @@ public class FreightFrenzyNavigation implements Runnable
         double turnOffset = 0.02*speed*sideMultiplier;
         if(angle>0) turnOffset*=-1;
 
-        while (colorSensor.alpha() < whiteThreshold){
+        while (colorSensor.alpha() < whiteThreshold && navigatorRunning){
             chassis.RawDrive(angle,speed,turnOffset);
         }
         chassis.RawDrive(0,0,0);
@@ -410,7 +420,7 @@ public class FreightFrenzyNavigation implements Runnable
 
     //Turns to an angle
     public void TurnToAngle(double angle, double speed){
-        while (!chassis.InWithinRangeOfAngle(angle,5)) {
+        while (!chassis.InWithinRangeOfAngle(angle,5) && navigatorRunning) {
             chassis.TurnTowardsAngle(angle, speed, turnCoefficient);
             opMode.telemetry.addData("Robot Angle", chassis.GetImu().GetRobotAngle());
             opMode.telemetry.update();
@@ -423,7 +433,7 @@ public class FreightFrenzyNavigation implements Runnable
         //DriveForTime(-90,0.5,0.08*sideMultiplier,0.2);
         double startTime = opMode.getRuntime();
         double speed = 0;
-        while(speed<maxSpeed){
+        while(speed<maxSpeed && navigatorRunning){
 
             speed = (opMode.getRuntime()-startTime)*multiplier;
             if (speed>1)speed=1;
@@ -442,10 +452,10 @@ public class FreightFrenzyNavigation implements Runnable
 
     public void PrintSensorTelemetry(){
         Telemetry tele = opMode.telemetry;
-        tele.addData("Duck Distance", duckDistance.getDistance(DistanceUnit.CM));
-        tele.addData("Intake Distance", intakeDistance.getDistance(DistanceUnit.CM));
-        tele.addData("Port Distance", portDist.getDistance(DistanceUnit.CM));
-        tele.addData("Starboard Distance", starboardDist.getDistance(DistanceUnit.CM));
+        //tele.addData("Duck Distance", duckDistance.getDistance(DistanceUnit.CM));
+        //tele.addData("Intake Distance", intakeDistance.getDistance(DistanceUnit.CM));
+        //tele.addData("Port Distance", portDist.getDistance(DistanceUnit.CM));
+        //tele.addData("Starboard Distance", starboardDist.getDistance(DistanceUnit.CM));
         tele.addData("Color Alpha", colorSensor.alpha());
     }
 

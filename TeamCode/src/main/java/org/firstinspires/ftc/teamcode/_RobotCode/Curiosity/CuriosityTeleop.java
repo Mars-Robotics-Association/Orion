@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.FreightFrenzy.FreightFrenzyNavigation;
 
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ACCEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_ACCEL_MOD;
@@ -78,7 +79,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         control.Start();
         control.ResetGyro();
         //control.GetImu().OffsetGyro(-90);//apply offset to robot's gyro at start of match
-        control.SetInputOffset(90);
+        if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) control.SetInputOffset(90); //90 is blue, -90 is red
+        else if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) control.SetInputOffset(-90); //90 is blue, -90 is red
+        //control.navigation
         control.SetHeadlessMode(true);
     }
 
@@ -87,28 +90,37 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         controllerInput1.Loop();
         controllerInput2.Loop();
 
+        //KILL SWITCH FOR NAVIGATOR
+        if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
+            control.navigation.StopNavigator();
+        }
+
+        if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) telemetry.addData("Alliance Side", "BLUE");
+        else telemetry.addData("Alliance Side", "RED");
+
+        if(control.navigation.IsThreadRunning()) return;
+
         control.Update();
         control.TurretArm().UpdateIntakeTiered();
 
         control.navigation.PrintSensorTelemetry();
 
-        if(!busy) {
-            //Manage driving
-            control.SetHeadingPID(turnP, turnI, turnD);
-            control.DriveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+        //Manage driving
+        control.SetHeadingPID(turnP, turnI, turnD);
+        control.DriveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
 
-        }
         //print telemetry
         if(control.isUSE_NAVIGATOR()) {
             //control.GetOrion().PrintVuforiaTelemetry(0);
             //control.GetOrion().PrintTensorflowTelemetry();
         }
 
-        telemetry.addLine("*TELEOP DATA*");
-        telemetry.addData("Speed Modifier", speedMultiplier);
-        telemetry.addData("Payload Controller", payloadControllerNumber);
-
         telemetry.update();
+    }
+
+    @Override
+    public void stop(){
+        control.Stop();
     }
 
     ////INPUT MAPPING////
@@ -125,7 +137,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void BPressed(double controllerNumber) {
 
         if(controllerNumber == 1) {
-            control.navigation.CollectFreightLinear();
+            //control.navigation.CollectFreightLinear();
+            control.navigation.StartCollectFreight();
         }
     }
 
@@ -139,7 +152,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void YPressed(double controllerNumber) {
         if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            control.TurretArm().GoToAutoTier();
+            //control.navigation.PlaceFreightLinear();
+            control.navigation.StartPlaceFreight();
         }
     }
 
@@ -258,12 +272,16 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void DUpPressed(double controllerNumber) {
+
         control.TurretArm().AutoIntakeTierUp();
+        control.TurretArm().GoToAutoTier();
     }
 
     @Override
     public void DDownPressed(double controllerNumber) {
+
         control.TurretArm().AutoIntakeTierDown();
+        control.TurretArm().GoToAutoTier();
     }
 
     @Override
@@ -320,6 +338,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void LJSPressed(double controllerNumber) {
         if(controllerNumber == 1) {
             control.navigation.ToggleAllianceSide();
+            if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) control.SetInputOffset(90); //90 is blue, -90 is red
+            else if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) control.SetInputOffset(-90); //90 is blue, -90 is red
         }
     }
 
@@ -327,7 +347,6 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void RJSPressed(double controllerNumber) {
         if(controllerNumber == 1) {
             control.ResetGyro();
-            control.SwitchHeadlessMode();
         }
         //if(controllerNumber == 1) control.TurnToZero();
     }
