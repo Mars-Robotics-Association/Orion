@@ -34,6 +34,8 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private DcMotor RR;
     private DcMotor RL;
     private DcMotor armPos;
+    private DcMotor gripper;
+    private DcMotor turntable;
 
     private ColorSensor colorSensor1;
 
@@ -53,10 +55,11 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private boolean doFunnyLockThing = false;
 
     private double speed = 1;
+    private int gripperStart = 0;
 
-    private double armSpeed = 0.5;
 
-    private double armAngle = 0;
+    private int armStartPos = 0;
+
     private AndrewArm andrewArm;
 
 
@@ -67,7 +70,8 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
         FL = this.hardwareMap.dcMotor.get("FL");
         RR = this.hardwareMap.dcMotor.get("RR");
         RL = this.hardwareMap.dcMotor.get("RL");
-
+        gripper = this.hardwareMap.dcMotor.get("clawMotor");
+        turntable = this.hardwareMap.dcMotor.get("turntable");
         colorSensor1 = hardwareMap.colorSensor.get("color2");
     //    RL.setDirection(DcMotorSimple.Direction.REVERSE); //uncomment this too
     //    FR.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -88,6 +92,8 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             imu.Start();
             andrewArm = new AndrewArm(armPos);
             andrewIMU.resetRotation();
+            gripperStart = gripper.getCurrentPosition();
+            armStartPos = armPos.getCurrentPosition();
         }
 
 
@@ -99,7 +105,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             andrewIMU.loop();
             andrewArm.loop();
 
-            double stickDir = Math.atan2(gamepad1.left_stick_y, 0-gamepad1.left_stick_x);
+            double stickDir = Math.PI+Math.atan2(gamepad1.left_stick_y, 0-gamepad1.left_stick_x);
             double stickDist = Math.sqrt(Math.pow(gamepad1.left_stick_x,2)+Math.pow(gamepad1.left_stick_y,2));
 
             double moveAngle = stickDir*180/3.14;
@@ -157,74 +163,11 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             startWasDown = gamepad1.start;
 
 
-            if(gamepad2.x){
-                andrewArm.setRawPower(0.5);
-            }
-            if(gamepad2.y){
-                andrewArm.setRawPower(-0.5);
-            }
-            /*
-            if(gamepad2.a){
-                andrewArm.setTarget(0.5,1,0.03);
-            }
-            if(gamepad2.b){
-                andrewArm.setTarget(0,1,0.03);
-            }
-            if(gamepad2.back){
-                andrewArm.zeroArm();
-            }
-            */
 
-            boolean indexWasChanged = false;
-
-            if(gamepad2.dpad_left&&!dpad2WasDown){
-                armPosIndex--;
-                indexWasChanged= true;
-            }
-            if(gamepad2.dpad_right&&!dpad2WasDown){
-                armPosIndex++;
-                indexWasChanged= true;
-            }
-            if(gamepad2.dpad_up&&!dpad2WasDown){
-                armPosIndex = armPositions.length-1;
-                indexWasChanged= true;
-            }
-            if(gamepad2.dpad_down&&!dpad2WasDown){
-                armPosIndex = 0;
-                indexWasChanged= true;
-            }
-if(armPosIndex>=armPositions.length) armPosIndex = armPositions.length-1;
-if(armPosIndex<0) armPosIndex = 0;
+            player2ArmStuff();
 
 
 
-
-            dpad2WasDown = gamepad2.dpad_up||gamepad2.dpad_down||gamepad2.dpad_left||gamepad2.dpad_right;
-            if(dpad2WasDown)  andrewArm.setTarget(armPositions[armPosIndex],1,0.03);
-
-            if(gamepad2.start){
-                andrewArm.setRawPower(0);
-            }
-
-            if(!armTouch.getState()){
-                andrewArm.zeroArm();
-                andrewArm.setTarget(0,0.4,0.02);
-                armPosIndex = 1;
-            }
-
-
-            armAngle = andrewArm.getAngle();
-
-            telemetry.addData("Arm angle",andrewArm.getAngle());
-            telemetry.addData("Arm target",andrewArm.getTarget());
-            telemetry.addData("TargetSetCount" , andrewArm.targetCount);
-            telemetry.addData("left_stick_y",gamepad2.left_stick_y);
-
-            if(Math.abs(gamepad2.left_stick_y)>0.1){
-                andrewArm.setAdjustmentSpeed(0-gamepad2.left_stick_y);
-            }else{
-                andrewArm.setAdjustmentSpeed(0);
-            }
 
             telemetry.addData("FR",FR.getCurrentPosition());
             telemetry.addData("FL",FL.getCurrentPosition());
@@ -239,8 +182,148 @@ if(armPosIndex<0) armPosIndex = 0;
 
 
         }
+        private boolean gamepad2APressed = false;
+        private boolean gripperToggle;
+        private int turntableLockPos = 0;
+        private boolean turntableLockOn = false;
 
 
+        public void player2ArmStuff(){
+            telemetry.addData("gripper position",gripper.getCurrentPosition()+gripperStart);
+
+
+            /*
+        if(Math.abs(gamepad2.left_stick_y)>0.1) //ARM UP/DOWN
+            armPos.setPower(gamepad2.left_stick_y);
+        else
+            armPos.setPower(0);
+*/
+
+
+
+/*
+        if(Math.abs(gamepad2.right_stick_x)>0.1) //TURNTABLE
+            turntable.setPower(0-gamepad2.right_stick_x);
+        else
+            turntable.setPower(0);
+*/
+            if(gamepad1.dpad_left||gamepad2.dpad_left) {
+
+                turntable.setPower(1);
+            }else if(gamepad1.dpad_right||gamepad2.dpad_right) {
+                turntable.setPower(0 - 1);
+            }else{
+
+                  turntable.setPower(0);
+
+
+            }
+
+
+
+            if(gamepad1.dpad_up||gamepad2.dpad_up)
+                armPos.setPower(-1);
+            else if(gamepad1.dpad_down||gamepad2.dpad_down)
+                armPos.setPower(1);
+            else
+                armPos.setPower(0);
+
+
+        if(!gamepad2APressed&&(gamepad1.a||gamepad2.a)){ //GRIPPER TOGGLE
+            gripperToggle = !gripperToggle;
+        }
+        gamepad2APressed = (gamepad1.a||gamepad2.a);
+        if(gripperToggle){
+          gripperStart = gripper.getCurrentPosition();
+          gripper.setTargetPosition(400+gripperStart);
+          if(gripper.getCurrentPosition()+gripperStart>300)
+              gripper.setPower(0.2);
+          else
+              gripper.setPower(1);
+          gripper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+      }else{
+          gripper.setPower(0);
+      }
+
+
+
+
+
+        }
+
+
+
+
+
+
+    public void things(){
+
+        if(gamepad2.x){
+            andrewArm.setRawPower(0.5);
+        }
+        if(gamepad2.y){
+            andrewArm.setRawPower(-0.5);
+        }
+            /*
+            if(gamepad2.a){
+                andrewArm.setTarget(0.5,1,0.03);
+            }
+            if(gamepad2.b){
+                andrewArm.setTarget(0,1,0.03);
+            }
+
+            */
+        if(gamepad2.back){
+            andrewArm.zeroArm();
+            andrewArm.setRawPower(0);
+        }
+
+        boolean indexWasChanged = false;
+
+        if(gamepad2.dpad_left&&!dpad2WasDown){
+            armPosIndex--;
+            indexWasChanged= true;
+        }
+        if(gamepad2.dpad_right&&!dpad2WasDown){
+            armPosIndex++;
+            indexWasChanged= true;
+        }
+        if(gamepad2.dpad_up&&!dpad2WasDown){
+            armPosIndex = armPositions.length-1;
+            indexWasChanged= true;
+        }
+        if(gamepad2.dpad_down&&!dpad2WasDown){
+            armPosIndex = 0;
+            indexWasChanged= true;
+        }
+
+
+        if(Math.abs(gamepad2.left_stick_y)>0.1){
+            andrewArm.setAdjustmentSpeed(0-gamepad2.left_stick_y);
+        }else{
+            andrewArm.setAdjustmentSpeed(0);
+        }
+
+            if(armPosIndex>=armPositions.length) armPosIndex = armPositions.length-1;
+        if(armPosIndex<0) armPosIndex = 0;
+
+
+
+        dpad2WasDown = gamepad2.dpad_up||gamepad2.dpad_down||gamepad2.dpad_left||gamepad2.dpad_right;
+        if(dpad2WasDown)  andrewArm.setTarget(armPositions[armPosIndex],1,0.03);
+
+        if(gamepad2.start){
+            andrewArm.setRawPower(0);
+        }
+
+        if(!armTouch.getState()){
+            andrewArm.zeroArm();
+            andrewArm.setTarget(0,0.4,0.02);
+            armPosIndex = 1;
+        }
+
+
+    }
 
     @Override
     public void APressed(double controllerNumber) {
