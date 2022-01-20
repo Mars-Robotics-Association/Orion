@@ -253,7 +253,7 @@ public class FreightFrenzyNavigation implements Runnable
         chassis.RawDrive(0,0,0);*/
     }
 
-    public void ScanBarcodeLinear(){
+    public DuckPos ScanBarcodeLinear(){
         //should start at constant point along a side wall north of warehouse with intake facing south
         //start moving arm so intake faces barcode
         //break away from the wall and move towards the center of the field for time
@@ -265,7 +265,15 @@ public class FreightFrenzyNavigation implements Runnable
         double startTime = opMode.getRuntime();
         DriveForDuckSensorDistance(90,0.5,0,5);
         double totalTime = opMode.getRuntime()-startTime;
-
+        DuckPos location = DuckPos.NULL;
+        if(totalTime<2){
+            location = DuckPos.FIRST;
+        }else if(totalTime<3){
+            location = DuckPos.SECOND;
+        }else {
+            location = DuckPos.THIRD;
+        }
+        return location;
     }
 
     public DuckPos ScanBarcodeOpenCV() throws InterruptedException {
