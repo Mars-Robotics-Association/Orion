@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.RoadrunnerModu
 public class CuriosityTESTAutonomous extends LinearOpMode
 {
     CuriosityRobot robot;
-    Camera cam;
     FreightFrenzyNavigation nav;
     public static double targetHeading = -90;
     public static double targetHeading2 = -200;

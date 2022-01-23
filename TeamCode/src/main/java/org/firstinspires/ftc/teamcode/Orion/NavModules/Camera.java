@@ -85,22 +85,10 @@ public class Camera
 
 
     //start sample
-    /** State regarding our interaction with the camera */
     private CameraManager cameraManager;
-    private WebcamName cameraName;
     private org.firstinspires.ftc.robotcore.external.hardware.camera.Camera camera;
     private CameraCaptureSession cameraCaptureSession;
-
-    /** The queue into which all frames from the camera are placed as they become available.
-     * Frames which are not processed by the OpMode are automatically discarded. */
-
-    /** State regarding where and how to save frames when the 'A' button is pressed. */
-    private int captureCounter = 0;
     private File captureDirectory = AppUtil.ROBOT_DATA_DIR;
-
-    /** A utility object that indicates where the asynchronous callbacks from the camera
-     * infrastructure are to run. In this OpMode, that's all hidden from you (but see {@link #startCamera}
-     * if you're curious): no knowledge of multi-threading is needed here. */
     private Handler callbackHandler;
     private static final String TAG = "Webcam Sample";
 //end sample
@@ -476,7 +464,6 @@ public class Camera
         callbackHandler = CallbackLooper.getDefault().getHandler();
 
         cameraManager = ClassFactory.getInstance().getCameraManager();
-        cameraName = opmode.hardwareMap.get(WebcamName.class, "Webcam 1");
 
         initializeFrameQueue(2);
         AppUtil.getInstance().ensureDirectoryExists(captureDirectory);
@@ -531,9 +518,9 @@ public class Camera
         if (camera != null) return; // be idempotent
 
         Deadline deadline = new Deadline(Integer.MAX_VALUE, TimeUnit.SECONDS);
-        camera = cameraManager.requestPermissionAndOpenCamera(deadline, cameraName, null);
+        camera = cameraManager.requestPermissionAndOpenCamera(deadline, webcamname, null);
         if (camera == null) {
-            error("camera not found or permission to use not granted: %s", cameraName);
+            error("camera not found or permission to use not granted: %s", webcamname);
         }
     }
 
@@ -546,7 +533,7 @@ public class Camera
         final int imageFormat = ImageFormat.YUY2;
 
         /** Verify that the image is supported, and fetch size and desired frame rate if so */
-        CameraCharacteristics cameraCharacteristics = cameraName.getCameraCharacteristics();
+        CameraCharacteristics cameraCharacteristics = webcamname.getCameraCharacteristics();
         if (!contains(cameraCharacteristics.getAndroidFormats(), imageFormat)) {
             error("image format not supported");
             return;
