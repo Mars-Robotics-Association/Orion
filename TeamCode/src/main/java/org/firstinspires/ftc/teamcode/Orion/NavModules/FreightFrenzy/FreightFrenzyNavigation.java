@@ -328,13 +328,21 @@ public class FreightFrenzyNavigation implements Runnable
         //when no freight is detected by intakeDist, goToWall() at a diagonal
         //wallFollowToWhite() from the north
 
+        //Turn to zero
         TurnToAngle(0,0.8);
         TurnToAngle(0,0.2);
+        //Go to the wall
         GoToWall(1);
+        //Wall follow the short distance to the white line
         WallFollowToWhite(0.6,0);
+        //Wall follow past the line
         WallFollowForTime(1,0.25);
+        //Dead reckon towards hub
         DriveForTime(45*sideMultiplier,1,0,0.65);
+        //Turn to face hub
         TurnToAngle(75*sideMultiplier,0.5);
+        //Go forwards a bit
+        //DriveForTime(90*sideMultiplier,0.5,0,0.25);
     }
 
     public void CollectFreightLinear(){
@@ -347,10 +355,16 @@ public class FreightFrenzyNavigation implements Runnable
         //once freight is collected, goToWall() at a diagonal
         //wallFollowToWhite() from the south
 
+        //Turn to zero
         TurnToAngle(0,0.4);
-        GoToWall(1);
+        //Go towards the wall at an angle
+        GoToWall(-120*sideMultiplier,1);
+        //Reset arm
         arm.ReturnToHomeAndIntake(0.02,1);
+        //Wall follow to white line
         WallFollowToWhite(0.6,180);
+        //Go a little further
+        WallFollowForTime(-0.6,0.25);
     }
 
     ////MINOR FUNCTIONS////
