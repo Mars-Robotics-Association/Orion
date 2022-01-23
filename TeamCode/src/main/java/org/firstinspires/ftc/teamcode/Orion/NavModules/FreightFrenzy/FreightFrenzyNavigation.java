@@ -109,7 +109,7 @@ public class FreightFrenzyNavigation implements Runnable
         portDist = setPortDist;
         starboardDist = setStarboardDist;
         colorSensor = setColorSensor;
-        //camera = new Camera(opMode,"Webcam 1");
+        camera = new Camera(opMode,"Webcam 1");
 
         side = setSide;
 
