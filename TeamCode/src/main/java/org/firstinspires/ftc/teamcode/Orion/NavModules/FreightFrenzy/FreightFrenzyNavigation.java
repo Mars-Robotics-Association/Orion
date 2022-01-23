@@ -193,6 +193,7 @@ public class FreightFrenzyNavigation implements Runnable
     }
 
     public void DriveAndSpinDucksLinear(int numberOfCycles, double speed){
+        NavigatorOn();
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already (might need to turn? don't worry about it for now)
         GoToWall(speed);
@@ -204,7 +205,7 @@ public class FreightFrenzyNavigation implements Runnable
         }
         //Stop
         duckSpinner.Stop();
-        chassis.Stop();
+        chassis.RawDrive(0,0,0);
     }
 
 
@@ -330,7 +331,7 @@ public class FreightFrenzyNavigation implements Runnable
         TurnToAngle(0,0.8);
         TurnToAngle(0,0.2);
         GoToWall(1);
-        WallFollowToWhite(0.5,0);
+        WallFollowToWhite(0.6,0);
         WallFollowForTime(1,0.25);
         DriveForTime(45*sideMultiplier,1,0,0.65);
         TurnToAngle(75*sideMultiplier,0.5);
@@ -349,7 +350,7 @@ public class FreightFrenzyNavigation implements Runnable
         TurnToAngle(0,0.4);
         GoToWall(1);
         arm.ReturnToHomeAndIntake(0.02,1);
-        WallFollowToWhite(0.5,180);
+        WallFollowToWhite(0.6,180);
     }
 
     ////MINOR FUNCTIONS////
@@ -437,7 +438,7 @@ public class FreightFrenzyNavigation implements Runnable
 
     //Spine the ducks
     public void SpinDucks(double multiplier, double maxSpeed){
-
+        NavigatorOn();
         //DriveForTime(-90,0.5,0.08*sideMultiplier,0.2);
         double startTime = opMode.getRuntime();
         double speed = 0;
