@@ -262,7 +262,7 @@ public class FreightFrenzyNavigation implements Runnable
         //use intakeDist to record the time from start of sweep at which it detected the freight
         //determine barcode configuration off of time
         //raise arm to appropriate height and reverse intake
-        DriveForTime(0,1,0,1);
+        DriveForTime(0,1,0,.25);
         double startTime = opMode.getRuntime();
         DriveForDuckSensorDistance(90,0.5,0,5);
         double totalTime = opMode.getRuntime()-startTime;

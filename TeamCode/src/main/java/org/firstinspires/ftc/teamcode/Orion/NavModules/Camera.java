@@ -390,6 +390,8 @@ public class Camera
         for (int i = 0; i < numImages; i++) {
             if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
                 img = frame.getImage(i);
+                opmode.telemetry.addData("pulled frame",i);
+                opmode.telemetry.update();
                 break;
             }
         }
@@ -397,6 +399,8 @@ public class Camera
 
         Bitmap bmp = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.RGB_565);
         bmp.copyPixelsFromBuffer(img.getPixels());
+        opmode.telemetry.addData("made","bmp");
+        opmode.telemetry.update();
         frame.close();
         //Bitmap bmp = frameQueue.poll();
         return bmp;
