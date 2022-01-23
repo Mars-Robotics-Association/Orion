@@ -228,17 +228,21 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LTHeld(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
             control.Arm().SetPowerClamped(armSpeed);
-            //control.Arm().SetPowerRaw(armSpeed);
+        }
+        if(controllerNumber == 2 && control.isUSE_PAYLOAD()){
+            control.Arm().SetPowerRaw(armSpeed);
         }
     }
 
     @Override
     public void RTHeld(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
+        if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
             control.Arm().SetPowerClamped(-armSpeed);
-            //control.Arm().SetPowerRaw(-armSpeed);
+        }
+        if(controllerNumber == 2 && control.isUSE_PAYLOAD()){
+            control.Arm().SetPowerRaw(-armSpeed);
         }
     }
 
@@ -254,19 +258,15 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LTReleased(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            //control.Arm().SetPowerClamped(0);
+        if(control.isUSE_PAYLOAD()){
             control.Arm().SetPowerRaw(0);
-            //control.Arm().LockArm();
         }
     }
 
     @Override
     public void RTReleased(double controllerNumber) {
-        if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
-            //control.Arm().SetPowerClamped(0);
+        if(control.isUSE_PAYLOAD()){
             control.Arm().SetPowerRaw(0);
-            //control.Arm().LockArm();
         }
     }
 
@@ -348,7 +348,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         if(controllerNumber == 1) {
             control.ResetGyro();
         }
-        //if(controllerNumber == 1) control.TurnToZero();
+        if(controllerNumber == 2 && control.isUSE_PAYLOAD()) control.Arm().ResetToZero();
     }
 
     @Override
