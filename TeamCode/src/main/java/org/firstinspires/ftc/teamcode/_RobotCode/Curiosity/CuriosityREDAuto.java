@@ -29,6 +29,7 @@ public class CuriosityREDAuto extends LinearOpMode
 
         waitForStart();
         robot.Start();
+        nav.NavigatorOn();
         nav.side = side;
 
         multiplier = -nav.GetSideMultiplier();
@@ -53,15 +54,17 @@ public class CuriosityREDAuto extends LinearOpMode
         //TURNS BACK TO WALL
         nav.TurnToAngle(0,0.5);
         robot.TurretArm().SetIntakeSpeed(0);
-        robot.Arm().GoToPosition(0);
+        robot.Arm().GoToPosition(0.02);
 
         //SPINS DUCKS
         nav.DriveAndSpinDucksLinear(1,0.5);
 
         //GOES TO PARK
+        nav.WallFollowForTime(-1,0.5);
         nav.WallFollowToWhite(0.5,180);
         nav.DriveForTime(180,0.5,0,0.5);
 
+        nav.StopNavigator();
         stop();
 
 
