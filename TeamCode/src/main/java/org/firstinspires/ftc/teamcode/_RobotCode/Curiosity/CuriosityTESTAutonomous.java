@@ -43,7 +43,7 @@ public class CuriosityTESTAutonomous extends LinearOpMode
 //        nav.TurnToAngle(-90*multiplier,0.2);
 //        nav.TurnToAngle(-90*multiplier,0.1);
 //        nav.DriveForTime(0,1,0,0.2);
-        FreightFrenzyNavigation.DuckPos pos = nav.ScanBarcodeLinear(); //TODO: get working
+        FreightFrenzyNavigation.DuckPos pos = nav.ScanBarcodeOpenCV(); //TODO: get working
 
         //PLACES FREIGHT
 //        robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.MIDDLE);
