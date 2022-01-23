@@ -383,21 +383,21 @@ public class Camera
     }
 
     public Bitmap GetImage() throws InterruptedException {
-        Image img = vuforia.getFrameQueue().take().getImage(1);
-//        VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take(); //takes the frame at the head of the queue
-//        long numImages = frame.getNumImages();
-//        Image rgb=null;
-//        for (int i = 0; i < numImages; i++) {
-//            if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
-//                rgb = frame.getImage(i);
-//                break;
-//            }
-//        }
-//
-        Bitmap bmp = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.RGB_565);
-//        bmp.copyPixelsFromBuffer(rgb.getPixels());
-//        frame.close();
+//        Image img = vuforia.getFrameQueue().take().getImage(1);
+        VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take(); //takes the frame at the head of the queue
+        long numImages = frame.getNumImages();
+        Image img=null;
+        for (int i = 0; i < numImages; i++) {
+            if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
+                img = frame.getImage(i);
+                break;
+            }
+        }
 
+
+        Bitmap bmp = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.RGB_565);
+        bmp.copyPixelsFromBuffer(img.getPixels());
+        frame.close();
         //Bitmap bmp = frameQueue.poll();
         return bmp;
     }
