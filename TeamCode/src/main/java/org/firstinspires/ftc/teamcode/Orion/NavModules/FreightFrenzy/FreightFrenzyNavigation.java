@@ -294,10 +294,12 @@ public class FreightFrenzyNavigation implements Runnable
         Mat firstMat = new Mat(img,firstRect);
         Mat secondMat = new Mat(img,secondRect);
         Mat thirdMat = new Mat(img,thirdRect);
-        FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(firstMat));
         firstMat = camera.IsolateYellow(firstMat);
         secondMat = camera.IsolateYellow(secondMat);
         thirdMat = camera.IsolateYellow(thirdMat);
+        FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(firstMat));
+        FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(secondMat));
+        FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(thirdMat));
         Bitmap first = camera.convertMatToBitMap(firstMat);
         Bitmap second = camera.convertMatToBitMap(secondMat);
         Bitmap third = camera.convertMatToBitMap(thirdMat);
@@ -317,7 +319,7 @@ public class FreightFrenzyNavigation implements Runnable
             opMode.telemetry.addData("Element in position", "null");
         }
         opMode.telemetry.update();
-        return DuckPos.FIRST;
+        return pos;
     }
 
     public void PlaceFreightLinear(){
