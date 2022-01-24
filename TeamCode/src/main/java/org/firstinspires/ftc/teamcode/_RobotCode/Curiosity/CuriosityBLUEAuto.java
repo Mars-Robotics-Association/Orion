@@ -45,7 +45,7 @@ public class CuriosityBLUEAuto extends LinearOpMode
 
         //PLACES FREIGHT
         robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.MIDDLE);
-        nav.DriveForTime(120*multiplier,0.7,0,1.4);
+        nav.DriveForTime(120*multiplier,0.7,0,1.35);
         robot.TurretArm().SetIntakeSpeed(-1);
         nav.Wait(1);
         nav.DriveForTime(-60*multiplier,0.5,0,0.5);

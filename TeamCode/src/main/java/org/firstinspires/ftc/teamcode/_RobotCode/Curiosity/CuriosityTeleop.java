@@ -93,12 +93,19 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //KILL SWITCH FOR NAVIGATOR
         if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
             control.navigation.StopNavigator();
+            control.blinkinController.Lime();
         }
 
-        if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) telemetry.addData("Alliance Side", "BLUE");
-        else telemetry.addData("Alliance Side", "RED");
-
         if(control.navigation.IsThreadRunning()) return;
+
+        if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE){
+            telemetry.addData("Alliance Side", "BLUE");
+            control.blinkinController.Blue();
+        }
+        else {
+            telemetry.addData("Alliance Side", "RED");
+            control.blinkinController.Red();
+        }
 
         control.Update();
         control.TurretArm().UpdateIntakeTiered();

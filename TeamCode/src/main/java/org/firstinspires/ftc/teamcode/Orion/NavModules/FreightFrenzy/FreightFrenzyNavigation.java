@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Camera;
+import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.BlinkinController;
 import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.DuckSpinner;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -29,6 +30,7 @@ public class FreightFrenzyNavigation implements Runnable
     private ColorSensor colorSensor;
     private MecanumChassis chassis;
     private Camera camera;
+    private BlinkinController lights;
 
     ////configuration variables////
     //Basic
@@ -99,7 +101,7 @@ public class FreightFrenzyNavigation implements Runnable
     Thread thread;
     boolean threadRunning = false;
 
-    public FreightFrenzyNavigation(OpMode setOpMode, MecanumChassis setChassis, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor, AllianceSide setSide){
+    public FreightFrenzyNavigation(OpMode setOpMode, MecanumChassis setChassis, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor, BlinkinController setBlinkin, AllianceSide setSide){
         opMode = setOpMode;
         chassis=setChassis;
         arm = setArm;
@@ -109,7 +111,8 @@ public class FreightFrenzyNavigation implements Runnable
         portDist = setPortDist;
         starboardDist = setStarboardDist;
         colorSensor = setColorSensor;
-        //camera = new Camera(opMode,"Webcam 1");
+        camera = new Camera(opMode,"Webcam 1");
+        lights = setBlinkin;
 
         side = setSide;
 
@@ -127,6 +130,7 @@ public class FreightFrenzyNavigation implements Runnable
         opMode.telemetry.addLine("Nav Thread Start!");
         threadRunning = true;
         NavigatorOn();
+        lights.Purple();
 
         if(startSpinDucks) {
             startSpinDucks = false;
@@ -155,7 +159,7 @@ public class FreightFrenzyNavigation implements Runnable
 
         opMode.telemetry.addLine("Nav Thread End!");
 
-
+        lights.Yellow();
         threadRunning = false;
     }
     public boolean IsThreadRunning(){return threadRunning;}

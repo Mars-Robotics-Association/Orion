@@ -109,10 +109,10 @@ public class Camera
         cameraMonitorViewID = opmode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", opmode.hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewID);
 
-        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamname, cameraMonitorViewID);
+        /*OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamname, cameraMonitorViewID);
         camera.openCameraDevice();
         camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
-        camera.setPipeline(new Pipeline());
+        camera.setPipeline(new Pipeline());*/
 
         parameters.vuforiaLicenseKey = VLK;
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
@@ -120,8 +120,6 @@ public class Camera
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
         trackables = GetVuforia().loadTrackablesFromAsset("UltimateGoal");
-
-        opMode.telemetry.update();
 
         trackables.activate();
         initializeFrameQueue(2);
@@ -459,13 +457,12 @@ public class Camera
 
 //stuff from sample
 
-    public Bitmap GetImage() {
+    public Bitmap GetImage() throws InterruptedException {
 
         callbackHandler = CallbackLooper.getDefault().getHandler();
 
         cameraManager = ClassFactory.getInstance().getCameraManager();
 
-        initializeFrameQueue(2);
         AppUtil.getInstance().ensureDirectoryExists(captureDirectory);
 
         try {
@@ -483,11 +480,9 @@ public class Camera
                 return null;
             }
 
-
-            boolean buttonPressSeen = false;
-            boolean captureWhenAvailable = false;
-
-            Bitmap bmp = frameQueue.poll();
+            Bitmap bmp = null;
+            while (bmp == null) bmp = frameQueue.take();
+            opmode.telemetry.addData("Queue size",frameQueue.size());
             opmode.telemetry.addData("got","bmp");
             opmode.telemetry.update();
             return bmp;

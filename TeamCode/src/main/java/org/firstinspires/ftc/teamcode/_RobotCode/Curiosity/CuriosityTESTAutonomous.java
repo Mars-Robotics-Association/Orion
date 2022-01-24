@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.RoadrunnerModu
 
 @Autonomous(name = "TEST Curiosity Auto", group = "Curiosity")
 @Config
-@Disabled
+//@Disabled
 public class CuriosityTESTAutonomous extends LinearOpMode
 {
     CuriosityRobot robot;
