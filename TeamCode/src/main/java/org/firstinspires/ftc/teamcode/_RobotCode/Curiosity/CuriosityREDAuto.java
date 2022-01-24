@@ -63,6 +63,8 @@ public class CuriosityREDAuto extends LinearOpMode
         nav.WallFollowToWhite(0.5,180);
         nav.DriveForTime(180,0.5,0,0.5);
 
+        robot.Arm().GoToPosition(0);
+
         nav.StopNavigator();
         stop();
 
