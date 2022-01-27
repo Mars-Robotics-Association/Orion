@@ -38,7 +38,7 @@ public class AndrewAutonomousNew extends LinearOpMode
 
 
         setWheelSpeedsTurning(270,0.5,0); //initial forward
-        waitForMotors(new DcMotor[] {FR,FL,RR,RL},930);
+        waitForMotors(new DcMotor[] {FR,FL,RR,RL},850);
         sleep(200);
 
         setWheelSpeedsTurning(180,0.4,0); // slide right to red line
@@ -55,14 +55,18 @@ public class AndrewAutonomousNew extends LinearOpMode
         setWheelSpeedsTurning(0,0.4,0); //move into turntable
         waitForMotors(new DcMotor[] {FR,FL,RR,RL},370);
         sleep(4500);
+duckyMotor.setPower(0);
 
         setWheelSpeedsTurning(180,0.4,0); // move back, slightly past red line
       //  waitForColor(colorBottom,75,500,500);
-
         waitForMotors(new DcMotor[] {FR,FL,RR,RL},500);
         stopWheels();
         sleep(300);
 
+
+        setWheelSpeedsTurning(75,0.7,0); // parking
+        waitForMotors(new DcMotor[] {FR,FL,RR,RL},2500);
+        stopWheels();
 
         setWheelSpeedsTurning(45,0.5,-0.05);  // 45 degree move back
         waitForMotors(new DcMotor[] {FR,FL,RR,RL},1500);
@@ -89,8 +93,8 @@ public class AndrewAutonomousNew extends LinearOpMode
         armPos = this.hardwareMap.dcMotor.get("armPosition");
         turntable = this.hardwareMap.dcMotor.get("turntable");
 
-        colorBottom = hardwareMap.colorSensor.get("color1"); // bottom
-        colorSide1 = hardwareMap.colorSensor.get("color2"); //side
+    //    colorBottom = hardwareMap.colorSensor.get("color1"); // bottom
+    //    colorSide1 = hardwareMap.colorSensor.get("color2"); //side
 
     }
 

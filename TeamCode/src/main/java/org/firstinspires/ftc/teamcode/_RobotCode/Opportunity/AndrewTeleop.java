@@ -7,9 +7,12 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
@@ -36,6 +39,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private DcMotor armPos;
     private DcMotor gripper;
     private DcMotor turntable;
+    private DistanceSensor sideDist;
 
     private ColorSensor colorSensor1;
 
@@ -72,7 +76,9 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
         RL = this.hardwareMap.dcMotor.get("RL");
         gripper = this.hardwareMap.dcMotor.get("clawMotor");
         turntable = this.hardwareMap.dcMotor.get("turntable");
-        colorSensor1 = hardwareMap.colorSensor.get("color2");
+
+        sideDist = hardwareMap.get(DistanceSensor.class, "distSide");
+  //      colorSensor1 = hardwareMap.colorSensor.get("color2");
     //    RL.setDirection(DcMotorSimple.Direction.REVERSE); //uncomment this too
     //    FR.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -99,6 +105,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
         public void loop(){
 
+        telemetry.addData("Distance sensor",sideDist.getDistance(DistanceUnit.INCH));
 
             controllerInput1.Loop();
             controllerInput2.Loop();
@@ -147,13 +154,13 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             else
                 duckyMotor.setPower(0);
 
-            if(gamepad1.back&&!backWasDown){
+            if(gamepad1.left_bumper&&!backWasDown){
                 if(speed==1)
                     speed = 0.5;
                 else
                     speed=1;
             }
-            backWasDown = gamepad1.back;
+            backWasDown = gamepad1.left_bumper;
 
 
             if(gamepad1.start&&!startWasDown){
@@ -169,15 +176,12 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
 
 
-            telemetry.addData("FR",FR.getCurrentPosition());
-            telemetry.addData("FL",FL.getCurrentPosition());
-            telemetry.addData("RR",RR.getCurrentPosition());
-            telemetry.addData("RL",RL.getCurrentPosition());
-          //  telemetry.update();
-
-            telemetry.addData("red",colorSensor1.red());
-            telemetry.addData("green",colorSensor1.green());
-            telemetry.addData("blue",colorSensor1.blue());
+//            telemetry.addData("FR",FR.getCurrentPosition());
+//            telemetry.addData("FL",FL.getCurrentPosition());
+//            telemetry.addData("RR",RR.getCurrentPosition());
+//            telemetry.addData("RL",RL.getCurrentPosition());
+//          //  telemetry.update();
+//
 
 
 
