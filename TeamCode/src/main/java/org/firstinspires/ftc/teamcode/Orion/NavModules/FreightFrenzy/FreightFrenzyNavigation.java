@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.BlinkinController;
 import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.DuckSpinner;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 
 @Config
 public class FreightFrenzyNavigation implements Runnable
@@ -294,7 +295,7 @@ public class FreightFrenzyNavigation implements Runnable
         Mat firstMat = new Mat(img,firstRect);
         Mat secondMat = new Mat(img,secondRect);
         Mat thirdMat = new Mat(img,thirdRect);
-        firstMat = camera.IsolateYellow(firstMat);
+        firstMat = camera.isolateColor(firstMat,new Scalar(10,255,110),new Scalar(0,245,92));
         secondMat = camera.IsolateYellow(secondMat);
         thirdMat = camera.IsolateYellow(thirdMat);
         FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(firstMat));
