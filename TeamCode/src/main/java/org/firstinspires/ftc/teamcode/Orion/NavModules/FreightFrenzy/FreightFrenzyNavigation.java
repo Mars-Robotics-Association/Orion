@@ -297,12 +297,19 @@ public class FreightFrenzyNavigation implements Runnable
         firstMat = camera.IsolateYellow(firstMat);
         secondMat = camera.IsolateYellow(secondMat);
         thirdMat = camera.IsolateYellow(thirdMat);
-        FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(firstMat));
+
+        //FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(firstMat));
         FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(secondMat));
-        FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(thirdMat));
+        //FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(thirdMat));
+
         Bitmap first = camera.convertMatToBitMap(firstMat);
         Bitmap second = camera.convertMatToBitMap(secondMat);
         Bitmap third = camera.convertMatToBitMap(thirdMat);
+
+        opMode.telemetry.addData("Pixel Count 1",camera.countPixels(first));
+        opMode.telemetry.addData("Pixel Count 2",camera.countPixels(second));
+        opMode.telemetry.addData("Pixel Count 3",camera.countPixels(third));
+
         if(camera.countPixels(first)>camera.countPixels(second)&&camera.countPixels(first)>camera.countPixels(third)){
             pos=DuckPos.FIRST;
             opMode.telemetry.addData("Element in position","1");
