@@ -300,7 +300,7 @@ public class FreightFrenzyNavigation implements Runnable
         thirdMat = camera.IsolateYellow(thirdMat);
 
         //FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(firstMat));
-        FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(secondMat));
+        //FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(secondMat));
         //FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(thirdMat));
 
         Bitmap first = camera.convertMatToBitMap(firstMat);
