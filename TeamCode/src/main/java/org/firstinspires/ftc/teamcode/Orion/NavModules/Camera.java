@@ -118,7 +118,7 @@ public class Camera
 
         dashboard = FtcDashboard.getInstance();
 
-        //dashboard.startCameraStream(vuforia,0);
+        //dashboard.startCameraStream(tfod,0);
     }
 
     private void initTfod() {

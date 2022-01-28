@@ -282,22 +282,46 @@ public class FreightFrenzyNavigation implements Runnable
         return location;
     }
 
+    public void SendGreenFilteredToDash() throws InterruptedException {
+        //get camera input and convert to mat
+        //divide image into three sections
+        //find section with most yellow
+        opMode.telemetry.addData("Started scan", opMode.getRuntime());
+        Bitmap in = camera.GetImage();
+        Mat img = camera.convertBitmapToMat(in);
+
+
+        //bgr lime(0,255,102)
+        Scalar max = new Scalar(255,255,255);
+        Scalar min = new Scalar(0,0,0);
+        img = camera.isolateColor(img,max,min);
+
+        FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(img));
+    }
+
     public DuckPos ScanBarcodeOpenCV() throws InterruptedException {
         //get camera input and convert to mat
         //divide image into three sections
         //find section with most yellow
         DuckPos pos= DuckPos.NULL;
+        opMode.telemetry.addData("Started scan", opMode.getRuntime());
         Bitmap in = camera.GetImage();
         Mat img = camera.convertBitmapToMat(in);
+
         Rect firstRect = new Rect(0,0,img.width()/3,img.height());
         Rect secondRect = new Rect(img.width()/3,0,img.width()/3,img.height());
         Rect thirdRect = new Rect(2*img.width()/3,0,img.width()/3,img.height());
+
         Mat firstMat = new Mat(img,firstRect);
         Mat secondMat = new Mat(img,secondRect);
         Mat thirdMat = new Mat(img,thirdRect);
-        firstMat = camera.isolateColor(firstMat,new Scalar(10,255,110),new Scalar(0,245,92));
-        secondMat = camera.isolateColor(secondMat,new Scalar(10,255,110),new Scalar(0,245,92));
-        thirdMat = camera.isolateColor(thirdMat,new Scalar(10,255,110),new Scalar(0,245,92));
+        //bgr lime(0,255,102)
+        Scalar max = new Scalar(170,217,132);
+        Scalar min = new Scalar(104,137,58);
+        firstMat = camera.isolateColor(firstMat,max,min);
+        secondMat = camera.isolateColor(secondMat,max,min);
+        thirdMat = camera.isolateColor(thirdMat,max,min);
+
 
         //FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(firstMat));
         //FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(secondMat));
@@ -307,26 +331,33 @@ public class FreightFrenzyNavigation implements Runnable
         Bitmap second = camera.convertMatToBitMap(secondMat);
         Bitmap third = camera.convertMatToBitMap(thirdMat);
 
-        opMode.telemetry.addData("Pixel Count 1",camera.countPixels(first));
-        opMode.telemetry.addData("Pixel Count 2",camera.countPixels(second));
-        opMode.telemetry.addData("Pixel Count 3",camera.countPixels(third));
+        FtcDashboard.getInstance().sendImage(first);
 
-        if(camera.countPixels(first)>camera.countPixels(second)&&camera.countPixels(first)>camera.countPixels(third)){
+        double pixelsFirst = camera.countPixels(first);
+        double pixelsSecond = camera.countPixels(second);
+        double pixelsThird = camera.countPixels(third);
+
+        opMode.telemetry.addData("Pixel Count 1",pixelsFirst);
+        opMode.telemetry.addData("Pixel Count 2",pixelsSecond);
+        opMode.telemetry.addData("Pixel Count 3",pixelsThird);
+
+
+        if(pixelsFirst>pixelsSecond&&pixelsFirst>pixelsThird){
             pos=DuckPos.FIRST;
             opMode.telemetry.addData("Element in position","1");
         }
-        else if(camera.countPixels(second)>camera.countPixels(first)&&camera.countPixels(second)>camera.countPixels(third)){
+        else if(pixelsSecond>pixelsFirst&&pixelsSecond>pixelsThird){
             pos=DuckPos.SECOND;
             opMode.telemetry.addData("Element in position","2");
         }
-        else if(camera.countPixels(third)>camera.countPixels(second)&&camera.countPixels(third)>camera.countPixels(first)){
+        else if(pixelsThird>pixelsSecond&&pixelsThird>pixelsFirst){
             pos=DuckPos.THIRD;
             opMode.telemetry.addData("Element in position","3");
         }
-        if(pos==DuckPos.NULL) {
+        else if(pos==DuckPos.NULL) {
             opMode.telemetry.addData("Element in position", "null");
         }
-        opMode.telemetry.update();
+        opMode.telemetry.addData("Scan Done!", opMode.getRuntime());
         return pos;
     }
 
@@ -467,6 +498,7 @@ public class FreightFrenzyNavigation implements Runnable
     //Spine the ducks
     public void SpinDucks(double multiplier, double maxSpeed){
         NavigatorOn();
+        lights.Purple();
         //DriveForTime(-90,0.5,0.08*sideMultiplier,0.2);
         double startTime = opMode.getRuntime();
         double speed = 0;

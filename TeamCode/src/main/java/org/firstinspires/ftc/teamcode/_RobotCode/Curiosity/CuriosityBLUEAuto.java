@@ -41,11 +41,22 @@ public class CuriosityBLUEAuto extends LinearOpMode
         nav.TurnToAngle(-90*multiplier,0.2);
         nav.TurnToAngle(-90*multiplier,0.1);
         nav.DriveForTime(0,1,0,0.2);
-//        FreightFrenzyNavigation.DuckPos pos = nav.ScanBarcodeOpenCV(); //TODO: get working
+
+        telemetry.update();
+
+        //SCAN
+        FreightFrenzyNavigation.DuckPos pos = nav.ScanBarcodeOpenCV();
+        telemetry.update();
+
+        nav.Wait(10);
+
+        /*//MOVE ARM TO POSITION
+        if(pos == FreightFrenzyNavigation.DuckPos.FIRST) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.BOTTOM);
+        if(pos == FreightFrenzyNavigation.DuckPos.SECOND) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.MIDDLE);
+        if(pos == FreightFrenzyNavigation.DuckPos.THIRD) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.TOP);
 
         //PLACES FREIGHT
-        robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.MIDDLE);
-        nav.DriveForTime(120*multiplier,0.7,0,1.35);
+        nav.DriveForTime(120*multiplier,0.7,0,1.3);
         robot.TurretArm().SetIntakeSpeed(-1);
         nav.Wait(1);
         nav.DriveForTime(-60*multiplier,0.5,0,0.5);
@@ -66,7 +77,7 @@ public class CuriosityBLUEAuto extends LinearOpMode
         robot.Arm().GoToPosition(0);
 
         nav.StopNavigator();
-        stop();
+        stop();*/
 
 
     }

@@ -34,36 +34,17 @@ public class CuriosityTESTAutonomous extends LinearOpMode
 
         multiplier = -nav.GetSideMultiplier();
 
-//        //STARTS ALONG WALL BY DUCKS
-//        nav.GoToWall(0.2);
-//
-//        //TURNS TO FACE AND SCAN TOWER
-//        nav.DriveForTime(90*multiplier,0.5,0,0.5);
-//        nav.TurnToAngle(-90*multiplier,0.2);
-//        nav.TurnToAngle(-90*multiplier,0.1);
-//        nav.DriveForTime(0,1,0,0.2);
-        FreightFrenzyNavigation.DuckPos pos = nav.ScanBarcodeOpenCV(); //TODO: get working
+        while (!isStopRequested()){
+            nav.SendGreenFilteredToDash();
+            telemetry.update();
+            nav.Wait(1);
+        }
 
-        //PLACES FREIGHT
-//        robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.MIDDLE);
-//        nav.DriveForTime(120*multiplier,0.7,0,1.4);
-//        robot.TurretArm().SetIntakeSpeed(-1);
-//        nav.Wait(1);
-//        nav.DriveForTime(-60*multiplier,0.5,0,0.5);
-//
-//        //TURNS BACK TO WALL
-//        nav.TurnToAngle(0,0.5);
-//        robot.TurretArm().SetIntakeSpeed(0);
-//        robot.Arm().GoToPosition(0);
-//
-//        //SPINS DUCKS
-//        nav.DriveAndSpinDucksLinear(1,0.5);
-//
-//        //GOES TO PARK
-//        nav.WallFollowToWhite(0.5,180);
-//        nav.DriveForTime(180,0.5,0,0.5);
 
-        stop();
+        /*FreightFrenzyNavigation.DuckPos pos = nav.ScanBarcodeOpenCV(); //TODO: get working
+        telemetry.update();
+        nav.Wait(1);*/
+
 
 
     }
