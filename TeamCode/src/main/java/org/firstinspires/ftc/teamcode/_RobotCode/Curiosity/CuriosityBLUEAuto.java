@@ -44,13 +44,12 @@ public class CuriosityBLUEAuto extends LinearOpMode
 
         telemetry.update();
 
+        nav.Wait(.5);
         //SCAN
         FreightFrenzyNavigation.DuckPos pos = nav.ScanBarcodeOpenCV();
         telemetry.update();
 
-        nav.Wait(10);
-
-        /*//MOVE ARM TO POSITION
+        //MOVE ARM TO POSITION
         if(pos == FreightFrenzyNavigation.DuckPos.FIRST) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.BOTTOM);
         if(pos == FreightFrenzyNavigation.DuckPos.SECOND) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.MIDDLE);
         if(pos == FreightFrenzyNavigation.DuckPos.THIRD) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.TOP);
@@ -77,7 +76,7 @@ public class CuriosityBLUEAuto extends LinearOpMode
         robot.Arm().GoToPosition(0);
 
         nav.StopNavigator();
-        stop();*/
+        stop();
 
 
     }

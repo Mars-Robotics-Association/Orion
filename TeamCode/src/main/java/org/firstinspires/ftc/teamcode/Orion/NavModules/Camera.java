@@ -343,32 +343,28 @@ public class Camera
 
     //takes a Mat and isolates the color yellow
     public Mat IsolateYellow(Mat input){
-        Scalar lowbgr = new Scalar(0,100,100);
-        Scalar highbgr = new Scalar(30, 255, 255);
-        Mat result;
+        Scalar lowhsv = new Scalar(0,100,100);
+        Scalar highhsv = new Scalar(30, 255, 255);
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();
         Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(hsv, lowbgr,highbgr, mask);
+        Core.inRange(hsv, lowhsv,highhsv, mask);
         Core.bitwise_and(input, input, last, mask);
-        result = last;
-        return result;
+        return last;
     }
 
     //takes a Mat and isolates the color white
     public Mat IsolateWhite(Mat input){
-        Scalar highbgr = new Scalar(255,255,255);
-        Scalar lowbgr = new Scalar(230,230,230);
-        Mat result;
+        Scalar highhsv = new Scalar(255,255,255);
+        Scalar lowhsv = new Scalar(230,230,230);
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();
         Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(hsv, lowbgr,highbgr, mask);
+        Core.inRange(hsv, lowhsv,highhsv, mask);
         Core.bitwise_and(input, input, last, mask);
-        result = last;
-        return result;
+        return last;
     }
 
     //for determining nonwhite pixels in a cropped image
@@ -390,16 +386,14 @@ public class Camera
     }
 
     //isolate a color from a mat
-    public Mat isolateColor(Mat input, Scalar highbgr, Scalar lowbgr){
-        Mat result;
+    public Mat isolateColor(Mat input, Scalar highhsv, Scalar lowhsv){
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();
         Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(hsv, lowbgr,highbgr, mask);
+        Core.inRange(hsv, lowhsv,highhsv, mask);
         Core.bitwise_and(input, input, last, mask);
-        result = last;
-        return result;
+        return last;
     }
 
     public Bitmap GetImage() throws InterruptedException {

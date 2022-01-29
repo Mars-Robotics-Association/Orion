@@ -316,22 +316,22 @@ public class FreightFrenzyNavigation implements Runnable
         Mat secondMat = new Mat(img,secondRect);
         Mat thirdMat = new Mat(img,thirdRect);
         //bgr lime(0,255,102)
-        Scalar max = new Scalar(170,217,132);
-        Scalar min = new Scalar(104,137,58);
+        Scalar max = new Scalar(75,255,255);
+        Scalar min = new Scalar(35,58,121);
         firstMat = camera.isolateColor(firstMat,max,min);
         secondMat = camera.isolateColor(secondMat,max,min);
         thirdMat = camera.isolateColor(thirdMat,max,min);
+        Bitmap BigBit = camera.convertMatToBitMap(camera.isolateColor(img,max,min));
 
-
-        //FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(firstMat));
-        //FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(secondMat));
-        //FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(thirdMat));
 
         Bitmap first = camera.convertMatToBitMap(firstMat);
         Bitmap second = camera.convertMatToBitMap(secondMat);
         Bitmap third = camera.convertMatToBitMap(thirdMat);
 
-        FtcDashboard.getInstance().sendImage(first);
+        //FtcDashboard.getInstance().sendImage(first);
+        //FtcDashboard.getInstance().sendImage(second);
+        //FtcDashboard.getInstance().sendImage(third);
+        FtcDashboard.getInstance().sendImage(BigBit);
 
         double pixelsFirst = camera.countPixels(first);
         double pixelsSecond = camera.countPixels(second);
