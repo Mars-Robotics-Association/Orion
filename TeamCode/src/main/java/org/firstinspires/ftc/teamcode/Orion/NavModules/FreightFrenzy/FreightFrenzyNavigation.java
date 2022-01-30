@@ -282,22 +282,6 @@ public class FreightFrenzyNavigation implements Runnable
         return location;
     }
 
-    public void SendGreenFilteredToDash() throws InterruptedException {
-        //get camera input and convert to mat
-        //divide image into three sections
-        //find section with most yellow
-        opMode.telemetry.addData("Started scan", opMode.getRuntime());
-        Bitmap in = camera.GetImage();
-        Mat img = camera.convertBitmapToMat(in);
-
-
-        //bgr lime(0,255,102)
-        Scalar max = new Scalar(255,255,255);
-        Scalar min = new Scalar(0,0,0);
-        img = camera.isolateColor(img,max,min);
-
-        FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(img));
-    }
 
     public DuckPos ScanBarcodeOpenCV() throws InterruptedException {
         //get camera input and convert to mat
@@ -321,7 +305,11 @@ public class FreightFrenzyNavigation implements Runnable
         firstMat = camera.isolateColor(firstMat,max,min);
         secondMat = camera.isolateColor(secondMat,max,min);
         thirdMat = camera.isolateColor(thirdMat,max,min);
-        Bitmap BigBit = camera.convertMatToBitMap(camera.isolateColor(img,max,min));
+        Bitmap BigBit = camera.convertMatToBitMap(
+                camera.isolateColor(
+                        img
+                        ,max,min)
+                 );
 
 
         Bitmap first = camera.convertMatToBitMap(firstMat);
@@ -421,6 +409,19 @@ public class FreightFrenzyNavigation implements Runnable
             arm.UpdateIntake(armIntakeDistance, armAutoHeight);
             chassis.RawDrive(180,0.2,0);
         }
+    }
+
+    public void GoToHub() throws InterruptedException {
+        //start facing hub
+        //find sector of image with hub
+        //move towards it
+        Bitmap img = camera.GetImage();
+        if(side==AllianceSide.BLUE) {
+            img = camera.convertMatToBitMap(camera.IsolateBlue(camera.convertBitmapToMat(img)));
+        }else{
+            img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
+        }
+        
     }
 
     ////MINOR FUNCTIONS////
