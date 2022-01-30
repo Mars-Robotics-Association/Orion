@@ -411,4 +411,8 @@ public class Camera
         frame.close();
         return bmp;
     }
+
+    public Bitmap ShrinkBitmap(Bitmap bitmapIn, int width, int height){
+        return Bitmap.createScaledBitmap(bitmapIn, width, height, true); //might want to set filter to false (uses more proccessing power to make better image
+    }
 }

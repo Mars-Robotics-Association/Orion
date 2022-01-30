@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
 
-class CuriosityTurretArm extends UniversalTurretIntakeArm
+public class CuriosityTurretArm extends UniversalTurretIntakeArm
 {
     public enum Alliance {RED,BLUE}
     public enum Strategy {TEAM,SHARED}
@@ -65,6 +65,19 @@ class CuriosityTurretArm extends UniversalTurretIntakeArm
         else if(currentAutoIntakeTeir == 2) {
             UpdateIntake(armIntakeDist,armTopPos);
             opMode.telemetry.addData("Intake Tier", "TOP");
+
+        }
+    }
+
+    public double GetCurrentAutoTierRotation(){
+        if(currentAutoIntakeTeir == 0) {
+            return armBottomPos;
+        }
+        else if(currentAutoIntakeTeir == 1) {
+            return armMiddlePos;
+        }
+        else {
+            return armTopPos;
 
         }
     }

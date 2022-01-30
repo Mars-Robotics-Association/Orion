@@ -145,7 +145,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
         if(controllerNumber == 1) {
             //control.navigation.CollectFreightLinear();
-            control.navigation.StartCollectFreight();
+            control.navigation.StarGoToCollect();
         }
     }
 
@@ -160,7 +160,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void YPressed(double controllerNumber) {
         if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
             //control.navigation.PlaceFreightLinear();
-            control.navigation.StartPlaceFreight();
+            control.navigation.StartGoToPlace();
         }
     }
 

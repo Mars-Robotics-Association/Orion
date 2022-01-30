@@ -81,8 +81,8 @@ public class FreightFrenzyNavigation implements Runnable
     boolean startParkWarehouse = false;
     boolean startParkDepot = false;
     boolean startScanBarcode = false;
-    boolean startPlaceFreight = false;
-    boolean startCollectFreight = false;
+    boolean startGoToPlace = false;
+    boolean startGoToCollect = false;
 
     boolean navigatorRunning = true;
 
@@ -149,13 +149,13 @@ public class FreightFrenzyNavigation implements Runnable
             startScanBarcode = false;
             ScanBarcodeLinear();
         }
-        if(startPlaceFreight) {
-            startPlaceFreight = false;
-            PlaceFreightLinear();
+        if(startGoToPlace) {
+            startGoToPlace = false;
+            GoToPlaceLinear();
         }
-        if(startCollectFreight) {
-            startCollectFreight = false;
-            CollectFreightLinear();
+        if(startGoToCollect) {
+            startGoToCollect = false;
+            GoToFreightLinear();
         }
 
         opMode.telemetry.addLine("Nav Thread End!");
@@ -188,12 +188,12 @@ public class FreightFrenzyNavigation implements Runnable
         startScanBarcode = true;
         thread.start();
     }
-    public void StartPlaceFreight(){
-        startPlaceFreight = true;
+    public void StartGoToPlace(){
+        startGoToPlace = true;
         thread.start();
     }
-    public void StartCollectFreight(){
-        startCollectFreight = true;
+    public void StarGoToCollect(){
+        startGoToCollect = true;
         thread.start();
     }
 
@@ -361,7 +361,7 @@ public class FreightFrenzyNavigation implements Runnable
         return pos;
     }
 
-    public void PlaceFreightLinear(){
+    public void GoToPlaceLinear(){
         //should start in the depot with the intake side facing away from hub (can start on white line)
         //goToWall()
         //wallFollowToWhite() from the south
@@ -390,7 +390,7 @@ public class FreightFrenzyNavigation implements Runnable
         //DriveForTime(90*sideMultiplier,0.5,0,0.25);
     }
 
-    public void CollectFreightLinear(){
+    public void GoToFreightLinear(){
         //should start north of white line along wall or at it
         //goToWall()
         //wallFollowToWhite() from the north
@@ -410,6 +410,17 @@ public class FreightFrenzyNavigation implements Runnable
         WallFollowToWhite(0.6,180);
         //Go a little further
         WallFollowForTime(-0.6,0.25);
+    }
+
+    public void AutoCollectFreightLinear(double armIntakeDistance, double armAutoHeight){
+        //starts in warehouse along wall facing freight
+        //turns on intake
+        arm.ReturnToHomeAndIntake(0.02, 1);
+        //move forwards slowly while auto-intaking
+        while (arm.GetIntakeState() == 1){
+            arm.UpdateIntake(armIntakeDistance, armAutoHeight);
+            chassis.RawDrive(180,0.2,0);
+        }
     }
 
     ////MINOR FUNCTIONS////
