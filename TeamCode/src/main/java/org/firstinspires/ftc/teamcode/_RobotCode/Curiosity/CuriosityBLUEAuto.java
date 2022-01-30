@@ -50,9 +50,9 @@ public class CuriosityBLUEAuto extends LinearOpMode
         telemetry.update();
 
         //MOVE ARM TO POSITION
-        if(pos == FreightFrenzyNavigation.DuckPos.FIRST) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.BOTTOM);
+        if(pos == FreightFrenzyNavigation.DuckPos.FIRST) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.TOP);
         if(pos == FreightFrenzyNavigation.DuckPos.SECOND) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.MIDDLE);
-        if(pos == FreightFrenzyNavigation.DuckPos.THIRD) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.TOP);
+        if(pos == FreightFrenzyNavigation.DuckPos.THIRD) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.BOTTOM);
 
         //PLACES FREIGHT
         nav.DriveForTime(120*multiplier,0.7,0,1.3);
