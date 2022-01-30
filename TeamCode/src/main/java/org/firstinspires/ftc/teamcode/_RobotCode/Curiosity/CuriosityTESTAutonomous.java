@@ -35,7 +35,6 @@ public class CuriosityTESTAutonomous extends LinearOpMode
         multiplier = -nav.GetSideMultiplier();
 
         while (!isStopRequested()){
-            nav.SendGreenFilteredToDash();
             telemetry.update();
             nav.Wait(1);
         }

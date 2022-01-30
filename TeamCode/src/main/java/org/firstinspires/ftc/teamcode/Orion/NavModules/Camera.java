@@ -367,6 +367,32 @@ public class Camera
         return last;
     }
 
+    //takes a Mat and isolates the color white
+    public Mat IsolateBlue(Mat input){
+        Scalar highhsv = new Scalar(118,255,189);
+        Scalar lowhsv = new Scalar(103,101,47);
+        Mat hsv = new Mat();
+        Mat mask = new Mat();
+        Mat last = new Mat();
+        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
+        Core.inRange(hsv, lowhsv,highhsv, mask);
+        Core.bitwise_and(input, input, last, mask);
+        return last;
+    }
+
+    //takes a Mat and isolates the color white
+    public Mat IsolateRed(Mat input){
+        Scalar highhsv = new Scalar(21,255,244);
+        Scalar lowhsv = new Scalar(0,93,66);
+        Mat hsv = new Mat();
+        Mat mask = new Mat();
+        Mat last = new Mat();
+        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
+        Core.inRange(hsv, lowhsv,highhsv, mask);
+        Core.bitwise_and(input, input, last, mask);
+        return last;
+    }
+
     //for determining nonwhite pixels in a cropped image
     public int countPixels(Bitmap input){
         int pixelcount = 0;
@@ -383,6 +409,24 @@ public class Camera
             }
         }
         return pixelcount;
+    }
+
+    public int[] findColor(Bitmap input){
+        int width = -1,height=-1;
+        for(int w = 0;w<input.getWidth();w++){
+            for(int h=0;h<input.getHeight();h++){
+                int color = input.getPixel(w,h);
+                int R = (color & 0xff0000) >> 16;
+                int G = (color & 0xff00) >> 8;
+                int B = color & 0xff;
+                if((R != 0)&&(G != 0)&&(B != 0)){
+                    width = w;
+                    height = h;
+                }
+            }
+        }
+        int[] a = {width,height};
+        return a;
     }
 
     //isolate a color from a mat
