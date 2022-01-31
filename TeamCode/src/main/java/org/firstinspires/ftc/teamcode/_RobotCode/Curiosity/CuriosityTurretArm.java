@@ -5,11 +5,15 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
 
 public class CuriosityTurretArm extends UniversalTurretIntakeArm
 {
+    DistanceSensor resetSensor;
+    double armResetDistanceCM = 4;
+
     public enum Alliance {RED,BLUE}
     public enum Strategy {TEAM,SHARED}
     public enum Tier {BOTTOM, MIDDLE, TOP, CAP}
@@ -26,14 +30,15 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm
     double armTopPos = 0.3;
     double armCapPos = 0.34;
 
-    public static double armIntakeDist = 5;
+    public static double armIntakeDist = 7;
 
     int currentAutoIntakeTeir = 1; //what level to send the arm to when intaking
 
 
 
-    public CuriosityTurretArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo intake, DistanceSensor intakeSensor, TouchSensor armTouch, boolean reverseIntake) {
+    public CuriosityTurretArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo intake, DistanceSensor intakeSensor, DistanceSensor setResetSensor, TouchSensor armTouch, boolean reverseIntake) {
         super(setOpMode, setArmProfile, setTurretProfile, intake, intakeSensor, armTouch, reverseIntake);
+        resetSensor = setResetSensor;
     }
 
     public void GoToTier(Tier tier){
@@ -96,6 +101,17 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm
     public void AutoIntakeTierDown(){
         if(currentAutoIntakeTeir<=0) return;
         else currentAutoIntakeTeir--;
+    }
+
+    public void ResetArm(){
+        //go down until distance sensor detects floor
+        while (resetSensor.getDistance(DistanceUnit.CM) > armResetDistanceCM){
+            Arm().SetPowerRaw(-0.2);
+            opMode.telemetry.addData("Arm Reset Sensor Distance", resetSensor.getDistance(DistanceUnit.CM)+" CM");
+            opMode.telemetry.update();
+        }
+        //reset the arm
+        Arm().ResetToZero();
     }
 
 }

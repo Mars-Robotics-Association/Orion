@@ -62,6 +62,7 @@ public class CuriosityRobot extends MecanumChassis
 
         duckDist = opMode.hardwareMap.get(DistanceSensor.class, "duckDist");
         DistanceSensor intakeDist = opMode.hardwareMap.get(DistanceSensor.class, "intakeDist");
+        DistanceSensor armResetDist = opMode.hardwareMap.get(DistanceSensor.class, "armResetDist");
 
         text = new TextCycler(opMode);
         dashboard = FtcDashboard.getInstance();
@@ -78,7 +79,7 @@ public class CuriosityRobot extends MecanumChassis
 
             TouchSensor armTouch = opMode.hardwareMap.get(TouchSensor.class, "armTouch");
 
-            turretArm = new CuriosityTurretArm(opMode, new _ArmProfile(armMotor), new _TurretProfile(turretMotor), spinnerServo, intakeDist,armTouch,false);
+            turretArm = new CuriosityTurretArm(opMode, new _ArmProfile(armMotor), new _TurretProfile(turretMotor), spinnerServo, intakeDist, armResetDist,armTouch,false);
             turretArm.Arm().ResetToZero();
 
             duckSpinner = new DuckSpinner(duckMotor, 1);

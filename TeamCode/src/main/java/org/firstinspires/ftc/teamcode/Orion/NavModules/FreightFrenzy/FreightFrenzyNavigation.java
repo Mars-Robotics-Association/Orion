@@ -405,7 +405,7 @@ public class FreightFrenzyNavigation implements Runnable
         //turns on intake
         arm.ReturnToHomeAndIntake(0.02, 1);
         //move forwards slowly while auto-intaking
-        while (arm.GetIntakeState() == 1){
+        while (arm.GetIntakeState() == 1 && navigatorRunning){
             arm.UpdateIntake(armIntakeDistance, armAutoHeight);
             chassis.RawDrive(180,0.2,0);
         }
