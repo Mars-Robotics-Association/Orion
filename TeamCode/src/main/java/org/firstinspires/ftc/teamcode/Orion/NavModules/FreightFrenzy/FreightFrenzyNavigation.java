@@ -427,16 +427,21 @@ public class FreightFrenzyNavigation implements Runnable
                 img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
             }
             img = camera.ShrinkBitmap(img,20,20);
+            FtcDashboard.getInstance().sendImage(img);
             int[] vals = camera.findColor(img);
             if(!hDone&&vals[0]!=-1) {
                 if (vals[0] < 10) {
-                    TurnToAngle(chassis.GetImu().GetRobotAngle() - 5, 1);
+                    chassis.RawTurn(-0.2);
+                    Wait(.5);
+                    chassis.RawTurn(0);
                     if (right == true) {
                         hDone = true;
                     }
                     right = false;
                 } else if (vals[0] >= 10) {
-                    TurnToAngle(chassis.GetImu().GetRobotAngle() + 5, 1);
+                   chassis.RawTurn(0.2);
+                   Wait(.5);
+                   chassis.RawTurn(0);
                     if (right == false) {
                         hDone = true;
                     }
@@ -447,7 +452,7 @@ public class FreightFrenzyNavigation implements Runnable
                 if (vals[1] < 5) {
                     vDone=true;
                 } else if (vals[1] >= 5) {
-                    DriveForTime(0,1,0,.5);
+                    DriveForTime(0,.2,0,.5);
                 }
             }
         }
