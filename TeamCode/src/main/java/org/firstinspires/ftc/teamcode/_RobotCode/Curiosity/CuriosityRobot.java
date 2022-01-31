@@ -81,6 +81,7 @@ public class CuriosityRobot extends MecanumChassis
 
             turretArm = new CuriosityTurretArm(opMode, new _ArmProfile(armMotor), new _TurretProfile(turretMotor), spinnerServo, intakeDist, armResetDist,armTouch,false);
             turretArm.Arm().ResetToZero();
+            turretArm.SetThread(new Thread(turretArm));
 
             duckSpinner = new DuckSpinner(duckMotor, 1);
 
