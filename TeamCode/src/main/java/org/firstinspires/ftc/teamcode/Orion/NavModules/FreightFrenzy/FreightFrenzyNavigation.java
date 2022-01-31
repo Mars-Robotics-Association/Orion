@@ -415,13 +415,42 @@ public class FreightFrenzyNavigation implements Runnable
         //start facing hub
         //find sector of image with hub
         //move towards it
-        Bitmap img = camera.GetImage();
-        if(side==AllianceSide.BLUE) {
-            img = camera.convertMatToBitMap(camera.IsolateBlue(camera.convertBitmapToMat(img)));
-        }else{
-            img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
+
+        Boolean hDone = false;
+        Boolean vDone = false;
+        Boolean right = true;
+        while((!vDone||!hDone)&&navigatorRunning){
+            Bitmap img = camera.GetImage();
+            if(side==AllianceSide.BLUE) {
+                img = camera.convertMatToBitMap(camera.IsolateBlue(camera.convertBitmapToMat(img)));
+            }else{
+                img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
+            }
+            img = camera.ShrinkBitmap(img,20,20);
+            int[] vals = camera.findColor(img);
+            if(!hDone&&vals[0]!=-1) {
+                if (vals[0] < 10) {
+                    TurnToAngle(chassis.GetImu().GetRobotAngle() - 5, 1);
+                    if (right == true) {
+                        hDone = true;
+                    }
+                    right = false;
+                } else if (vals[0] >= 10) {
+                    TurnToAngle(chassis.GetImu().GetRobotAngle() + 5, 1);
+                    if (right == false) {
+                        hDone = true;
+                    }
+                    right = true;
+                }
+            }
+            if(!vDone&&vals[1]!=-1) {
+                if (vals[1] < 5) {
+                    vDone=true;
+                } else if (vals[1] >= 5) {
+                    DriveForTime(0,1,0,.5);
+                }
+            }
         }
-        
     }
 
     ////MINOR FUNCTIONS////
