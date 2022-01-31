@@ -139,6 +139,7 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm implements Runn
     public void run() {
         threadRunning = true;
         ResetArmLinear();
+        threadRunning = false;
     }
 
 }
