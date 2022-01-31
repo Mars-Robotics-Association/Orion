@@ -2,12 +2,14 @@ package org.firstinspires.ftc.teamcode._RobotCode.Curiosity.SimpleAutos;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.CuriosityRobot;
 
 @Autonomous(name = "*Curiosity Warehouse*", group = "Curiosity")
 @Config
+@Disabled
 public class SimpleCuriosityWarehouseAuto extends LinearOpMode
 {
     public static double time = 2;

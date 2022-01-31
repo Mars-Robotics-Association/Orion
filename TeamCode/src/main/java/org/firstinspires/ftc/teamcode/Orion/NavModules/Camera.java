@@ -1,17 +1,31 @@
 package org.firstinspires.ftc.teamcode.Orion.NavModules;
 
 import android.graphics.Bitmap;
+import android.graphics.ImageFormat;
+import android.os.Handler;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.vuforia.Frame;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.android.util.Size;
 import org.firstinspires.ftc.robotcore.external.function.Consumer;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureRequest;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureSequenceId;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureSession;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCharacteristics;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraException;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraFrame;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -27,6 +41,10 @@ import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.internal.collections.EvictingBlockingQueue;
+import org.firstinspires.ftc.robotcore.internal.network.CallbackLooper;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.system.ContinuationSynchronizer;
+import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DashboardWebSocketServer;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.ConfidenceLevel;
@@ -45,8 +63,13 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class Camera
 {
@@ -55,10 +78,10 @@ public class Camera
     private VuforiaLocalizer vuforia;
     private VuforiaTrackables trackables;
     private TFObjectDetector tfod;
-    private EvictingBlockingQueue<Bitmap> frameQueue;
     private FtcDashboard dashboard;
 
     public VuforiaLocalizer GetVuforia() {return vuforia;}
+
 
     private int cameraMonitorViewID;
     private static final String VLK = "AeZ+Eyv/////AAABmfcFKgZ5NkXfgqEeyUnIJMIHuzBJhNTY+sbZO+ChF7mbo1evegC5fO" +
@@ -75,10 +98,10 @@ public class Camera
         cameraMonitorViewID = opmode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", opmode.hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewID);
 
-        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamname, cameraMonitorViewID);
+        /*OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamname, cameraMonitorViewID);
         camera.openCameraDevice();
         camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
-        camera.setPipeline(new Pipeline());
+        camera.setPipeline(new Pipeline());*/
 
         parameters.vuforiaLicenseKey = VLK;
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
@@ -87,10 +110,7 @@ public class Camera
 
         trackables = GetVuforia().loadTrackablesFromAsset("UltimateGoal");
 
-        opMode.telemetry.update();
-
         trackables.activate();
-        initializeFrameQueue(2);
 
         //Init
         initTfod();
@@ -98,7 +118,7 @@ public class Camera
 
         dashboard = FtcDashboard.getInstance();
 
-        dashboard.startCameraStream(vuforia,0);
+        //dashboard.startCameraStream(tfod,0);
     }
 
     private void initTfod() {
@@ -310,7 +330,7 @@ public class Camera
 
     //takes a Mat image and converts it to a Bitmap
     public Bitmap convertMatToBitMap(Mat input){
-        Bitmap bmp = null;
+        Bitmap bmp = Bitmap.createBitmap(input.width(),input.height(), Bitmap.Config.RGB_565);
         Utils.matToBitmap(input,bmp);
         return bmp;
     }
@@ -323,32 +343,54 @@ public class Camera
 
     //takes a Mat and isolates the color yellow
     public Mat IsolateYellow(Mat input){
-        Scalar lowbgr = new Scalar(0,100,100);
-        Scalar highbgr = new Scalar(30, 255, 255);
-        Mat result;
+        Scalar lowhsv = new Scalar(0,100,100);
+        Scalar highhsv = new Scalar(30, 255, 255);
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();
         Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(hsv, lowbgr,highbgr, mask);
+        Core.inRange(hsv, lowhsv,highhsv, mask);
         Core.bitwise_and(input, input, last, mask);
-        result = last;
-        return result;
+        return last;
     }
 
     //takes a Mat and isolates the color white
     public Mat IsolateWhite(Mat input){
-        Scalar highbgr = new Scalar(255,255,255);
-        Scalar lowbgr = new Scalar(230,230,230);
-        Mat result;
+        Scalar highhsv = new Scalar(255,255,255);
+        Scalar lowhsv = new Scalar(230,230,230);
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();
         Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(hsv, lowbgr,highbgr, mask);
+        Core.inRange(hsv, lowhsv,highhsv, mask);
         Core.bitwise_and(input, input, last, mask);
-        result = last;
-        return result;
+        return last;
+    }
+
+    //takes a Mat and isolates the color white
+    public Mat IsolateBlue(Mat input){
+        Scalar highhsv = new Scalar(118,255,189);
+        Scalar lowhsv = new Scalar(103,101,47);
+        Mat hsv = new Mat();
+        Mat mask = new Mat();
+        Mat last = new Mat();
+        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
+        Core.inRange(hsv, lowhsv,highhsv, mask);
+        Core.bitwise_and(input, input, last, mask);
+        return last;
+    }
+
+    //takes a Mat and isolates the color white
+    public Mat IsolateRed(Mat input){
+        Scalar highhsv = new Scalar(21,255,244);
+        Scalar lowhsv = new Scalar(0,93,66);
+        Mat hsv = new Mat();
+        Mat mask = new Mat();
+        Mat last = new Mat();
+        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
+        Core.inRange(hsv, lowhsv,highhsv, mask);
+        Core.bitwise_and(input, input, last, mask);
+        return last;
     }
 
     //for determining nonwhite pixels in a cropped image
@@ -369,48 +411,52 @@ public class Camera
         return pixelcount;
     }
 
+    public int[] findColor(Bitmap input){
+        int width = -1,height=-1;
+        for(int w = 0;w<input.getWidth();w++){
+            for(int h=0;h<input.getHeight();h++){
+                int color = input.getPixel(w,h);
+                int R = (color & 0xff0000) >> 16;
+                int G = (color & 0xff00) >> 8;
+                int B = color & 0xff;
+                if((R != 0)&&(G != 0)&&(B != 0)){
+                    width = w;
+                    height = h;
+                }
+            }
+        }
+        int[] a = {width,height};
+        return a;
+    }
+
     //isolate a color from a mat
-    public Mat isolateColor(Mat input, Scalar highbgr, Scalar lowbgr){
-        Mat result;
+    public Mat isolateColor(Mat input, Scalar highhsv, Scalar lowhsv){
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();
         Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(hsv, lowbgr,highbgr, mask);
+        Core.inRange(hsv, lowhsv,highhsv, mask);
         Core.bitwise_and(input, input, last, mask);
-        result = last;
-        return result;
+        return last;
     }
 
     public Bitmap GetImage() throws InterruptedException {
         VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take(); //takes the frame at the head of the queue
         long numImages = frame.getNumImages();
-        Image rgb=null;
+        Image img=null;
         for (int i = 0; i < numImages; i++) {
             if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
-                rgb = frame.getImage(i);
+                img = frame.getImage(i);
                 break;
             }
         }
-
-        Bitmap bmp = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
-        bmp.copyPixelsFromBuffer(rgb.getPixels());
+        Bitmap bmp = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.RGB_565);
+        bmp.copyPixelsFromBuffer(img.getPixels());
         frame.close();
-
-        //Bitmap bmp = frameQueue.poll();
         return bmp;
     }
 
-
-    private void initializeFrameQueue(int capacity) {
-        /** The frame queue will automatically throw away bitmap frames if they are not processed
-         * quickly by the OpMode. This avoids a buildup of frames in memory */
-        frameQueue = new EvictingBlockingQueue<Bitmap>(new ArrayBlockingQueue<Bitmap>(capacity));
-        frameQueue.setEvictAction(new Consumer<Bitmap>() {
-            @Override public void accept(Bitmap frame) {
-                // RobotLog.ii(TAG, "frame recycled w/o processing");
-                frame.recycle(); // not strictly necessary, but helpful
-            }
-        });
+    public Bitmap ShrinkBitmap(Bitmap bitmapIn, int width, int height){
+        return Bitmap.createScaledBitmap(bitmapIn, width, height, true); //might want to set filter to false (uses more proccessing power to make better image
     }
 }

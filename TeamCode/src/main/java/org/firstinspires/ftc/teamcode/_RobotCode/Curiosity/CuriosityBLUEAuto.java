@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.RoadrunnerModu
 public class CuriosityBLUEAuto extends LinearOpMode
 {
     CuriosityRobot robot;
-    Camera cam;
     FreightFrenzyNavigation nav;
     public static double targetHeading = -90;
     public static double targetHeading2 = -200;
@@ -29,6 +28,7 @@ public class CuriosityBLUEAuto extends LinearOpMode
 
         waitForStart();
         robot.Start();
+        nav.NavigatorOn();
         nav.side = side;
 
         multiplier = -nav.GetSideMultiplier();
@@ -41,11 +41,21 @@ public class CuriosityBLUEAuto extends LinearOpMode
         nav.TurnToAngle(-90*multiplier,0.2);
         nav.TurnToAngle(-90*multiplier,0.1);
         nav.DriveForTime(0,1,0,0.2);
-//        FreightFrenzyNavigation.DuckPos pos = nav.ScanBarcodeOpenCV(); //TODO: get working
+
+        telemetry.update();
+
+        nav.Wait(.5);
+        //SCAN
+        FreightFrenzyNavigation.DuckPos pos = nav.ScanBarcodeOpenCV();
+        telemetry.update();
+
+        //MOVE ARM TO POSITION
+        if(pos == FreightFrenzyNavigation.DuckPos.FIRST) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.TOP);
+        if(pos == FreightFrenzyNavigation.DuckPos.SECOND) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.MIDDLE);
+        if(pos == FreightFrenzyNavigation.DuckPos.THIRD) robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.BOTTOM);
 
         //PLACES FREIGHT
-        robot.TurretArm().GoToTier(CuriosityTurretArm.Tier.MIDDLE);
-        nav.DriveForTime(120*multiplier,0.7,0,1.4);
+        nav.DriveForTime(120*multiplier,0.7,0,1.3);
         robot.TurretArm().SetIntakeSpeed(-1);
         nav.Wait(1);
         nav.DriveForTime(-60*multiplier,0.5,0,0.5);
@@ -53,15 +63,19 @@ public class CuriosityBLUEAuto extends LinearOpMode
         //TURNS BACK TO WALL
         nav.TurnToAngle(0,0.5);
         robot.TurretArm().SetIntakeSpeed(0);
-        robot.Arm().GoToPosition(0);
+        robot.Arm().GoToPosition(0.02);
 
         //SPINS DUCKS
         nav.DriveAndSpinDucksLinear(1,0.5);
 
         //GOES TO PARK
+        nav.WallFollowForTime(-1,0.5);
         nav.WallFollowToWhite(0.5,180);
         nav.DriveForTime(180,0.5,0,0.5);
 
+        robot.Arm().GoToPosition(0);
+
+        nav.StopNavigator();
         stop();
 
 

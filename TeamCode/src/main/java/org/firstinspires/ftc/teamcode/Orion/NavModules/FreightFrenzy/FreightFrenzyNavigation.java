@@ -13,9 +13,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Camera;
+import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.BlinkinController;
 import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.DuckSpinner;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 
 @Config
 public class FreightFrenzyNavigation implements Runnable
@@ -29,6 +31,7 @@ public class FreightFrenzyNavigation implements Runnable
     private ColorSensor colorSensor;
     private MecanumChassis chassis;
     private Camera camera;
+    private BlinkinController lights;
 
     ////configuration variables////
     //Basic
@@ -78,8 +81,8 @@ public class FreightFrenzyNavigation implements Runnable
     boolean startParkWarehouse = false;
     boolean startParkDepot = false;
     boolean startScanBarcode = false;
-    boolean startPlaceFreight = false;
-    boolean startCollectFreight = false;
+    boolean startGoToPlace = false;
+    boolean startGoToCollect = false;
 
     boolean navigatorRunning = true;
 
@@ -99,7 +102,7 @@ public class FreightFrenzyNavigation implements Runnable
     Thread thread;
     boolean threadRunning = false;
 
-    public FreightFrenzyNavigation(OpMode setOpMode, MecanumChassis setChassis, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor, AllianceSide setSide){
+    public FreightFrenzyNavigation(OpMode setOpMode, MecanumChassis setChassis, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor, BlinkinController setBlinkin, AllianceSide setSide){
         opMode = setOpMode;
         chassis=setChassis;
         arm = setArm;
@@ -109,7 +112,8 @@ public class FreightFrenzyNavigation implements Runnable
         portDist = setPortDist;
         starboardDist = setStarboardDist;
         colorSensor = setColorSensor;
-        //camera = new Camera(opMode,"Webcam 1");
+        camera = new Camera(opMode,"Webcam 1");
+        lights = setBlinkin;
 
         side = setSide;
 
@@ -127,6 +131,7 @@ public class FreightFrenzyNavigation implements Runnable
         opMode.telemetry.addLine("Nav Thread Start!");
         threadRunning = true;
         NavigatorOn();
+        lights.Purple();
 
         if(startSpinDucks) {
             startSpinDucks = false;
@@ -144,18 +149,18 @@ public class FreightFrenzyNavigation implements Runnable
             startScanBarcode = false;
             ScanBarcodeLinear();
         }
-        if(startPlaceFreight) {
-            startPlaceFreight = false;
-            PlaceFreightLinear();
+        if(startGoToPlace) {
+            startGoToPlace = false;
+            GoToPlaceLinear();
         }
-        if(startCollectFreight) {
-            startCollectFreight = false;
-            CollectFreightLinear();
+        if(startGoToCollect) {
+            startGoToCollect = false;
+            GoToFreightLinear();
         }
 
         opMode.telemetry.addLine("Nav Thread End!");
 
-
+        lights.Yellow();
         threadRunning = false;
     }
     public boolean IsThreadRunning(){return threadRunning;}
@@ -183,16 +188,17 @@ public class FreightFrenzyNavigation implements Runnable
         startScanBarcode = true;
         thread.start();
     }
-    public void StartPlaceFreight(){
-        startPlaceFreight = true;
+    public void StartGoToPlace(){
+        startGoToPlace = true;
         thread.start();
     }
-    public void StartCollectFreight(){
-        startCollectFreight = true;
+    public void StarGoToCollect(){
+        startGoToCollect = true;
         thread.start();
     }
 
     public void DriveAndSpinDucksLinear(int numberOfCycles, double speed){
+        NavigatorOn();
         //should start along side wall north of warehouse with intake facing south
         //goToWall() if not at it already (might need to turn? don't worry about it for now)
         GoToWall(speed);
@@ -204,7 +210,7 @@ public class FreightFrenzyNavigation implements Runnable
         }
         //Stop
         duckSpinner.Stop();
-        chassis.Stop();
+        chassis.RawDrive(0,0,0);
     }
 
 
@@ -253,7 +259,7 @@ public class FreightFrenzyNavigation implements Runnable
         chassis.RawDrive(0,0,0);*/
     }
 
-    public void ScanBarcodeLinear(){
+    public DuckPos ScanBarcodeLinear(){
         //should start at constant point along a side wall north of warehouse with intake facing south
         //start moving arm so intake faces barcode
         //break away from the wall and move towards the center of the field for time
@@ -261,53 +267,89 @@ public class FreightFrenzyNavigation implements Runnable
         //use intakeDist to record the time from start of sweep at which it detected the freight
         //determine barcode configuration off of time
         //raise arm to appropriate height and reverse intake
-        DriveForTime(0,1,0,1);
+        DriveForTime(0,1,0,.25);
         double startTime = opMode.getRuntime();
         DriveForDuckSensorDistance(90,0.5,0,5);
         double totalTime = opMode.getRuntime()-startTime;
-
+        DuckPos location = DuckPos.NULL;
+        if(totalTime<2){
+            location = DuckPos.FIRST;
+        }else if(totalTime<3){
+            location = DuckPos.SECOND;
+        }else {
+            location = DuckPos.THIRD;
+        }
+        return location;
     }
+
 
     public DuckPos ScanBarcodeOpenCV() throws InterruptedException {
         //get camera input and convert to mat
         //divide image into three sections
         //find section with most yellow
         DuckPos pos= DuckPos.NULL;
+        opMode.telemetry.addData("Started scan", opMode.getRuntime());
         Bitmap in = camera.GetImage();
         Mat img = camera.convertBitmapToMat(in);
+
         Rect firstRect = new Rect(0,0,img.width()/3,img.height());
         Rect secondRect = new Rect(img.width()/3,0,img.width()/3,img.height());
         Rect thirdRect = new Rect(2*img.width()/3,0,img.width()/3,img.height());
+
         Mat firstMat = new Mat(img,firstRect);
         Mat secondMat = new Mat(img,secondRect);
         Mat thirdMat = new Mat(img,thirdRect);
-        FtcDashboard.getInstance().sendImage(camera.convertMatToBitMap(firstMat));
-        firstMat = camera.IsolateYellow(firstMat);
-        secondMat = camera.IsolateYellow(secondMat);
-        thirdMat = camera.IsolateYellow(thirdMat);
+        //bgr lime(0,255,102)
+        Scalar max = new Scalar(75,255,255);
+        Scalar min = new Scalar(35,58,121);
+        firstMat = camera.isolateColor(firstMat,max,min);
+        secondMat = camera.isolateColor(secondMat,max,min);
+        thirdMat = camera.isolateColor(thirdMat,max,min);
+        Bitmap BigBit = camera.convertMatToBitMap(
+                camera.isolateColor(
+                        img
+                        ,max,min)
+                 );
+
+
         Bitmap first = camera.convertMatToBitMap(firstMat);
         Bitmap second = camera.convertMatToBitMap(secondMat);
         Bitmap third = camera.convertMatToBitMap(thirdMat);
-        if(camera.countPixels(first)>camera.countPixels(second)&&camera.countPixels(first)>camera.countPixels(third)){
+
+        //FtcDashboard.getInstance().sendImage(first);
+        //FtcDashboard.getInstance().sendImage(second);
+        //FtcDashboard.getInstance().sendImage(third);
+        FtcDashboard.getInstance().sendImage(BigBit);
+
+        double pixelsFirst = camera.countPixels(first);
+        double pixelsSecond = camera.countPixels(second);
+        double pixelsThird = camera.countPixels(third);
+
+        opMode.telemetry.addData("Pixel Count 1",pixelsFirst);
+        opMode.telemetry.addData("Pixel Count 2",pixelsSecond);
+        opMode.telemetry.addData("Pixel Count 3",pixelsThird);
+
+
+        if(pixelsFirst>pixelsSecond&&pixelsFirst>pixelsThird){
             pos=DuckPos.FIRST;
             opMode.telemetry.addData("Element in position","1");
         }
-        else if(camera.countPixels(second)>camera.countPixels(first)&&camera.countPixels(second)>camera.countPixels(third)){
+        else if(pixelsSecond>pixelsFirst&&pixelsSecond>pixelsThird){
             pos=DuckPos.SECOND;
             opMode.telemetry.addData("Element in position","2");
         }
-        else if(camera.countPixels(third)>camera.countPixels(second)&&camera.countPixels(third)>camera.countPixels(first)){
+        else if(pixelsThird>pixelsSecond&&pixelsThird>pixelsFirst){
             pos=DuckPos.THIRD;
             opMode.telemetry.addData("Element in position","3");
         }
-        if(pos==DuckPos.NULL) {
+        else if(pos==DuckPos.NULL) {
             opMode.telemetry.addData("Element in position", "null");
         }
-        opMode.telemetry.update();
-        return DuckPos.FIRST;
+        opMode.telemetry.addData("Scan Done!", opMode.getRuntime());
+        return pos;
     }
 
-    public void PlaceFreightLinear(){
+    public void GoToPlaceLinear(){
         //should start in the depot with the intake side facing away from hub (can start on white line)
         //goToWall()
         //wallFollowToWhite() from the south
@@ -319,16 +361,24 @@ public class FreightFrenzyNavigation implements Runnable
         //when no freight is detected by intakeDist, goToWall() at a diagonal
         //wallFollowToWhite() from the north
 
+        //Turn to zero
         TurnToAngle(0,0.8);
         TurnToAngle(0,0.2);
+        //Go to the wall
         GoToWall(1);
-        WallFollowToWhite(0.5,0);
+        //Wall follow the short distance to the white line
+        WallFollowToWhite(0.6,0);
+        //Wall follow past the line
         WallFollowForTime(1,0.25);
+        //Dead reckon towards hub
         DriveForTime(45*sideMultiplier,1,0,0.65);
+        //Turn to face hub
         TurnToAngle(75*sideMultiplier,0.5);
+        //Go forwards a bit
+        //DriveForTime(90*sideMultiplier,0.5,0,0.25);
     }
 
-    public void CollectFreightLinear(){
+    public void GoToFreightLinear(){
         //should start north of white line along wall or at it
         //goToWall()
         //wallFollowToWhite() from the north
@@ -338,10 +388,74 @@ public class FreightFrenzyNavigation implements Runnable
         //once freight is collected, goToWall() at a diagonal
         //wallFollowToWhite() from the south
 
+        //Turn to zero
         TurnToAngle(0,0.4);
-        GoToWall(1);
+        //Go towards the wall at an angle
+        GoToWall(-120*sideMultiplier,1);
+        //Reset arm
         arm.ReturnToHomeAndIntake(0.02,1);
-        WallFollowToWhite(0.5,180);
+        //Wall follow to white line
+        WallFollowToWhite(0.6,180);
+        //Go a little further
+        WallFollowForTime(-0.6,0.25);
+    }
+
+    public void AutoCollectFreightLinear(double armIntakeDistance, double armAutoHeight){
+        //starts in warehouse along wall facing freight
+        //turns on intake
+        arm.ReturnToHomeAndIntake(0.02, 1);
+        //move forwards slowly while auto-intaking
+        while (arm.GetIntakeState() == 1 && navigatorRunning){
+            arm.UpdateIntake(armIntakeDistance, armAutoHeight);
+            chassis.RawDrive(180,0.2,0);
+        }
+    }
+
+    public void GoToHub() throws InterruptedException {
+        //start facing hub
+        //find sector of image with hub
+        //move towards it
+
+        Boolean hDone = false;
+        Boolean vDone = false;
+        Boolean right = true;
+        while((!vDone||!hDone)&&navigatorRunning){
+            Bitmap img = camera.GetImage();
+            if(side==AllianceSide.BLUE) {
+                img = camera.convertMatToBitMap(camera.IsolateBlue(camera.convertBitmapToMat(img)));
+            }else{
+                img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
+            }
+            img = camera.ShrinkBitmap(img,20,20);
+            FtcDashboard.getInstance().sendImage(img);
+            int[] vals = camera.findColor(img);
+            if(!hDone&&vals[0]!=-1) {
+                if (vals[0] < 10) {
+                    chassis.RawTurn(-0.2);
+                    Wait(.5);
+                    chassis.RawTurn(0);
+                    if (right == true) {
+                        hDone = true;
+                    }
+                    right = false;
+                } else if (vals[0] >= 10) {
+                   chassis.RawTurn(0.2);
+                   Wait(.5);
+                   chassis.RawTurn(0);
+                    if (right == false) {
+                        hDone = true;
+                    }
+                    right = true;
+                }
+            }
+            if(!vDone&&vals[1]!=-1) {
+                if (vals[1] < 5) {
+                    vDone=true;
+                } else if (vals[1] >= 5) {
+                    DriveForTime(0,.2,0,.5);
+                }
+            }
+        }
     }
 
     ////MINOR FUNCTIONS////
@@ -429,7 +543,8 @@ public class FreightFrenzyNavigation implements Runnable
 
     //Spine the ducks
     public void SpinDucks(double multiplier, double maxSpeed){
-
+        NavigatorOn();
+        lights.Purple();
         //DriveForTime(-90,0.5,0.08*sideMultiplier,0.2);
         double startTime = opMode.getRuntime();
         double speed = 0;

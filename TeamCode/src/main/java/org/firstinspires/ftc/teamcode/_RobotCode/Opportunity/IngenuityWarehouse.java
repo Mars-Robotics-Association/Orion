@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Opportunity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.CuriosityRobot;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode._RobotCode.Ingenuity.IngenuityControl;
 
 @Autonomous(name = "*Oppy Warehouse*", group = "Oppy")
 @Config
+@Disabled
 public class IngenuityWarehouse extends LinearOpMode
 {
     public static double time = 2;

@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 @TeleOp(name = "*LIFT BOT TELEOP*", group = "Test")
 @Config
+@Disabled
 public class LiftBotTeleop extends OpMode implements ControllerInputListener
 {
     ////Dependencies////

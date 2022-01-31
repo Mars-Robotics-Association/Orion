@@ -13,9 +13,9 @@ import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.D
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_ANG_VEL_MOD;
 import static org.firstinspires.ftc.teamcode.Orion.NavModules.Roadrunner.drive.DriveConstants.MAX_VEL_MOD;
 
-@TeleOp(name = "*CURIOSITY TELEOP*", group = "Curiosity")
+@TeleOp(name = "*TEST CURIOSITY TELEOP*", group = "Curiosity")
 @Config
-public class CuriosityTeleop extends OpMode implements ControllerInputListener
+public class CuriosityTESTTeleop extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
     private CuriosityRobot control;
@@ -153,6 +153,14 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void XPressed(double controllerNumber) {
         if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
             control.TurretArm().ReturnToHomeAndIntake(0.02,intakeSpeed);
+        }
+        if(controllerNumber==2)
+        {
+            try {
+                control.navigation.GoToHub();
+            } catch (InterruptedException e) {
+
+            }
         }
     }
 
@@ -348,7 +356,6 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) control.SetInputOffset(90); //90 is blue, -90 is red
             else if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) control.SetInputOffset(-90); //90 is blue, -90 is red
         }
-        if(controllerNumber == 2 && control.isUSE_PAYLOAD()) control.TurretArm().ResetArm();
     }
 
     @Override

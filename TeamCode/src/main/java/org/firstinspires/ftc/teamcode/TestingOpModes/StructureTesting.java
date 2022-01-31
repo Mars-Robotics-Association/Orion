@@ -9,12 +9,12 @@ import org.firstinspires.ftc.teamcode.Orion.NavModules.*;
 @Autonomous(name="StructureTesting")
 @Disabled
 public class StructureTesting extends LinearOpMode {
-    Camera camera;
+//    Camera camera;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        camera = new Camera(this,"Webcam 1");
-        waitForStart();
-        camera.PrintTFTelemetry();
+//        camera = new Camera(this,"Webcam 1");
+//        waitForStart();
+//        camera.PrintTFTelemetry();
     }
 }

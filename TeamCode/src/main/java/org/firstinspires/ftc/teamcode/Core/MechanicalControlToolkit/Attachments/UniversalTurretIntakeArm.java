@@ -21,7 +21,7 @@ public class UniversalTurretIntakeArm
     DistanceSensor intakeSensor;
     TouchSensor bottomSensor;
     public static double intakeMultiplier = 1;
-    private double intakeState = 0;
+    private int intakeState = 0;
 
     protected OpMode opMode;
     private Servo intake;
@@ -71,6 +71,8 @@ public class UniversalTurretIntakeArm
             Arm().GoToPosition(intakedPosition);
         }
     }
+
+    public int GetIntakeState() {return intakeState;}
 
     public void GoToMax(){
         arm.GoToMax();

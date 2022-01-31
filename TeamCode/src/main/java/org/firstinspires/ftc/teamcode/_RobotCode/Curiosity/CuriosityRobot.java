@@ -34,8 +34,13 @@ public class CuriosityRobot extends MecanumChassis
     CuriosityTurretArm turretArm;
     DuckSpinner duckSpinner;
     DistanceSensor duckDist;
+    EncoderActuator tapeMeasureCapper;
+    BlinkinController blinkinController;
+
+    //Misc
     TextCycler text;
     FtcDashboard dashboard;
+
 
     //Nav Modules
     FreightFrenzyNavigation navigation;
@@ -57,6 +62,7 @@ public class CuriosityRobot extends MecanumChassis
 
         duckDist = opMode.hardwareMap.get(DistanceSensor.class, "duckDist");
         DistanceSensor intakeDist = opMode.hardwareMap.get(DistanceSensor.class, "intakeDist");
+        DistanceSensor armResetDist = opMode.hardwareMap.get(DistanceSensor.class, "armResetDist");
 
         text = new TextCycler(opMode);
         dashboard = FtcDashboard.getInstance();
@@ -65,23 +71,28 @@ public class CuriosityRobot extends MecanumChassis
         if(USE_PAYLOAD){
             DcMotor armMotor = opMode.hardwareMap.dcMotor.get("Arm");
             armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+            //DcMotor tapeMotor = opMode.hardwareMap.dcMotor.get("Tape");
             DcMotor turretMotor = opMode.hardwareMap.dcMotor.get("Turret");
             DcMotor duckMotor = opMode.hardwareMap.dcMotor.get("Duck");
             Servo spinnerServo = opMode.hardwareMap.servo.get("intake");
 
             TouchSensor armTouch = opMode.hardwareMap.get(TouchSensor.class, "armTouch");
 
-            turretArm = new CuriosityTurretArm(opMode, new _ArmProfile(armMotor), new _TurretProfile(turretMotor), spinnerServo, intakeDist,armTouch,false);
+            turretArm = new CuriosityTurretArm(opMode, new _ArmProfile(armMotor), new _TurretProfile(turretMotor), spinnerServo, intakeDist, armResetDist,armTouch,false);
             turretArm.Arm().ResetToZero();
 
             duckSpinner = new DuckSpinner(duckMotor, 1);
+
+            //tapeMeasureCapper = new EncoderActuator(opMode,new _TapeMeasureProfile(tapeMotor));
+            blinkinController = new BlinkinController(opMode);
         }
 
         if(useNavigator){
             DistanceSensor portDist = opMode.hardwareMap.get(DistanceSensor.class, "portDist");
             DistanceSensor starboardDist = opMode.hardwareMap.get(DistanceSensor.class, "starboardDist");
             ColorSensor colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
-            navigation = new CuriosityNavigator(opMode, this, turretArm, duckSpinner, duckDist, intakeDist, portDist, starboardDist, colorSensor, FreightFrenzyNavigation.AllianceSide.BLUE);
+            navigation = new CuriosityNavigator(opMode, this, turretArm, duckSpinner, duckDist, intakeDist, portDist, starboardDist, colorSensor, blinkinController, FreightFrenzyNavigation.AllianceSide.BLUE);
             navigation.SetThread(new Thread(navigation));
         }
     }
@@ -121,6 +132,8 @@ public class CuriosityRobot extends MecanumChassis
     public DuckSpinner GetDuckSpinner(){return duckSpinner;}
 
     public FreightFrenzyNavigation Navigation(){return navigation;}
+
+    public BlinkinController Lights(){return blinkinController;}
 
     public double GetDistToWallCM(){return duckDist.getDistance(DistanceUnit.CM);}
 
