@@ -348,6 +348,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) control.SetInputOffset(90); //90 is blue, -90 is red
             else if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) control.SetInputOffset(-90); //90 is blue, -90 is red
         }
+        if(controllerNumber == 2 && control.isUSE_PAYLOAD()) control.TurretArm().ResetArm();
     }
 
     @Override
