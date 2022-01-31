@@ -27,7 +27,7 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm
     //arm positions for each of the levels
     double armBottomPos = 0.1;
     double armMiddlePos = 0.2;
-    double armTopPos = 0.3;
+    double armTopPos = 0.34;
     double armCapPos = 0.34;
 
     public static double armIntakeDist = 7;
