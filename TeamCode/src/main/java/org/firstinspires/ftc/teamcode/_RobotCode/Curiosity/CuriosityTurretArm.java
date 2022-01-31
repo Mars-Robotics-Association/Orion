@@ -13,7 +13,7 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm implements Runn
 {
     DistanceSensor resetSensor;
     double armSlowDistanceCM = 8;
-    double armResetDistanceCM = 2;
+    double armResetDistanceCM = 3;
 
     public enum Alliance {RED,BLUE}
     public enum Strategy {TEAM,SHARED}
@@ -115,7 +115,7 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm implements Runn
     public void ResetArmLinear(){
         //go down until distance sensor detects floor
         while (resetSensor.getDistance(DistanceUnit.CM) > armResetDistanceCM && threadRunning){
-            while (resetSensor.getDistance(DistanceUnit.CM) > armSlowDistanceCM && threadRunning) Arm().SetPowerRaw(0.8);//go fast
+            while (resetSensor.getDistance(DistanceUnit.CM) > armSlowDistanceCM && threadRunning) Arm().SetPowerRaw(1);//go fast
             Arm().SetPowerRaw(0.2); //slow
             opMode.telemetry.addData("Arm Reset Sensor Distance", resetSensor.getDistance(DistanceUnit.CM)+" CM");
             opMode.telemetry.update();
