@@ -411,14 +411,14 @@ public class FreightFrenzyNavigation implements Runnable
         }
     }
 
-    public void GoToHub() throws InterruptedException {
+    public void GoToHubLinear() throws InterruptedException {
         //start facing hub
         //find sector of image with hub
         //move towards it
 
-        Boolean hDone = false;
-        Boolean vDone = false;
-        Boolean right = true;
+        boolean hDone = false;
+        boolean vDone = false;
+        boolean right = true;
         while((!vDone||!hDone)&&navigatorRunning){
             Bitmap img = camera.GetImage();
             if(side==AllianceSide.BLUE) {

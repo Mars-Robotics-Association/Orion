@@ -106,7 +106,7 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm
     public void ResetArm(){
         //go down until distance sensor detects floor
         while (resetSensor.getDistance(DistanceUnit.CM) > armResetDistanceCM){
-            Arm().SetPowerRaw(-0.2);
+            Arm().SetPowerRaw(0.2);
             opMode.telemetry.addData("Arm Reset Sensor Distance", resetSensor.getDistance(DistanceUnit.CM)+" CM");
             opMode.telemetry.update();
         }

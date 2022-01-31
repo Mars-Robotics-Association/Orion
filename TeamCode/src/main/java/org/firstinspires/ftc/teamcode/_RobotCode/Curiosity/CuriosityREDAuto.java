@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -42,6 +43,7 @@ public class CuriosityREDAuto extends LinearOpMode
         nav.TurnToAngle(-90*multiplier,0.1);
         nav.DriveForTime(0,1,0,0.2);
 
+        nav.Wait(.5);
         //SCAN
         FreightFrenzyNavigation.DuckPos pos = nav.ScanBarcodeOpenCV();
         telemetry.update();
