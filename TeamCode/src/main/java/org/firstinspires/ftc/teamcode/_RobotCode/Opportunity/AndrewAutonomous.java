@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 
-
+@Disabled//OLD AUTO
 @Config
 @Autonomous(name = "Andrew auto", group = "All")
 @Disabled
@@ -37,8 +37,8 @@ public class AndrewAutonomous extends LinearOpMode
         RR = this.hardwareMap.dcMotor.get("RR");
         RL = this.hardwareMap.dcMotor.get("RL");
 
-        colorSensor1 = hardwareMap.colorSensor.get("color1");
-        colorSensor2 = hardwareMap.colorSensor.get("color2");
+     //   colorSensor1 = hardwareMap.colorSensor.get("color1");
+     //   colorSensor2 = hardwareMap.colorSensor.get("color2");
 
         duckyMotor = this.hardwareMap.dcMotor.get("duckyMotor");
         imu = new IMU(this);
@@ -69,9 +69,10 @@ public class AndrewAutonomous extends LinearOpMode
             telemetry.addData("FL",FL.getCurrentPosition()-FLStart);
             telemetry.update();
             andrewIMU.loop();
-            initialRotation = andrewIMU.getRotation();
-        }
 
+        }
+        andrewIMU.loop();
+        initialRotation = andrewIMU.getRotation();
         FR.setPower(0);
         FL.setPower(0);
         RR.setPower(0);
@@ -109,7 +110,7 @@ public class AndrewAutonomous extends LinearOpMode
         FRStart = FR.getCurrentPosition();
         FLStart = FL.getCurrentPosition();
 
-        duckyMotor.setPower(-0.5);
+        duckyMotor.setPower(-0.8);
 
         startTime = getRuntime();
         newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(0,0.3,0);
@@ -127,9 +128,9 @@ public class AndrewAutonomous extends LinearOpMode
         RL.setPower(0);
 
         startTime = getRuntime();
-        while(getRuntime()<startTime+4){
+        while(getRuntime()<startTime+2){
             if(!opModeIsActive()) return;
-            duckyMotor.setPower(-0.7);
+            duckyMotor.setPower(-1);
         }
 
         FR.setPower(0);
@@ -184,9 +185,9 @@ public class AndrewAutonomous extends LinearOpMode
         startTime = getRuntime();
 
         andrewIMU.loop();
-        if(Math.abs(andrewIMU.getRotation())>10){
+        if(Math.abs(andrewIMU.getRotation()-initialRotation)>10){
             turnRight = andrewIMU.getRotation()>initialRotation;
-            while(andrewIMU.getRotation()>initialRotation==turnRight){
+            while(andrewIMU.getRotation()>initialRotation!=turnRight){
                 if(!opModeIsActive()) return;
                 andrewIMU.loop();
                 if(turnRight)
@@ -210,7 +211,7 @@ public class AndrewAutonomous extends LinearOpMode
         FLStart = FL.getCurrentPosition();
 
 
-
+        int distanceTravelled = 0;
 
         newSpeeds = MecanumChassis.CalculateWheelSpeedsTurning(90,0.2,0);
         while((FR.getCurrentPosition()-FRStart)-(FL.getCurrentPosition()-FLStart)<2000*2){
@@ -219,10 +220,24 @@ public class AndrewAutonomous extends LinearOpMode
             FL.setPower(newSpeeds[2]);
             RR.setPower(newSpeeds[1]);
             RL.setPower(newSpeeds[3]);
-            if(colorSensor2.green()>60)
+            if(colorSensor2.green()>60){
+               distanceTravelled = (FR.getCurrentPosition()-FRStart)-(FL.getCurrentPosition()-FLStart)/5;
                 break;
+            }
+
         }
 
+        startTime = getRuntime();
+        while(getRuntime()<startTime+8){
+            if(!opModeIsActive()) return;
+            FR.setPower(0);
+            FL.setPower(0);
+            RR.setPower(0);
+            RL.setPower(0);
+            telemetry.addData("distance",distanceTravelled);
+            telemetry.update();
+
+        }
 
 
 

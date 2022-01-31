@@ -92,6 +92,11 @@ public class UniversalTurretIntakeArm
         intakeState = 1;
     }
 
+    public void StartIntake(double intakeSpeed){
+        SetIntakeSpeed(intakeSpeed);
+        intakeState = 1;
+    }
+
     public void CycleIntakeState(double intakeSpeed){
         opMode.telemetry.addLine("CYCLING INTAKE");
         if(intakeState == 0) SetIntakeSpeed(intakeSpeed);

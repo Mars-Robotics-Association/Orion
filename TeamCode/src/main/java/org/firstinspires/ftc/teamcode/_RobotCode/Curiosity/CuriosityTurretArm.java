@@ -9,10 +9,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
 
-public class CuriosityTurretArm extends UniversalTurretIntakeArm
+public class CuriosityTurretArm extends UniversalTurretIntakeArm implements Runnable
 {
     DistanceSensor resetSensor;
-    double armResetDistanceCM = 4;
+    double armSlowDistanceCM = 8;
+    double armResetDistanceCM = 2;
 
     public enum Alliance {RED,BLUE}
     public enum Strategy {TEAM,SHARED}
@@ -33,6 +34,9 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm
     public static double armIntakeDist = 7;
 
     int currentAutoIntakeTeir = 1; //what level to send the arm to when intaking
+
+    Thread thread;
+    boolean threadRunning = true;
 
 
 
@@ -103,15 +107,38 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm
         else currentAutoIntakeTeir--;
     }
 
-    public void ResetArm(){
+    public void ReturnToHomeAndIntakeWithSensor(){
+        StartIntake(1);
+        StartResetArm();
+    }
+
+    public void ResetArmLinear(){
         //go down until distance sensor detects floor
-        while (resetSensor.getDistance(DistanceUnit.CM) > armResetDistanceCM){
-            Arm().SetPowerRaw(0.2);
+        while (resetSensor.getDistance(DistanceUnit.CM) > armResetDistanceCM && threadRunning){
+            while (resetSensor.getDistance(DistanceUnit.CM) > armSlowDistanceCM && threadRunning) Arm().SetPowerRaw(0.8);//go fast
+            Arm().SetPowerRaw(0.2); //slow
             opMode.telemetry.addData("Arm Reset Sensor Distance", resetSensor.getDistance(DistanceUnit.CM)+" CM");
             opMode.telemetry.update();
         }
         //reset the arm
         Arm().ResetToZero();
+        Arm().SetPowerRaw(0);
+    }
+
+    public void StartResetArm(){
+        thread.start();
+    }
+
+    public void StopThread(){
+        threadRunning = false;
+    }
+
+    public void SetThread(Thread setThread) {thread=setThread;}
+
+    @Override
+    public void run() {
+        threadRunning = true;
+        ResetArmLinear();
     }
 
 }
