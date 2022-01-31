@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
@@ -41,6 +42,8 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private DcMotor turntable;
     private DistanceSensor sideDist;
 
+    private double gamepad2SpeedMultiplier = 1;
+
     private ColorSensor colorSensor1;
 
     private TouchSensor armZeroTouchSensor;
@@ -50,11 +53,14 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
     private IMU imu;
     private AndrewIMU andrewIMU;
    // private CRServo duckyServo;
+    private CRServo tapeServo;
     private DcMotor duckyMotor;
     private boolean backWasDown = false;
     private boolean startWasDown = false;
     private boolean lBumperWasDown = false;
     private boolean dpad2WasDown = false;
+
+    private int startingArmPos;
 
     private boolean doFunnyLockThing = false;
 
@@ -63,9 +69,10 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
 
     private int armStartPos = 0;
+    private int turntableStartPos = 0;
 
     private AndrewArm andrewArm;
-
+    private boolean gamepad2LeftBumper = false;
 
     public void init() {
         controllerInput1 = new ControllerInput(gamepad1,1);
@@ -77,6 +84,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
         gripper = this.hardwareMap.dcMotor.get("clawMotor");
         turntable = this.hardwareMap.dcMotor.get("turntable");
 
+
         sideDist = hardwareMap.get(DistanceSensor.class, "distSide");
   //      colorSensor1 = hardwareMap.colorSensor.get("color2");
     //    RL.setDirection(DcMotorSimple.Direction.REVERSE); //uncomment this too
@@ -85,6 +93,7 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
         armPos = this.hardwareMap.dcMotor.get("armPosition");
     //    duckyServo = this.hardwareMap.crservo.get("duckyServo");
+        tapeServo = this.hardwareMap.crservo.get("tapeServo");
         duckyMotor = this.hardwareMap.dcMotor.get("duckyMotor");
         //armTouch = this.hardwareMap.get(TouchSensor.class,"armTouch");
 
@@ -99,7 +108,8 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
             andrewArm = new AndrewArm(armPos);
             andrewIMU.resetRotation();
             gripperStart = gripper.getCurrentPosition();
-            armStartPos = armPos.getCurrentPosition();
+            startingArmPos = armPos.getCurrentPosition();
+            turntableStartPos = turntable.getCurrentPosition();
         }
 
 
@@ -107,10 +117,13 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
         telemetry.addData("Distance sensor",sideDist.getDistance(DistanceUnit.INCH));
 
+        telemetry.addData("armPos",armPos.getCurrentPosition() - startingArmPos);
+        telemetry.addData("turntablePos",turntable.getCurrentPosition() - turntableStartPos);
             controllerInput1.Loop();
             controllerInput2.Loop();
             andrewIMU.loop();
             andrewArm.loop();
+            player2TapeStuff();
 
             double stickDir = Math.PI+Math.atan2(gamepad1.left_stick_y, 0-gamepad1.left_stick_x);
             double stickDist = Math.sqrt(Math.pow(gamepad1.left_stick_x,2)+Math.pow(gamepad1.left_stick_y,2));
@@ -173,7 +186,12 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
             player2ArmStuff();
 
-
+            if(gamepad2.left_bumper && !gamepad2LeftBumper){
+                if(gamepad2SpeedMultiplier == 0.35)
+                    gamepad2SpeedMultiplier = 1;
+                else
+                    gamepad2SpeedMultiplier = 0.35;
+            }
 
 
 //            telemetry.addData("FR",FR.getCurrentPosition());
@@ -191,6 +209,14 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
         private int turntableLockPos = 0;
         private boolean turntableLockOn = false;
 
+        public void player2TapeStuff(){
+            if(gamepad2.right_bumper)
+                tapeServo.setPower(1);
+            else if(gamepad2.right_trigger>0.5)
+                tapeServo.setPower(-1);
+            else
+                tapeServo.setPower(0);
+        }
 
         public void player2ArmStuff(){
             telemetry.addData("gripper position",gripper.getCurrentPosition()+gripperStart);
@@ -213,9 +239,9 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 */
             if(gamepad1.dpad_left||gamepad2.dpad_left) {
 
-                turntable.setPower(1);
+                turntable.setPower(0-1*gamepad2SpeedMultiplier);
             }else if(gamepad1.dpad_right||gamepad2.dpad_right) {
-                turntable.setPower(0 - 1);
+                turntable.setPower(1*gamepad2SpeedMultiplier);
             }else{
 
                   turntable.setPower(0);
@@ -226,9 +252,9 @@ public class AndrewTeleop extends OpMode implements ControllerInputListener {
 
 
             if(gamepad1.dpad_up||gamepad2.dpad_up)
-                armPos.setPower(-1);
+                armPos.setPower(-1*gamepad2SpeedMultiplier);
             else if(gamepad1.dpad_down||gamepad2.dpad_down)
-                armPos.setPower(1);
+                armPos.setPower(1*gamepad2SpeedMultiplier);
             else
                 armPos.setPower(0);
 
