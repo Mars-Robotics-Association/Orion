@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Camera;
-import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.BlinkinController;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BlinkinController;
 import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.DuckSpinner;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -92,6 +92,7 @@ public class FreightFrenzyNavigation implements Runnable
     boolean currentParkFurtherInWarehouse = false;
     double currentRobotSpeed = 0.5;
 
+    //side multiplier
     protected double sideMultiplier = 1;
     public double GetSideMultiplier(){
         if(side == AllianceSide.RED) sideMultiplier = 1;
@@ -99,8 +100,10 @@ public class FreightFrenzyNavigation implements Runnable
         return sideMultiplier;
     }
 
+    //thread
     Thread thread;
     boolean threadRunning = false;
+
 
     public FreightFrenzyNavigation(OpMode setOpMode, MecanumChassis setChassis, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor, BlinkinController setBlinkin, AllianceSide setSide){
         opMode = setOpMode;
