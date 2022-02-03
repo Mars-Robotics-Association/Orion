@@ -29,8 +29,6 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm
     double armTopPos = 0.34;
     double armCapPos = 0.34;
 
-    public static double armIntakeDist = 7;
-
     int currentAutoIntakeTeir = 1; //what level to send the arm to when intaking
 
 

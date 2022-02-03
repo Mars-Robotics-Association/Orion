@@ -93,6 +93,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //KILL SWITCH FOR NAVIGATOR
         if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
             control.navigation.StopNavigator();
+            control.TurretArm().StopAutoLeveller();
             control.blinkinController.Lime();
         }
 
@@ -108,7 +109,6 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         }
 
         control.Update();
-        control.TurretArm().UpdateIntakeTiered();
 
         control.navigation.PrintSensorTelemetry();
 

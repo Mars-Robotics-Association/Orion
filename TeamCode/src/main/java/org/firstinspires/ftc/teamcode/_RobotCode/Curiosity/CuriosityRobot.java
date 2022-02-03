@@ -93,7 +93,7 @@ public class CuriosityRobot extends MecanumChassis
             DistanceSensor portDist = opMode.hardwareMap.get(DistanceSensor.class, "portDist");
             DistanceSensor starboardDist = opMode.hardwareMap.get(DistanceSensor.class, "starboardDist");
             ColorSensor colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
-            navigation = new FreightFrenzyNavigation(opMode, this, turretArm, duckSpinner, duckDist, intakeDist, portDist, starboardDist, colorSensor, blinkinController, FreightFrenzyNavigation.AllianceSide.BLUE);
+            navigation = new FreightFrenzyNavigation(opMode, this, turretArm, duckSpinner, duckDist, intakeDist, armResetDist, portDist, starboardDist, colorSensor, blinkinController, FreightFrenzyNavigation.AllianceSide.BLUE);
             navigation.SetThread(new Thread(navigation));
         }
     }
@@ -118,7 +118,8 @@ public class CuriosityRobot extends MecanumChassis
 
     public void Update(){
         text.Update();
-        if(USE_NAVIGATOR){
+        if(USE_PAYLOAD){
+            turretArm.UpdateIntakeTiered();
         }
     }
 

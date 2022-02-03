@@ -21,6 +21,10 @@ class ArmLeveller implements Runnable
     //intaking sensor
     double lowerArmDistanceCM = 10;
 
+    //time buffer
+    double lastTimeBlockDetected = 0;
+    double timeToKeepDown = 1;
+
     Thread thread;
     boolean threadRunning = false;
 
@@ -35,22 +39,24 @@ class ArmLeveller implements Runnable
     }
 
     public void ResetArmLinear(){
+        resetArmQueued = false;
         //go down until distance sensor detects floor
         while (resetSensor.getDistance(DistanceUnit.CM) > armResetDistanceCM && threadRunning){
             while (resetSensor.getDistance(DistanceUnit.CM) > armSlowDistanceCM && threadRunning) arm.SetPowerRaw(1);//go fast
             arm.SetPowerRaw(0.2); //slow
             opMode.telemetry.addData("Arm Reset Sensor Distance", resetSensor.getDistance(DistanceUnit.CM)+" CM");
-            opMode.telemetry.update();
         }
         //reset the arm
         arm.ResetToZero();
         arm.SetPowerRaw(0);
-        resetArmQueued = false;
     }
 
     public void LevelArm(){
-        if(intakeSensor.getDistance(DistanceUnit.CM) < lowerArmDistanceCM) arm.GoToPosition(0); //if something is close, go all the way down
-        else arm.GoToPosition(armStorageLocation);
+        if(intakeSensor.getDistance(DistanceUnit.CM) < lowerArmDistanceCM) {
+            arm.GoToPosition(0); //if something is close, go all the way down
+            lastTimeBlockDetected = opMode.getRuntime();
+        }
+        else if(opMode.getRuntime() > lastTimeBlockDetected+timeToKeepDown) arm.GoToPosition(armStorageLocation); //only move up if its been a second
     }
 
     public void StartResetArm(){
@@ -64,6 +70,8 @@ class ArmLeveller implements Runnable
     }
 
     public void StopThread(){
+        levelArmQueued = false;
+        resetArmQueued = false;
         threadRunning = false;
     }
 

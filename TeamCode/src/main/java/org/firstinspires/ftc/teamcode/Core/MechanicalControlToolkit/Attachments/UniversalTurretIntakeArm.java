@@ -28,6 +28,9 @@ public class UniversalTurretIntakeArm
     enum ArmState {Intaking, Storage, Placing}
     ArmState armState = ArmState.Storage;
 
+    public static double armIntakeDist = 7;
+    public double GetArmIntakeDist() {return armIntakeDist;}
+
     public UniversalTurretIntakeArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo setIntake, DistanceSensor setIntakeDetector, TouchSensor setBottomSensor, boolean reverseIntake){
         opMode = setOpMode;
 

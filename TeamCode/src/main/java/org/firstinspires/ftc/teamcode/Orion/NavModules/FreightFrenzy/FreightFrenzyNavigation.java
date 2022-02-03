@@ -26,7 +26,7 @@ public class FreightFrenzyNavigation implements Runnable
     private OpMode opMode;
     private UniversalTurretIntakeArm arm;
     private DuckSpinner duckSpinner;
-    private DistanceSensor duckDistance, intakeDistance;
+    private DistanceSensor duckDistance, intakeDistance, levelSensor;
     private DistanceSensor portDist, starboardDist;
     private ColorSensor colorSensor;
     private MecanumChassis chassis;
@@ -57,6 +57,9 @@ public class FreightFrenzyNavigation implements Runnable
     //Scan Barcode
 
     //Place
+    protected double placeHeightThreshold = 8; //uses distance sensor on the bottom to know when to stop
+    protected double placeTurningCoefficient = 0.05; //multiplier by error for turn offset
+    protected double placeSpeed = 0.5;
 
     //Collect
 
@@ -105,13 +108,14 @@ public class FreightFrenzyNavigation implements Runnable
     boolean threadRunning = false;
 
 
-    public FreightFrenzyNavigation(OpMode setOpMode, MecanumChassis setChassis, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor, BlinkinController setBlinkin, AllianceSide setSide){
+    public FreightFrenzyNavigation(OpMode setOpMode, MecanumChassis setChassis, UniversalTurretIntakeArm setArm, DuckSpinner setSpinner, DistanceSensor setDuckDist, DistanceSensor setIntakeDist, DistanceSensor setLevelSensor, DistanceSensor setPortDist, DistanceSensor setStarboardDist, ColorSensor setColorSensor, BlinkinController setBlinkin, AllianceSide setSide){
         opMode = setOpMode;
         chassis=setChassis;
         arm = setArm;
         duckSpinner = setSpinner;
         duckDistance = setDuckDist;
         intakeDistance = setIntakeDist;
+        levelSensor = setLevelSensor;
         portDist = setPortDist;
         starboardDist = setStarboardDist;
         colorSensor = setColorSensor;
@@ -459,6 +463,20 @@ public class FreightFrenzyNavigation implements Runnable
                 }
             }
         }
+    }
+
+    public void PlaceLinear(){
+        while (levelSensor.getDistance(DistanceUnit.CM) > placeHeightThreshold && navigatorRunning){ //while not above hub
+            double error = 0; //need to get error
+            double offset = error * placeTurningCoefficient;
+            chassis.RawDrive(chassis.GetImu().GetRobotAngle(), placeSpeed, offset); //drive forwards towards hub
+        }
+        chassis.Stop(); //stop
+        arm.SetIntakeSpeed(-1); //reverse intake
+        while (intakeDistance.getDistance(DistanceUnit.CM) < arm.GetArmIntakeDist() && navigatorRunning){ //while freight is still in intake
+            //wait
+        }
+        arm.SetIntakeSpeed(0);//stop intake
     }
 
     ////MINOR FUNCTIONS////
