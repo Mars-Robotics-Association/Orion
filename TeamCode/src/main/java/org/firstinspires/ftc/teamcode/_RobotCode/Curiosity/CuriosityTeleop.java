@@ -237,9 +237,11 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void LTHeld(double controllerNumber) {
         if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.TurretArm().StopAutoLeveller();
             control.Arm().SetPowerClamped(armSpeed);
         }
         if(controllerNumber == 2 && control.isUSE_PAYLOAD()){
+            control.TurretArm().StopAutoLeveller();
             control.Arm().SetPowerRaw(armSpeed);
         }
     }
@@ -247,9 +249,11 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void RTHeld(double controllerNumber) {
         if(controllerNumber == 1 && control.isUSE_PAYLOAD()){
+            control.TurretArm().StopAutoLeveller();
             control.Arm().SetPowerClamped(-armSpeed);
         }
         if(controllerNumber == 2 && control.isUSE_PAYLOAD()){
+            control.TurretArm().StopAutoLeveller();
             control.Arm().SetPowerRaw(-armSpeed);
         }
     }
@@ -349,7 +353,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) control.SetInputOffset(90); //90 is blue, -90 is red
             else if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) control.SetInputOffset(-90); //90 is blue, -90 is red
         }
-        if(controllerNumber == 2 && control.isUSE_PAYLOAD()) control.TurretArm().StartResetArm();
+        //if(controllerNumber == 2 && control.isUSE_PAYLOAD()) control.TurretArm().StartResetArm();
     }
 
     @Override

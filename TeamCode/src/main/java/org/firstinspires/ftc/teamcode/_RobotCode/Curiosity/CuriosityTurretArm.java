@@ -9,11 +9,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.UniversalTurretIntakeArm;
 
-public class CuriosityTurretArm extends UniversalTurretIntakeArm implements Runnable
+public class CuriosityTurretArm extends UniversalTurretIntakeArm
 {
-    DistanceSensor resetSensor;
-    double armSlowDistanceCM = 8;
-    double armResetDistanceCM = 3;
+    ArmLeveller leveller;
 
     public enum Alliance {RED,BLUE}
     public enum Strategy {TEAM,SHARED}
@@ -35,17 +33,15 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm implements Runn
 
     int currentAutoIntakeTeir = 1; //what level to send the arm to when intaking
 
-    Thread thread;
-    boolean threadRunning = true;
 
-
-
-    public CuriosityTurretArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo intake, DistanceSensor intakeSensor, DistanceSensor setResetSensor, TouchSensor armTouch, boolean reverseIntake) {
+    public CuriosityTurretArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo intake, DistanceSensor intakeSensor, DistanceSensor resetSensor, TouchSensor armTouch, boolean reverseIntake) {
         super(setOpMode, setArmProfile, setTurretProfile, intake, intakeSensor, armTouch, reverseIntake);
-        resetSensor = setResetSensor;
+        leveller = new ArmLeveller(opMode,resetSensor,intakeSensor,Arm());
+        leveller.SetThread(new Thread(leveller));
     }
 
     public void GoToTier(Tier tier){
+        leveller.StopThread();
         if(tier == Tier.BOTTOM){
             Arm().GoToPosition(armBottomPos);
         }
@@ -109,37 +105,9 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm implements Runn
 
     public void ReturnToHomeAndIntakeWithSensor(){
         StartIntake(1);
-        StartResetArm();
+        leveller.StartResetArm();
+        leveller.StartLevelArmLoop();
     }
 
-    public void ResetArmLinear(){
-        //go down until distance sensor detects floor
-        while (resetSensor.getDistance(DistanceUnit.CM) > armResetDistanceCM && threadRunning){
-            while (resetSensor.getDistance(DistanceUnit.CM) > armSlowDistanceCM && threadRunning) Arm().SetPowerRaw(1);//go fast
-            Arm().SetPowerRaw(0.2); //slow
-            opMode.telemetry.addData("Arm Reset Sensor Distance", resetSensor.getDistance(DistanceUnit.CM)+" CM");
-            opMode.telemetry.update();
-        }
-        //reset the arm
-        Arm().ResetToZero();
-        Arm().SetPowerRaw(0);
-    }
-
-    public void StartResetArm(){
-        thread.start();
-    }
-
-    public void StopThread(){
-        threadRunning = false;
-    }
-
-    public void SetThread(Thread setThread) {thread=setThread;}
-
-    @Override
-    public void run() {
-        threadRunning = true;
-        ResetArmLinear();
-        threadRunning = false;
-    }
-
+    public void StopAutoLeveller(){leveller.StopThread();}
 }

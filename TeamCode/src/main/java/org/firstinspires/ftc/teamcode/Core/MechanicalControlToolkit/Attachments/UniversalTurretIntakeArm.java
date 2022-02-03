@@ -107,6 +107,8 @@ public class UniversalTurretIntakeArm
         if(intakeState > 3) intakeState = 0;
     }
 
+    public double GetIntakeDistanceCM() {return intakeSensor.getDistance(DistanceUnit.CM);}
+
     public static double clamp(double val, double min, double max) {
         return Math.max(min, Math.min(max, val));
     }
