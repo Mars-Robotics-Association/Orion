@@ -425,7 +425,8 @@ public class FreightFrenzyNavigation implements Runnable
 
         boolean hDone = false;
         boolean vDone = false;
-        boolean right = true;
+        boolean right = false;
+        boolean first = true;
         while((!vDone||!hDone)&&navigatorRunning){
             Bitmap img = camera.GetImage();
             if(side==AllianceSide.BLUE) {
@@ -433,7 +434,7 @@ public class FreightFrenzyNavigation implements Runnable
             }else{
                 img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
             }
-            //img = camera.ShrinkBitmap(img,20,20);
+            img = camera.ShrinkBitmap(img,20,20);
             FtcDashboard.getInstance().sendImage(img);
             int[] vals = camera.findColor(img);
             if(!hDone&&vals[0]!=-1) {
@@ -442,7 +443,7 @@ public class FreightFrenzyNavigation implements Runnable
                     chassis.RawTurn(0.2);
                     Wait(.5);
                     chassis.RawTurn(0);
-                    if (right == true) {
+                    if (right&&!first) {
                         hDone = true;
                     }
                     right = false;
@@ -451,10 +452,14 @@ public class FreightFrenzyNavigation implements Runnable
                    chassis.RawTurn(-0.2);
                    Wait(.5);
                    chassis.RawTurn(0);
-                    if (right == false) {
+                    if (!right&&!first) {
                         hDone = true;
                     }
                     right = true;
+                }
+                if(first)
+                {
+                    first=false;
                 }
             }
             if(!vDone&&vals[1]!=-1) {
