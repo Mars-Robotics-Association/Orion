@@ -433,12 +433,13 @@ public class FreightFrenzyNavigation implements Runnable
             }else{
                 img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
             }
-            img = camera.ShrinkBitmap(img,20,20);
+            //img = camera.ShrinkBitmap(img,20,20);
             FtcDashboard.getInstance().sendImage(img);
             int[] vals = camera.findColor(img);
             if(!hDone&&vals[0]!=-1) {
                 if (vals[0] < 10) {
-                    chassis.RawTurn(-0.2);
+                    opMode.telemetry.addData("turning","left");
+                    chassis.RawTurn(0.2);
                     Wait(.5);
                     chassis.RawTurn(0);
                     if (right == true) {
@@ -446,7 +447,8 @@ public class FreightFrenzyNavigation implements Runnable
                     }
                     right = false;
                 } else if (vals[0] >= 10) {
-                   chassis.RawTurn(0.2);
+                    opMode.telemetry.addData("turning","right");
+                   chassis.RawTurn(-0.2);
                    Wait(.5);
                    chassis.RawTurn(0);
                     if (right == false) {
@@ -459,9 +461,11 @@ public class FreightFrenzyNavigation implements Runnable
                 if (vals[1] < 5) {
                     vDone=true;
                 } else if (vals[1] >= 5) {
-                    DriveForTime(0,.2,0,.5);
+                    opMode.telemetry.addData("driving","forward");
+                    DriveForTime(180,.2,0,.5);
                 }
             }
+            opMode.telemetry.update();
         }
     }
 

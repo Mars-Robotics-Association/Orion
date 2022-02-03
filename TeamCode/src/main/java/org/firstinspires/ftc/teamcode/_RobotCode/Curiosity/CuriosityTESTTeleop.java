@@ -99,18 +99,18 @@ public class CuriosityTESTTeleop extends OpMode implements ControllerInputListen
         if(control.navigation.IsThreadRunning()) return;
 
         if(control.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE){
-            telemetry.addData("Alliance Side", "BLUE");
+            //telemetry.addData("Alliance Side", "BLUE");
             control.blinkinController.Blue();
         }
         else {
-            telemetry.addData("Alliance Side", "RED");
+            //telemetry.addData("Alliance Side", "RED");
             control.blinkinController.Red();
         }
 
         control.Update();
         control.TurretArm().UpdateIntakeTiered();
 
-        control.navigation.PrintSensorTelemetry();
+        //control.navigation.PrintSensorTelemetry();
 
         //Manage driving
         control.SetHeadingPID(turnP, turnI, turnD);
@@ -122,7 +122,7 @@ public class CuriosityTESTTeleop extends OpMode implements ControllerInputListen
             //control.GetOrion().PrintTensorflowTelemetry();
         }
 
-        telemetry.update();
+        //telemetry.update();
     }
 
     @Override
