@@ -306,7 +306,7 @@ public class Camera
                             int R = (color & 0xff0000) >> 16;
                             int G = (color & 0xff00) >> 8;
                             int B = color & 0xff;
-                            if((R != 0)&&(G != 0)&&(B != 0)){
+                            if(!((R == 0) && (G == 0) && (B == 0))){
                                 pixelcount++;
                             }
                         }
@@ -403,7 +403,7 @@ public class Camera
                 int R = (color & 0xff0000) >> 16;
                 int G = (color & 0xff00) >> 8;
                 int B = color & 0xff;
-                if((R != 0)&&(G != 0)&&(B != 0)){
+                if(!((R == 0) && (G == 0) && (B == 0))){
                     pixelcount++;
                 }
             }
@@ -412,26 +412,22 @@ public class Camera
     }
 
     public int[] findColor(Bitmap input){
-        int width = -1,height=-1;
-        boolean done=false;
+        int width = 0,height=0,count=0;
         for(int w = 0;w<input.getWidth();w++){
-            if(!done) {
-                for (int h = 0; h < input.getHeight(); h++) {
-                    int color = input.getPixel(w, h);
-                    int R = (color & 0xff0000) >> 16;
-                    int G = (color & 0xff00) >> 8;
-                    int B = color & 0xff;
-                    if ((R != 0) && (G != 0) && (B != 0)) {
-                        width = w;
-                        height = h;
-                        done=true;
-                        break;
-                    }
+            for (int h = 0; h < input.getHeight(); h++) {
+                int color = input.getPixel(w, h);
+                int R = (color & 0xff0000) >> 16;
+                int G = (color & 0xff00) >> 8;
+                int B = color & 0xff;
+                if (!((R == 0) && (G == 0) && (B == 0))) {
+                    width += w;
+                    height += h;
+                    count++;
                 }
             }
         }
-        int[] a = {width,height};
-        return a;
+        opmode.telemetry.addData("x",width);
+        return new int[]{width/count,height/count};
     }
 
     //isolate a color from a mat
