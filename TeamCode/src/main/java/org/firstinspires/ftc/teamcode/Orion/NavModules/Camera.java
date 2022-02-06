@@ -427,7 +427,10 @@ public class Camera
             }
         }
         opmode.telemetry.addData("x",width);
-        return new int[]{width/count,height/count};
+        if(count==0){
+            return new int[]{input.getWidth()/2,input.getHeight()/2};
+        }
+        return new int[]{width/count,height/count};//TODO:fix
     }
 
     //isolate a color from a mat

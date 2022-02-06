@@ -461,8 +461,7 @@ public class FreightFrenzyNavigation implements Runnable
                 {
                     first=false;
                 }
-            }
-            if(!vDone&&vals[1]!=-1) {
+            }   if(!vDone) {
                 if (vals[1] < 5) {
                     vDone=true;
                 } else if (vals[1] >= 5) {
@@ -474,11 +473,20 @@ public class FreightFrenzyNavigation implements Runnable
         }
     }
 
-    public void PlaceLinear(){
+    public void PlaceLinear() throws InterruptedException {
         while (levelSensor.getDistance(DistanceUnit.CM) > placeHeightThreshold && navigatorRunning){ //while not above hub
-            double error = 0; //need to get error
+            Bitmap img = camera.GetImage();
+            if(side==AllianceSide.BLUE) {
+                img = camera.convertMatToBitMap(camera.IsolateBlue(camera.convertBitmapToMat(img)));
+            }else{
+                img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
+            }
+            img = camera.ShrinkBitmap(img,20,20);
+            FtcDashboard.getInstance().sendImage(img);
+            int[] vals = camera.findColor(img);
+            double error = vals[0]-10; //need to get error
             double offset = error * placeTurningCoefficient;
-            chassis.RawDrive(chassis.GetImu().GetRobotAngle(), placeSpeed, offset); //drive forwards towards hub
+            chassis.RawDrive(chassis.GetImu().GetRobotAngle(), -placeSpeed, -offset); //drive forwards towards hub
         }
         chassis.Stop(); //stop
         arm.SetIntakeSpeed(-1); //reverse intake
@@ -486,6 +494,7 @@ public class FreightFrenzyNavigation implements Runnable
             //wait
         }
         arm.SetIntakeSpeed(0);//stop intake
+
     }
 
     ////MINOR FUNCTIONS////
