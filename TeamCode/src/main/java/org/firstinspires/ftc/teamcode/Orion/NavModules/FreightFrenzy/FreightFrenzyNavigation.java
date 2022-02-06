@@ -57,7 +57,7 @@ public class FreightFrenzyNavigation implements Runnable
     //Scan Barcode
 
     //Place
-    protected double placeHeightThreshold = 8; //uses distance sensor on the bottom to know when to stop
+    protected double placeHeightThreshold = 15; //uses distance sensor on the bottom to know when to stop
     protected double placeTurningCoefficient = 0.05; //multiplier by error for turn offset
     protected double placeSpeed = 0.5;
 
@@ -474,7 +474,7 @@ public class FreightFrenzyNavigation implements Runnable
     }
 
     public void PlaceLinear() throws InterruptedException {
-        while (levelSensor.getDistance(DistanceUnit.CM) > placeHeightThreshold && navigatorRunning){ //while not above hub
+        while (levelSensor.getDistance(DistanceUnit.CM) > placeHeightThreshold&& navigatorRunning){ //while not above hub
             Bitmap img = camera.GetImage();
             if(side==AllianceSide.BLUE) {
                 img = camera.convertMatToBitMap(camera.IsolateBlue(camera.convertBitmapToMat(img)));
@@ -482,8 +482,11 @@ public class FreightFrenzyNavigation implements Runnable
                 img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
             }
             img = camera.ShrinkBitmap(img,20,20);
-            FtcDashboard.getInstance().sendImage(img);
+            FtcDashboard.getInstance().sendImage(camera.GrowBitmap(img,200,200));
             int[] vals = camera.findColor(img);
+            int[] tb = camera.getTopBottom(img);
+            opMode.telemetry.addData("top", tb[1]);
+            opMode.telemetry.addData("bottom", tb[0]);
             double error = vals[0]-10; //need to get error
             double offset = error * placeTurningCoefficient;
             chassis.RawDrive(chassis.GetImu().GetRobotAngle(), -placeSpeed, -offset); //drive forwards towards hub

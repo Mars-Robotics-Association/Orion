@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Orion.NavModules;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.os.Handler;
 import android.util.Log;
@@ -462,5 +463,36 @@ public class Camera
 
     public Bitmap ShrinkBitmap(Bitmap bitmapIn, int width, int height){
         return Bitmap.createScaledBitmap(bitmapIn, width, height, true); //might want to set filter to false (uses more proccessing power to make better image
+    }
+
+    public Bitmap GrowBitmap(Bitmap input,int width, int height){
+        Bitmap bmp = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
+        for(int x=0;x<width;x++){
+            for(int y=0;y<height;y++){
+                int color = input.getPixel((x*input.getWidth())/width,(y*input.getHeight())/height);
+                int R = (color & 0xff0000) >> 16;
+                int G = (color & 0xff00) >> 8;
+                int B = color & 0xff;
+                bmp.setPixel(x,y,Color.rgb(R,G,B));
+            }
+        }
+        return bmp;
+    }
+
+    public int[] getTopBottom(Bitmap input){
+        int max = Integer.MIN_VALUE,min=Integer.MAX_VALUE;
+        for(int w = 0;w<input.getWidth();w++){
+            for (int h = 0; h < input.getHeight(); h++) {
+                int color = input.getPixel(w, h);
+                int R = (color & 0xff0000) >> 16;
+                int G = (color & 0xff00) >> 8;
+                int B = color & 0xff;
+                if (!((R == 0) && (G == 0) && (B == 0))) {
+                    if(h<min)min=h;
+                    if(h>max)max=h;
+                }
+            }
+        }
+        return new int[]{min,max};
     }
 }
