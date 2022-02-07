@@ -21,7 +21,7 @@ public class AndrewAutonomousNewerer extends LinearOpMode
 
     @Override
     public void runOpMode() throws InterruptedException {
-        andrew = new AndrewRobot(this, true, false,false);
+        andrew = new AndrewRobot(this, true, false,false,this);
         andrew.init();
 
 
@@ -103,7 +103,14 @@ sleep(200);
         startTime = getRuntime();  //reorient after next to goal
         while(getRuntime()<startTime+1){
             if(!opModeIsActive()) return;
+
+            telemetry.clear();
+
             andrew.TurnTowardsAngle(180,-0.4,0.05);
+            telemetry.addData("targetHeading",180);
+            telemetry.addData("IMU", andrew.GetImu().GetRobotAngle());
+
+            telemetry.update();
         }
         sleep(200);
         andrew.RawDrive(90,0.6,0);

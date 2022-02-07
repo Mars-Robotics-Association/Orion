@@ -18,7 +18,7 @@ public class AndrewAutoTests extends LinearOpMode
 
     @Override
     public void runOpMode() throws InterruptedException {
-        andrew = new AndrewRobot(this, true, false,false);
+        andrew = new AndrewRobot(this, true, false,false,this);
         andrew.init();
 
 
@@ -26,29 +26,15 @@ public class AndrewAutoTests extends LinearOpMode
         andrew.StartCoreRobotModules();
 
         andrew.ResetGyro();
+        andrew.GetImu().ResetGyro();
 
         double startTime = getRuntime();
-        int armStartPos = andrew.armPos.getCurrentPosition();
-        int turntableStartPos = andrew.turntable.getCurrentPosition();
-
-//
-//        andrew.armPos.setPower(1);
-//        andrew.armPos.setPower(1);
-//        while(andrew.armPos.getCurrentPosition()<6300+armStartPos){
-//            if(!opModeIsActive()) return;
-//            telemetry.addData("armPos",andrew.armPos.getCurrentPosition() +"<"+(6300+armStartPos));
-//            telemetry.update();
-//            sleep(250);
-//        }
-//        andrew.armPos.setPower(0);
-
-        andrew.turntable.setTargetPosition(turntableStartPos + -3600);
-        andrew.turntable.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        andrew.turntable.setPower(1);
-
-        sleep(6000);
-
-
+        while(getRuntime()<startTime+30){
+            if(!opModeIsActive()) return;
+            telemetry.clear();
+            telemetry.addData("distRotation",andrew.getRotationFromDistanceSensors());
+            telemetry.update();
+        }
 
     }
 
