@@ -28,7 +28,7 @@ public class AndrewAutoTests extends LinearOpMode
         andrew.ResetGyro();
         andrew.GetImu().ResetGyro();
 
-        double startTime = getRuntime();
+                double startTime = getRuntime();
         while(getRuntime()<startTime+30){
             if(!opModeIsActive()) return;
             telemetry.clear();

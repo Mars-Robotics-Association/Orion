@@ -59,83 +59,84 @@ public class AndrewRobot extends MecanumChassis {
 
     public double TurnTowardsAngle2(double ld_TargetHeading, double ld_Speed, double ld_Coefficient){
         // Turn toward the angle.
-// ld_TargetHeading = the desired heading.  Range: -180 to 180
-// ld_Speed = the desired speed.  Range: 0 to 1
-// ld_Coefficient = adjustment coefficient.  Range: >0 to 1
+            // ld_TargetHeading = the desired heading.  Range: -180 to 180
+            // ld_Speed = the desired speed.  Range: 0 to 1
+            // ld_Coefficient = adjustment coefficient.  Range: >0 to 1
 
-/* if(ld_TargetHeading > 180) ld_TargetHeading = -360+ld_TargetHeading;
-        else if(ld_TargetHeading < -180) ld_TargetHeading = 360+ld_TargetHeading;
-        //calculate error and turn speed
-        double error = ld_TargetHeading - imu.GetRobotAngle();
-*/
-// Get the difference between the desired heading and the robots current orientation.
+            /* if(ld_TargetHeading > 180) ld_TargetHeading = -360+ld_TargetHeading;
+                else if(ld_TargetHeading < -180) ld_TargetHeading = 360+ld_TargetHeading;
+                //calculate error and turn speed
+                double error = ld_TargetHeading - imu.GetRobotAngle();
+            */
+
+        // Get the difference between the desired heading and the robots current orientation.
         double ld_error = GetTargetHeadingDifference(ld_TargetHeading);
 
-// If ld_error = 0, then abort before a divide by zero error...
+        // If ld_error = 0, then abort before a divide by zero error...
         if (ld_error == 0){
             return ld_error;
         }
-// Calculate the TurnSpeed
+        // Calculate the TurnSpeed
         double ld_TurnSpeed = (ld_error*ld_Coefficient*ld_Speed) + 0.2*(ld_error/Math.abs(ld_error));
 
-// Turn the Robot
+        // Turn the Robot
         this.RawTurn(ld_TurnSpeed);
 
-// Get the new difference (post-turn) between the desired heading and the robots current orientation.
+        // Get the new difference (post-turn) between the desired heading and the robots current orientation.
          ld_error = GetTargetHeadingDifference(ld_TargetHeading);
 
         return ld_error;
     }
 
     public double GetTargetHeadingDifference (double ld_TargetHeading){
-// Calculate the difference between TargetHeading and the robot's current orientation.
-// ld_TargetHeading = the desired heading.  Range: -180 to 180
-//
+        // Calculate the difference between TargetHeading and the robot's current orientation.
+        // ld_TargetHeading = the desired heading.  Range: -180 to 180
+        //
 
-// Error check ld_TargetHeading
-// If ld_TargetHeading is greater than 180 degrees, convert to negative value.
-// EX:  190 = -170
-// If ld_TargetHeading is less than -180 degrees, convert to positive value.
-// EX:  -190 = 170
+        // Error check ld_TargetHeading
+        // If ld_TargetHeading is greater than 180 degrees, convert to negative value.
+        // EX:  190 = -170
+        // If ld_TargetHeading is less than -180 degrees, convert to positive value.
+        // EX:  -190 = 170
         if(ld_TargetHeading > 180) ld_TargetHeading = -360+ld_TargetHeading;
         else if(ld_TargetHeading < -180) ld_TargetHeading = 360+ld_TargetHeading;
 
-//Calculate error and turn speed
+        //Calculate error and turn speed
         double ld_error = ld_TargetHeading - imu.GetRobotAngle();
 
-// Error check ld_error.
-// If ld_error is greater than 180 degrees, convert to negative value.
-// EX:  190 = -170
-// If ld_error is less than -180 degrees, convert to positive value.
-// EX:  -190 = 170
+        // Error check ld_error.
+        // If ld_error is greater than 180 degrees, convert to negative value.
+        // EX:  190 = -170
+        // If ld_error is less than -180 degrees, convert to positive value.
+        // EX:  -190 = 170
         if(ld_error > 180) ld_error = -360+ld_error;
 
         return ld_error;
     }
 
     public double TurnToAngle(double ld_TargetHeading, double ld_Speed, double ld_Precision){
-// Turn the Robot to the specified angle.
-// ld_TargetHeading = the desired heading.  Range: -180 to 180
-// ld_Speed = the desired speed.  Range: 0 to 1
-// ld_Precision = the number of degrees =/- of ld_TargetHeading that is "close enough"
+        // Turn the Robot to the specified angle.
+        // ld_TargetHeading = the desired heading.  Range: -180 to 180
+        // ld_Speed = the desired speed.  Range: 0 to 1
+        // ld_Precision = the number of degrees =/- of ld_TargetHeading that is "close enough"
 
         double ld_startTime = opMode.getRuntime();
         int li_iteration = 0;
         int li_MaxIterations=6;
         boolean lb_positive;
 
-// Turn the Robot.
-// Get the Current Heading Difference
+        // Turn the Robot.
+        // Get the Current Heading Difference
         double ld_error = GetTargetHeadingDifference (ld_TargetHeading);
 
-// Set whether the current error is positive (true) or negative (false)
+        // Set whether the current error is positive (true) or negative (false)
         lb_positive = (ld_error > 0);
 
-// While the robot is not within the desired precision and has not exceeded the attempts limit
+        // While the robot is not within the desired precision and has not exceeded the attempts limit
         while (Math.abs(ld_error)>=ld_Precision && li_iteration<li_MaxIterations){
             if(!linearOpMode.opModeIsActive()) return ld_error;
             ld_error= TurnTowardsAngle2(ld_TargetHeading, ld_Speed, 0.05);
-// If we overshoot the correction, cut the spped in half and try again.
+        // If we overshoot the correction, cut the spped in half and try again.
             if (lb_positive != (ld_error > 0)){
                 ld_Speed /= 2;
                 li_iteration++;
