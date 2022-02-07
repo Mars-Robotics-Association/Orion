@@ -336,6 +336,7 @@ public class Camera
         return bmp;
     }
 
+    //takes a Bitmap image and converts it to a Mat
     public Mat convertBitmapToMat(Bitmap input){
         Mat mat = new Mat();
         Utils.bitmapToMat(input,mat);
@@ -368,7 +369,7 @@ public class Camera
         return last;
     }
 
-    //takes a Mat and isolates the color white
+    //takes a Mat and isolates the color blue
     public Mat IsolateBlue(Mat input){
         Scalar highhsv = new Scalar(118,255,189);
         Scalar lowhsv = new Scalar(103,101,47);
@@ -381,7 +382,7 @@ public class Camera
         return last;
     }
 
-    //takes a Mat and isolates the color white
+    //takes a Mat and isolates the color red
     public Mat IsolateRed(Mat input){
         Scalar highhsv = new Scalar(21,255,244);
         Scalar lowhsv = new Scalar(0,93,66);
@@ -394,7 +395,7 @@ public class Camera
         return last;
     }
 
-    //for determining nonwhite pixels in a cropped image
+    //for determining nonblack pixels in a color isolated image
     public int countPixels(Bitmap input){
         int pixelcount = 0;
 
@@ -412,6 +413,7 @@ public class Camera
         return pixelcount;
     }
 
+    //returns average length and width of all colored pixels in a color isolated image
     public int[] findColor(Bitmap input){
         int width = 0,height=0,count=0;
         for(int w = 0;w<input.getWidth();w++){
@@ -431,7 +433,7 @@ public class Camera
         if(count==0){
             return new int[]{input.getWidth()/2,input.getHeight()/2};
         }
-        return new int[]{width/count,height/count};//TODO:fix
+        return new int[]{width/count,height/count};
     }
 
     //isolate a color from a mat
@@ -479,8 +481,9 @@ public class Camera
         return bmp;
     }
 
-    public int[] getTopBottom(Bitmap input){
-        int max = Integer.MIN_VALUE,min=Integer.MAX_VALUE;
+    //get extreme top bottom left and right values of a color isolated image
+    public int[] getTBLR(Bitmap input){
+        int maxh = Integer.MIN_VALUE,minh=Integer.MAX_VALUE, maxw = Integer.MIN_VALUE,minw=Integer.MAX_VALUE;
         for(int w = 0;w<input.getWidth();w++){
             for (int h = 0; h < input.getHeight(); h++) {
                 int color = input.getPixel(w, h);
@@ -488,11 +491,13 @@ public class Camera
                 int G = (color & 0xff00) >> 8;
                 int B = color & 0xff;
                 if (!((R == 0) && (G == 0) && (B == 0))) {
-                    if(h<min)min=h;
-                    if(h>max)max=h;
+                    if(h<minh)minh=h;
+                    if(h>maxh)maxh=h;
+                    if(w<minw)minw=w;
+                    if(w>maxw)maxw=w;
                 }
             }
         }
-        return new int[]{min,max};
+        return new int[]{minh,maxh,minw,maxw};
     }
 }

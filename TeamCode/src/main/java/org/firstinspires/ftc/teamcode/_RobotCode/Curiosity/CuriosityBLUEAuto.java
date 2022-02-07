@@ -33,10 +33,10 @@ public class CuriosityBLUEAuto extends LinearOpMode
 
         multiplier = -nav.GetSideMultiplier();
 
-        //STARTS ALONG WALL BY DUCKS
+        //STARTS ALONG WALL BY DUCKS TODO start facing other way
         nav.GoToWall(0.2);
 
-        //TURNS TO FACE AND SCAN TOWER
+        //TURNS TO FACE AND SCAN TOWER TODO get rid of this
         nav.DriveForTime(90*multiplier,0.5,0,0.5);
         nav.TurnToAngle(-90*multiplier,0.2);
         nav.TurnToAngle(-90*multiplier,0.1);

@@ -484,9 +484,9 @@ public class FreightFrenzyNavigation implements Runnable
             img = camera.ShrinkBitmap(img,20,20);
             FtcDashboard.getInstance().sendImage(camera.GrowBitmap(img,200,200));
             int[] vals = camera.findColor(img);
-            int[] tb = camera.getTopBottom(img);
-            opMode.telemetry.addData("top", tb[1]);
-            opMode.telemetry.addData("bottom", tb[0]);
+            int[] tblr = camera.getTBLR(img);
+            opMode.telemetry.addData("top", tblr[1]);
+            opMode.telemetry.addData("bottom", tblr[0]);
             double error = vals[0]-10; //need to get error
             double offset = error * placeTurningCoefficient;
             chassis.RawDrive(chassis.GetImu().GetRobotAngle(), -placeSpeed, -offset); //drive forwards towards hub
