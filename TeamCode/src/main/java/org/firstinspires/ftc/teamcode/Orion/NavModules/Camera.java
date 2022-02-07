@@ -468,6 +468,7 @@ public class Camera
     }
 
     public Bitmap GrowBitmap(Bitmap input,int width, int height){
+        if(width<input.getWidth()||height<input.getHeight())return input;
         Bitmap bmp = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
         for(int x=0;x<width;x++){
             for(int y=0;y<height;y++){
