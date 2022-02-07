@@ -68,14 +68,19 @@ public class AndrewAutonomousNewerer extends LinearOpMode
         andrew.Stop();
         sleep(200);
 
-        double startTime = getRuntime();
-        while(getRuntime()<startTime+1){
-            if(!opModeIsActive()) return;
-            andrew.TurnTowardsAngle(180,-0.4,0.05);
-        }
+        andrew.RawDrive(0,0.4,0);
+        waitForMotors(andrew,10000,2); // align with wall
+        andrew.Stop();
+        sleep(200);
+
+//        double startTime = getRuntime();
+//        while(getRuntime()<startTime+1){
+//            if(!opModeIsActive()) return;
+//            andrew.TurnTowardsAngle(180,-0.4,0.05);
+//        }
 
         sleep(200); // works up to here
-        startTime = getRuntime();
+        double startTime = getRuntime();
         int tickBefore = (int)andrew.getMotorTicks()[0];
         while(andrew.sideDist.getDistance(DistanceUnit.INCH)>10 && getRuntime()<startTime+6){
             if(!opModeIsActive()) return;
@@ -83,6 +88,9 @@ public class AndrewAutonomousNewerer extends LinearOpMode
         //    telemetry.update();
             andrew.RawDrive(180,0.4,0); // scan
         }
+        boolean emergencySkip = getRuntime()>=startTime+6;
+
+
         andrew.Stop();
         int distTraveled = (int)andrew.getMotorTicks()[0] - tickBefore;
         int level = 1;        //level 1 is the closest and lowest
@@ -92,30 +100,30 @@ public class AndrewAutonomousNewerer extends LinearOpMode
             level = 3;
 
 
-        sleep(1000);
+        sleep(600);
 
         sleep(200);
         andrew.RawDrive(180,0.6,0);
         waitForMotors(andrew,1900-distTraveled,15);
         andrew.Stop();
 
-sleep(200);
-        startTime = getRuntime();  //reorient after next to goal
-        while(getRuntime()<startTime+1){
-            if(!opModeIsActive()) return;
-
-            telemetry.clear();
-
-            andrew.TurnTowardsAngle(180,-0.4,0.05);
-            telemetry.addData("targetHeading",180);
-            telemetry.addData("IMU", andrew.GetImu().GetRobotAngle());
-
-            telemetry.update();
-        }
-        sleep(200);
-        andrew.RawDrive(90,0.6,0);
-        waitForMotors(andrew,180,2); //left to red line
-        andrew.Stop();
+//sleep(200);
+//        startTime = getRuntime();  //reorient after next to goal
+//        while(getRuntime()<startTime+1){
+//            if(!opModeIsActive()) return;
+//
+//            telemetry.clear();
+//
+//            andrew.TurnTowardsAngle(180,-0.4,0.05);
+//            telemetry.addData("targetHeading",180);
+//            telemetry.addData("IMU", andrew.GetImu().GetRobotAngle());
+//
+//            telemetry.update();
+//        }
+//        sleep(200);
+//        andrew.RawDrive(90,0.6,0);
+//        waitForMotors(andrew,180,2); //left to red line
+//        andrew.Stop();
         sleep(200);
 
 
@@ -126,8 +134,9 @@ sleep(200);
         if(level==2)
             armPosToSet = 6300;
 
+    if(!emergencySkip) {
 
-        andrew.armPos.setTargetPosition(armStartPos+armPosToSet);
+        andrew.armPos.setTargetPosition(armStartPos + armPosToSet);
         andrew.armPos.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         andrew.armPos.setPower(1);
 
@@ -155,10 +164,10 @@ sleep(200);
 
         sleep(1500);
 
-
+    }
 
         andrew.RawDrive(270,0.7,0); //right to park
-        waitForMotors(andrew,1000,15);
+        waitForMotors(andrew,1000,4);
         andrew.Stop();
 
         andrew.RawDrive(190,0.8,0.05); //forward to park
