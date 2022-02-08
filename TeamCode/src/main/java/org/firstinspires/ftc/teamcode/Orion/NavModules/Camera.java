@@ -384,8 +384,8 @@ public class Camera
 
     //takes a Mat and isolates the color red
     public Mat IsolateRed(Mat input){
-        Scalar highhsv = new Scalar(21,255,244);
-        Scalar lowhsv = new Scalar(0,93,66);
+        Scalar highhsv = new Scalar(20,255,255);
+        Scalar lowhsv = new Scalar(0,80,100);
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();
