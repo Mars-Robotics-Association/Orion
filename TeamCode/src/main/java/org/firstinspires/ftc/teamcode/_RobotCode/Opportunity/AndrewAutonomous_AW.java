@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 @Config
-@Autonomous(name = "Andrew auto v3", group = "All")
+@Autonomous(name = "Andrew Auto AW", group = "All")
 public class AndrewAutonomous_AW extends LinearOpMode
 {
     AndrewRobot andrew;
