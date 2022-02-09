@@ -128,20 +128,26 @@ public class AndrewRobot extends MecanumChassis {
         // Turn the Robot.
         // Get the Current Heading Difference
         double ld_error = GetTargetHeadingDifference (ld_TargetHeading);
+        opMode.telemetry.addData("Target:   ", ld_TargetHeading);
+        opMode.telemetry.addData("Difference:  ", ld_error);
 
         // Set whether the current error is positive (true) or negative (false)
         lb_positive = (ld_error > 0);
+        opMode.telemetry.addData("Positive:  ", lb_positive);
 
         // While the robot is not within the desired precision and has not exceeded the attempts limit
         while (Math.abs(ld_error)>=ld_Precision && li_iteration<li_MaxIterations){
             if(!linearOpMode.opModeIsActive()) return ld_error;
             ld_error= TurnTowardsAngle2(ld_TargetHeading, ld_Speed, 0.05);
-        // If we overshoot the correction, cut the spped in half and try again.
+        // If we overshoot the correction, cut the speed in half and try again.
             if (lb_positive != (ld_error > 0)){
                 ld_Speed /= 2;
                 li_iteration++;
             }
         }
+
+        // Turn the Robot
+        this.RawTurn(0);
 
         return ld_error;
     }

@@ -96,11 +96,12 @@ public class AndrewTeleop_AW extends OpMode implements ControllerInputListener {
 
         imu = new IMU(this);
         andrewIMU = new AndrewIMU(imu);
+
     }
         public void start(){
             imu.Start();
             andrewArm = new AndrewArm(armPos);
-//            andrewIMU.resetRotation();
+            andrewIMU.resetRotation();
             gripperStart = gripper.getCurrentPosition();
             startingArmPos = armPos.getCurrentPosition();
             turntableStartPos = turntable.getCurrentPosition();
@@ -196,8 +197,11 @@ public class AndrewTeleop_AW extends OpMode implements ControllerInputListener {
 //
 
             li_iterations++;
+            telemetry.addData("Version: ", "1.6");
             telemetry.addData("Iterations: ", li_iterations);
             telemetry.addData("IMU Angle: ", imu.GetRobotAngle());
+            telemetry.addData("andrewIMU: ", andrewIMU.getRotation());
+            andrewIMU.resetRotation();
             telemetry.update();
 //
 

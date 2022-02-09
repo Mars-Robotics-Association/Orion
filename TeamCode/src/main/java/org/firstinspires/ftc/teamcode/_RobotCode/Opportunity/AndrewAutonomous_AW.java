@@ -20,16 +20,53 @@ public class AndrewAutonomous_AW extends LinearOpMode
         andrew = new AndrewRobot(this, true, false,false,this);
         andrew.init();
 
+        andrew.GetImu().Start();
+        sleep (500);
+        double ld_gyro_init = andrew.GetImu().GetRobotAngle();
+        andrew.GetImu().ResetGyro();
+//        andrew.StartCoreRobotModules();
 
         waitForStart();
         int armStartPos = andrew.armPos.getCurrentPosition();
         int turntableStartPos = andrew.turntable.getCurrentPosition();
+        //andrew.GetImu().ResetGyro();
 
-        andrew.StartCoreRobotModules();
+        int li_iterations = 0;
+        double ld_gyro_reset = andrew.GetImu().GetRobotAngle();
+        double[] ld_gyro_now = new double[25];
+        double ld_error = 0;
 
-        andrew.ResetGyro();
+        while(li_iterations<25) {
+            telemetry.addData("Version:         ", "1.1");
+        //    telemetry.addData("Iterations:      ", li_iterations);
+            telemetry.addData("IMU Angle Start: ", ld_gyro_init);
+            telemetry.addData("IMU Angle Reset: ", ld_gyro_reset);
+            //andrew.GetImu().ResetGyro();
+            //telemetry.addData("andrewIMU: ", andrew.GetImu().getRotation());
+            //telemetry.addData("IMU Angle Pre:   ","");
+            ld_gyro_now[li_iterations]=andrew.GetImu().GetRobotAngle();
+            for(int i=0;i<li_iterations;i++) {
+                telemetry.addData("", ld_gyro_now[i]);
+            }
+            //telemetry.addData("IMU Angle Pre:   ", andrew.GetImu().GetRobotAngle());
+            sleep (1000);
 
+            // Turn to Angle
+            // Turn to +45
+            //if(li_iterations==0){
+            //    ld_error=andrew.TurnToAngle(-45,0.5,1);
+            //}
 
+            //telemetry.addData("ld_Error:   ", ld_error);
+            //telemetry.addData("IMU Angle Post:   ", andrew.GetImu().GetRobotAngle());
+            telemetry.update();
+
+            li_iterations++;
+        }
+
+        sleep (25000);
+
+/*
         andrew.RawDrive(0,0.7,0);
         waitForMotors(andrew,650,15); //initial forward
         andrew.Stop();
@@ -169,7 +206,7 @@ sleep(200);
         telemetry.update();
         sleep(15000);
 
-
+*/
     }
 
     void waitForMotors(AndrewRobot bot, int targetPosition, double timeLimit){
