@@ -463,9 +463,10 @@ public class FreightFrenzyNavigation implements Runnable
                     first=false;
                 }
             }   if(!vDone) {
-                if (levelSensor.getDistance(DistanceUnit.CM)<15) {
+                if (levelSensor.getDistance(DistanceUnit.CM)<30) {
+                    DriveForTime(0,0,0,0);
                     vDone=true;
-                } else if (vals[1] >= 5) {
+                } else{
                     opMode.telemetry.addData("driving","forward");
                     opMode.telemetry.addData("distance sensor level",levelSensor.getDistance(DistanceUnit.CM));
                     DriveForTime(180,.2,0,.5);
@@ -487,7 +488,6 @@ public class FreightFrenzyNavigation implements Runnable
             img = camera.ShrinkBitmap(img,20,20);
             FtcDashboard.getInstance().sendImage(camera.GrowBitmap(img,200,200));
             int[] vals = camera.findColor(img);
-            int[] tblr = camera.getTBLR(img);
             opMode.telemetry.addData("distance",levelSensor.getDistance((DistanceUnit.CM)));
             opMode.telemetry.update();
             double error = vals[0]-10; //need to get error
