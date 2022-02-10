@@ -431,7 +431,7 @@ public class FreightFrenzyNavigation implements Runnable
         boolean vDone = false;
         boolean right = false;
         boolean first = true;
-        while((!vDone||!hDone)&&navigatorRunning){
+        while((/*!vDone||*/!hDone)&&navigatorRunning){
             Bitmap img = camera.GetImage();
             if(side==AllianceSide.BLUE) {
                 img = camera.convertMatToBitMap(camera.IsolateBlue(camera.convertBitmapToMat(img)));
@@ -439,25 +439,23 @@ public class FreightFrenzyNavigation implements Runnable
                 img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
             }
             img = camera.ShrinkBitmap(img,20,20);
-            FtcDashboard.getInstance().sendImage(img);
+            FtcDashboard.getInstance().sendImage(camera.GrowBitmap(img,200,200));
             int[] vals = camera.findColor(img);
             if(!hDone&&vals[0]!=-1) {
                 if (vals[0] < 10) {
                     opMode.telemetry.addData("turning","left");
                     chassis.RawTurn(0.2);
-                    Wait(.5);
-                    chassis.RawTurn(0);
                     if (right&&!first) {
                         hDone = true;
+                        chassis.RawTurn(0);
                     }
                     right = false;
                 } else if (vals[0] >= 10) {
                     opMode.telemetry.addData("turning","right");
                    chassis.RawTurn(-0.2);
-                   Wait(.5);
-                   chassis.RawTurn(0);
                     if (!right&&!first) {
                         hDone = true;
+                        chassis.RawTurn(0);
                     }
                     right = true;
                 }
@@ -465,7 +463,7 @@ public class FreightFrenzyNavigation implements Runnable
                 {
                     first=false;
                 }
-            }   if(!vDone) {
+            }   /*if(!vDone) {
                 if (levelSensor.getDistance(DistanceUnit.CM)<30) {
                     DriveForTime(0,0,0,0);
                     vDone=true;
@@ -474,7 +472,7 @@ public class FreightFrenzyNavigation implements Runnable
                     opMode.telemetry.addData("distance sensor level",levelSensor.getDistance(DistanceUnit.CM));
                     DriveForTime(180,.2,0,.5);
                 }
-            }
+            }*/
             opMode.telemetry.update();
         }
     }
