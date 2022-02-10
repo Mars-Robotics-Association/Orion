@@ -377,8 +377,8 @@ public class FreightFrenzyNavigation implements Runnable
         WallFollowToWhite(0.6,0);
         //Wall follow past the line
         WallFollowForTime(1,0.25);
-        //Dead reckon towards hub
-        DriveForTime(45*sideMultiplier,1,0,0.65);
+        //Dead reckon towards hub while turning
+        DriveForTimeToAngle(45*sideMultiplier,1,75*sideMultiplier,0.02,0.65);
         //Turn to face hub
         TurnToAngle(75*sideMultiplier,0.5);
         //Go forwards a bit
@@ -395,10 +395,11 @@ public class FreightFrenzyNavigation implements Runnable
         //once freight is collected, goToWall() at a diagonal
         //wallFollowToWhite() from the south
 
-        //Turn to zero
+        /*//Turn to zero
         TurnToAngle(0,0.4);
         //Go towards the wall at an angle
-        GoToWall(-120*sideMultiplier,1);
+        GoToWall(-120*sideMultiplier,1);*/
+        GoToWallTurning(-120*sideMultiplier,1,0,0.02);
         //Reset arm
         arm.ReturnToHomeAndIntake(0.02,1);
         //Wall follow to white line
@@ -513,6 +514,15 @@ public class FreightFrenzyNavigation implements Runnable
         chassis.RawDrive(0,0,0);
     }
 
+    //Drive for a period of time
+    public void DriveForTimeToAngle(double driveAngle, double speed, double turnAngle, double coefficient, double time){
+        double startTime = opMode.getRuntime();
+        while (opMode.getRuntime()<startTime+time && navigatorRunning){
+            chassis.RawDriveTurningTowards(driveAngle,speed,turnAngle,coefficient);
+        }
+        chassis.RawDrive(0,0,0);
+    }
+
     //Drive until duck sensor detects distance
     public void DriveForDuckSensorDistance(double angle, double speed, double turnOffset, double distance){
         while (duckDistance.getDistance(DistanceUnit.CM)>distance && navigatorRunning){
@@ -537,6 +547,14 @@ public class FreightFrenzyNavigation implements Runnable
     }
     public void GoToWall(double speed){
         GoToWall(90*(-sideMultiplier),speed);
+    }
+
+    //Goes to the wall at an angle. Stops when in contact with wall
+    public void GoToWallTurning(double driveAngle, double speed, double facingAngle, double coefficient){
+        while (!CheckDistance(portDist,wallStopDistance) && !CheckDistance(starboardDist,wallStopDistance) && navigatorRunning) {
+            chassis.RawDriveTurningTowards(driveAngle, speed, facingAngle,coefficient);
+        }
+        chassis.RawDrive(0,0,0);
     }
 
     //Wall follows at specified speed, which also determines direction.
