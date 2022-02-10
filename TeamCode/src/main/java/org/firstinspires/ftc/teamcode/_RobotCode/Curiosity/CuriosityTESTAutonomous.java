@@ -36,7 +36,7 @@ public class CuriosityTESTAutonomous extends LinearOpMode
 
 
 
-        nav.PlaceLinear();
+        nav.GoToHubLinear();
 
 
 

@@ -57,7 +57,7 @@ public class FreightFrenzyNavigation implements Runnable
     //Scan Barcode
 
     //Place
-    protected double placeHeightThreshold = 15; //uses distance sensor on the bottom to know when to stop
+    protected double placeHeightThreshold = 30; //uses distance sensor on the bottom to know when to stop
     protected double placeTurningCoefficient = 0.05; //multiplier by error for turn offset
     protected double placeSpeed = 0.5;
 
@@ -462,10 +462,11 @@ public class FreightFrenzyNavigation implements Runnable
                     first=false;
                 }
             }   if(!vDone) {
-                if (vals[1] < 5) {
+                if (levelSensor.getDistance(DistanceUnit.CM)<15) {
                     vDone=true;
                 } else if (vals[1] >= 5) {
                     opMode.telemetry.addData("driving","forward");
+                    opMode.telemetry.addData("distance sensor level",levelSensor.getDistance(DistanceUnit.CM));
                     DriveForTime(180,.2,0,.5);
                 }
             }
@@ -481,12 +482,13 @@ public class FreightFrenzyNavigation implements Runnable
             }else{
                 img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
             }
+            //FtcDashboard.getInstance().sendImage(img);
             img = camera.ShrinkBitmap(img,20,20);
             FtcDashboard.getInstance().sendImage(camera.GrowBitmap(img,200,200));
             int[] vals = camera.findColor(img);
             int[] tblr = camera.getTBLR(img);
-            opMode.telemetry.addData("top", tblr[1]);
-            opMode.telemetry.addData("bottom", tblr[0]);
+            opMode.telemetry.addData("distance",levelSensor.getDistance((DistanceUnit.CM)));
+            opMode.telemetry.update();
             double error = vals[0]-10; //need to get error
             double offset = error * placeTurningCoefficient;
             chassis.RawDrive(chassis.GetImu().GetRobotAngle(), -placeSpeed, -offset); //drive forwards towards hub
