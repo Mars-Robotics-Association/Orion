@@ -51,23 +51,23 @@ class ArmLeveller implements Runnable
         arm.SetPowerRaw(0);
     }
 
-    public void LevelArm(){
+    /*public void LevelArm(){
         if(intakeSensor.getDistance(DistanceUnit.CM) < lowerArmDistanceCM) {
             arm.GoToPosition(0); //if something is close, go all the way down
             lastTimeBlockDetected = opMode.getRuntime();
         }
         else if(opMode.getRuntime() > lastTimeBlockDetected+timeToKeepDown) arm.GoToPosition(armStorageLocation); //only move up if its been a second
-    }
+    }*/
 
     public void StartResetArm(){
         resetArmQueued = true;
         if(!threadRunning) thread.start();
     }
 
-    public void StartLevelArmLoop(){
+    /*public void StartLevelArmLoop(){
         levelArmQueued = true;
         if(!threadRunning) thread.start();
-    }
+    }*/
 
     public void StopThread(){
         levelArmQueued = false;
@@ -77,14 +77,13 @@ class ArmLeveller implements Runnable
 
     public void SetThread(Thread setThread) {thread=setThread;}
 
+    public boolean IsThreadRunning(){return threadRunning;}
+
     @Override
     public void run() {
+        if(threadRunning) return;
         threadRunning = true;
-        if(resetArmQueued) ResetArmLinear();
-        while (levelArmQueued && threadRunning) {
-            if(resetArmQueued) ResetArmLinear();
-            LevelArm();
-        }
+        ResetArmLinear();
         threadRunning = false;
     }
 }

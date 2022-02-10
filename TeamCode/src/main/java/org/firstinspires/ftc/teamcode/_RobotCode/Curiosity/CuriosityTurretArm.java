@@ -104,7 +104,6 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm
     public void ReturnToHomeAndIntakeWithSensor(){
         StartIntake(1);
         leveller.StartResetArm();
-        leveller.StartLevelArmLoop();
     }
 
     public void StopAutoLeveller(){leveller.StopThread();}
