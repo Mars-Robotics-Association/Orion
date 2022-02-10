@@ -40,6 +40,7 @@ public class FreightFrenzyNavigation implements Runnable
     protected double timePastLineToWarehouse = 0.5;
     protected double timePastLineToHub = 0.5;
     public static double turnCoefficient = 0.02;
+    public static double turnWhileDrivingCoefficient = 0.015;
 
 
     //Ducks
@@ -60,6 +61,8 @@ public class FreightFrenzyNavigation implements Runnable
     protected double placeHeightThreshold = 30; //uses distance sensor on the bottom to know when to stop
     protected double placeTurningCoefficient = 0.05; //multiplier by error for turn offset
     protected double placeSpeed = 0.5;
+    public static double goToPlaceFacingAngle = 120;
+    public static double goToPlaceTime = 0.65;
 
     //Collect
 
@@ -378,9 +381,9 @@ public class FreightFrenzyNavigation implements Runnable
         //Wall follow past the line
         WallFollowForTime(1,0.25);
         //Dead reckon towards hub while turning
-        DriveForTimeToAngle(45*sideMultiplier,1,75*sideMultiplier,0.02,0.65);
+        DriveForTimeToAngle(45*sideMultiplier,1,goToPlaceFacingAngle*sideMultiplier,turnWhileDrivingCoefficient,goToPlaceTime);
         //Turn to face hub
-        TurnToAngle(75*sideMultiplier,0.5);
+        TurnToAngle(goToPlaceFacingAngle*sideMultiplier,0.5);
         //Go forwards a bit
         //DriveForTime(90*sideMultiplier,0.5,0,0.25);
     }
@@ -399,7 +402,7 @@ public class FreightFrenzyNavigation implements Runnable
         TurnToAngle(0,0.4);
         //Go towards the wall at an angle
         GoToWall(-120*sideMultiplier,1);*/
-        GoToWallTurning(-120*sideMultiplier,1,0,0.02);
+        GoToWallTurning(-120*sideMultiplier,1,0,turnWhileDrivingCoefficient);
         //Reset arm
         arm.ReturnToHomeAndIntake(0.02,1);
         //Wall follow to white line

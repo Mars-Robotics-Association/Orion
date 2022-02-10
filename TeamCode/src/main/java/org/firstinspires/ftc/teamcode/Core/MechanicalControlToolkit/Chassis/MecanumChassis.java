@@ -190,8 +190,8 @@ public class MecanumChassis
         //calculate error and turn speed
         double error = targetHeading - imu.GetRobotAngle();
 
-        if(error > 180) error = -360+error;
-        else if(error < 180) error = 360-error;
+        /*if(error > 180) error = -360+error;
+        else if(error < 180) error = 360-error;*/
         return error;
     }
     public void TurnTowardsAngle(double targetHeading, double speed, double coefficient){
