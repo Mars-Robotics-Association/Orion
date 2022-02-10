@@ -20,7 +20,7 @@ public class CuriosityTESTAutonomous extends LinearOpMode
     public static double targetHeading = -90;
     public static double targetHeading2 = -200;
     private double multiplier = 1;
-    protected FreightFrenzyNavigation.AllianceSide side = FreightFrenzyNavigation.AllianceSide.BLUE;
+    protected FreightFrenzyNavigation.AllianceSide side = FreightFrenzyNavigation.AllianceSide.RED;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -36,7 +36,7 @@ public class CuriosityTESTAutonomous extends LinearOpMode
 
 
 
-        nav.GoToHubLinear();
+        nav.PlaceLinear();
 
 
 

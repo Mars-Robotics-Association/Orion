@@ -57,7 +57,7 @@ public class FreightFrenzyNavigation implements Runnable
     //Scan Barcode
 
     //Place
-    protected double placeHeightThreshold = 8; //uses distance sensor on the bottom to know when to stop
+    protected double placeHeightThreshold = 15; //uses distance sensor on the bottom to know when to stop
     protected double placeTurningCoefficient = 0.05; //multiplier by error for turn offset
     protected double placeSpeed = 0.5;
 
@@ -425,7 +425,8 @@ public class FreightFrenzyNavigation implements Runnable
 
         boolean hDone = false;
         boolean vDone = false;
-        boolean right = true;
+        boolean right = false;
+        boolean first = true;
         while((!vDone||!hDone)&&navigatorRunning){
             Bitmap img = camera.GetImage();
             if(side==AllianceSide.BLUE) {
@@ -433,7 +434,7 @@ public class FreightFrenzyNavigation implements Runnable
             }else{
                 img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
             }
-            //img = camera.ShrinkBitmap(img,20,20);
+            img = camera.ShrinkBitmap(img,20,20);
             FtcDashboard.getInstance().sendImage(img);
             int[] vals = camera.findColor(img);
             if(!hDone&&vals[0]!=-1) {
@@ -442,7 +443,7 @@ public class FreightFrenzyNavigation implements Runnable
                     chassis.RawTurn(0.2);
                     Wait(.5);
                     chassis.RawTurn(0);
-                    if (right == true) {
+                    if (right&&!first) {
                         hDone = true;
                     }
                     right = false;
@@ -451,13 +452,16 @@ public class FreightFrenzyNavigation implements Runnable
                    chassis.RawTurn(-0.2);
                    Wait(.5);
                    chassis.RawTurn(0);
-                    if (right == false) {
+                    if (!right&&!first) {
                         hDone = true;
                     }
                     right = true;
                 }
-            }
-            if(!vDone&&vals[1]!=-1) {
+                if(first)
+                {
+                    first=false;
+                }
+            }   if(!vDone) {
                 if (vals[1] < 5) {
                     vDone=true;
                 } else if (vals[1] >= 5) {
@@ -469,11 +473,23 @@ public class FreightFrenzyNavigation implements Runnable
         }
     }
 
-    public void PlaceLinear(){
-        while (levelSensor.getDistance(DistanceUnit.CM) > placeHeightThreshold && navigatorRunning){ //while not above hub
-            double error = 0; //need to get error
+    public void PlaceLinear() throws InterruptedException {
+        while (levelSensor.getDistance(DistanceUnit.CM) > placeHeightThreshold&& navigatorRunning){ //while not above hub
+            Bitmap img = camera.GetImage();
+            if(side==AllianceSide.BLUE) {
+                img = camera.convertMatToBitMap(camera.IsolateBlue(camera.convertBitmapToMat(img)));
+            }else{
+                img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
+            }
+            img = camera.ShrinkBitmap(img,20,20);
+            FtcDashboard.getInstance().sendImage(camera.GrowBitmap(img,200,200));
+            int[] vals = camera.findColor(img);
+            int[] tblr = camera.getTBLR(img);
+            opMode.telemetry.addData("top", tblr[1]);
+            opMode.telemetry.addData("bottom", tblr[0]);
+            double error = vals[0]-10; //need to get error
             double offset = error * placeTurningCoefficient;
-            chassis.RawDrive(chassis.GetImu().GetRobotAngle(), placeSpeed, offset); //drive forwards towards hub
+            chassis.RawDrive(chassis.GetImu().GetRobotAngle(), -placeSpeed, -offset); //drive forwards towards hub
         }
         chassis.Stop(); //stop
         arm.SetIntakeSpeed(-1); //reverse intake
@@ -481,6 +497,7 @@ public class FreightFrenzyNavigation implements Runnable
             //wait
         }
         arm.SetIntakeSpeed(0);//stop intake
+
     }
 
     ////MINOR FUNCTIONS////

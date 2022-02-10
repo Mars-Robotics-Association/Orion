@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Orion.NavModules;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.os.Handler;
 import android.util.Log;
@@ -335,6 +336,7 @@ public class Camera
         return bmp;
     }
 
+    //takes a Bitmap image and converts it to a Mat
     public Mat convertBitmapToMat(Bitmap input){
         Mat mat = new Mat();
         Utils.bitmapToMat(input,mat);
@@ -367,7 +369,7 @@ public class Camera
         return last;
     }
 
-    //takes a Mat and isolates the color white
+    //takes a Mat and isolates the color blue
     public Mat IsolateBlue(Mat input){
         Scalar highhsv = new Scalar(118,255,189);
         Scalar lowhsv = new Scalar(103,101,47);
@@ -380,10 +382,10 @@ public class Camera
         return last;
     }
 
-    //takes a Mat and isolates the color white
+    //takes a Mat and isolates the color red
     public Mat IsolateRed(Mat input){
-        Scalar highhsv = new Scalar(21,255,244);
-        Scalar lowhsv = new Scalar(0,93,66);
+        Scalar highhsv = new Scalar(20,255,255);
+        Scalar lowhsv = new Scalar(0,80,100);
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();
@@ -393,7 +395,7 @@ public class Camera
         return last;
     }
 
-    //for determining nonwhite pixels in a cropped image
+    //for determining nonblack pixels in a color isolated image
     public int countPixels(Bitmap input){
         int pixelcount = 0;
 
@@ -411,6 +413,7 @@ public class Camera
         return pixelcount;
     }
 
+    //returns average length and width of all colored pixels in a color isolated image
     public int[] findColor(Bitmap input){
         int width = 0,height=0,count=0;
         for(int w = 0;w<input.getWidth();w++){
@@ -427,6 +430,9 @@ public class Camera
             }
         }
         opmode.telemetry.addData("x",width);
+        if(count==0){
+            return new int[]{input.getWidth()/2,input.getHeight()/2};
+        }
         return new int[]{width/count,height/count};
     }
 
@@ -459,5 +465,40 @@ public class Camera
 
     public Bitmap ShrinkBitmap(Bitmap bitmapIn, int width, int height){
         return Bitmap.createScaledBitmap(bitmapIn, width, height, true); //might want to set filter to false (uses more proccessing power to make better image
+    }
+
+    public Bitmap GrowBitmap(Bitmap input,int width, int height){
+        if(width<input.getWidth()||height<input.getHeight())return input;
+        Bitmap bmp = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
+        for(int x=0;x<width;x++){
+            for(int y=0;y<height;y++){
+                int color = input.getPixel((x*input.getWidth())/width,(y*input.getHeight())/height);
+                int R = (color & 0xff0000) >> 16;
+                int G = (color & 0xff00) >> 8;
+                int B = color & 0xff;
+                bmp.setPixel(x,y,Color.rgb(R,G,B));
+            }
+        }
+        return bmp;
+    }
+
+    //get extreme top bottom left and right values of a color isolated image
+    public int[] getTBLR(Bitmap input){
+        int maxh = Integer.MIN_VALUE,minh=Integer.MAX_VALUE, maxw = Integer.MIN_VALUE,minw=Integer.MAX_VALUE;
+        for(int w = 0;w<input.getWidth();w++){
+            for (int h = 0; h < input.getHeight(); h++) {
+                int color = input.getPixel(w, h);
+                int R = (color & 0xff0000) >> 16;
+                int G = (color & 0xff00) >> 8;
+                int B = color & 0xff;
+                if (!((R == 0) && (G == 0) && (B == 0))) {
+                    if(h<minh)minh=h;
+                    if(h>maxh)maxh=h;
+                    if(w<minw)minw=w;
+                    if(w>maxw)maxw=w;
+                }
+            }
+        }
+        return new int[]{minh,maxh,minw,maxw};
     }
 }
