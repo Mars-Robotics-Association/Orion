@@ -165,6 +165,10 @@ public class MecanumChassis
         //Updates brake pos, as this is called continuously as robot is driving
         UpdateEncoderBrakePos();
     }
+    public void RawDriveTurningTowards(double driveAngle, double speed, double facingAngle, double turnCoefficient){
+        double turnOffset = GetHeadingError(facingAngle)*speed*turnCoefficient;
+        RawDrive(driveAngle,speed,turnOffset);
+    }
     public void Stop(){RawDrive(0,0,0);}
     public void RawTurn(double speed){
         //Used continuously in teleop to turn the robot
@@ -179,13 +183,20 @@ public class MecanumChassis
         //Update the values for breaking
         UpdateEncoderBrakePos();
     }
-    public void TurnTowardsAngle(double targetHeading, double speed, double coefficient){
+    public double GetHeadingError(double targetHeading){
         //fix angle
         if(targetHeading > 180) targetHeading = -360+targetHeading;
         else if(targetHeading < -180) targetHeading = 360+targetHeading;
         //calculate error and turn speed
         double error = targetHeading - imu.GetRobotAngle();
-        double turnSpeed = (error*coefficient*speed) + 0.2*(error/Math.abs(error));
+
+        if(error > 180) error = -360+error;
+        else if(error < 180) error = 360-error;
+        return error;
+    }
+    public void TurnTowardsAngle(double targetHeading, double speed, double coefficient){
+        double error = GetHeadingError(targetHeading);
+        double turnSpeed = (error*coefficient*speed) + 0.1*(error/Math.abs(error)); //add offset of 0.2
         RawTurn(turnSpeed);
     }
     public boolean InWithinRangeOfAngle(double targetHeading, double threshold){
