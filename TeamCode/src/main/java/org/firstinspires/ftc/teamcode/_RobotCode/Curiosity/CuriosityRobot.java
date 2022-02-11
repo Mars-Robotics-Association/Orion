@@ -80,13 +80,14 @@ public class CuriosityRobot extends MecanumChassis
 
             TouchSensor armTouch = opMode.hardwareMap.get(TouchSensor.class, "armTouch");
 
-            turretArm = new CuriosityTurretArm(opMode, new _ArmProfile(armMotor), new _TurretProfile(turretMotor), spinnerServo, intakeDist, armResetDist,armTouch,false);
+            blinkinController = new BlinkinController(opMode);
+
+            turretArm = new CuriosityTurretArm(opMode, blinkinController, new _ArmProfile(armMotor), new _TurretProfile(turretMotor), spinnerServo, intakeDist, armResetDist,armTouch,false);
             turretArm.Arm().ResetToZero();
 
             duckSpinner = new DuckSpinner(duckMotor, 1);
 
             //tapeMeasureCapper = new EncoderActuator(opMode,new _TapeMeasureProfile(tapeMotor));
-            blinkinController = new BlinkinController(opMode);
         }
 
         if(useNavigator){

@@ -48,6 +48,8 @@ public class BlinkinController
     Telemetry.Item display;
     DisplayKind displayKind;
 
+    double cooldownTime = 0;
+
     protected enum DisplayKind {
         MANUAL,
         AUTO
@@ -72,22 +74,31 @@ public class BlinkinController
         blinkinLedDriver.setPattern(pattern);
     }
 
+    public void SetCooldown(double seconds){cooldownTime = opMode.getRuntime()+seconds;}
+    boolean IsCooldownUp(){return cooldownTime<opMode.getRuntime();}
+
     public void Blue(){
+        if(!IsCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
     }
     public void Red(){
+        if(!IsCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
     }
     public void Green(){
+        if(!IsCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
     }
     public void Lime(){
+        if(!IsCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
     }
     public void Yellow(){
+        if(!IsCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
     }
     public void Purple(){
+        if(!IsCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
     }
 }

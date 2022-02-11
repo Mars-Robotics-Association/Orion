@@ -182,7 +182,8 @@ public class FreightFrenzyNavigation implements Runnable
         navigatorRunning = true;
     }
 
-    public void StartSpinDucks(){
+    public void StartSpinDucks(int numberOfCycles){
+        currentNumberOfSpinCycles = numberOfCycles;
         startSpinDucks = true;
         thread.start();
     }
@@ -216,6 +217,7 @@ public class FreightFrenzyNavigation implements Runnable
         WallFollowForDuckDistance(speed,duckStopDistance);
         //rampSpinDuck() for numberOfCycles
         for(int i = 0;i<numberOfCycles;i++) {
+            if(!navigatorRunning) break;
             SpinDucks(0.5,1);
         }
         //Stop

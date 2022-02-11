@@ -214,6 +214,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         if(controllerNumber == payloadControllerNumber && control.isUSE_PAYLOAD()){
             control.navigation.SpinDucks(0.5,1);
         }
+        else if(controllerNumber == 2 && control.isUSE_PAYLOAD()) control.navigation.StartSpinDucks(10);
     }
 
     @Override

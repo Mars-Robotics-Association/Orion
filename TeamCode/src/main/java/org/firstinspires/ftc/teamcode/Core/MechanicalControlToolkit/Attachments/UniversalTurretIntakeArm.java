@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //Distance sensor on the intake to detect collection
 //Touch sensor at the bottom and top extremes
 
+@Config
 public class UniversalTurretIntakeArm
 {
     EncoderActuatorProfile armProfile;
@@ -28,7 +30,7 @@ public class UniversalTurretIntakeArm
     enum ArmState {Intaking, Storage, Placing}
     ArmState armState = ArmState.Storage;
 
-    public static double armIntakeDist = 7;
+    public static double armIntakeDist = 3;
     public double GetArmIntakeDist() {return armIntakeDist;}
 
     public UniversalTurretIntakeArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo setIntake, DistanceSensor setIntakeDetector, TouchSensor setBottomSensor, boolean reverseIntake){
@@ -71,9 +73,12 @@ public class UniversalTurretIntakeArm
         if(intakeState == 1 && intakeSensor.getDistance(DistanceUnit.CM) < intakeDistanceCM){ //if intaking AND something is detected
             SetIntakeSpeed(0);
             intakeState = 2;
+            IntakeFullAction();
             Arm().GoToPosition(intakedPosition);
         }
     }
+
+    protected void IntakeFullAction(){}
 
     public int GetIntakeState() {return intakeState;}
 
