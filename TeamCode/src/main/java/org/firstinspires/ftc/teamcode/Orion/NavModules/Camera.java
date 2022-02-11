@@ -431,7 +431,7 @@ public class Camera
         }
         opmode.telemetry.addData("x",width);
         if(count==0){
-            return new int[]{input.getWidth()/2,input.getHeight()/2};
+            return new int[]{-1,-1};
         }
         return new int[]{width/count,height/count};
     }

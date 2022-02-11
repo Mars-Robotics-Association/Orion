@@ -300,6 +300,7 @@ public class FreightFrenzyNavigation implements Runnable
         DuckPos pos= DuckPos.NULL;
         opMode.telemetry.addData("Started scan", opMode.getRuntime());
         Bitmap in = camera.GetImage();
+        in = camera.ShrinkBitmap(in,in.getWidth()/3,in.getHeight()/3);
         Mat img = camera.convertBitmapToMat(in);
 
         Rect firstRect = new Rect(0,0,img.width()/3,img.height());
@@ -422,57 +423,54 @@ public class FreightFrenzyNavigation implements Runnable
         }
     }
 
-    public void GoToHubLinear() throws InterruptedException {
+    public void TurnToHubLinear() throws InterruptedException {
         //start facing hub
         //find sector of image with hub
         //move towards it
 
         boolean hDone = false;
-        boolean vDone = false;
         boolean right = false;
-        boolean first = true;
-        while((/*!vDone||*/!hDone)&&navigatorRunning){
+        boolean left = false;
+        while(!hDone&&navigatorRunning){
             Bitmap img = camera.GetImage();
             if(side==AllianceSide.BLUE) {
                 img = camera.convertMatToBitMap(camera.IsolateBlue(camera.convertBitmapToMat(img)));
             }else{
                 img = camera.convertMatToBitMap(camera.IsolateRed(camera.convertBitmapToMat(img)));
             }
+            FtcDashboard.getInstance().sendImage(img);
             img = camera.ShrinkBitmap(img,20,20);
-            FtcDashboard.getInstance().sendImage(camera.GrowBitmap(img,200,200));
+            //FtcDashboard.getInstance().sendImage(camera.GrowBitmap(img,200,200));
             int[] vals = camera.findColor(img);
+            if(vals[0]==-1)
+            {
+                if(side==AllianceSide.BLUE) {
+                    chassis.RawTurn(0.2);
+                    right=true;
+                } else{
+                    chassis.RawTurn(-0.2);
+                    left=true;
+                }
+            }
             if(!hDone&&vals[0]!=-1) {
                 if (vals[0] < 10) {
                     opMode.telemetry.addData("turning","left");
                     chassis.RawTurn(0.2);
-                    if (right&&!first) {
+                    if (right) {
                         hDone = true;
                         chassis.RawTurn(0);
                     }
-                    right = false;
+                    left=true;
                 } else if (vals[0] >= 10) {
                     opMode.telemetry.addData("turning","right");
                    chassis.RawTurn(-0.2);
-                    if (!right&&!first) {
+                    if (left) {
                         hDone = true;
                         chassis.RawTurn(0);
                     }
                     right = true;
                 }
-                if(first)
-                {
-                    first=false;
-                }
-            }   /*if(!vDone) {
-                if (levelSensor.getDistance(DistanceUnit.CM)<30) {
-                    DriveForTime(0,0,0,0);
-                    vDone=true;
-                } else{
-                    opMode.telemetry.addData("driving","forward");
-                    opMode.telemetry.addData("distance sensor level",levelSensor.getDistance(DistanceUnit.CM));
-                    DriveForTime(180,.2,0,.5);
-                }
-            }*/
+            }
             opMode.telemetry.update();
         }
     }

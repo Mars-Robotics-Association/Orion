@@ -33,18 +33,20 @@ public class CuriosityBLUEAuto extends LinearOpMode
 
         multiplier = -nav.GetSideMultiplier();
 
-        //STARTS ALONG WALL BY DUCKS TODO start facing other way
-        nav.GoToWall(0.2);
+        robot.GetImu().OffsetGyro(90);
 
-        //TURNS TO FACE AND SCAN TOWER TODO get rid of this
-        nav.DriveForTime(90*multiplier,0.5,0,0.5);
-        nav.TurnToAngle(-90*multiplier,0.2);
-        nav.TurnToAngle(-90*multiplier,0.1);
-        nav.DriveForTime(0,1,0,0.2);
-
-        telemetry.update();
-
-        nav.Wait(.5);
+//        //STARTS ALONG WALL BY DUCKS TODO start facing other way
+//        nav.GoToWall(0.2);
+//
+//        //TURNS TO FACE AND SCAN TOWER TODO get rid of this
+//        nav.DriveForTime(90*multiplier,0.5,0,0.5);
+//        nav.TurnToAngle(-90*multiplier,0.2);
+//        nav.TurnToAngle(-90*multiplier,0.1);
+//        nav.DriveForTime(0,1,0,0.2);
+//
+//        telemetry.update();
+//
+//        nav.Wait(.5);
         //SCAN
         FreightFrenzyNavigation.DuckPos pos = nav.ScanBarcodeOpenCV();
         telemetry.update();
@@ -57,7 +59,7 @@ public class CuriosityBLUEAuto extends LinearOpMode
         //PLACES FREIGHT
         nav.DriveForTime(120*multiplier,0.7,0,1.3);
         robot.TurretArm().SetIntakeSpeed(-1);
-        nav.Wait(1);
+        nav.Wait(2);
         nav.DriveForTime(-60*multiplier,0.5,0,0.5);
 
         //TURNS BACK TO WALL

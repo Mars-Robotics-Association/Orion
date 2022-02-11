@@ -157,7 +157,7 @@ public class CuriosityTESTTeleop extends OpMode implements ControllerInputListen
         if(controllerNumber==2)
         {
             try {
-                control.navigation.GoToHubLinear();
+                control.navigation.TurnToHubLinear();
             } catch (InterruptedException e) {
 
             }
