@@ -68,16 +68,16 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm
     //Automatically intakes taking to account tiers
     public void UpdateIntakeTiered(){
         if(currentAutoIntakeTeir == 0) {
-            UpdateIntake(armIntakeDist,armBottomPos);
+            UpdateIntake(armBottomPos);
             opMode.telemetry.addData("Intake Tier", "BOTTOM");
         }
         else if(currentAutoIntakeTeir == 1) {
-            UpdateIntake(armIntakeDist,armMiddlePos);
+            UpdateIntake(armMiddlePos);
             opMode.telemetry.addData("Intake Tier", "MIDDLE");
 
         }
         else if(currentAutoIntakeTeir == 2) {
-            UpdateIntake(armIntakeDist,armTopPos);
+            UpdateIntake(armTopPos);
             opMode.telemetry.addData("Intake Tier", "TOP");
 
         }

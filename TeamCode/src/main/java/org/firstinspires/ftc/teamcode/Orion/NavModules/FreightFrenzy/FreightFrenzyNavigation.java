@@ -65,6 +65,7 @@ public class FreightFrenzyNavigation implements Runnable
     public static double goToPlaceTime = 0.65;
 
     //Collect
+    protected double currentArmAutoHeight = 0.02;
 
     ////configuration enums////
     public enum AllianceSide {RED, BLUE}
@@ -89,6 +90,7 @@ public class FreightFrenzyNavigation implements Runnable
     boolean startScanBarcode = false;
     boolean startGoToPlace = false;
     boolean startGoToCollect = false;
+    boolean startCollect = false;
 
     boolean navigatorRunning = true;
 
@@ -167,6 +169,10 @@ public class FreightFrenzyNavigation implements Runnable
             startGoToCollect = false;
             GoToFreightLinear();
         }
+        if(startCollect){
+            startCollect = false;
+            AutoCollectFreightLinear();
+        }
 
         opMode.telemetry.addLine("Nav Thread End!");
 
@@ -205,6 +211,11 @@ public class FreightFrenzyNavigation implements Runnable
     }
     public void StarGoToCollect(){
         startGoToCollect = true;
+        thread.start();
+    }
+    public void StartCollecting(double armRaiseHeight){
+        currentArmAutoHeight = armRaiseHeight;
+        startCollect = true;
         thread.start();
     }
 
@@ -414,13 +425,13 @@ public class FreightFrenzyNavigation implements Runnable
         WallFollowForTime(-0.6,0.25);
     }
 
-    public void AutoCollectFreightLinear(double armIntakeDistance, double armAutoHeight){
+    public void AutoCollectFreightLinear(){
         //starts in warehouse along wall facing freight
         //turns on intake
         arm.ReturnToHomeAndIntake(0.02, 1);
         //move forwards slowly while auto-intaking
         while (arm.GetIntakeState() == 1 && navigatorRunning){
-            arm.UpdateIntake(armIntakeDistance, armAutoHeight);
+            arm.UpdateIntake(currentArmAutoHeight);
             chassis.RawDrive(180,0.2,0);
         }
     }

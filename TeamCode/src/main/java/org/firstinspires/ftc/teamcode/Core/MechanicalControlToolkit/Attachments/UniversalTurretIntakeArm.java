@@ -30,7 +30,7 @@ public class UniversalTurretIntakeArm
     enum ArmState {Intaking, Storage, Placing}
     ArmState armState = ArmState.Storage;
 
-    public static double armIntakeDist = 3;
+    public static double armIntakeDist = 4;
     public double GetArmIntakeDist() {return armIntakeDist;}
 
     public UniversalTurretIntakeArm(OpMode setOpMode, EncoderActuatorProfile setArmProfile, EncoderActuatorProfile setTurretProfile, Servo setIntake, DistanceSensor setIntakeDetector, TouchSensor setBottomSensor, boolean reverseIntake){
@@ -68,9 +68,9 @@ public class UniversalTurretIntakeArm
         }
     }
 
-    public void UpdateIntake(double intakeDistanceCM, double intakedPosition){
+    public void UpdateIntake(double intakedPosition){
         opMode.telemetry.addData("ArmDist Sensor", intakeSensor.getDistance(DistanceUnit.CM));
-        if(intakeState == 1 && intakeSensor.getDistance(DistanceUnit.CM) < intakeDistanceCM){ //if intaking AND something is detected
+        if(intakeState == 1 && intakeSensor.getDistance(DistanceUnit.CM) < armIntakeDist){ //if intaking AND something is detected
             SetIntakeSpeed(0);
             intakeState = 2;
             IntakeFullAction();
