@@ -15,7 +15,7 @@ class ArmLeveller implements Runnable
 
     //levelling sensor
     double armSlowDistanceCM = 8;
-    double armResetDistanceCM = 1.5;
+    double armResetDistanceCM = 2;
     double armStorageLocation = 0.02;
 
     //intaking sensor
