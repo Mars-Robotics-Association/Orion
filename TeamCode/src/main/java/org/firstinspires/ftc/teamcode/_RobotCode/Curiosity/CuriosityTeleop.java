@@ -138,6 +138,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             if (speedMultiplier == 1) speedMultiplier = 0.5;
             else speedMultiplier = 1;
         }
+        else if(controllerNumber == 2){
+            control.navigation.StartCollecting(control.turretArm.GetCurrentAutoTierRotation());
+        }
     }
 
     @Override
@@ -147,9 +150,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             //control.navigation.CollectFreightLinear();
             control.navigation.StarGoToCollect();
         }
-        else if(controllerNumber == 2){
-            control.navigation.StartCollecting(control.turretArm.GetCurrentAutoTierRotation());
-        }
+
     }
 
     @Override
