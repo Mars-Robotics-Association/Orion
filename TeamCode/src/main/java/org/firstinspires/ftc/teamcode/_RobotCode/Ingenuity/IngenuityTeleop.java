@@ -14,6 +14,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
+import java.util.Arrays;
+
 @TeleOp(name = "*INGENUITY TELEOP*", group = "Ingenuity")
 @Config
 public class IngenuityTeleop extends OpMode implements ControllerInputListener
@@ -82,12 +84,10 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
         control.Update();
 
-        if(!busy) {
-            //Manage driving
-            control.SetHeadingPID(turnP, turnI, turnD);
-            ManageDriveMovementCustom();
+        //Manage driving
+        control.SetHeadingPID(turnP, turnI, turnD);
+        control.DriveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
 
-        }
         //print telemetry
         if(control.isUSE_NAVIGATOR()) {
             control.GetOrion().PrintVuforiaTelemetry(0);
@@ -113,12 +113,16 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     private void ManageDriveMovementCustom() {
         //MOVE if left joystick magnitude > 0.1
         if (controllerInput1.CalculateLJSMag() > 0.1) {
-            control.RawDrive(180 - controllerInput1.CalculateLJSAngle(), controllerInput1.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
+            control.RawDrive(controllerInput1.CalculateLJSAngle(), controllerInput1.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
+            double[] params = {controllerInput1.CalculateLJSAngle(), controllerInput1.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput1.GetRJSX() * turnSpeed * speedMultiplier};
+            telemetry.addData("Passed Parameters: ", Arrays.toString(params));
             telemetry.addData("Moving at ", controllerInput1.CalculateLJSAngle());
         }
         //TURN if right joystick magnitude > 0.1 and not moving
         else if (Math.abs(controllerInput1.GetRJSX()) > 0.1) {
             control.RawTurn(controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//turns at speed according to rjs1
+            double[] params = {controllerInput1.GetRJSX() * turnSpeed * speedMultiplier};
+            telemetry.addData("Passed Parameters: ", Arrays.toString(params));
             telemetry.addData("Turning", true);
         }
         else {
