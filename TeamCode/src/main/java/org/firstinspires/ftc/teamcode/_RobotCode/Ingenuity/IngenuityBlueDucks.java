@@ -2,12 +2,10 @@ package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
 @Autonomous(name = "*Ingenuity Blue Duck*", group = "Ingenuity")
-@Disabled
 public class IngenuityBlueDucks extends LinearOpMode
 {
     IngenuityControl robot;
@@ -24,7 +22,7 @@ public class IngenuityBlueDucks extends LinearOpMode
     public void runOpMode() throws InterruptedException {
         robot = new IngenuityControl(this, true, true, false);
         robot.Init();
-        duckController = new IngenuityDuckController(hardwareMap.servo.get("duckController"));
+        duckController = robot.GetDuck();
 
         waitForStart();
         robot.Start();

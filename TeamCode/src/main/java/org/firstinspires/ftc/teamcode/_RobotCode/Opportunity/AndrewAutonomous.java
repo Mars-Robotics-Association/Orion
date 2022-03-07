@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 
-@Disabled//OLD AUTO
 @Config
 @Autonomous(name = "Andrew auto", group = "All")
 @Disabled

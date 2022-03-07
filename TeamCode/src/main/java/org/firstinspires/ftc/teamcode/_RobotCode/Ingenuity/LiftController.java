@@ -6,29 +6,25 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 
 class LiftController {
-    public LiftController(int lowerBounds_e, int upperBounds_e, double speed_e, boolean raiseBoundErrors_e) {
-        lowerBounds = lowerBounds_e;
+    public LiftController(int upperBounds_e, double speed_e, boolean raiseBoundErrors_e) {
         upperBounds = upperBounds_e;
         speed = speed_e;
         raiseBoundErrors = raiseBoundErrors_e;
     }
 
-    public LiftController(int lowerBounds_e, int upperBounds_e, boolean raiseBoundErrors_e) {
-        lowerBounds = lowerBounds_e;
+    public LiftController(int upperBounds_e, boolean raiseBoundErrors_e) {
         upperBounds = upperBounds_e;
         speed = 0.1;
         raiseBoundErrors = raiseBoundErrors_e;
     }
 
-    public LiftController(int lowerBounds_e, int upperBounds_e, double speed_e) {
-        lowerBounds = lowerBounds_e;
+    public LiftController(int upperBounds_e, double speed_e) {
         upperBounds = upperBounds_e;
         speed = speed_e;
         raiseBoundErrors = false;
     }
 
-    public LiftController(int lowerBounds_e, int upperBounds_e) {
-        lowerBounds = lowerBounds_e;
+    public LiftController(int upperBounds_e) {
         upperBounds = upperBounds_e;
         speed = 0.1;
         raiseBoundErrors = false;
@@ -94,8 +90,8 @@ class LiftController {
         lift.setPower(speed);
     }
 
-    private int lowerBounds;
-    private int upperBounds;
+    private final int lowerBounds = 0;
+    private final int upperBounds;
     private double speed;
     private boolean raiseBoundErrors;
 

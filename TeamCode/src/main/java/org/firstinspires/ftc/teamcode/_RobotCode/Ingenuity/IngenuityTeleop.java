@@ -16,15 +16,12 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 @TeleOp(name = "*INGENUITY TELEOP*", group = "Ingenuity")
 @Config
-@Disabled
 public class IngenuityTeleop extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
     private IngenuityControl control;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
-
-
 
     ////Variables////
     //Tweaking Vars
@@ -48,8 +45,6 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     public void init() {
         control = new IngenuityControl(this, true, true, false);
         control.Init();
-
-
 
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
@@ -118,7 +113,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     private void ManageDriveMovementCustom() {
         //MOVE if left joystick magnitude > 0.1
         if (controllerInput1.CalculateLJSMag() > 0.1) {
-            control.RawDrive(controllerInput1.CalculateLJSAngle(), controllerInput1.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
+            control.RawDrive(180 - controllerInput1.CalculateLJSAngle(), controllerInput1.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput1.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
             telemetry.addData("Moving at ", controllerInput1.CalculateLJSAngle());
         }
         //TURN if right joystick magnitude > 0.1 and not moving
@@ -215,22 +210,22 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void LBHeld(double controllerNumber) {
-        control.GetIntake().on(0.9);
+        control.GetIntake().on(1);
     }
 
     @Override
     public void RBHeld(double controllerNumber) {
-        control.GetIntake().on(-0.9);
+        control.GetIntake().on(0);
     }
 
     @Override
     public void LTHeld(double controllerNumber) {
-        control.GetLift().SetPowerClamped(-0.2);
+        control.GetLift().SetPowerRaw(-0.2);
     }
 
     @Override
     public void RTHeld(double controllerNumber) {
-        control.GetLift().SetPowerClamped(0.2);
+        control.GetLift().SetPowerRaw(0.2);
     }
 
     @Override
@@ -239,10 +234,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     }
 
     @Override
-    public void RBReleased(double controllerNumber) {
-        control.GetIntake().off();
-
-    }
+    public void RBReleased(double controllerNumber) { control.GetIntake().off(); }
 
     @Override
     public void LTReleased(double controllerNumber) {

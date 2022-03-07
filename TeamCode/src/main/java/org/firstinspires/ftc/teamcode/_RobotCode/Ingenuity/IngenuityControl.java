@@ -22,13 +22,14 @@ public class IngenuityControl extends MecanumBaseControl
     ////Dependencies////
     //Mechanical Components
     private IngenuityLift lift;
-    private IntakeController intake;
+    private IngenuityIntakeController intake;
     private IngenuityDuckController duckController;
 
     ////Variables////
+    private double duckSpeed = 80;
+
     //Calibration
     private double levelPitchThreshold = 5;
-
 
     /**@param setOpMode pass the opmode running this down to access hardware map
      * @param useChassis whether to use the chassis of the robot
@@ -43,14 +44,12 @@ public class IngenuityControl extends MecanumBaseControl
     public void Init(){
         super.InitCoreRobotModules();
 
-
         if(USE_PAYLOAD) {
             lift = new IngenuityLift(opMode,opMode.hardwareMap.dcMotor.get("liftMotor"));
 
-            intake = new IntakeController();
-            intake.Init(opMode,"intakeMotor");
+            intake = new IngenuityIntakeController(opMode.hardwareMap.servo.get("intakeServo"));
 
-            duckController = new IngenuityDuckController(opMode.hardwareMap.servo.get("duckController"));
+            duckController = new IngenuityDuckController(opMode.hardwareMap.servo.get("duckServo"), duckSpeed);
         }
     }
 
@@ -66,6 +65,79 @@ public class IngenuityControl extends MecanumBaseControl
     }
 
     public IngenuityLift GetLift() {return lift;}
-    public IntakeController GetIntake() {return intake;}
+    public IngenuityIntakeController GetIntake() {return intake;}
     public IngenuityDuckController GetDuck() {return duckController;}
+
+    //ADVANCED DRIVE CONTROL//
+    enum DriveDirection{
+        N,
+        S,
+        E,
+        W,
+        NE,
+        NW,
+        SE,
+        SW
+    }
+
+    int ResolveDriveDirection(DriveDirection direction){
+        int ticks = 0;
+        switch(direction){
+            case N:
+                ticks = 0;
+                break;
+            case NE:
+                ticks = 1;
+                break;
+            case E:
+                ticks = 2;
+                break;
+            case SE:
+                ticks = 3;
+                break;
+            case S:
+                ticks = 4;
+                break;
+            case SW:
+                ticks = 5;
+                break;
+            case W:
+                ticks = 6;
+                break;
+            case NW:
+                ticks = 7;
+                break;
+        }
+
+        return ticks * 45;
+    }
+
+    public void rawDriveFor(int duration, DriveDirection direction, double speed, double turnOffset) throws InterruptedException {
+        RawDrive(ResolveDriveDirection(direction), speed, turnOffset);
+        Thread.sleep(duration);
+        RawDrive(0, 0, 0);
+    }
+
+    public void rawDriveFor(double duration, DriveDirection direction, double speed, double turnOffset) throws InterruptedException {
+        RawDrive(ResolveDriveDirection(direction), speed, turnOffset);
+        Thread.sleep(ToMillis(duration));
+        RawDrive(0, 0, 0);
+    }
+
+    public void rawDriveFor(int duration, double inputAngle, double speed, double turnOffset) throws InterruptedException {
+        RawDrive(inputAngle, speed, turnOffset);
+        Thread.sleep(duration);
+        RawDrive(0, 0, 0);
+    }
+
+    public void rawDriveFor(double duration, double inputAngle, double speed, double turnOffset) throws InterruptedException {
+        RawDrive(inputAngle, speed, turnOffset);
+        Thread.sleep(ToMillis(duration));
+        RawDrive(0, 0, 0);
+    }
+
+    public long ToMillis(double seconds){
+        double millis = seconds*1000;
+        return (long)millis;
+    }
 }

@@ -4,21 +4,23 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-class IngenuityDuckController {
+public class IngenuityDuckController {
     Servo duckController;
+    double speed;
 
-    public IngenuityDuckController(Servo setServo) {
+    public IngenuityDuckController(Servo setServo, double setSpeed) {
         duckController = setServo;
+        speed = setSpeed / 200;
     }
 
     public void RedSide(){
-        duckController.setPosition(0);
+        duckController.setPosition(0.5-speed);
     }
     public void Stop(){
         duckController.setPosition(0.5);
     }
     public void BlueSide(){
-        duckController.setPosition(1);
+        duckController.setPosition(0.5+speed);
     }
 
 }

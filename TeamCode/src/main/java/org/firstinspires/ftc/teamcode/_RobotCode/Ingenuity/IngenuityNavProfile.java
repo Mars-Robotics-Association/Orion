@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+
 import org.firstinspires.ftc.teamcode.Orion.Archive.NavProfiles.NavigationProfile;
 import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaChassisProfile;
 import org.firstinspires.ftc.teamcode._RobotCode.BelindaChassis.BelindaOdometryProfile;
@@ -11,9 +14,6 @@ public class IngenuityNavProfile extends NavigationProfile
     public IngenuityNavProfile() {
         super(new BelindaTuningProfile(), new BelindaChassisProfile(), new BelindaVisionProfile(), new BelindaOdometryProfile());
     }
-
-
-    /*//
 
     //Drive Constants
     public static final double TICKS_PER_REV = 8192;
@@ -80,95 +80,50 @@ public class IngenuityNavProfile extends NavigationProfile
 
     //THESE ARE USED TO GET THE VALUES
 
-    @Override
     public double TICKS_PER_REV() {return TICKS_PER_REV;}
-    @Override
     public double MAX_RPM() {return MAX_RPM;}
-    @Override
     public boolean RUN_USING_ENCODER() {return RUN_USING_ENCODER;}
-    @Override
     public PIDFCoefficients MOTOR_VELO_PID() {return MOTOR_VELO_PID;}
-    @Override
     public double WHEEL_RADIUS_CHASSIS() {return WHEEL_RADIUS_CHASSIS;}
-    @Override
     public double GEAR_RATIO_CHASSIS() {return GEAR_RATIO_CHASSIS;}
-    @Override
     public double TRACK_WIDTH() {return TRACK_WIDTH;}
-    @Override
     public double kV() {return kV;}
-    @Override
     public double kA() {return kA;}
-    @Override
     public double kStatic() {return kStatic;}
-    @Override
     public PIDCoefficients TRANSLATIONAL_PID() {return TRANSLATIONAL_PID;}
-    @Override
     public PIDCoefficients HEADING_PID() {return HEADING_PID;}
-    @Override
     public String frontRightName() {return frontRightName;}
-    @Override
     public String frontLeftName() {return frontLeftName;}
-    @Override
     public String backRightName() {return backRightName;}
-    @Override
     public String backLeftName() {return backLeftName;}
-    @Override
     public boolean leftReversed() {return leftReversed;}
-    @Override
     public boolean rightReversed() {return rightReversed;}
 
-    @Override
     public double LATERAL_MULTIPLIER() {return LATERAL_MULTIPLIER;}
-    @Override
     public double VX_WEIGHT() {return VX_WEIGHT;}
-    @Override
     public double VY_WEIGHT() {return VY_WEIGHT;}
-    @Override
     public double OMEGA_WEIGHT() {return OMEGA_WEIGHT;}
-    @Override
     public double MAX_VEL() {return MAX_VEL;}
-    @Override
     public double MAX_ACCEL() {return MAX_ACCEL;}
-    @Override
     public double MAX_ANG_VEL() {return MAX_ANG_VEL;}
-    @Override
     public double MAX_ANG_ACCEL() {return MAX_ANG_ACCEL;}
-    @Override
     public double WHEEL_RADIUS_DEAD_WHEELS() {return WHEEL_RADIUS_DEAD_WHEELS;}
-    @Override
     public double GEAR_RATIO_DEAD_WHEELS() {return GEAR_RATIO_DEAD_WHEELS;}
-    @Override
     public double LATERAL_DISTANCE() {return LATERAL_DISTANCE;}
-    @Override
     public double FORWARD_OFFSET() {return FORWARD_OFFSET;}
-    @Override
     public double X_MULTIPLIER() {return X_MULTIPLIER;}
-    @Override
     public double Y_MULTIPLIER() {return Y_MULTIPLIER;}
-    @Override
     public double ROT_LEFT() {return ROT_LEFT;}
-    @Override
     public double ROT_RIGHT() {return ROT_RIGHT;}
-    @Override
     public double ROT_FRONT() {return ROT_FRONT;}
-    @Override
     public String LEFT_ENCODER_NAME() {return LEFT_ENCODER_NAME;}
-    @Override
     public String RIGHT_ENCODER_NAME() {return RIGHT_ENCODER_NAME;}
-    @Override
     public String FRONT_ENCODER_NAME() {return FRONT_ENCODER_NAME;}
-    @Override
     public boolean LEFT_ENCODER_REVERSED() {return LEFT_ENCODER_REVERSED;}
-    @Override
     public boolean RIGHT_ENCODER_REVERSED() {return RIGHT_ENCODER_REVERSED;}
-    @Override
     public boolean FRONT_ENCODER_REVERSED() {return FRONT_ENCODER_REVERSED;}
-    @Override
     public String TFOD_MODEL_ASSET() {return TFOD_MODEL_ASSET;}
-    @Override
     public String LABEL_FIRST_ELEMENT() {return LABEL_FIRST_ELEMENT;}
-    @Override
     public String LABEL_SECOND_ELEMENT() {return LABEL_SECOND_ELEMENT;}
-    @Override
-    public double cameraXOffset() {return cameraXOffset;}*/
+    public double cameraXOffset() {return cameraXOffset;}
 }
