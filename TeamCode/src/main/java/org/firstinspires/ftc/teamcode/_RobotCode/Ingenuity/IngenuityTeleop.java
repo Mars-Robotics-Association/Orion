@@ -30,13 +30,15 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     public static double driveSpeed = 1;//used to change how fast robot drives
     public static double turnSpeed = -1;//used to change how fast robot turns
 
+    public static double deadZone = 0.1;
+
     public static double autoSpeedModifier = 2; //used to change speed of automatic navigation
 
     public static double turnP = 0.005;
     public static double turnI = 0.0;
     public static double turnD = 0.01;
 
-    private double speedMultiplier = 1;
+    public static double speedMultiplier = 1;
 
     private boolean busy = false;
     private double turnOffset = 0;
@@ -72,10 +74,14 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
             MAX_ANG_VEL_MOD  = autoSpeedModifier;
             MAX_ANG_ACCEL_MOD = autoSpeedModifier;
         }
+
+        control.InitCoreRobotModules();
     }
 
     @Override
-    public void start(){control.Start();}
+    public void start(){
+        control.Start();
+    }
 
     @Override
     public void loop() {
@@ -86,7 +92,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
         //Manage driving
         control.SetHeadingPID(turnP, turnI, turnD);
-        control.DriveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+        ManageDriveMovementCustom();
 
         //print telemetry
         if(control.isUSE_NAVIGATOR()) {
@@ -260,6 +266,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     public void DDownPressed(double controllerNumber) {
         if(controllerNumber == payloadControllerNumber){
         }
+        control.RawDrive(0, 0, 0);
     }
 
     @Override

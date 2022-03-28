@@ -2,9 +2,13 @@ package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
+import org.firstinspires.ftc.teamcode._RobotCode.Archived.MecChassis;
 import org.firstinspires.ftc.teamcode._RobotCode.Archived.MecanumBaseControl;
+import org.opencv.core.Mat;
 
 /**
  * Control class for the Belinda Robot. Controls payload.
@@ -17,8 +21,7 @@ import org.firstinspires.ftc.teamcode._RobotCode.Archived.MecanumBaseControl;
 //REQUIRED TO RUN: Phones | REV Hub | Demobot Chassis | Shooter | Odometry Unit
 
 @Config
-public class IngenuityControl extends MecanumBaseControl
-{
+public class IngenuityControl extends MecanumBaseControl {
     ////Dependencies////
     //Mechanical Components
     private IngenuityLift lift;
@@ -31,9 +34,10 @@ public class IngenuityControl extends MecanumBaseControl
     //Calibration
     private double levelPitchThreshold = 5;
 
-    /**@param setOpMode pass the opmode running this down to access hardware map
-     * @param useChassis whether to use the chassis of the robot
-     * @param usePayload whether to use the shooter/intake/lift of the robot
+    /**
+     * @param setOpMode    pass the opmode running this down to access hardware map
+     * @param useChassis   whether to use the chassis of the robot
+     * @param usePayload   whether to use the shooter/intake/lift of the robot
      * @param useNavigator whether to use Orion (webcams + odometry navigation)
      */
     public IngenuityControl(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
@@ -41,11 +45,13 @@ public class IngenuityControl extends MecanumBaseControl
     }
 
     //SETUP METHODS//
-    public void Init(){
+    public void Init() {
         super.InitCoreRobotModules();
 
-        if(USE_PAYLOAD) {
-            lift = new IngenuityLift(opMode,opMode.hardwareMap.dcMotor.get("liftMotor"));
+        super.USE_CHASSIS = false;
+
+        if (USE_PAYLOAD) {
+            lift = new IngenuityLift(opMode, opMode.hardwareMap.dcMotor.get("liftMotor"));
 
             intake = new IngenuityIntakeController(opMode.hardwareMap.servo.get("intakeServo"));
 
@@ -53,23 +59,31 @@ public class IngenuityControl extends MecanumBaseControl
         }
     }
 
-    public void Start(){
+    public void Start() {
         super.StartCoreRobotModules();
     }
 
-    public boolean IsRobotLevel(){
+    public boolean IsRobotLevel() {
         double pitch = imu.GetRawAngles().secondAngle;
         opMode.telemetry.addData("Robot pitch: ", pitch);
 
         return !(Math.abs(pitch) > 5);
     }
 
-    public IngenuityLift GetLift() {return lift;}
-    public IngenuityIntakeController GetIntake() {return intake;}
-    public IngenuityDuckController GetDuck() {return duckController;}
+    public IngenuityLift GetLift() {
+        return lift;
+    }
+
+    public IngenuityIntakeController GetIntake() {
+        return intake;
+    }
+
+    public IngenuityDuckController GetDuck() {
+        return duckController;
+    }
 
     //ADVANCED DRIVE CONTROL//
-    enum DriveDirection{
+    enum DriveDirection {
         N,
         S,
         E,
@@ -80,9 +94,9 @@ public class IngenuityControl extends MecanumBaseControl
         SW
     }
 
-    int ResolveDriveDirection(DriveDirection direction){
+    int ResolveDriveDirection(DriveDirection direction) {
         int ticks = 0;
-        switch(direction){
+        switch (direction) {
             case N:
                 ticks = 0;
                 break;
@@ -136,8 +150,8 @@ public class IngenuityControl extends MecanumBaseControl
         RawDrive(0, 0, 0);
     }
 
-    public long ToMillis(double seconds){
-        double millis = seconds*1000;
-        return (long)millis;
+    public long ToMillis(double seconds) {
+        double millis = seconds * 1000;
+        return (long) millis;
     }
 }
