@@ -19,6 +19,7 @@ public class IngenuityDuckyDepot extends LinearOpMode
     public static double spinTime = 18;
     public static double timeToWarehouse = 1.5;
     public static boolean redSide = true;
+
     double sideMultiplier = 1;
 
     @Override

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Archived;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -79,6 +80,10 @@ public class MecChassis
 
     ////CALLABLE METHODS////
     //Movement
+    public void MoveAtCartesianVector(Vector2d vector){
+
+    }
+
     public void MoveAtAngle(double angle, double speed, double turnSpeed){
         //Tells robot to raw move at any angle. Turn speed variable causes it to sweep turn / corkscrew.
         //This is called continuously while the robot is driving.
@@ -88,9 +93,9 @@ public class MecChassis
 
         //HEADING PID//
         //Uses pid controller to correct for heading error using (currentAngle, targetAngle)
-        double headingPIDOffset = headingPIDController.getOutput(turnSpeed, imu.GetAngularVelocity());
+        double headingPIDOffset = headingPIDController.getOutput(turnSpeed, imu.GetAngularVelocity()) * -1;
         //if the number is not real, reset pid controller
-        if(!(headingPIDOffset > 0 || headingPIDOffset <= 0)){
+        if(!Double.isFinite(headingPIDOffset)){
             headingPIDController.reset();
         }
 
@@ -113,8 +118,8 @@ public class MecChassis
 
         //Gets speeds for the motors
         double[] speeds = CalculateWheelSpeedsTurning(angle, speed, turnSpeed+headingPIDOffset);
-        //SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
-        SetMotorSpeeds(speeds[0], -speeds[1], speeds[2], -speeds[3]);
+        SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
+        //SetMotorSpeeds(speeds[0], -speeds[1], speeds[2], -speeds[3]);
 
         //Updates brake pos, as this is called continuously as robot is driving
         UpdateEncoderBrakePos();
@@ -170,7 +175,7 @@ public class MecChassis
          * the wheels need to go) with a positive 45 or negative 45 shift, depending on the wheel. This works
          * so that no matter the degrees, it will always come out with the right value. A turn offset is added
          * to the end for corkscrewing, or turning while driving*/
-        double FRP = -Math.cos(Math.toRadians(degrees + 45)) * speed + turnSpeed;
+        double FRP = - Math.cos(Math.toRadians(degrees + 45)) * speed + turnSpeed;
         double FLP = Math.cos(Math.toRadians(degrees - 45)) * speed + turnSpeed;
         double RRP = -Math.cos(Math.toRadians(degrees - 45)) * speed + turnSpeed;
         double RLP = Math.cos(Math.toRadians(degrees + 45)) * speed + turnSpeed;
