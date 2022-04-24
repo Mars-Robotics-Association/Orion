@@ -50,6 +50,7 @@ import org.firstinspires.ftc.teamcode.Core.HermesLog.DashboardWebSocketServer;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.ConfidenceLevel;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.OpenCV.EncodedImageRecognition;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.OpenCV.OpenCVColors;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.OpenCV.Pipeline;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -345,8 +346,8 @@ public class Camera
 
     //takes a Mat and isolates the color yellow
     public Mat IsolateYellow(Mat input){
-        Scalar lowhsv = new Scalar(0,100,100);
-        Scalar highhsv = new Scalar(30, 255, 255);
+        Scalar lowhsv = OpenCVColors.YellowH;
+        Scalar highhsv = OpenCVColors.YellowL;
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();
@@ -358,8 +359,8 @@ public class Camera
 
     //takes a Mat and isolates the color white
     public Mat IsolateWhite(Mat input){
-        Scalar highhsv = new Scalar(255,255,255);
-        Scalar lowhsv = new Scalar(230,230,230);
+        Scalar highhsv = OpenCVColors.WhiteH;
+        Scalar lowhsv = OpenCVColors.WhiteL;
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();
@@ -371,8 +372,8 @@ public class Camera
 
     //takes a Mat and isolates the color blue
     public Mat IsolateBlue(Mat input){
-        Scalar highhsv = new Scalar(118,255,189);
-        Scalar lowhsv = new Scalar(103,101,47);
+        Scalar highhsv = OpenCVColors.BlueH;
+        Scalar lowhsv = OpenCVColors.BlueL;
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();
@@ -384,8 +385,8 @@ public class Camera
 
     //takes a Mat and isolates the color red
     public Mat IsolateRed(Mat input){
-        Scalar highhsv = new Scalar(12,255,167);
-        Scalar lowhsv = new Scalar(0,80,71);
+        Scalar highhsv = OpenCVColors.RedH;
+        Scalar lowhsv = OpenCVColors.RedL;
         Mat hsv = new Mat();
         Mat mask = new Mat();
         Mat last = new Mat();

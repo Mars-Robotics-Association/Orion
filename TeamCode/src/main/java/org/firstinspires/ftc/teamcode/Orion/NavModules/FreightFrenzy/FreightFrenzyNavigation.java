@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Orion.NavModules.Camera;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.BlinkinController;
+import org.firstinspires.ftc.teamcode.Orion.NavModules.OpenCV.OpenCVColors;
 import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.DuckSpinner;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -323,9 +324,8 @@ public class FreightFrenzyNavigation implements Runnable
         Mat firstMat = new Mat(img,firstRect);
         Mat secondMat = new Mat(img,secondRect);
         Mat thirdMat = new Mat(img,thirdRect);
-        //bgr lime(0,255,102)
-        Scalar max = new Scalar(75,255,255);
-        Scalar min = new Scalar(35,58,121);
+        Scalar max = OpenCVColors.MarsGreenH;
+        Scalar min = OpenCVColors.MarsGreenL;
         firstMat = camera.isolateColor(firstMat,max,min);
         secondMat = camera.isolateColor(secondMat,max,min);
         thirdMat = camera.isolateColor(thirdMat,max,min);
