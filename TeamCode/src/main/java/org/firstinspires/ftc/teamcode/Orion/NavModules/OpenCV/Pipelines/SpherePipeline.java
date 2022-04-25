@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Orion.NavModules.OpenCV;
+package org.firstinspires.ftc.teamcode.Orion.NavModules.OpenCV.Pipelines;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
