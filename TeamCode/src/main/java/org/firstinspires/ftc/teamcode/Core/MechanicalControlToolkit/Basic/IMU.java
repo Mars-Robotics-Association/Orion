@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -10,7 +11,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import org.firstinspires.ftc.teamcode.Sensors.BasicAccelerationIntegrator;
 
 public class IMU
 {
@@ -39,8 +39,8 @@ public class IMU
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
-        //parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        parameters.accelerationIntegrationAlgorithm = new BasicAccelerationIntegrator();
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        //parameters.accelerationIntegrationAlgorithm = new BasicAccelerationIntegrator();
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",

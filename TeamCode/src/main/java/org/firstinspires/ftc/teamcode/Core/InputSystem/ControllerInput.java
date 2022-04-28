@@ -2,23 +2,14 @@ package org.firstinspires.ftc.teamcode.Core.InputSystem;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-//Calls event based commands from a controller as well as providing direct access. To use, make a
-//class interface to ControllerInputListener.java, create an instance of this class, call input.AddListener(this),
-//then input.Init(), then there will be errors so click on red light bulb and hit "implement methods".
-
-//REQUIRED TO RUN: None
-//REQUIRED TO FUNCTION: Controller
-
-public class ControllerInput
+public class ControllerInput 
 {
-    //REFERENCES
-    private Gamepad gamepad;
-    private int id;
-    
+    Gamepad gamepad;
+    int id;
+
     //A list of all the listeners
     private List<ControllerInputListener> listeners = new ArrayList<ControllerInputListener>();
 
@@ -27,11 +18,13 @@ public class ControllerInput
         listeners.add(toAdd);
     }
     
-    //Initializer
-    public ControllerInput(Gamepad setGamepad, int setId){
+    public ControllerInput(Gamepad setGamepad, int setID){
         gamepad = setGamepad;
-        id = setId;
+        id = setID;
     }
+
+    //ENUMS
+    public enum Button {X,Y,A,B,RT,LT,RB,LB,DUP,DDOWN,DLEFT,DRIGHT,LJS,RJS}
 
     //VARIABLES
     //misc.
@@ -71,230 +64,66 @@ public class ControllerInput
         return gamepad.right_stick_y;
     }
 
-    ////EVENTS////
-    //Pressed
-    public void APressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.APressed(id);
+    //INTERNAL
+    void Pressed(Button button){
+        for(ControllerInputListener listener : listeners) listener.ButtonPressed(id,button);
     }
-    public void BPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.BPressed(id);
+    void Held(Button button){
+        for(ControllerInputListener listener : listeners) listener.ButtonHeld(id,button);
     }
-    public void XPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.XPressed(id);
-    }
-    public void YPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.YPressed(id);
-    }
-    public void RBPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.RBPressed(id);
-    }
-    public void LBPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.LBPressed(id);
-    }
-    public void RTPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.RTPressed(id);
-    }
-    public void LTPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.LTPressed(id);
-    }
-    public void DUpPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DUpPressed(id);
-    }
-    public void DDownPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DDownPressed(id);
-    }
-    public void DLeftPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DLeftPressed(id);
-    }
-    public void DRightPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DRightPressed(id);
-    }
-    public void LJSPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.LJSPressed(id);
-    }
-    public void RJSPressed() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.RJSPressed(id);
-    }
-
-    //Held
-    public void AHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.AHeld(id);
-    }
-    public void BHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.BHeld(id);
-    }
-    public void XHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.XHeld(id);
-    }
-    public void YHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.YHeld(id);
-    }
-    public void RBHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.RBHeld(id);
-    }
-    public void LBHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.LBHeld(id);
-    }
-    public void RTHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.RTHeld(id);
-    }
-    public void LTHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.LTHeld(id);
-    }
-    public void DUpHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DUpHeld(id);
-    }
-    public void DDownHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DDownHeld(id);
-    }
-    public void DLeftHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DLeftHeld(id);
-    }
-    public void DRightHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DRightHeld(id);
-    }
-    public void LJSHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.LJSHeld(id);
-    }
-    public void RJSHeld() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.RJSHeld(id);
-    }
-
-    //Released
-    public void AReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.AReleased(id);
-    }
-    public void BReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.BReleased(id);
-    }
-    public void XReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.XReleased(id);
-    }
-    public void YReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.YReleased(id);
-    }
-    public void RBReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.RBReleased(id);
-    }
-    public void LBReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.LBReleased(id);
-    }
-    public void RTReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.RTReleased(id);
-    }
-    public void LTReleased() {
-        for (ControllerInputListener inputListener : listeners)
-            inputListener.LTReleased(id);
-    }
-    public void DUpReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DUpReleased(id);
-    }
-    public void DDownReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DDownReleased(id);
-    }
-    public void DLeftReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DLeftReleased(id);
-    }
-    public void DRightReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.DRightReleased(id);
-    }
-    public void LJSReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.LJSReleased(id);
-    }
-    public void RJSReleased() {
-        for (ControllerInputListener controllerInput : listeners)
-            controllerInput.RJSReleased(id);
+    void Released(Button button){
+        for(ControllerInputListener listener : listeners) listener.ButtonReleased(id,button);
     }
 
     public void Loop(){
         //DETECT EVENTS
         //Pressed
-        if(gamepad.a == true && ADown == false) APressed();
-        if(gamepad.b == true && BDown == false) BPressed();
-        if(gamepad.x == true && XDown == false) XPressed();
-        if(gamepad.y == true && YDown == false) YPressed();
-        if(gamepad.left_bumper == true && LBDown == false) LBPressed();
-        if(gamepad.right_bumper == true && RBDown == false) RBPressed();
-        if(gamepad.left_trigger > TriggerThreshold && LTDown == false) LTPressed();
-        if(gamepad.right_trigger > TriggerThreshold && RTDown == false) RTPressed();
-        if(gamepad.dpad_up == true && DUpDown == false) DUpPressed();
-        if(gamepad.dpad_down == true && DDownDown == false) DDownPressed();
-        if(gamepad.dpad_left == true && DLeftDown == false) DLeftPressed();
-        if(gamepad.dpad_right == true && DRightDown == false) DRightPressed();
-        if(gamepad.left_stick_button == true && LJSDown == false) LJSPressed();
-        if(gamepad.right_stick_button == true && RJSDown == false) RJSPressed();
+        if(gamepad.a == true && ADown == false) Pressed(Button.A);
+        if(gamepad.b == true && BDown == false) Pressed(Button.B);
+        if(gamepad.x == true && XDown == false) Pressed(Button.X);
+        if(gamepad.y == true && YDown == false) Pressed(Button.Y);
+        if(gamepad.left_bumper == true && LBDown == false) Pressed(Button.LB);
+        if(gamepad.right_bumper == true && RBDown == false) Pressed(Button.RB);
+        if(gamepad.left_trigger > TriggerThreshold && LTDown == false) Pressed(Button.LT);
+        if(gamepad.right_trigger > TriggerThreshold && RTDown == false) Pressed(Button.RT);
+        if(gamepad.dpad_up == true && DUpDown == false) Pressed(Button.DUP);
+        if(gamepad.dpad_down == true && DDownDown == false) Pressed(Button.DDOWN);
+        if(gamepad.dpad_left == true && DLeftDown == false) Pressed(Button.DLEFT);
+        if(gamepad.dpad_right == true && DRightDown == false) Pressed(Button.DRIGHT);
+        if(gamepad.left_stick_button == true && LJSDown == false) Pressed(Button.LJS);
+        if(gamepad.right_stick_button == true && RJSDown == false) Pressed(Button.RJS);
 
         //Held
-        if(gamepad.a == true) AHeld();
-        if(gamepad.b == true) BHeld();
-        if(gamepad.x == true) XHeld();
-        if(gamepad.y == true) YHeld();
-        if(gamepad.left_bumper == true) LBHeld();
-        if(gamepad.right_bumper == true) RBHeld();
-        if(gamepad.left_trigger > TriggerThreshold) LTHeld();
-        if(gamepad.right_trigger > TriggerThreshold) RTHeld();
-        if(gamepad.dpad_up == true) DUpHeld();
-        if(gamepad.dpad_down == true) DDownHeld();
-        if(gamepad.dpad_left == true) DLeftHeld();
-        if(gamepad.dpad_right == true) DRightHeld();
-        if(gamepad.left_stick_button == true) LJSHeld();
-        if(gamepad.right_stick_button == true) RJSHeld();
+        if(gamepad.a == true) Held(Button.A);
+        if(gamepad.b == true) Held(Button.B);
+        if(gamepad.x == true) Held(Button.X);
+        if(gamepad.y == true) Held(Button.Y);
+        if(gamepad.left_bumper == true) Held(Button.LB);
+        if(gamepad.right_bumper == true) Held(Button.RB);
+        if(gamepad.left_trigger > TriggerThreshold) Held(Button.LT);
+        if(gamepad.right_trigger > TriggerThreshold) Held(Button.RT);
+        if(gamepad.dpad_up == true) Held(Button.DUP);
+        if(gamepad.dpad_down == true) Held(Button.DDOWN);
+        if(gamepad.dpad_left == true) Held(Button.DLEFT);
+        if(gamepad.dpad_right == true) Held(Button.DRIGHT);
+        if(gamepad.left_stick_button == true) Held(Button.LJS);
+        if(gamepad.right_stick_button == true) Held(Button.RJS);
 
         //Released
-        if(gamepad.a == false && ADown == true) AReleased();
-        if(gamepad.b == false && BDown == true) BReleased();
-        if(gamepad.x == false && XDown == true) XReleased();
-        if(gamepad.y == false && YDown == true) YReleased();
-        if(gamepad.left_bumper == false && LBDown == true) LBReleased();
-        if(gamepad.right_bumper == false && RBDown == true) RBReleased();
-        if(gamepad.left_trigger <= TriggerThreshold && LTDown == true) LTReleased();
-        if(gamepad.right_trigger <= TriggerThreshold && RTDown == true) RTReleased();
-        if(gamepad.dpad_up == false && DUpDown == true) DUpReleased();
-        if(gamepad.dpad_down == false && DDownDown == true) DDownReleased();
-        if(gamepad.dpad_left == false && DLeftDown == true) DLeftReleased();
-        if(gamepad.dpad_right == false && DRightDown == true) DRightReleased();
-        if(gamepad.left_stick_button == false && LJSDown == true) LJSReleased();
-        if(gamepad.right_stick_button == false && RJSDown == true) RJSReleased();
+        if(gamepad.a == false && ADown == true) Released(Button.A);
+        if(gamepad.b == false && BDown == true) Released(Button.B);
+        if(gamepad.x == false && XDown == true) Released(Button.X);
+        if(gamepad.y == false && YDown == true) Released(Button.Y);
+        if(gamepad.left_bumper == false && LBDown == true) Released(Button.LB);
+        if(gamepad.right_bumper == false && RBDown == true) Released(Button.RB);
+        if(gamepad.left_trigger <= TriggerThreshold && LTDown == true) Released(Button.LT);
+        if(gamepad.right_trigger <= TriggerThreshold && RTDown == true) Released(Button.RT);
+        if(gamepad.dpad_up == false && DUpDown == true) Released(Button.DUP);
+        if(gamepad.dpad_down == false && DDownDown == true) Released(Button.DDOWN);
+        if(gamepad.dpad_left == false && DLeftDown == true) Released(Button.DLEFT);
+        if(gamepad.dpad_right == false && DRightDown == true) Released(Button.DRIGHT);
+        if(gamepad.left_stick_button == false && LJSDown == true) Released(Button.LJS);
+        if(gamepad.right_stick_button == false && RJSDown == true) Released(Button.RJS);
 
 
         //SET VARS TO CURRENT VALUES
