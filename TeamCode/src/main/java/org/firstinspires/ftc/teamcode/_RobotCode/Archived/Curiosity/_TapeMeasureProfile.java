@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode._RobotCode.Archived.Curiosity;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMotorArray;
 
 class _TapeMeasureProfile implements EncoderActuatorProfile
 {
-    MotorArray MOTORS;
+    DCMotorArray MOTORS;
     double MAX_ROTS = 80;
     double MIN_ROTS = 0;
     double GEAR_RATIO = 3.14;
@@ -16,11 +16,11 @@ class _TapeMeasureProfile implements EncoderActuatorProfile
     boolean USE_ENCODER = true;
 
     public _TapeMeasureProfile(DcMotor motor){
-        MOTORS = new MotorArray(new DcMotor[]{motor}, new double[]{1},USE_ENCODER);
+        MOTORS = new DCMotorArray(new DcMotor[]{motor}, new double[]{1},USE_ENCODER);
     }
 
     @Override
-    public MotorArray motors() {return MOTORS;}
+    public DCMotorArray motors() {return MOTORS;}
 
     @Override
     public double maxRots() {return MAX_ROTS;}
