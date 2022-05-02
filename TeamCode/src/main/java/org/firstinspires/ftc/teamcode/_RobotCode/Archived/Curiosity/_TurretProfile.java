@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Archived.Curiosity;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMotorArray;
 
 class _TurretProfile implements EncoderActuatorProfile
 {
@@ -20,7 +20,7 @@ class _TurretProfile implements EncoderActuatorProfile
     }
 
     @Override
-    public MotorArray motors() {return new MotorArray(new DcMotor[]{MOTOR}, new double[]{1}, USE_ENCODER);}
+    public DCMotorArray motors() {return new DCMotorArray(new DcMotor[]{MOTOR}, new double[]{1}, USE_ENCODER);}
 
     @Override
     public double maxRots() {return MAX_ROTS;}

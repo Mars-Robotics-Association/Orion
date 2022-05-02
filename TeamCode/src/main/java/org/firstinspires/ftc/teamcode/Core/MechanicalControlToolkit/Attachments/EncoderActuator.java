@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMotorArray;
 
 public class EncoderActuator 
 {
@@ -10,7 +10,7 @@ public class EncoderActuator
     OpMode opMode;
 
     //All these values will be set by the profile
-    public MotorArray motors;
+    public DCMotorArray motors;
     public double maxRots;
     public double minRots;
     public double gearRatio;

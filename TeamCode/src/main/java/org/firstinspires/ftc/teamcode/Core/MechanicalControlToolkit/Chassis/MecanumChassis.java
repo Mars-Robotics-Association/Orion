@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMotorArray;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.PIDController;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
@@ -27,7 +27,7 @@ public class MecanumChassis
     private DcMotor FL;
     private DcMotor RR;
     private DcMotor RL;
-    public MotorArray driveMotors;
+    public DCMotorArray driveMotors;
 
     //Brake pos
     private int FRBrakePos = 0;
@@ -76,7 +76,7 @@ public class MecanumChassis
             FL = opMode.hardwareMap.dcMotor.get(profile.motorNames()[1]);
             RR = opMode.hardwareMap.dcMotor.get(profile.motorNames()[2]);
             RL = opMode.hardwareMap.dcMotor.get(profile.motorNames()[3]);
-            driveMotors = new MotorArray(new DcMotor[]{FR,FL,RR,RL}, new double[]{1,1,1,1}, profile.useEncoders());
+            driveMotors = new DCMotorArray(new DcMotor[]{FR,FL,RR,RL}, new double[]{1,1,1,1}, profile.useEncoders());
 
             driveMotors.StopAndResetEncoders();
             if(profile.useEncoders()) driveMotors.RunWithEncodersMode();
