@@ -16,4 +16,9 @@ public class BaseRobot
       USE_CHASSIS = SET_USE_CHASSIS;
       USE_NAVIGATOR = SET_USE_NAVIGATOR;
    }
+   public BaseRobot(FieldSide setSide, Pose setPose){
+      USE_PAYLOAD = true;
+      USE_CHASSIS = true;
+      USE_NAVIGATOR = true;
+   }
 }

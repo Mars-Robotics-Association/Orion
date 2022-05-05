@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Demobot2022;
 
-interface DemobotPayload
+import org.firstinspires.ftc.teamcode.Core.OrionObject;
+
+abstract class DemobotPayload extends OrionObject
 {
-    public void Intake();
-    public void Place();
+    public abstract void Intake();
+    public abstract void Place();
 }

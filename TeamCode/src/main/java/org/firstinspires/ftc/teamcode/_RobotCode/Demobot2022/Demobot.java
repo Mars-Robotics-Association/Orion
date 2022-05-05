@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRo
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
+import org.firstinspires.ftc.teamcode.Core.OrionObject;
 import org.firstinspires.ftc.teamcode.Navigation.FieldState.Pose;
 import org.firstinspires.ftc.teamcode.Navigation.FreightFrenzy.FreightFrenzyNavigator;
 
@@ -20,40 +21,20 @@ class Demobot extends BaseRobot
     ////Dependencies////
     OpMode opMode;
     //Mechanical Components
-    BlinkinController blinkinController;
-    DemobotPayload payload;
-    DemobotNavigation navigator;
+    OrionObject[] components;
 
     //Misc
     FtcDashboard dashboard;
 
-    public Demobot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
+    public Demobot(OpMode setOpMode, OrionObject[] setComponents) {
         //set up robot state parent
-        super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
+        super(FieldSide.BLUE,new Pose(0,0,0));
+
+        components = setComponents;
+
         opMode = setOpMode;
 
         dashboard = FtcDashboard.getInstance();
-
-        if(USE_CHASSIS) {
-            //initialize the chassis
-            navigator = new DemobotNavigation(opMode, this);
-        }
-
-        if(USE_PAYLOAD){
-            //motors
-
-            //sensors
-
-            blinkinController = new BlinkinController(opMode);
-
-        }
-
-        if(USE_NAVIGATOR){
-            //sensors
-
-            //initialize navigator
-
-        }
     }
 
     //SETUP METHODS//
@@ -85,11 +66,16 @@ class Demobot extends BaseRobot
         }
     }
 
+    //return whether an object of given name exists in components
+    public boolean CheckExistence(String objName){
+        for(OrionObject obj : components){
+            if(obj.GetName()==objName) return true;
+        }
+        return false;
+    }
 
-    public BlinkinController getLights(){return blinkinController;}
-    public DemobotNavigation getNavigator(){return navigator;}
-    public MecanumChassis getChassis(){return navigator.getChassis();}
-    public DemobotPayload getPayload(){return payload;}
-
+    public BlinkinController GetBlinkin(){
+        
+    }
 
 }

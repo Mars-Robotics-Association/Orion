@@ -30,16 +30,12 @@
 package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.teamcode.Core.OrionObject;
 
-import java.util.concurrent.TimeUnit;
-
-public class BlinkinController
+public class BlinkinController extends OrionObject
 {
     OpMode opMode;
 
@@ -57,7 +53,7 @@ public class BlinkinController
 
     public BlinkinController(OpMode setOpMode) //TODO: move hardware map get up to robot class
     {
-        opMode = setOpMode;
+        SetOpModeNameVersion(setOpMode, "BlinkinController", 1.0);
         displayKind = DisplayKind.AUTO;
 
         blinkinLedDriver = opMode.hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");

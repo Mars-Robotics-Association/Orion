@@ -8,6 +8,8 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
+import org.firstinspires.ftc.teamcode.Core.OrionObject;
 
 
 @TeleOp(name = "*DEMOBOT TELEOP*", group = "Demobot")
@@ -36,6 +38,11 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
+
+        BlinkinController blink = new BlinkinController(this);
+        DemobotPayload payload = new ExampleDemobotPayload(this);
+        DemobotNavigation nav = new DemobotNavigation(this);
+        robot = new Demobot(this, new OrionObject[] {blink, payload, nav});
 
         //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
         //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
