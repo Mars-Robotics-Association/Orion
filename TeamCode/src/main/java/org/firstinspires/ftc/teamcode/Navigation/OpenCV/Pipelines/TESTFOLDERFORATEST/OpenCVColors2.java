@@ -5,8 +5,8 @@ import org.opencv.core.Scalar;
 public class OpenCVColors2 {
     //contains the HSV values for various colors
 
-    public final static Scalar WhiteH = new Scalar(255,255,255);
-    public final static Scalar WhiteL = new Scalar(230,230,230);
+    public final static Scalar WhiteH = new Scalar(180,82,255);
+    public final static Scalar WhiteL = new Scalar(41,0,126);
 
     public final static Scalar MarsGreenH = new Scalar(75,255,255);
     public final static Scalar MarsGreenL = new Scalar(35,58,121);
