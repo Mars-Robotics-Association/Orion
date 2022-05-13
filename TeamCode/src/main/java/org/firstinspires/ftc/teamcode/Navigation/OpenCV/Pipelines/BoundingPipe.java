@@ -31,7 +31,6 @@ public class BoundingPipe extends OpenCvPipeline {
         Imgproc.cvtColor(input,gray,Imgproc.COLOR_RGB2GRAY);
         Mat thresh = new Mat();
         Imgproc.threshold(gray,thresh,0,255,Imgproc.THRESH_BINARY_INV+ Imgproc.THRESH_OTSU);
-        int num = 0;
         Mat send = new Mat();
         Imgproc.Canny(thresh,send,100,200);
         List<MatOfPoint> cnts = new ArrayList<>();
