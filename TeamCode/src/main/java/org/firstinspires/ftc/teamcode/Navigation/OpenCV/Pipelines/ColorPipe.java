@@ -53,4 +53,13 @@ public class ColorPipe extends OpenCvPipeline {
                 break;
         }
     }
+
+    public Mat range(Mat input)
+    {
+        Mat hsvMat = new Mat();
+        Mat mask = new Mat();
+        Imgproc.cvtColor(input,hsvMat,Imgproc.COLOR_RGB2HSV);
+        Core.inRange(hsvMat,low,high,mask);
+        return mask;
+    }
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines;
 
 
 
+import org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines.TESTFOLDERFORATEST.OpenCVColors2;
 import org.opencv.core.*;
 import org.opencv.imgproc.*;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -39,10 +40,13 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
 
         // Step HSV_Threshold0  (stage 2):
         Mat hsvThresholdInput = blurOutput;
-        double[] hsvThresholdHue = {0, 90};
-        double[] hsvThresholdSaturation = {150, 255};
-        double[] hsvThresholdValue = {150, 255};
-        hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
+        Scalar lowhsv = OpenCVColors2.YellowL;
+        Scalar highhsv = OpenCVColors2.YellowH;
+        hsvThreshold(hsvThresholdInput, lowhsv, highhsv, hsvThresholdOutput);
+        ColorPipe pip = new ColorPipe();
+        pip.onViewportTapped();
+        pip.onViewportTapped();
+        hsvThresholdOutput=pip.range(blurOutput);
 
         // Step Find_Contours0 (stage 3):
         Mat findContoursInput = hsvThresholdOutput;
@@ -77,7 +81,7 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
             Imgproc.drawContours(finalContourOutputMat, findContoursOutput, largestContourIndex, new Scalar(255, 255, 255), 2);
 
 
-        return findContoursOutputMat;
+        return finalContourOutputMat;
     }
 
     public int[] getPosition() {
@@ -139,11 +143,9 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
         }
     }
 
-    private void hsvThreshold(Mat input, double[] hue, double[] sat, double[] val,
-                              Mat out) {
+    private void hsvThreshold(Mat input, Scalar low, Scalar high, Mat out) {
         Imgproc.cvtColor(input, out, Imgproc.COLOR_BGR2HSV);
-        Core.inRange(out, new Scalar(hue[0], sat[0], val[0]),
-                new Scalar(hue[1], sat[1], val[1]), out);
+        Core.inRange(out, low, high, out);
     }
 
     private void findContours(Mat input, boolean externalOnly,
