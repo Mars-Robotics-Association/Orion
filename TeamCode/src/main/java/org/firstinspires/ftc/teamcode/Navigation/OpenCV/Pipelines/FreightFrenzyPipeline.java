@@ -1,10 +1,7 @@
 package org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines;
 
-import android.graphics.Bitmap;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 
-import org.opencv.android.Utils;
 import org.opencv.core.*;
 import org.opencv.imgproc.*;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -13,8 +10,6 @@ import java.util.ArrayList;
 
 public class FreightFrenzyPipeline extends OpenCvPipeline
 {
-    private boolean enableDashboard;
-    private FtcDashboard dashboard;
 
     private Mat blurInput = new Mat();
     private Mat blurOutput = new Mat();
@@ -26,11 +21,7 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
     private int largestX, largestY;
     private double largestArea;
 
-    public FreightFrenzyPipeline(boolean enableDashboard) {
-        this.enableDashboard = enableDashboard;
-
-        if(enableDashboard)
-            dashboard = FtcDashboard.getInstance();
+    public FreightFrenzyPipeline() {
 
         largestX = -1;
         largestY = -1;
@@ -71,7 +62,7 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
         for(int i = 0; i < findContoursOutput.size(); i++) {
             MatOfPoint contour = findContoursOutput.get(i);
             double contourArea = Imgproc.contourArea(contour);
-            if(contourArea > 2500 && contourArea > largestArea) {
+            if(contourArea > largestArea) {
                 Moments p = Imgproc.moments(contour, false);
                 int x = (int) (p.get_m10() / p.get_m00());
                 int y = (int) (p.get_m01() / p.get_m00());
@@ -86,17 +77,11 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
             Imgproc.drawContours(finalContourOutputMat, findContoursOutput, largestContourIndex, new Scalar(255, 255, 255), 2);
 
 
-        return input;
+        return findContoursOutputMat;
     }
 
     public int[] getPosition() {
         return new int[] {largestX, largestY};
-    }
-
-    private void sendMatToDashboard(Mat input) {
-        Bitmap bitmap = Bitmap.createBitmap(input.width(), input.height(), Bitmap.Config.RGB_565);
-        Utils.matToBitmap(input, bitmap);
-        dashboard.sendImage(bitmap);
     }
 
 
