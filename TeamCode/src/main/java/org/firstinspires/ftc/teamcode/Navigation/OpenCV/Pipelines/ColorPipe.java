@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines;
 
-import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCVColors;
+import org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines.TESTFOLDERFORATEST.OpenCVColors2;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
@@ -9,8 +9,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class ColorPipe extends OpenCvPipeline {
     int color = 1;
-    Scalar high = OpenCVColors.RedH;
-    Scalar low = OpenCVColors.RedL;
+    Scalar high = OpenCVColors2.RedH;
+    Scalar low = OpenCVColors2.RedL;
     @Override
     public Mat processFrame(Mat input) {
         Mat hsvMat = new Mat();
@@ -32,24 +32,24 @@ public class ColorPipe extends OpenCvPipeline {
         switch(color)
         {
             case(1):
-                high = OpenCVColors.RedH;
-                low = OpenCVColors.RedL;
+                high = OpenCVColors2.RedH;
+                low = OpenCVColors2.RedL;
                 break;
             case(2):
-                high = OpenCVColors.BlueH;
-                low = OpenCVColors.BlueL;
+                high = OpenCVColors2.BlueH;
+                low = OpenCVColors2.BlueL;
                 break;
             case(3):
-                high = OpenCVColors.YellowH;
-                low = OpenCVColors.YellowL;
+                high = OpenCVColors2.YellowH;
+                low = OpenCVColors2.YellowL;
                 break;
             case(4):
-                high = OpenCVColors.WhiteH;
-                low = OpenCVColors.WhiteL;
+                high = OpenCVColors2.WhiteH;
+                low = OpenCVColors2.WhiteL;
                 break;
             case(5):
-                high = OpenCVColors.MarsGreenH;
-                low = OpenCVColors.MarsGreenL;
+                high = OpenCVColors2.MarsGreenH;
+                low = OpenCVColors2.MarsGreenL;
                 break;
         }
     }
