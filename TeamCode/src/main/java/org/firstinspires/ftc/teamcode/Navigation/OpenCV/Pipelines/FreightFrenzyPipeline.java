@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines;
 
 
-
-import org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines.TESTFOLDERFORATEST.OpenCVColors2;
+import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCVColors;
 import org.opencv.core.*;
 import org.opencv.imgproc.*;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -40,8 +39,8 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
 
         // Step HSV_Threshold0  (stage 2):
         Mat hsvThresholdInput = blurOutput;
-        Scalar lowhsv = OpenCVColors2.YellowL;
-        Scalar highhsv = OpenCVColors2.YellowH;
+        Scalar lowhsv = OpenCVColors.YellowL;
+        Scalar highhsv = OpenCVColors.YellowH;
         hsvThreshold(hsvThresholdInput, lowhsv, highhsv, hsvThresholdOutput);
         ColorPipe pip = new ColorPipe();
         pip.onViewportTapped();
@@ -77,9 +76,14 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
                 largestArea = contourArea;
             }
         }
-        if(largestContourIndex != -1)
-            Imgproc.drawContours(finalContourOutputMat, findContoursOutput, largestContourIndex, new Scalar(255, 255, 255), 2);
-
+//        if(largestContourIndex != -1)
+//            Imgproc.drawContours(finalContourOutputMat, findContoursOutput, largestContourIndex, new Scalar(255, 255, 255), 2);
+        for(int i=0;i<findContoursOutput.size();i++)
+        {
+//            Imgproc.drawContours(finalContourOutputMat,findContoursOutput,i,new Scalar(255,255,255),2);
+            Rect rect = Imgproc.boundingRect(findContoursOutput.get(i));
+            Imgproc.rectangle(finalContourOutputMat,new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255), 2);
+        }
 
         return finalContourOutputMat;
     }
