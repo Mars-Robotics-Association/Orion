@@ -11,8 +11,11 @@ public class OpenCVColors2 {
     public final static Scalar MarsGreenH = new Scalar(75,255,255);
     public final static Scalar MarsGreenL = new Scalar(35,58,121);
 
-    public final static Scalar YellowH = new Scalar(0,100,100);
-    public final static Scalar YellowL = new Scalar(30,255,255);
+    public final static Scalar YellowH = new Scalar(30,255,255);
+    public final static Scalar YellowL = new Scalar(0,100,100);
+
+    public final static Scalar StrictYellowH = new Scalar(30,255,255);
+    public final static Scalar StrictYellowL = new Scalar(20,100,100);
 
     public final static Scalar RedH = new Scalar(12,255,167);
     public final static Scalar RedL = new Scalar(0,80,71);
