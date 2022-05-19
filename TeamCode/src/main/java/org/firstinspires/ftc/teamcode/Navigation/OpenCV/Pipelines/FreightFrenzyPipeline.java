@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines;
 
 
-import org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines.TESTFOLDERFORATEST.OpenCVColors2;
+import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCVColors;
 import org.opencv.core.*;
 import org.opencv.imgproc.*;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -39,8 +39,8 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
 
         // Step HSV_Threshold0  (stage 2):
         Mat hsvThresholdInput = blurOutput;
-        Scalar lowhsv = OpenCVColors2.YellowL;
-        Scalar highhsv = OpenCVColors2.YellowH;
+        Scalar lowhsv = OpenCVColors.YellowL;
+        Scalar highhsv = OpenCVColors.YellowH;
         hsvThreshold(hsvThresholdInput, lowhsv, highhsv, hsvThresholdOutput);
         ColorPipe pip = new ColorPipe();
         pip.onViewportTapped();

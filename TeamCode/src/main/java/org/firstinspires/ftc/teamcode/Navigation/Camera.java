@@ -22,6 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCV;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -291,16 +292,12 @@ public class Camera
 
     //takes a Mat image and converts it to a Bitmap
     public Bitmap convertMatToBitMap(Mat input){
-        Bitmap bmp = Bitmap.createBitmap(input.width(),input.height(), Bitmap.Config.RGB_565);
-        Utils.matToBitmap(input,bmp);
-        return bmp;
+        return OpenCV.convertMatToBitMap(input);
     }
 
     //takes a Bitmap image and converts it to a Mat
     public Mat convertBitmapToMat(Bitmap input){
-        Mat mat = new Mat();
-        Utils.bitmapToMat(input,mat);
-        return mat;
+        return OpenCV.convertBitmapToMat(input);
     }
 
     //takes a Mat and isolates the color yellow
@@ -318,93 +315,32 @@ public class Camera
 
     //takes a Mat and isolates the color white
     public Mat IsolateWhite(Mat input){
-        Scalar highhsv = new Scalar(255,255,255);
-        Scalar lowhsv = new Scalar(230,230,230);
-        Mat hsv = new Mat();
-        Mat mask = new Mat();
-        Mat last = new Mat();
-        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(hsv, lowhsv,highhsv, mask);
-        Core.bitwise_and(input, input, last, mask);
-        return last;
+        return OpenCV.IsolateWhite(input);
     }
 
     //takes a Mat and isolates the color blue
     public Mat IsolateBlue(Mat input){
-        Scalar highhsv = new Scalar(118,255,189);
-        Scalar lowhsv = new Scalar(103,101,47);
-        Mat hsv = new Mat();
-        Mat mask = new Mat();
-        Mat last = new Mat();
-        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(hsv, lowhsv,highhsv, mask);
-        Core.bitwise_and(input, input, last, mask);
-        return last;
+        return OpenCV.IsolateBlue(input);
     }
 
     //takes a Mat and isolates the color red
     public Mat IsolateRed(Mat input){
-        Scalar highhsv = new Scalar(12,255,167);
-        Scalar lowhsv = new Scalar(0,80,71);
-        Mat hsv = new Mat();
-        Mat mask = new Mat();
-        Mat last = new Mat();
-        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(hsv, lowhsv,highhsv, mask);
-        Core.bitwise_and(input, input, last, mask);
-        return last;
+        return OpenCV.IsolateRed(input);
     }
 
     //for determining nonblack pixels in a color isolated image
     public int countPixels(Bitmap input){
-        int pixelcount = 0;
-
-        for (int x = 0; x <input.getWidth(); x++) {
-            for (int y = 0; y < input.getHeight(); y++) {
-                int color = input.getPixel(x,y);
-                int R = (color & 0xff0000) >> 16;
-                int G = (color & 0xff00) >> 8;
-                int B = color & 0xff;
-                if(!((R == 0) && (G == 0) && (B == 0))){
-                    pixelcount++;
-                }
-            }
-        }
-        return pixelcount;
+        return OpenCV.countPixels(input);
     }
 
     //returns average length and width of all colored pixels in a color isolated image
     public int[] findColor(Bitmap input){
-        int width = 0,height=0,count=0;
-        for(int w = 0;w<input.getWidth();w++){
-            for (int h = 0; h < input.getHeight(); h++) {
-                int color = input.getPixel(w, h);
-                int R = (color & 0xff0000) >> 16;
-                int G = (color & 0xff00) >> 8;
-                int B = color & 0xff;
-                if (!((R == 0) && (G == 0) && (B == 0))) {
-                    width += w;
-                    height += h;
-                    count++;
-                }
-            }
-        }
-        opmode.telemetry.addData("x",width);
-        if(count==0){
-            return new int[]{-1,-1};
-        }
-        return new int[]{width/count,height/count};
+        return OpenCV.findColor(input);
     }
 
     //isolate a color from a mat
     public Mat isolateColor(Mat input, Scalar highhsv, Scalar lowhsv){
-        Mat hsv = new Mat();
-        Mat mask = new Mat();
-        Mat last = new Mat();
-        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(hsv, lowhsv,highhsv, mask);
-        Core.bitwise_and(input, input, last, mask);
-        return last;
+        return OpenCV.isolateColor(input,highhsv,lowhsv);
     }
 
     public Bitmap GetImage() throws InterruptedException {
@@ -424,41 +360,15 @@ public class Camera
     }
 
     public Bitmap ShrinkBitmap(Bitmap bitmapIn, int width, int height){
-        return Bitmap.createScaledBitmap(bitmapIn, width, height, true); //might want to set filter to false (uses more proccessing power to make better image
+        return OpenCV.ShrinkBitmap(bitmapIn,width,height);
     }
 
     public Bitmap GrowBitmap(Bitmap input,int width, int height){
-        if(width<input.getWidth()||height<input.getHeight())return input;
-        Bitmap bmp = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
-        for(int x=0;x<width;x++){
-            for(int y=0;y<height;y++){
-                int color = input.getPixel((x*input.getWidth())/width,(y*input.getHeight())/height);
-                int R = (color & 0xff0000) >> 16;
-                int G = (color & 0xff00) >> 8;
-                int B = color & 0xff;
-                bmp.setPixel(x,y,Color.rgb(R,G,B));
-            }
-        }
-        return bmp;
+        return OpenCV.GrowBitmap(input,width,height);
     }
 
     //get extreme top bottom left and right values of a color isolated image
     public int[] getTBLR(Bitmap input){
-        int maxh = Integer.MIN_VALUE,minh=Integer.MAX_VALUE, maxw = Integer.MIN_VALUE,minw=Integer.MAX_VALUE;
-        for(int w = 0;w<input.getWidth();w++){
-            for (int h = 0; h < input.getHeight(); h++) {
-                int color = input.getPixel(w, h);
-                int R = (color & 0xff0000) >> 16;
-                int G = (color & 0xff00) >> 8;
-                int B = color & 0xff;
-                if (!((R == 0) && (G == 0) && (B == 0))) {
-                    if(h<minh)minh=h;
-                    if(h>maxh)maxh=h;
-                    if(w<minw)minw=w;
-                    if(w>maxw)maxw=w;
-                }
-            }
-        }
-        return new int[]{minh,maxh,minw,maxw};
+        return OpenCV.getTBLR(input);
     }
 }
