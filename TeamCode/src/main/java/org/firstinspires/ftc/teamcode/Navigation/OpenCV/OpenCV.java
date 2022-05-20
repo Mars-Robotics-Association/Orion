@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
@@ -98,6 +99,11 @@ public class OpenCV {
         return pixelcount;
     }
 
+    public static double percentColor(Bitmap input)
+    {
+        return countPixels(input)/(input.getHeight()*input.getWidth());
+    }
+
     //returns average length and width of all colored pixels in a color isolated image
     public static int[] findColor(Bitmap input){
         int width = 0,height=0,count=0;
@@ -168,5 +174,9 @@ public class OpenCV {
             }
         }
         return new int[]{minh,maxh,minw,maxw};
+    }
+
+    public static Mat crop(Mat input, Rect rect) {
+        return input.submat(rect);
     }
 }
