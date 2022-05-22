@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Navigation.FreightFrenzy;
+package org.firstinspires.ftc.teamcode.Navigation.Archive.FreightFrenzy;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 

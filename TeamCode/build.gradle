@@ -26,6 +26,7 @@ android {
             pickFirsts += ['**/*.so', '**/*.so']
         }
     }
+    namespace 'org.firstinspires.ftc.teamcode'
 }
 
 dependencies {
@@ -37,4 +38,6 @@ dependencies {
     implementation 'com.acmerobotics.roadrunner:core:0.5.4'
 
     implementation 'org.openftc:easyopencv:1.5.0'
+
+    //implementation 'org.ftclib.ftclib:core:2.0.1' // core
 }

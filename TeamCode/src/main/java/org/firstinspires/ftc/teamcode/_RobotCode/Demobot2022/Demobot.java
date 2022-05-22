@@ -2,18 +2,11 @@ package org.firstinspires.ftc.teamcode._RobotCode.Demobot2022;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
-import org.firstinspires.ftc.teamcode.Navigation.FieldState.Pose;
-import org.firstinspires.ftc.teamcode.Navigation.FreightFrenzy.FreightFrenzyNavigator;
+import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 
 class Demobot extends BaseRobot
 {

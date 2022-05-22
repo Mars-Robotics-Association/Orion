@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRo
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
-import org.firstinspires.ftc.teamcode.Navigation.FieldState.Pose;
-import org.firstinspires.ftc.teamcode.Navigation.FreightFrenzy.FreightFrenzyNavigator;
+import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
+import org.firstinspires.ftc.teamcode.Navigation.Archive.FreightFrenzy.FreightFrenzyNavigator;
 
 class ErasmusRobot extends BaseRobot
 {
