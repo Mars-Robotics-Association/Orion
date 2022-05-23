@@ -53,7 +53,7 @@ public class Camera
             "3O0YSzX3Jp2ppTE2kDS2I9zBYEmuEqkMjItxd52oES0Ij0rZm";
 
 
-    public Camera(OpMode opMode, String webCam) {
+    public Camera(OpMode opMode, String webCam, boolean useDashboard) {
         opmode = opMode;
 
         webcamname = opmode.hardwareMap.get(WebcamName.class,webCam);
@@ -78,9 +78,10 @@ public class Camera
         initTfod();
         if (tfod != null)tfod.activate();
 
-        dashboard = FtcDashboard.getInstance();
-
-        //dashboard.startCameraStream(tfod,0);
+        if(useDashboard) {
+            dashboard = FtcDashboard.getInstance();
+            //dashboard.startCameraStream(tfod,0);
+        }
     }
 
     private void initTfod() {

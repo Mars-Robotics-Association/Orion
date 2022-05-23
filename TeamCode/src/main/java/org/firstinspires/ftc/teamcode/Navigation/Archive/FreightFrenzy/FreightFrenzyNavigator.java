@@ -110,7 +110,7 @@ public class FreightFrenzyNavigator
       starboardDist = setStarboardDist;
       colorSensor = setColorSensor;
       //instantiate navigator-specific classes
-      camera = new Camera(opMode,"Webcam 1");
+      camera = new Camera(opMode,"Webcam 1",true);
       driveFuncs = new ChassisFunctions(opMode, chassis, this);
       navigatorThread = new FreightFrenzyNavigatorThread(opMode, lights, this);
 

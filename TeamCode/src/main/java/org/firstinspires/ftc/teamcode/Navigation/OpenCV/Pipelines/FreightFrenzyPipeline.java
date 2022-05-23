@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
 import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCV;
 import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCVColors;
 import org.opencv.core.*;
@@ -41,8 +43,8 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
         // Step HSV_Threshold0  (stage 2):
         Mat hsvThresholdInput = blurOutput;
         Scalar[] yellow = OpenCVColors.broaden(OpenCVColors.YellowL,OpenCVColors.YellowH);
-        Scalar lowhsv = yellow[0];
-        Scalar highhsv = yellow[1];
+        Scalar lowhsv = OpenCVColors.RedL;
+        Scalar highhsv = OpenCVColors.YellowH;
         hsvThreshold(hsvThresholdInput, lowhsv, highhsv, hsvThresholdOutput);
         ColorPipe pip = new ColorPipe();
         pip.onViewportTapped();
@@ -83,7 +85,10 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
         for(int i=0;i<findContoursOutput.size();i++){
 //            Imgproc.drawContours(finalContourOutputMat,findContoursOutput,i,new Scalar(255,255,255),2);
             Rect rect = Imgproc.boundingRect(findContoursOutput.get(i));
-            //if(OpenCV.percentColor(OpenCV.convertMatToBitMap(OpenCV.isolateColor(OpenCV.crop(finalContourOutputMat,rect),OpenCVColors.YellowL,OpenCVColors.YellowH)))>0)
+            Mat cropped = OpenCV.crop(finalContourOutputMat,rect);
+            cropped = OpenCV.isolateColor(cropped,OpenCVColors.YellowH,OpenCVColors.YellowL);
+            double percent = OpenCV.percentColor(OpenCV.convertMatToBitMap(cropped));
+            //if(percent>.7)
                 Imgproc.rectangle(finalContourOutputMat, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255), 2);
         }
 

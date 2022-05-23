@@ -101,7 +101,7 @@ public class OpenCV {
 
     public static double percentColor(Bitmap input)
     {
-        return countPixels(input)/(input.getHeight()*input.getWidth());
+        return (double)countPixels(input)/(input.getHeight()*input.getWidth());
     }
 
     //returns average length and width of all colored pixels in a color isolated image
