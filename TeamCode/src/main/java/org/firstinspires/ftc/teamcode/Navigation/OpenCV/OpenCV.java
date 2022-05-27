@@ -101,7 +101,7 @@ public class OpenCV {
 
     public static double percentColor(Bitmap input)
     {
-        return countPixels(input)/(input.getHeight()*input.getWidth());
+        return (double)countPixels(input)/(input.getHeight()*input.getWidth());
     }
 
     //returns average length and width of all colored pixels in a color isolated image
@@ -178,5 +178,14 @@ public class OpenCV {
 
     public static Mat crop(Mat input, Rect rect) {
         return input.submat(rect);
+    }
+
+    public static Mat range(Mat input, Scalar low, Scalar high)
+    {
+        Mat hsvMat = new Mat();
+        Mat mask = new Mat();
+        Imgproc.cvtColor(input,hsvMat,Imgproc.COLOR_RGB2HSV);
+        Core.inRange(hsvMat,low,high,mask);
+        return mask;
     }
 }
