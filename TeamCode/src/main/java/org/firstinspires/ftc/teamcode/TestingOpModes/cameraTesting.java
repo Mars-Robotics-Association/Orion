@@ -24,6 +24,7 @@ public class cameraTesting extends OpMode {
     public void init() {
         cam = new Camera(this,"Webcam 1",false);
         d=FtcDashboard.getInstance();
+        msStuckDetectLoop=50000;
     }
 
     @Override
@@ -36,6 +37,7 @@ public class cameraTesting extends OpMode {
             OpenCvPipeline p = new FreightFrenzyPipeline();
             Mat m2=p.processFrame(m);
             Bitmap img2=OpenCV.convertMatToBitMap(m2);
+            //img2=OpenCV.GrowBitmap(img2,img2.getWidth()*10,img2.getHeight()*10);
             d.sendImage(img2);
         } catch (InterruptedException e) {
             e.printStackTrace();
