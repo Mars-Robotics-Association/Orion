@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry;
 
+import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.geometry.Point;
+
 /**
  * A two-dimensional position that includes a {@link Vector2d} and
  * a heading angle. Look at {@link Vector2d} for information on what
  * some of these methods do.
  */
-public class Pose2d {
+public class Pose2d extends Point{
     private final Translation2d m_translation;
     private final Rotation2d m_rotation;
 
@@ -27,6 +29,11 @@ public class Pose2d {
     public Pose2d(Translation2d translation, Rotation2d rotation) {
         m_translation = translation;
         m_rotation = rotation;
+    }
+
+    public Pose2d(double x, double y, double angle) {
+        m_translation = new Translation2d(x,y);
+        m_rotation = new Rotation2d(angle);
     }
 
     /**
@@ -229,5 +236,9 @@ public class Pose2d {
 
     public double getHeading() {
         return m_rotation.getRadians();
+    }
+
+    public Point to_point() {
+        return new Point(this);
     }
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Navigation.PurePursuit.path;
 
+import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.geometry.Circle;
 import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.geometry.Point;
 import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.geometry.Pose;
@@ -30,7 +31,7 @@ public class Path {
 
     ArrayList<PathPoint> points = new ArrayList<>();
 
-    Pose robot_pose = new Pose();
+    Pose2d robot_pose = new Pose2d();
 
     double follow_radius = 5;
 
@@ -141,7 +142,7 @@ public class Path {
         }
     }
 
-    public void update(Pose new_robot_pose) {
+    public void update(Pose2d new_robot_pose) {
         robot_pose.copy(new_robot_pose);
 
         markPassedPoints();
@@ -215,7 +216,7 @@ public class Path {
     }
 
 
-    public Pose getFollowPose() {
+    public Pose2d getFollowPose() {
 
         // Start off with our follow point being the recovery point. This will be overwritten if we find actual valid intersections
         Point follow_point = getRecoveryPoint(recovery_method).clone();
@@ -245,13 +246,13 @@ public class Path {
 
         double follow_heading = getHeadingGoal(heading_method, follow_point);
 
-        return new Pose(follow_point.x, follow_point.y, follow_heading);
+        return new Pose2d(follow_point.x, follow_point.y, follow_heading);
     }
 
     public boolean isComplete() {
         return
                 robot_pose.distance(getLastPoint()) < position_precision &&
-                Math.abs(robot_pose.angle - getHeadingGoal(heading_method, getFollowPose())) < heading_precision;
+                Math.abs(robot_pose.getHeading() - getHeadingGoal(heading_method, getFollowPose())) < heading_precision;
     }
 
     public PathPoint getFirstUnpassedPoint() {
