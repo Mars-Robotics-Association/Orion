@@ -179,4 +179,13 @@ public class OpenCV {
     public static Mat crop(Mat input, Rect rect) {
         return input.submat(rect);
     }
+
+    public static Mat range(Mat input, Scalar low, Scalar high)
+    {
+        Mat hsvMat = new Mat();
+        Mat mask = new Mat();
+        Imgproc.cvtColor(input,hsvMat,Imgproc.COLOR_RGB2HSV);
+        Core.inRange(hsvMat,low,high,mask);
+        return mask;
+    }
 }
