@@ -7,9 +7,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+
 @Config
 @TeleOp(name = "motorServoTest")
-public class motorServoTesting extends OpMode{
+public class motorServoTesting extends OpMode implements ControllerInputListener {
 
     private DcMotor motor1;
     private DcMotor motor2;
@@ -24,6 +27,8 @@ public class motorServoTesting extends OpMode{
     int currentmotor = 0;
     int currentservo = 0;
 
+    private ControllerInput controllerInput1;
+
     @Override
     public void init(){
         motor1 = hardwareMap.dcMotor.get("motor 1");
@@ -36,226 +41,210 @@ public class motorServoTesting extends OpMode{
         servo4 = hardwareMap.servo.get("servo 4");
         servo5 = hardwareMap.servo.get("servo 5");
         servo6 = hardwareMap.servo.get("servo 6");
+
+        controllerInput1 = new ControllerInput(gamepad1, 1);
+        controllerInput1.addListener(this);
     }
 
     @Override
-    public void loop(){
-        //Spin motor forwards/backwards using left trigger
-        if(gamepad1.dpad_up)
-        {
-            currentmotor+=1;
-        }
-        if(gamepad1.dpad_down){
-            currentmotor-=1;
-        }
-        if(gamepad1.dpad_right){
-            currentservo+=1;
-        }
-        if(gamepad1.dpad_left){
-            currentservo-=1;
-        }
-        if(currentmotor>4){
-            currentmotor=1;
-        }
-        if(currentservo>6){
-            currentservo=1;
-        }
-        if(currentmotor<1){
-            currentmotor=4;
-        }
-        if(currentservo<1){
-            currentservo=6;
-        }
-        if (gamepad1.left_trigger > 0.1){
-            switch(currentmotor){
-                case(1):
-                    motor1.setPower(1);
-                    break;
-                case(2):
-                    motor2.setPower(1);
-                    break;
-                case(3):
-                    motor3.setPower(1);
-                    break;
-                case(4):
-                    motor4.setPower(1);
-                    break;
-            }
-        }else if (gamepad1.right_trigger > 0.1){
-            switch(currentmotor) {
-                case (1):
-                    motor1.setPower(-1);
-                    break;
-                case (2):
-                    motor2.setPower(-1);
-                    break;
-                case (3):
-                    motor3.setPower(-1);
-                    break;
-                case (4):
-                    motor4.setPower(-1);
-                    break;
-            }
-        }else{
-            switch(currentmotor) {
-                case (1):
-                    motor1.setPower(0);
-                    break;
-                case (2):
-                    motor2.setPower(0);
-                    break;
-                case (3):
-                    motor3.setPower(0);
-                    break;
-                case (4):
-                    motor4.setPower(0);
-                    break;
-            }
+    public void loop() {
+        controllerInput1.Loop();
+        if(gamepad1.right_trigger<0.1 && gamepad1.left_trigger<0.1){
+            telemetry.addLine("STOP MOTORS");
+            motor1.setPower(0);
+            motor2.setPower(0);
+            motor3.setPower(0);
+            motor4.setPower(0);
         }
 
-
-        //Spin motor 1 forwards/backwards using left trigger
-        if (gamepad1.right_bumper){
-            switch(currentservo) {
-                case (1):
-                    servo1.setPosition(0);
-                    break;
-                case (2):
-                    servo2.setPosition(0);
-                    break;
-                case (3):
-                    servo3.setPosition(0);
-                    break;
-                case (4):
-                    servo4.setPosition(0);
-                    break;
-                case(5):
-                    servo5.setPosition(0);
-                    break;
-                case(6):
-                    servo6.setPosition(0);
-                    break;
-            }
-        }else if (gamepad1.left_bumper){
-            switch(currentservo) {
-                case (1):
-                    servo1.setPosition(1);
-                    break;
-                case (2):
-                    servo2.setPosition(1);
-                    break;
-                case (3):
-                    servo3.setPosition(1);
-                    break;
-                case (4):
-                    servo4.setPosition(1);
-                    break;
-                case(5):
-                    servo5.setPosition(1);
-                    break;
-                case(6):
-                    servo6.setPosition(1);
-                    break;
-            }
-        }else if(gamepad1.a){
-            switch(currentservo) {
-                case (1):
-                    servo1.setPosition(0.5);
-                    break;
-                case (2):
-                    servo2.setPosition(0.5);
-                    break;
-                case (3):
-                    servo3.setPosition(0.5);
-                    break;
-                case (4):
-                    servo4.setPosition(0.5);
-                    break;
-                case(5):
-                    servo5.setPosition(0.5);
-                    break;
-                case(6):
-                    servo6.setPosition(0.5);
-                    break;
-            }
-        }
-        telemetry.addData("current motor: ",currentmotor);
-        telemetry.addData("current servo: ",currentservo);
-        telemetry.addData("To spin motor: ","left and right triggers");
-        telemetry.addData("To move servo to extremes: ","left and right bumpers");
-        telemetry.addData("To move servo to middle position: ","a");
-        telemetry.addData("To switch motor: ","up and down on dpad");
-        telemetry.addData("To switch servo: ","left and right on dpad");
-        telemetry.addData("Make sure you are using ","gamepad 1");
+        telemetry.addData("current motor: ", currentmotor);
+        telemetry.addData("current servo: ", currentservo);
+        telemetry.addData("To spin motor: ", "left and right triggers");
+        telemetry.addData("To move servo to extremes: ", "left and right bumpers");
+        telemetry.addData("To move servo to middle position: ", "a");
+        telemetry.addData("To switch motor: ", "up and down on dpad");
+        telemetry.addData("To switch servo: ", "left and right on dpad");
+        telemetry.addData("Make sure you are using ", "gamepad 1");
         telemetry.update();
-//
-//
-//        //Spin motor 1 forwards/backwards using left trigger
-//        if (gamepad1.dpad_up){
-//            motor3.setPower(1);
-//        }else if (gamepad1.dpad_down){
-//            motor3.setPower(-1);
-//        }else{
-//            motor3.setPower(0);
-//        }
-//
-//
-//        //Spin motor 1 forwards/backwards using left trigger
-//        if (gamepad1.x){
-//            motor4.setPower(1);
-//        }else if (gamepad1.y){
-//            motor4.setPower(-1);
-//        }else{
-//            motor4.setPower(0);
-//        }
-//
-//
-//
-//
-//
-//        //Send servo 1 to extremes using left trigger
-//        if (gamepad2.left_trigger > 0.1){
-//            servo1.setPosition(0);
-//        }else if (gamepad2.right_trigger> 0.1){
-//            servo1.setPosition(1);
-//        }
-//
-//
-//        if (gamepad2.left_bumper){
-//            servo2.setPosition(0);
-//        }else if (gamepad2.right_bumper){
-//            servo2.setPosition(1);
-//        }
-//
-//
-//        if (gamepad2.dpad_up){
-//            servo3.setPosition(0);
-//        }else if (gamepad2.dpad_down) {
-//            servo3.setPosition(1);
-//        }
-//
-//
-//        if (gamepad2.dpad_left){
-//            servo4.setPosition(0);
-//        }else if (gamepad2.dpad_right) {
-//            servo4.setPosition(1);
-//        }
-//
-//
-//        if (gamepad2.x){
-//            servo5.setPosition(0);
-//        }else if (gamepad2.y) {
-//            servo5.setPosition(1);
-//        }
-//
-//
-//        if (gamepad2.a){
-//            servo6.setPosition(0);
-//        }else if (gamepad2.b) {
-//            servo6.setPosition(1);
-//        }
-
     }
 
+    @Override
+    public void ButtonPressed(int id, ControllerInput.Button button) {
+        //controller 1
+        if(id == 1){
+            //Colored buttons
+            if(button == ControllerInput.Button.A);
+            if(button == ControllerInput.Button.B);
+            if(button == ControllerInput.Button.X);
+            if(button == ControllerInput.Button.Y);
+            //Bumpers
+            if(button == ControllerInput.Button.LB);
+            if(button == ControllerInput.Button.RB);
+            //Triggers
+            if(button == ControllerInput.Button.LT);
+            if(button == ControllerInput.Button.RT);
+            if(button == ControllerInput.Button.DUP) {
+                currentmotor += 1;
+                if (currentmotor > 4) currentmotor = 1;
+            }
+            if(button == ControllerInput.Button.DDOWN) {
+                currentmotor -= 1;
+                if (currentmotor < 1) currentmotor = 4;
+            }
+            if(button == ControllerInput.Button.DLEFT) {
+                currentservo -= 1;
+                if (currentservo < 1) currentservo = 6;
+            }
+            if(button == ControllerInput.Button.DRIGHT) {
+                currentservo += 1;
+                if (currentservo > 6) currentservo = 1;
+            }
+            //Joystick Buttons
+            if(button == ControllerInput.Button.LJS);
+            if(button == ControllerInput.Button.RJS);
+        }
+    }
 
+    @Override
+    public void ButtonHeld(int id, ControllerInput.Button button) {
+        //controller 1
+        if(id == 1){
+            //Colored buttons
+            if(button == ControllerInput.Button.A){
+                switch (currentservo) {
+                    case (1):
+                        servo1.setPosition(0.5);
+                        break;
+                    case (2):
+                        servo2.setPosition(0.5);
+                        break;
+                    case (3):
+                        servo3.setPosition(0.5);
+                        break;
+                    case (4):
+                        servo4.setPosition(0.5);
+                        break;
+                    case (5):
+                        servo5.setPosition(0.5);
+                        break;
+                    case (6):
+                        servo6.setPosition(0.5);
+                        break;
+                }
+            }
+            if(button == ControllerInput.Button.B);
+            if(button == ControllerInput.Button.X);
+            if(button == ControllerInput.Button.Y);
+            //Bumpers
+            if(button == ControllerInput.Button.LB){
+                switch (currentservo) {
+                    case (1):
+                        servo1.setPosition(1);
+                        break;
+                    case (2):
+                        servo2.setPosition(1);
+                        break;
+                    case (3):
+                        servo3.setPosition(1);
+                        break;
+                    case (4):
+                        servo4.setPosition(1);
+                        break;
+                    case (5):
+                        servo5.setPosition(1);
+                        break;
+                    case (6):
+                        servo6.setPosition(1);
+                        break;
+                }
+            }
+            if(button == ControllerInput.Button.RB){
+                switch (currentservo) {
+                    case (1):
+                        servo1.setPosition(0);
+                        break;
+                    case (2):
+                        servo2.setPosition(0);
+                        break;
+                    case (3):
+                        servo3.setPosition(0);
+                        break;
+                    case (4):
+                        servo4.setPosition(0);
+                        break;
+                    case (5):
+                        servo5.setPosition(0);
+                        break;
+                    case (6):
+                        servo6.setPosition(0);
+                        break;
+                }
+            }
+            //Triggers
+            if(button == ControllerInput.Button.LT){
+                switch (currentmotor) {
+                    case (1):
+                        motor1.setPower(gamepad1.left_trigger);
+                        break;
+                    case (2):
+                        motor2.setPower(gamepad1.left_trigger);
+                        break;
+                    case (3):
+                        motor3.setPower(gamepad1.left_trigger);
+                        break;
+                    case (4):
+                        motor4.setPower(gamepad1.left_trigger);
+                        break;
+                }
+            }
+            if(button == ControllerInput.Button.RT){
+                switch (currentmotor) {
+                    case (1):
+                        motor1.setPower(-gamepad1.right_trigger);
+                        break;
+                    case (2):
+                        motor2.setPower(-gamepad1.right_trigger);
+                        break;
+                    case (3):
+                        motor3.setPower(-gamepad1.right_trigger);
+                        break;
+                    case (4):
+                        motor4.setPower(-gamepad1.right_trigger);
+                        break;
+                }
+            }
+            if(button == ControllerInput.Button.DUP);
+            if(button == ControllerInput.Button.DDOWN);
+            if(button == ControllerInput.Button.DLEFT);
+            if(button == ControllerInput.Button.DRIGHT);
+            //Joystick Buttons
+            if(button == ControllerInput.Button.LJS);
+            if(button == ControllerInput.Button.RJS);
+        }
+    }
+
+    @Override
+    public void ButtonReleased(int id, ControllerInput.Button button) {
+        //controller 1
+        if(id == 1){
+            //Colored buttons
+            if(button == ControllerInput.Button.A);
+            if(button == ControllerInput.Button.B);
+            if(button == ControllerInput.Button.X);
+            if(button == ControllerInput.Button.Y);
+            //Bumpers
+            if(button == ControllerInput.Button.LB);
+            if(button == ControllerInput.Button.RB);
+            //Triggers
+            if(button == ControllerInput.Button.LT);
+            if(button == ControllerInput.Button.RT);
+            if(button == ControllerInput.Button.DUP);
+            if(button == ControllerInput.Button.DDOWN);
+            if(button == ControllerInput.Button.DLEFT);
+            if(button == ControllerInput.Button.DRIGHT);
+            //Joystick Buttons
+            if(button == ControllerInput.Button.LJS);
+            if(button == ControllerInput.Button.RJS);
+        }
+    }
 }
