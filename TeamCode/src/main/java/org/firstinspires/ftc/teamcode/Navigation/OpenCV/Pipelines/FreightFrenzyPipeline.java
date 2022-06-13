@@ -21,6 +21,8 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
     private Mat findContoursOutputMat = new Mat();
     private Mat finalContourOutputMat = new Mat();
 
+    private ArrayList<Rect> rectList;
+
     private int largestX, largestY;
     private double largestArea;
 
@@ -29,6 +31,7 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
         largestX = -1;
         largestY = -1;
         largestArea = -1;
+        rectList = new ArrayList<Rect>();
     }
 
     @Override
@@ -87,8 +90,10 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
             //double percent = OpenCV.percentColor(OpenCV.convertMatToBitMap(cropped));
             //if(percent>.7)
             if(rect.area()>input.width()*input.height()/50) {
-                if ((double) rect.height / rect.width < 1.5 && (double) rect.height / rect.width > (double) 2 / 3)
+                if ((double) rect.height / rect.width < 1.5 && (double) rect.height / rect.width > (double) 2 / 3) {
                     Imgproc.rectangle(finalContourOutputMat, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255), 2);
+                    rectList.add(rect);
+                }
 //                else
 //                    Imgproc.rectangle(finalContourOutputMat, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0), 2);
             }
@@ -224,5 +229,9 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
         }
         int method = Imgproc.CHAIN_APPROX_SIMPLE;
         Imgproc.findContours(input, contours, hierarchy, mode, method);
+    }
+
+    public ArrayList<Rect> getRects(){
+        return rectList;
     }
 }

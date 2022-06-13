@@ -32,6 +32,7 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
+        robot = new Demobot(this,true,true,false);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -63,17 +64,6 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
         //KILL SWITCH FOR NAVIGATOR
         if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
 
-        }
-
-        //if(robot.navigation.IsThreadRunning()) return;
-
-        if(robot.fieldSide == BaseRobot.FieldSide.BLUE){
-            telemetry.addData("Alliance Side", "BLUE");
-            if(robot.USE_PAYLOAD) robot.blinkinController.Blue();
-        }
-        else {
-            telemetry.addData("Alliance Side", "RED");
-            if(robot.USE_PAYLOAD) robot.blinkinController.Red();
         }
 
         robot.Update();
