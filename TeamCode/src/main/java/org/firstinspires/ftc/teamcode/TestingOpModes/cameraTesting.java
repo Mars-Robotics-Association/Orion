@@ -43,9 +43,10 @@ public class cameraTesting extends OpMode {
             //img=cam.GrowBitmap(img,img.getWidth()*10,img.getHeight()*10);
             d.sendImage(img);
             ArrayList<Rect> r = ((FreightFrenzyPipeline)p).getRects();
-            for(Rect rect:r)
-            {
-
+            Rect rect = r.get(0);
+            int rectx = (rect.x+rect.x+rect.width)/2;
+            if(rectx<img.getWidth()/2){
+                
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
