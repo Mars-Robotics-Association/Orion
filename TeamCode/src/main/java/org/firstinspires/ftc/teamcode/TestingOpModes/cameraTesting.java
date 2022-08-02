@@ -12,7 +12,10 @@ import org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines.BoundingPipe;
 import org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines.FreightFrenzyPipeline;
 import org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines.Pipeline;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvPipeline;
+
+import java.util.ArrayList;
 
 @TeleOp
 public class cameraTesting extends OpMode {
@@ -32,13 +35,19 @@ public class cameraTesting extends OpMode {
         Bitmap img;
         try {
             img = cam.GetImage();
-            img = OpenCV.ShrinkBitmap(img,img.getWidth()/10,img.getHeight()/10);
-            Mat m = OpenCV.convertBitmapToMat(img);
+            img = cam.ShrinkBitmap(img,img.getWidth()/10,img.getHeight()/10);
+            Mat m = cam.convertBitmapToMat(img);
             OpenCvPipeline p = new FreightFrenzyPipeline();
-            Mat m2=p.processFrame(m);
-            Bitmap img2=OpenCV.convertMatToBitMap(m2);
-            //img2=OpenCV.GrowBitmap(img2,img2.getWidth()*10,img2.getHeight()*10);
-            d.sendImage(img2);
+            m=p.processFrame(m);
+            img=cam.convertMatToBitMap(m);
+            //img=cam.GrowBitmap(img,img.getWidth()*10,img.getHeight()*10);
+            d.sendImage(img);
+            ArrayList<Rect> r = ((FreightFrenzyPipeline)p).getRects();
+            Rect rect = r.get(0);
+            int rectx = (rect.x+rect.x+rect.width)/2;
+            if(rectx<img.getWidth()/2){
+                
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

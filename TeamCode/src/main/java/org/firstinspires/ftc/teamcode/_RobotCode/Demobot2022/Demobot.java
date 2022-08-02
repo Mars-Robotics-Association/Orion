@@ -8,12 +8,12 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.Blink
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 
+
 class Demobot extends BaseRobot
 {
     ////Dependencies////
     OpMode opMode;
     //Mechanical Components
-    BlinkinController blinkinController;
     DemobotPayload payload;
     DemobotNavigation navigator;
 
@@ -37,7 +37,6 @@ class Demobot extends BaseRobot
 
             //sensors
 
-            blinkinController = new BlinkinController(opMode);
 
         }
 
@@ -79,7 +78,6 @@ class Demobot extends BaseRobot
     }
 
 
-    public BlinkinController getLights(){return blinkinController;}
     public DemobotNavigation getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
     public DemobotPayload getPayload(){return payload;}
