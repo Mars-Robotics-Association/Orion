@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ServoArray
 {
     Servo[] servos;
+    public Servo[] getServos(){return servos;}
     double[] positions;
 
     //Provide an array of servos with an array of equal length containing start positions

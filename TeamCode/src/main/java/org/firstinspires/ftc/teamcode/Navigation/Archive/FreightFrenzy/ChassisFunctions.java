@@ -28,8 +28,10 @@ class ChassisFunctions
    }
 
    ////UTILITY / GENERAL FUNCTIONS////
+
    //Whether a timer has run out
    public boolean IsTimeUp(double startTime, double runTime){ return opMode.getRuntime()<startTime+runTime && navigator.IsNavigatorRunning(); }
+
    //If within distance sensor range
    boolean CheckDistance(DistanceSensor sensor,double distance){
       if(!navigator.IsNavigatorRunning()) return false;
@@ -38,6 +40,7 @@ class ChassisFunctions
       if(dist<distance) return true;
       else return false;
    }
+
    //Wait for a period of time
    public void Wait(double time){
       double startTime = opMode.getRuntime();

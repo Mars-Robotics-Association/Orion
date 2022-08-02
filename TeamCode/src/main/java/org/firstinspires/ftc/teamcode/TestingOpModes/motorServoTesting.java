@@ -9,38 +9,40 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMotorArray;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.ServoArray;
 
 @Config
 @TeleOp(name = "motorServoTest")
 public class motorServoTesting extends OpMode implements ControllerInputListener {
 
-    private DcMotor motor1;
-    private DcMotor motor2;
-    private DcMotor motor3;
-    private DcMotor motor4;
-    private Servo servo1;
-    private Servo servo2;
-    private Servo servo3;
-    private Servo servo4;
-    private Servo servo5;
-    private Servo servo6;
+    private DCMotorArray motors;
+    private ServoArray servos;
+
     int currentmotor = 0;
     int currentservo = 0;
+    int numMotors = 1;
 
     private ControllerInput controllerInput1;
 
     @Override
     public void init(){
-        motor1 = hardwareMap.dcMotor.get("motor 1");
-        motor2 = hardwareMap.dcMotor.get("motor 2");
-        motor3 = hardwareMap.dcMotor.get("motor 3");
-        motor4 = hardwareMap.dcMotor.get("motor 4");
-        servo1 = hardwareMap.servo.get("servo 1");
-        servo2 = hardwareMap.servo.get("servo 2");
-        servo3 = hardwareMap.servo.get("servo 3");
-        servo4 = hardwareMap.servo.get("servo 4");
-        servo5 = hardwareMap.servo.get("servo 5");
-        servo6 = hardwareMap.servo.get("servo 6");
+        DcMotor motor1 = hardwareMap.dcMotor.get("motor 1");
+        DcMotor motor2 = hardwareMap.dcMotor.get("motor 2");
+        DcMotor motor3 = hardwareMap.dcMotor.get("motor 3");
+        DcMotor motor4 = hardwareMap.dcMotor.get("motor 4");
+        Servo servo1 = hardwareMap.servo.get("servo 1");
+        Servo servo2 = hardwareMap.servo.get("servo 2");
+        Servo servo3 = hardwareMap.servo.get("servo 3");
+        Servo servo4 = hardwareMap.servo.get("servo 4");
+        Servo servo5 = hardwareMap.servo.get("servo 5");
+        Servo servo6 = hardwareMap.servo.get("servo 6");
+
+        motors = new DCMotorArray(new DcMotor[]{motor1,motor2,motor3,motor4}, new double[]{1,1,1,1}, false);
+        motors.RunWithoutEncodersMode();
+
+        servos = new ServoArray(new Servo[]{servo1,servo2,servo3,servo4,servo5,servo6}, new double[]{.5,.5,.5,.5,.5,.5});
+        servos.GoToPosition(0.5);
 
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
@@ -51,19 +53,17 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
         controllerInput1.Loop();
         if(gamepad1.right_trigger<0.1 && gamepad1.left_trigger<0.1){
             telemetry.addLine("STOP MOTORS");
-            motor1.setPower(0);
-            motor2.setPower(0);
-            motor3.setPower(0);
-            motor4.setPower(0);
+            motors.SetPowers(0);
         }
 
-        telemetry.addData("current motor: ", currentmotor);
+        telemetry.addData("current motor: ", currentmotor + "and " + (numMotors-1) + " more");
         telemetry.addData("current servo: ", currentservo);
         telemetry.addData("To spin motor: ", "left and right triggers");
         telemetry.addData("To move servo to extremes: ", "left and right bumpers");
         telemetry.addData("To move servo to middle position: ", "a");
         telemetry.addData("To switch motor: ", "up and down on dpad");
         telemetry.addData("To switch servo: ", "left and right on dpad");
+        telemetry.addData("To cycle number of motors used: ", "y");
         telemetry.addData("Make sure you are using ", "gamepad 1");
         telemetry.update();
     }
@@ -76,7 +76,10 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
             if(button == ControllerInput.Button.A);
             if(button == ControllerInput.Button.B);
             if(button == ControllerInput.Button.X);
-            if(button == ControllerInput.Button.Y);
+            if(button == ControllerInput.Button.Y){ //cycles number of motors affected
+                numMotors += 1;
+                if(numMotors > 4) numMotors = 1;
+            }
             //Bumpers
             if(button == ControllerInput.Button.LB);
             if(button == ControllerInput.Button.RB);
@@ -111,25 +114,8 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
         if(id == 1){
             //Colored buttons
             if(button == ControllerInput.Button.A){
-                switch (currentservo) {
-                    case (1):
-                        servo1.setPosition(0.5);
-                        break;
-                    case (2):
-                        servo2.setPosition(0.5);
-                        break;
-                    case (3):
-                        servo3.setPosition(0.5);
-                        break;
-                    case (4):
-                        servo4.setPosition(0.5);
-                        break;
-                    case (5):
-                        servo5.setPosition(0.5);
-                        break;
-                    case (6):
-                        servo6.setPosition(0.5);
-                        break;
+                for (int i = 0; i < numMotors; i++) {
+                    servos.getServos()[i+currentservo].setPosition(0.5);
                 }
             }
             if(button == ControllerInput.Button.B);
@@ -137,80 +123,24 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
             if(button == ControllerInput.Button.Y);
             //Bumpers
             if(button == ControllerInput.Button.LB){
-                switch (currentservo) {
-                    case (1):
-                        servo1.setPosition(1);
-                        break;
-                    case (2):
-                        servo2.setPosition(1);
-                        break;
-                    case (3):
-                        servo3.setPosition(1);
-                        break;
-                    case (4):
-                        servo4.setPosition(1);
-                        break;
-                    case (5):
-                        servo5.setPosition(1);
-                        break;
-                    case (6):
-                        servo6.setPosition(1);
-                        break;
+                for (int i = 0; i < numMotors; i++) {
+                    servos.getServos()[i+currentservo].setPosition(1);
                 }
             }
             if(button == ControllerInput.Button.RB){
-                switch (currentservo) {
-                    case (1):
-                        servo1.setPosition(0);
-                        break;
-                    case (2):
-                        servo2.setPosition(0);
-                        break;
-                    case (3):
-                        servo3.setPosition(0);
-                        break;
-                    case (4):
-                        servo4.setPosition(0);
-                        break;
-                    case (5):
-                        servo5.setPosition(0);
-                        break;
-                    case (6):
-                        servo6.setPosition(0);
-                        break;
+                for (int i = 0; i < numMotors; i++) {
+                    servos.getServos()[i+currentservo].setPosition(0);
                 }
             }
             //Triggers
             if(button == ControllerInput.Button.LT){
-                switch (currentmotor) {
-                    case (1):
-                        motor1.setPower(gamepad1.left_trigger);
-                        break;
-                    case (2):
-                        motor2.setPower(gamepad1.left_trigger);
-                        break;
-                    case (3):
-                        motor3.setPower(gamepad1.left_trigger);
-                        break;
-                    case (4):
-                        motor4.setPower(gamepad1.left_trigger);
-                        break;
+                for (int i = 0; i < numMotors; i++) {
+                    motors.getMotors()[i+currentmotor].setPower(gamepad1.left_trigger);
                 }
             }
             if(button == ControllerInput.Button.RT){
-                switch (currentmotor) {
-                    case (1):
-                        motor1.setPower(-gamepad1.right_trigger);
-                        break;
-                    case (2):
-                        motor2.setPower(-gamepad1.right_trigger);
-                        break;
-                    case (3):
-                        motor3.setPower(-gamepad1.right_trigger);
-                        break;
-                    case (4):
-                        motor4.setPower(-gamepad1.right_trigger);
-                        break;
+                for (int i = 0; i < numMotors; i++) {
+                    motors.getMotors()[i+currentmotor].setPower(-gamepad1.right_trigger);
                 }
             }
             if(button == ControllerInput.Button.DUP);

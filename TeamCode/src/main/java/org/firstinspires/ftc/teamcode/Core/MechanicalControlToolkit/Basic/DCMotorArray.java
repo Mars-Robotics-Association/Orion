@@ -8,6 +8,7 @@ import java.util.List;
 public class DCMotorArray
 {
     DcMotor[] motors;
+    public DcMotor[] getMotors(){return motors;}
     double[] speedMultipliers;
     boolean useEncoders = false;
 
