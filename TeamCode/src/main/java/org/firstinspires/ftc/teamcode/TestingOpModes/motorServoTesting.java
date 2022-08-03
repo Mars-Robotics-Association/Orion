@@ -113,36 +113,16 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
         //controller 1
         if(id == 1){
             //Colored buttons
-            if(button == ControllerInput.Button.A){
-                for (int i = 0; i < numMotors; i++) {
-                    servos.getServos()[i+currentservo].setPosition(0.5);
-                }
-            }
+            if(button == ControllerInput.Button.A) setServoSpeeds(0.5);
             if(button == ControllerInput.Button.B);
             if(button == ControllerInput.Button.X);
             if(button == ControllerInput.Button.Y);
             //Bumpers
-            if(button == ControllerInput.Button.LB){
-                for (int i = 0; i < numMotors; i++) {
-                    servos.getServos()[i+currentservo].setPosition(1);
-                }
-            }
-            if(button == ControllerInput.Button.RB){
-                for (int i = 0; i < numMotors; i++) {
-                    servos.getServos()[i+currentservo].setPosition(0);
-                }
-            }
+            if(button == ControllerInput.Button.LB) setServoSpeeds(1);
+            if(button == ControllerInput.Button.RB) setServoSpeeds(0);
             //Triggers
-            if(button == ControllerInput.Button.LT){
-                for (int i = 0; i < numMotors; i++) {
-                    motors.getMotors()[i+currentmotor].setPower(gamepad1.left_trigger);
-                }
-            }
-            if(button == ControllerInput.Button.RT){
-                for (int i = 0; i < numMotors; i++) {
-                    motors.getMotors()[i+currentmotor].setPower(-gamepad1.right_trigger);
-                }
-            }
+            if(button == ControllerInput.Button.LT) setMotorSpeeds(gamepad1.left_trigger);
+            if(button == ControllerInput.Button.RT) setMotorSpeeds(-gamepad1.right_trigger);
             if(button == ControllerInput.Button.DUP);
             if(button == ControllerInput.Button.DDOWN);
             if(button == ControllerInput.Button.DLEFT);
@@ -175,6 +155,22 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
             //Joystick Buttons
             if(button == ControllerInput.Button.LJS);
             if(button == ControllerInput.Button.RJS);
+        }
+    }
+
+    private void setServoSpeeds(double speed){
+        for (int i = 0; i < numMotors; i++) {
+            int servoIndex = i+currentservo;
+            if(servoIndex > 5) servoIndex -= 6;
+            servos.getServos()[servoIndex].setPosition(speed);
+        }
+    }
+
+    private void setMotorSpeeds(double speed){
+        for (int i = 0; i < numMotors; i++) {
+            int motorIndex = i+currentmotor;
+            if(motorIndex > 3) motorIndex -= 4;
+            motors.getMotors()[motorIndex].setPower(speed);
         }
     }
 }
