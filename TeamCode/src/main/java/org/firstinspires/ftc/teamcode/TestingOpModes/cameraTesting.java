@@ -51,13 +51,16 @@ public class cameraTesting extends OpMode {
             //img=cam.GrowBitmap(img,img.getWidth()*10,img.getHeight()*10);
             d.sendImage(img);
             ArrayList<Rect> r = ((FreightFrenzyPipeline)p).getRects();
-            if(r!=null) {
+            if(r.size()!=0) {
                 Rect rect = r.get(0);
                 int rectx = (rect.x + rect.x + rect.width) / 2;
-                if (rectx < img.getWidth() / 2) {
+                if (rectx < img.getWidth() / 3) {
                     demo.getChassis().RawTurn(.2);
-                } else {
+                } else if (rectx>2*img.getWidth()/3){
                     demo.getChassis().RawTurn(-.2);
+                }
+                else{
+                    demo.getChassis().RawTurn(0);
                 }
             }
         } catch (InterruptedException e) {
