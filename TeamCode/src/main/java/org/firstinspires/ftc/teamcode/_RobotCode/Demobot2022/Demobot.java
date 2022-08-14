@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 
@@ -28,52 +27,35 @@ class Demobot extends BaseRobot
         dashboard = FtcDashboard.getInstance();
 
         if(USE_CHASSIS) {
-            //initialize the chassis
+            //initialize the chassis & navigator
             navigator = new DemobotNavigation(opMode, this);
         }
 
-        if(USE_PAYLOAD){
-            //motors
+        if(USE_PAYLOAD){}
 
-            //sensors
-
-
-        }
-
-        if(USE_NAVIGATOR){
-            //sensors
-
-            //initialize navigator
-
-        }
+        if(USE_NAVIGATOR){}
     }
 
     //SETUP METHODS//
-    public void Init(){
-        //TODO ===INIT PAYLOAD===
+    public void init(){
 
-        //TODO ===INIT CORE ROBOT===
-        getChassis().InitCoreRobotModules();
+    }
 
+    public void start(){
+        getChassis().startChassis();
+    }
 
-        if(USE_NAVIGATOR) {
+    public void update(){
+
+        if(USE_NAVIGATOR){
+            navigator.update();
         }
     }
 
-    public void Start(){
-        getChassis().StartCoreRobotModules();
-        //if(USE_NAVIGATOR) navigator.NavigatorOn();
-    }
-
-    public void Update(){
-        if(USE_PAYLOAD){
-        }
-    }
-
-    //TODO make sure to stop everything
-    public void Stop(){
-        if(USE_PAYLOAD) {
-
+    //make sure to stop everything!
+    public void stop(){
+        if(USE_CHASSIS){
+            navigator.getChassis().stop();
         }
     }
 

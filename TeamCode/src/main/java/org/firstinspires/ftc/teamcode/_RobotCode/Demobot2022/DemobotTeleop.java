@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
+import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 
 @TeleOp(name = "*DEMOBOT TELEOP*", group = "Demobot")
@@ -49,11 +49,11 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void start(){
-        robot.Start();
-        robot.getChassis().ResetGyro();
+        robot.start();
+        robot.getChassis().resetGyro();
         //if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) robot.SetInputOffset(90); //90 is blue, -90 is red
         //else if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) robot.SetInputOffset(-90); //90 is blue, -90 is red
-        robot.getChassis().SetHeadlessMode(true);
+        robot.getChassis().setHeadlessMode(true);
     }
 
     @Override
@@ -61,28 +61,46 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
         controllerInput1.Loop();
         controllerInput2.Loop();
 
+        ////PRINT TELEMETRY////
+        //CONTROLS
+        telemetry.addLine("----CONTROLS----");
+        telemetry.addData("Drive with: ", "LJS");
+        telemetry.addData("Turn with: ", "RJS");
+        telemetry.addData("Change speed multiplier: ", "A");
+        telemetry.addData("Reset robot angle: ", "Press RJS");
+        telemetry.addData("Toggle headless mode: ", "Press LJS");
+        //DATA
+        telemetry.addLine();
+        telemetry.addLine("----DATA----");
+        //Dead wheel positions
+        telemetry.addLine("Dead wheel positions");
+        double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
+        telemetry.addData("LEFT dead wheel: ", deadWheelPositions[0]+" inches");
+        telemetry.addData("RIGHT dead wheel: ", deadWheelPositions[1]+" inches");
+        telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
+        //Odometry estimated pose
+        telemetry.addLine();
+        telemetry.addLine("Robot pose");
+        Pose2d robotPose = robot.getNavigator().getPose();
+        telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + robotPose.getHeading());
+        telemetry.addLine();
+
         //KILL SWITCH FOR NAVIGATOR
         if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
 
         }
 
-        robot.Update();
+        robot.update();
 
         //Manage driving
-        robot.getChassis().DriveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
-
-        //print telemetry
-        if(robot.USE_NAVIGATOR) {
-            //control.GetOrion().PrintVuforiaTelemetry(0);
-            //control.GetOrion().PrintTensorflowTelemetry();
-        }
+        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
 
         telemetry.update();
     }
 
     @Override
     public void stop(){
-        robot.Stop();
+        robot.stop();
     }
 
     ////INPUT MAPPING////
@@ -113,8 +131,8 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
             if(button == Button.DLEFT);
             if(button == Button.DRIGHT);
             //Joystick Buttons
-            if(button == Button.LJS);
-            if(button == Button.RJS && robot.USE_CHASSIS) ;//robot.chassis.ResetGyro();
+            if(button == Button.LJS) robot.getChassis().switchHeadlessMode();
+            if(button == Button.RJS && robot.USE_CHASSIS) robot.getChassis().resetGyro();
         }
         //controller 2
         if(id == 2){

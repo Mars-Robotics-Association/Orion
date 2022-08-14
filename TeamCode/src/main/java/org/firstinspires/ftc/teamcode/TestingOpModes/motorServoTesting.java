@@ -21,7 +21,11 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
 
     int currentmotor = 0;
     int currentservo = 0;
-    int numMotors = 1;
+    int additionalMotors = 1;
+
+    //motor direction controls
+    int[] motorSpeedMultipliers = {1,1,1,1};
+
 
     private ControllerInput controllerInput1;
 
@@ -56,7 +60,12 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
             motors.SetPowers(0);
         }
 
-        telemetry.addData("current motor: ", currentmotor + "and " + (numMotors-1) + " more");
+        telemetry.addData("current motor: ", currentmotor + "and " + (additionalMotors) + " more");
+        telemetry.addData("motors speed multipliers:",
+                "motor 1: " + motorSpeedMultipliers[0] +
+                        " | motor 2: " + motorSpeedMultipliers[1] +
+                        " | motor 3: " + motorSpeedMultipliers[2] +
+                        " | motor 4: " + motorSpeedMultipliers[3]);
         telemetry.addData("current servo: ", currentservo);
         telemetry.addData("To spin motor: ", "left and right triggers");
         telemetry.addData("To move servo to extremes: ", "left and right bumpers");
@@ -64,6 +73,7 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
         telemetry.addData("To switch motor: ", "up and down on dpad");
         telemetry.addData("To switch servo: ", "left and right on dpad");
         telemetry.addData("To cycle number of motors used: ", "y");
+        telemetry.addData("To change motor direction: ", "x");
         telemetry.addData("Make sure you are using ", "gamepad 1");
         telemetry.update();
     }
@@ -75,10 +85,12 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
             //Colored buttons
             if(button == ControllerInput.Button.A);
             if(button == ControllerInput.Button.B);
-            if(button == ControllerInput.Button.X);
+            if(button == ControllerInput.Button.X){
+                motorSpeedMultipliers[currentmotor] *= -1;
+            }
             if(button == ControllerInput.Button.Y){ //cycles number of motors affected
-                numMotors += 1;
-                if(numMotors > 4) numMotors = 1;
+                additionalMotors += 1;
+                if(additionalMotors > 3) additionalMotors = 0;
             }
             //Bumpers
             if(button == ControllerInput.Button.LB);
@@ -88,19 +100,19 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
             if(button == ControllerInput.Button.RT);
             if(button == ControllerInput.Button.DUP) {
                 currentmotor += 1;
-                if (currentmotor > 4) currentmotor = 1;
+                if (currentmotor > 3) currentmotor = 0;
             }
             if(button == ControllerInput.Button.DDOWN) {
                 currentmotor -= 1;
-                if (currentmotor < 1) currentmotor = 4;
+                if (currentmotor < 0) currentmotor = 3;
             }
             if(button == ControllerInput.Button.DLEFT) {
                 currentservo -= 1;
-                if (currentservo < 1) currentservo = 6;
+                if (currentservo < 0) currentservo = 5;
             }
             if(button == ControllerInput.Button.DRIGHT) {
                 currentservo += 1;
-                if (currentservo > 6) currentservo = 1;
+                if (currentservo > 5) currentservo = 0;
             }
             //Joystick Buttons
             if(button == ControllerInput.Button.LJS);
@@ -159,7 +171,7 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
     }
 
     private void setServoSpeeds(double speed){
-        for (int i = 0; i < numMotors; i++) {
+        for (int i = 0; i <= additionalMotors; i++) {
             int servoIndex = i+currentservo;
             if(servoIndex > 5) servoIndex -= 6;
             servos.getServos()[servoIndex].setPosition(speed);
@@ -167,10 +179,10 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
     }
 
     private void setMotorSpeeds(double speed){
-        for (int i = 0; i < numMotors; i++) {
+        for (int i = 0; i <= additionalMotors; i++) {
             int motorIndex = i+currentmotor;
             if(motorIndex > 3) motorIndex -= 4;
-            motors.getMotors()[motorIndex].setPower(speed);
+            motors.getMotors()[motorIndex].setPower(speed*motorSpeedMultipliers[motorIndex]);
         }
     }
 }

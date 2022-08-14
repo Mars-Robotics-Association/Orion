@@ -4,9 +4,11 @@ public interface ChassisProfile
 {
    boolean flipIMU();
    String[] motorNames();
-   double[] headingPID();
+   boolean[] flipMotors();
+   double[] poseXYPID();
+   double[] poseAnglePID();
    double[] speedPID();
-   double[] directionPID();
+   double[] trajectoryPID();
    boolean useEncoders();
 
 }

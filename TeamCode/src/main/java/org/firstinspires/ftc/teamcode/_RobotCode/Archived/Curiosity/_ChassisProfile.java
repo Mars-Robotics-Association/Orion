@@ -17,12 +17,24 @@ class _ChassisProfile implements ChassisProfile
     public boolean flipIMU() { return false; }
     @Override
     public String[] motorNames() { return new String[]{"FR", "FL", "RR", "RL"}; }
+
     @Override
-    public double[] headingPID() { return new double[]{0, 0, 0}; }
+    public boolean[] flipMotors() {
+        return new boolean[] {false,false,false,false};
+    }
+
+    @Override
+    public double[] poseXYPID() { return new double[]{0, 0, 0}; }
+
+    @Override
+    public double[] poseAnglePID() {
+        return new double[]{0,0,0};
+    }
+
     @Override
     public double[] speedPID() { return new double[]{0, 0, 0}; }
     @Override
-    public double[] directionPID() { return new double[]{0, 0, 0}; }
+    public double[] trajectoryPID() { return new double[]{0, 0, 0}; }
     @Override
     public boolean useEncoders() { return false; }
 }
