@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.Meca
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 
 
-class Demobot extends BaseRobot
+public class Demobot extends BaseRobot
 {
     ////Dependencies////
     OpMode opMode;
