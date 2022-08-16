@@ -14,7 +14,17 @@ public class Profile implements ChassisProfile {
     }
 
     @Override
-    public double[] headingPID() {
+    public boolean[] flipMotors() {
+        return new boolean[]{false, false, false, false};
+    }
+
+    @Override
+    public double[] poseXYPID() {
+        return new double[]{0, 0, 0};
+    }
+
+    @Override
+    public double[] poseAnglePID() {
         return new double[]{0, 0, 0};
     }
 
@@ -24,7 +34,7 @@ public class Profile implements ChassisProfile {
     }
 
     @Override
-    public double[] directionPID() {
+    public double[] trajectoryPID() {
         return new double[]{0, 0, 0};
     }
 
