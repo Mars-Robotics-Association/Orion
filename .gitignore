@@ -3,6 +3,7 @@
 *.aar
 *.ap_
 *.aab
+*.hprof
 
 !libs/*.aar
 
