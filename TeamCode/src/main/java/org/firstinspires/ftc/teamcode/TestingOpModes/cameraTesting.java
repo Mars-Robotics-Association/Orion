@@ -23,48 +23,61 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 
-@TeleOp
+@TeleOp(name = "camera testing")
 public class cameraTesting extends OpMode {
 
-    Camera cam;
-    FtcDashboard d;
-    Demobot demo;
+    Camera camera;
+    FtcDashboard dash;
+    Demobot demobot;
+    FreightFrenzyPipeline pipeline;
 
     @Override
     public void init() {
-        cam = new Camera(this,"Webcam 1",false);
-        d=FtcDashboard.getInstance();
-        msStuckDetectLoop=50000;
-        demo = new Demobot(this,true,false,false);
+        camera = new Camera(this,"Webcam 1",false);
+        dash = FtcDashboard.getInstance();
+        msStuckDetectLoop = 50000;
+        demobot = new Demobot(this,true,false,false);
+        pipeline = new FreightFrenzyPipeline();
+        // gpu resources take time to allocate!
+        // don't put that in a loop!
     }
 
     @Override
     public void loop() {
-        Bitmap img;
+        Bitmap img = null;
+        Mat imageMat = null;
         try {
-            img = cam.GetImage();
-            img = cam.ShrinkBitmap(img,img.getWidth()/10,img.getHeight()/10);
-            Mat m = cam.convertBitmapToMat(img);
-            OpenCvPipeline p = new FreightFrenzyPipeline();
-            m=p.processFrame(m);
-            img=cam.convertMatToBitMap(m);
-            //img=cam.GrowBitmap(img,img.getWidth()*10,img.getHeight()*10);
-            d.sendImage(img);
-            ArrayList<Rect> r = ((FreightFrenzyPipeline)p).getRects();
-            if(r.size()!=0) {
-                Rect rect = r.get(0);
-                int rectx = (rect.x + rect.x + rect.width) / 2;
-                if (rectx < img.getWidth() / 3) {
-                    demo.getChassis().rawTurn(.2);
-                } else if (rectx>2*img.getWidth()/3){
-                    demo.getChassis().rawTurn(-.2);
+            img = camera.GetImage();
+            img = camera.ShrinkBitmap(img, img.getWidth() / 10,img.getHeight() / 10);
+            imageMat = camera.convertBitmapToMat(img);
+            imageMat = pipeline.processFrame(imageMat);
+            img = camera.convertMatToBitMap(imageMat);
+            //img = camera.GrowBitmap(img, img.getWidth() * 10, img.getHeight() * 10);
+            dash.sendImage(img);
+            ArrayList<Rect> boxRectArray = pipeline.getRects();
+
+            if(boxRectArray.size() != 0) { // if there's no objects to track, don't track I guess?
+                Rect boxRect = boxRectArray.get(0); // get the current rect
+
+                int centerX = boxRect.x + (boxRect.width / 2); // get the center of it
+                int halfOfWidth = img.getWidth() / 2; // half of width
+
+                if (centerX < halfOfWidth) {
+                    demobot.getChassis().rawTurn(.2); // object is too far left
+                } else if (centerX > halfOfWidth){
+                    demobot.getChassis().rawTurn(-.2); // object is too far right
                 }
                 else{
-                    demo.getChassis().rawTurn(0);
+                    demo.getChassis().RawTurn(0);
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException e) { // stop button was pressed or we took too long
             e.printStackTrace();
         }
+
+        // cleanup time!
+        // remembered this from working with low-level interop
+        if(img != null)img.recycle();
+        if(imageMat != null)imageMat.release();
     }
 }
