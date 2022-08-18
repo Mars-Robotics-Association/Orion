@@ -3,33 +3,24 @@ package org.firstinspires.ftc.teamcode.TestingOpModes;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.ChassisProfile;
 
 public class Profile implements ChassisProfile {
-    @Override
-    public boolean flipIMU() {
-        return false;
+    public Profile(){
+
     }
 
     @Override
-    public String[] motorNames() {
-        return new String[]{"FR","FL","RR","RL"};
-    }
-
+    public boolean flipIMU() { return true; }
     @Override
-    public double[] headingPID() {
-        return new double[]{0, 0, 0};
-    }
-
+    public String[] motorNames() { return new String[]{"FR", "FL", "RR", "RL"}; }
     @Override
-    public double[] speedPID() {
-        return new double[]{0, 0, 0};
-    }
-
+    public boolean[] flipMotors() {return new boolean[] {true,true,true,true};}
     @Override
-    public double[] directionPID() {
-        return new double[]{0, 0, 0};
-    }
-
+    public double[] poseXYPID() { return new double[]{0, 0, 0}; }
     @Override
-    public boolean useEncoders() {
-        return false;
-    }
+    public double[] poseAnglePID() { return new double[]{0, 0, 0}; }
+    @Override
+    public double[] speedPID() { return new double[]{0, 0, 0}; }
+    @Override
+    public double[] trajectoryPID() { return new double[]{0, 0, 0}; }
+    @Override
+    public boolean useEncoders() { return false; }
 }

@@ -43,6 +43,7 @@ public class Demobot extends BaseRobot
 
     public void start(){
         getChassis().startChassis();
+        getNavigator().setRobotPose(0,0,0);
     }
 
     public void update(){

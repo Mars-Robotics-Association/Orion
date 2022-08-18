@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Demobot2022;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -7,9 +8,26 @@ import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.path.Path;
 import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.path.PathPoint;
 
 @Autonomous(name = "Demobot Test Autonomous", group = "Demobot")
+@Config
 public class TestAutonomous extends LinearOpMode
 {
     Demobot robot;
+    public static double speed = -0.5;
+    public static double x1 = 12;
+    public static double y1 = 12;
+    public static double x2 = 0;
+    public static double y2 = -12;
+    public static double x3 = 0;
+    public static double y3 = 0;
+    public static double a1 = 90;
+    public static double a2 = -180;
+    public static double a3 = 0;
+
+    public static double driveSpeedThresh = 0.1;
+    public static double driveSpeedTime = 0.2;
+
+    public static double turnSpeedThresh = 0.1;
+    public static double turnSpeedTime = 0.2;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -19,8 +37,33 @@ public class TestAutonomous extends LinearOpMode
         waitForStart();
         robot.start();
 
-        //do something?
+        robot.getChassis().setHeadlessMode(true);
+
+        while (!isStopRequested()){
+            move(x1,y1);
+            turn(a1);
+            move(x2,y2);
+            turn(a2);
+            move(x3,y3);
+            turn(a3);
+
+        }
 
         robot.stop();
+    }
+
+    private void move(double x, double y){
+        while (!robot.getNavigator().moveTowards(x,y,speed,driveSpeedThresh,driveSpeedTime)&&!isStopRequested()){
+            robot.update();
+            telemetry.addData("Moving to ", "("+x+", "+y+")");
+            telemetry.update();
+        }
+    }
+    private void turn(double a){
+        while (!robot.getNavigator().turnTowards(a,speed,turnSpeedThresh,turnSpeedTime)&&!isStopRequested()){
+            robot.update();
+            telemetry.addData("Turning to ", a);
+            telemetry.update();
+        }
     }
 }

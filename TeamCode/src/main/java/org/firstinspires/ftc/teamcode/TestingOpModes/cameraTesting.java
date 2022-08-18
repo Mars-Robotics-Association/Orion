@@ -55,12 +55,12 @@ public class cameraTesting extends OpMode {
                 Rect rect = r.get(0);
                 int rectx = (rect.x + rect.x + rect.width) / 2;
                 if (rectx < img.getWidth() / 3) {
-                    demo.getChassis().RawTurn(.2);
+                    demo.getChassis().rawTurn(.2);
                 } else if (rectx>2*img.getWidth()/3){
-                    demo.getChassis().RawTurn(-.2);
+                    demo.getChassis().rawTurn(-.2);
                 }
                 else{
-                    demo.getChassis().RawTurn(0);
+                    demo.getChassis().rawTurn(0);
                 }
             }
         } catch (InterruptedException e) {
