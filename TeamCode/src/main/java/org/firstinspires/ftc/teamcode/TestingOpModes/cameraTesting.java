@@ -61,10 +61,11 @@ public class cameraTesting extends OpMode {
 
                 int centerX = boxRect.x + (boxRect.width / 2); // get the center of it
                 int halfOfWidth = img.getWidth() / 2; // half of width
+                int dStart = img.getWidth()/3;
 
-                if (centerX < halfOfWidth) {
+                if (centerX < dStart) {
                     demobot.getChassis().rawTurn(.2); // object is too far left
-                } else if (centerX > halfOfWidth){
+                } else if (centerX > 2*dStart){
                     demobot.getChassis().rawTurn(-.2); // object is too far right
                 }
                 else{
