@@ -40,7 +40,7 @@ public class TestAutonomous extends LinearOpMode
         robot.getChassis().setHeadlessMode(true);
 
         while (!isStopRequested()){
-            move(x1,y1);
+            goTo(x1,y1,a1);
             turn(a1);
             move(x2,y2);
             turn(a2);
@@ -63,6 +63,13 @@ public class TestAutonomous extends LinearOpMode
         while (!robot.getNavigator().turnTowards(a,speed,turnSpeedThresh,turnSpeedTime)&&!isStopRequested()){
             robot.update();
             telemetry.addData("Turning to ", a);
+            telemetry.update();
+        }
+    }
+    private void goTo(double x, double y, double a){
+        while (!robot.getNavigator().goTowardsPose(x,y,a,speed,turnSpeedThresh,turnSpeedTime)&&!isStopRequested()){
+            robot.update();
+            telemetry.addData("Going to to ", "("+x+", "+y+", "+a+")");
             telemetry.update();
         }
     }

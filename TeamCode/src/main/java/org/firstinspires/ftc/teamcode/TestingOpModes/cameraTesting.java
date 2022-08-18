@@ -68,7 +68,7 @@ public class cameraTesting extends OpMode {
                     demobot.getChassis().rawTurn(-.2); // object is too far right
                 }
                 else{
-                    demo.getChassis().RawTurn(0);
+                    //demo.getChassis().RawTurn(0);
                 }
             }
         } catch (InterruptedException e) { // stop button was pressed or we took too long

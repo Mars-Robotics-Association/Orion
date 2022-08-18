@@ -76,6 +76,7 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Reset robot pose:", "Press B");
         telemetry.addData("Turn towards "+odometryTestAngle+" degrees:", "Hold Right Trigger");
         telemetry.addData("Move towards ("+odometryTestX+", "+odometryTestY+"):", "Hold Right Bumper");
+        telemetry.addData("Move towards ("+odometryTestX+", "+odometryTestY+", "+odometryTestAngle+"):", "Hold Left Trigger");
         //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
@@ -159,7 +160,10 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
             telemetry.addData("Drive towards ("+odometryTestX+", "+odometryTestY+") reached: ", reached);
         }
         //Triggers
-        if(button == Button.LT);
+        if(button == Button.LT){
+            boolean reached = robot.getNavigator().goTowardsPose(odometryTestX, odometryTestY, odometryTestAngle, odometryTestSpeed);
+            telemetry.addData("Drive towards ("+odometryTestX+", "+odometryTestY+", "+odometryTestAngle+") reached: ", reached);
+        }
         if (button == Button.RT) {
             boolean reached = robot.getNavigator().turnTowards(odometryTestAngle, odometryTestSpeed);
             telemetry.addData("Turn towards "+odometryTestAngle+ " reached: ", reached);

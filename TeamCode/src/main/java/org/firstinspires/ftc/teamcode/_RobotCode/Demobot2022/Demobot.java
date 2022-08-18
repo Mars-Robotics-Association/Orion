@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode._RobotCode.Demobot2022;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
@@ -27,8 +29,13 @@ public class Demobot extends BaseRobot
         dashboard = FtcDashboard.getInstance();
 
         if(USE_CHASSIS) {
+            //sensors
+            DistanceSensor portDistance = opMode.hardwareMap.get(DistanceSensor.class, "port distance");
+            DistanceSensor starboardDistance = opMode.hardwareMap.get(DistanceSensor.class, "starboard distance");
+            ColorSensor colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
+
             //initialize the chassis & navigator
-            navigator = new DemobotNavigation(opMode, this);
+            navigator = new DemobotNavigation(opMode, this, portDistance, starboardDistance, colorSensor);
         }
 
         if(USE_PAYLOAD){}
