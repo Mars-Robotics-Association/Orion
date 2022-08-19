@@ -82,6 +82,7 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
         }
 //        if(largestContourIndex != -1)
 //            Imgproc.drawContours(finalContourOutputMat, findContoursOutput, largestContourIndex, new Scalar(255, 255, 255), 2);
+        rectList=new ArrayList<Rect>();
         for(int i=0;i<findContoursOutput.size();i++){
 //            Imgproc.drawContours(finalContourOutputMat,findContoursOutput,i,new Scalar(255,255,255),2);
             Rect rect = Imgproc.boundingRect(findContoursOutput.get(i));

@@ -56,6 +56,7 @@ public class cameraTesting extends OpMode {
             dash.sendImage(img);
             ArrayList<Rect> boxRectArray = pipeline.getRects();
 
+
             if(boxRectArray.size() != 0) { // if there's no objects to track, don't track I guess?
                 Rect boxRect = boxRectArray.get(0); // get the current rect
 
@@ -63,19 +64,25 @@ public class cameraTesting extends OpMode {
                 int halfOfWidth = img.getWidth() / 2; // half of width
                 int dStart = img.getWidth()/3;
 
+                telemetry.addData("centerX",centerX);
+                telemetry.addData("start",dStart);
+                telemetry.addData("end",2*dStart);
                 if (centerX < dStart) {
                     demobot.getChassis().rawTurn(.2); // object is too far left
+                    telemetry.addData("Going","Left");
                 } else if (centerX > 2*dStart){
                     demobot.getChassis().rawTurn(-.2); // object is too far right
+                    telemetry.addData("Going","Right");
                 }
                 else{
                     demobot.getChassis().rawTurn(0);
+                    telemetry.addData("Going","Found");
                 }
             }
         } catch (InterruptedException e) { // stop button was pressed or we took too long
             e.printStackTrace();
         }
-
+        telemetry.update();
         // cleanup time!
         // remembered this from working with low-level interop
         if(img != null)img.recycle();
