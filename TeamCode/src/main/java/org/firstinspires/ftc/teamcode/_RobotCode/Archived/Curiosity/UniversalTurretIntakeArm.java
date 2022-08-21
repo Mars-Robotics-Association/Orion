@@ -56,7 +56,7 @@ public class UniversalTurretIntakeArm
     //public EncoderActuator Turret(){return turret;}
 
     public void GoToZero(){
-        arm.GoToPosition(0);
+        arm.goToPosition(0);
         //turret.GoToPosition(0);
     }
 
@@ -65,7 +65,7 @@ public class UniversalTurretIntakeArm
             return true;
         }
         else{
-            arm.SetPowerRaw(power);
+            arm.setPowerRaw(power);
             return false;
         }
     }
@@ -76,7 +76,7 @@ public class UniversalTurretIntakeArm
             SetIntakeSpeed(0);
             intakeState = 2;
             IntakeFullAction();
-            Arm().GoToPosition(intakedPosition);
+            Arm().goToPosition(intakedPosition);
         }
     }
 
@@ -85,7 +85,7 @@ public class UniversalTurretIntakeArm
     public int GetIntakeState() {return intakeState;}
 
     public void GoToMax(){
-        arm.GoToMax();
+        arm.goToMax();
         //turret.GoToMax();
         armState = ArmState.Storage;
     }
@@ -97,7 +97,7 @@ public class UniversalTurretIntakeArm
     }
 
     public void ReturnToHomeAndIntake(double rotation, double intakeSpeed){
-        Arm().GoToPosition(rotation);
+        Arm().goToPosition(rotation);
         SetIntakeSpeed(intakeSpeed);
         intakeState = 1;
     }

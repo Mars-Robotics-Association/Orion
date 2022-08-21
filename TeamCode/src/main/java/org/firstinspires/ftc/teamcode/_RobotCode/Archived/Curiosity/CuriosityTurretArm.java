@@ -44,16 +44,16 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm
     public void GoToTier(Tier tier){
         leveller.StopThread();
         if(tier == Tier.BOTTOM){
-            Arm().GoToPosition(armBottomPos);
+            Arm().goToPosition(armBottomPos);
         }
         if(tier == Tier.MIDDLE){
-            Arm().GoToPosition(armMiddlePos);
+            Arm().goToPosition(armMiddlePos);
         }
         if(tier == Tier.TOP){
-            Arm().GoToPosition(armTopPos);
+            Arm().goToPosition(armTopPos);
         }
         if(tier == Tier.CAP){
-            Arm().GoToPosition(armCapPos);
+            Arm().goToPosition(armCapPos);
         }
     }
 

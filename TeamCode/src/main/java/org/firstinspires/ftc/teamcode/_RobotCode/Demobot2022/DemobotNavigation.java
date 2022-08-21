@@ -33,13 +33,13 @@ class DemobotNavigation
     public static double trackwidth = 10.8;
     public static double centerWheelOffset = -6.8;
 
-    public static double turnPID_P = 0.025;
+    public static double turnPID_P = 0.035;
     public static double turnPID_I = 0;
-    public static double turnPID_D = 0;
+    public static double turnPID_D = -0.1;
 
-    public static double movePID_D = 0;
+    public static double movePID_D = 0.1;
     public static double movePID_I = 0;
-    public static double movePID_P = 0.2;
+    public static double movePID_P = 0.3;
 
     double stopSpeedThreshold = 0.1; //how slow the robot needs to be moving before it stops
     double stopTimeThreshold = 0.2; //how long it needs to be below speed threshold
@@ -210,6 +210,7 @@ class DemobotNavigation
             return false;
     }
     public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed){return goTowardsPose(targetX, targetY, targetAngle, speed, stopSpeedThreshold, stopTimeThreshold);}
+
 
     ////UTILITY////
     private double getDistance(double x1, double y1, double x2, double y2){

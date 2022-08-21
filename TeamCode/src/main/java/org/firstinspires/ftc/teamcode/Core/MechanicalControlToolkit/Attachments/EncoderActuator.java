@@ -13,8 +13,8 @@ public class EncoderActuator
     public DCMotorArray motors;
     public double maxRots;
     public double minRots;
-    public double gearRatio;
-    public double encoderResolution;
+    public double gearRatio; //units per revolution
+    public double encoderResolution; //encoder ticks per revolution
     public double encoderMultiplier;
     public boolean useEncoder;
 
@@ -34,43 +34,43 @@ public class EncoderActuator
         if(profile.reverseEncoder()) encoderMultiplier = -1;
         else encoderMultiplier = 1;
         useEncoder = profile.useEncoder();
-        ResetToZero();
+        resetToZero();
     }
 
     //Sets the motor to go to a target rotation
-    public void GoToPosition(double pos){
+    public void goToPosition(double pos){
         motors.RunWithEncodersMode();
         motors.SetTargetPosition((int)(encoderResolution * clamp(pos,minRots,maxRots) * gearRatio * encoderMultiplier), true);
     }
 
     //Goes to motor's extreme
-    public void GoToMax(){
-        GoToPosition(maxRots);
+    public void goToMax(){
+        goToPosition(maxRots);
     }
 
     //Resets the motor's encoder
-    public void ResetToZero(){motors.StopAndResetEncoders();}
+    public void resetToZero(){motors.StopAndResetEncoders();}
 
     //Sets motor's extreme
-    public void ResetMax(){maxRots = GetFinalPosition();}
+    public void resetMax(){maxRots = getFinalPosition();}
 
     //Locks the motor in place using the encoder
-    public void Lock(){
+    public void lock(){
         motors.SetTargetPositions(motors.GetMotorPositions(), true);
     }
 
     //Sets the motors power and limits its position
-    public void SetPowerClamped(double power){
-        opMode.telemetry.addData("MOTOR POSITION", GetFinalPosition());
+    public void setPowerClamped(double power){
+        opMode.telemetry.addData("MOTOR POSITION", getFinalPosition());
         opMode.telemetry.addData("REQUESTED POWER", power);
-        if(power*encoderMultiplier < 0 && GetFinalPosition() < minRots){
-            if(useEncoder) GoToPosition(minRots * encoderResolution * gearRatio);
+        if(power*encoderMultiplier < 0 && getFinalPosition() < minRots){
+            if(useEncoder) goToPosition(minRots * encoderResolution * gearRatio);
             else motors.SetPowers(0);
             opMode.telemetry.addData("ADDING POWER", 0);
             return;
         }
-        else if(power*encoderMultiplier > 0 && GetFinalPosition() > maxRots){
-            if(useEncoder) GoToPosition(maxRots * encoderResolution * gearRatio);
+        else if(power*encoderMultiplier > 0 && getFinalPosition() > maxRots){
+            if(useEncoder) goToPosition(maxRots * encoderResolution * gearRatio);
             else motors.SetPowers(0);
             opMode.telemetry.addData("ADDING POWER", 0);
             return;
@@ -82,44 +82,44 @@ public class EncoderActuator
         motors.SetPowers(power);
     }
 
-    public void ChangeCurrentTargetRotation(double deltaAmount, double speed){
+    public void changeCurrentTargetRotation(double deltaAmount, double speed){
         double newPos = currentTargetPosition + deltaAmount;
         if(newPos > maxRots) {
-            GoToPosition(maxRots);
+            goToPosition(maxRots);
             return;
         }
         else if(newPos < minRots) {
-            GoToPosition(minRots);
+            goToPosition(minRots);
             return;
         }
         motors.SetPowers(speed);
-        GoToPosition(newPos);
+        goToPosition(newPos);
     }
-    public void ChangeCurrentTargetRotation(double deltaAmount, double speed, double min, double max){
+    public void changeCurrentTargetRotation(double deltaAmount, double speed, double min, double max){
         double newPos = currentTargetPosition + deltaAmount;
         if(newPos > maxRots || newPos > max) {
-            GoToPosition(maxRots);
+            goToPosition(maxRots);
             return;
         }
         else if(newPos < minRots || newPos < min) {
-            GoToPosition(minRots);
+            goToPosition(minRots);
             return;
         }
         motors.SetPowers(speed);
-        GoToPosition(newPos);
+        goToPosition(newPos);
     }
 
     //Set the motors power freely
-    public void SetPowerRaw(double power){
+    public void setPowerRaw(double power){
         motors.RunWithEncodersMode();
         motors.SetPowers(power);
     }
 
     //Returns the rotation of the final implement
-    public double GetFinalPosition(){
+    public double getFinalPosition(){
         return motors.GetMotorPositions()[0] * (encoderMultiplier / (encoderResolution * gearRatio));
     }
-    public double GetFinalPosition(int motorIndex){
+    public double getFinalPosition(int motorIndex){
         return motors.GetMotorPositions()[motorIndex] * (encoderMultiplier / (encoderResolution * gearRatio));
     }
 

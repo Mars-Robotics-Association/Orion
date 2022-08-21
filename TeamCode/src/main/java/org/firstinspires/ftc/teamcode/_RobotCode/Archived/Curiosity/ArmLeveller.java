@@ -42,13 +42,13 @@ class ArmLeveller implements Runnable
         resetArmQueued = false;
         //go down until distance sensor detects floor
         while (resetSensor.getDistance(DistanceUnit.CM) > armResetDistanceCM && threadRunning){
-            while (resetSensor.getDistance(DistanceUnit.CM) > armSlowDistanceCM && threadRunning) arm.SetPowerRaw(1);//go fast
-            arm.SetPowerRaw(0.2); //slow
+            while (resetSensor.getDistance(DistanceUnit.CM) > armSlowDistanceCM && threadRunning) arm.setPowerRaw(1);//go fast
+            arm.setPowerRaw(0.2); //slow
             opMode.telemetry.addData("Arm Reset Sensor Distance", resetSensor.getDistance(DistanceUnit.CM)+" CM");
         }
         //reset the arm
-        arm.ResetToZero();
-        arm.SetPowerRaw(0);
+        arm.resetToZero();
+        arm.setPowerRaw(0);
     }
 
     /*public void LevelArm(){

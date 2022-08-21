@@ -123,9 +123,9 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
             robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
         }
         if(button == Button.X && robot.USE_PAYLOAD){
-            Runnable runnable = () -> { robot.getPayload().Intake(); };
+            /*Runnable runnable = () -> { robot.getPayload().Intake(); };
             Thread myTestThread = new Thread(runnable);
-            myTestThread.start();
+            myTestThread.start();*/
         }
         if(button == Button.Y && robot.USE_PAYLOAD);
         //Bumpers

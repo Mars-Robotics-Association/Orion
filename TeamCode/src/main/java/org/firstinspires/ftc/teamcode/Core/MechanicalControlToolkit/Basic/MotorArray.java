@@ -21,47 +21,47 @@ public class MotorArray
         speedMultipliers = setSpeedMultipliers;
         useDCMotorEncoders = isUseDCEncoders;
 
-        if(useDCMotorEncoders) RunWithEncodersMode();
-        else RunWithoutEncodersMode();
+        if(useDCMotorEncoders) runWithEncodersMode();
+        else runWithoutEncodersMode();
     }
 
-    public void SetSpeedMultipliers(double[] setSpeedMultipliers){
+    public void setSpeedMultipliers(double[] setSpeedMultipliers){
         speedMultipliers = setSpeedMultipliers;
     }
 
     //Sets the powers of the motors based off an array using the speedMultipliers array
-    public void SetPowers(double[] setSpeeds){
+    public void setPowers(double[] setSpeeds){
         int i = 0;
         for (DcMotor m: motors) {
             m.setPower(setSpeeds[i]*speedMultipliers[i]);
             i++;
         }
         for (Servo s: servos) {
-            s.setPosition(ConvertMotorSpeedToServoSpeed(setSpeeds[i]*speedMultipliers[i]));
+            s.setPosition(convertMotorSpeedToServoSpeed(setSpeeds[i]*speedMultipliers[i]));
             i++;
         }
     }
 
     //Sets the powers of the motors to the same value
-    public void SetPowers(double speed){
+    public void setPowers(double speed){
         int i = 0;
         for (DcMotor m: motors) {
             m.setPower(speed*speedMultipliers[i]);
             i++;
         }
         for (Servo s: servos) {
-            s.setPosition(ConvertMotorSpeedToServoSpeed(speed*speedMultipliers[i]));
+            s.setPosition(convertMotorSpeedToServoSpeed(speed*speedMultipliers[i]));
             i++;
         }
     }
 
     //Stops the motors
-    public void StopMotors(){
-        SetPowers(0);
+    public void stopMotors(){
+        setPowers(0);
     }
 
     //set and possibly go to target positions
-    public void SetTargetPositions(int[] positions, boolean runToPositionsImmediate){
+    public void setTargetPositions(int[] positions, boolean runToPositionsImmediate){
         int i = 0;
         //servos
         for (Servo s:servos) {
@@ -76,12 +76,12 @@ public class MotorArray
         }
         //if turning the motors immediately to position
         if(runToPositionsImmediate) {
-            SetPowers(1);
-            RunToPositionMode();
+            setPowers(1);
+            runToPositionMode();
         }
     }
     //set and go to a target position
-    public void SetTargetPosition(int position, boolean runToPositionImmediate){
+    public void setTargetPosition(int position, boolean runToPositionImmediate){
         int i = 0;
         //servos
         for (Servo s:servos) {
@@ -96,13 +96,13 @@ public class MotorArray
         }
         //if turning the motors immediately to position
         if(runToPositionImmediate) {
-            SetPowers(1);
-            RunToPositionMode();
+            setPowers(1);
+            runToPositionMode();
         }
     }
 
     //Return all the current positions of servos and motors
-    public double[] GetMotorPositions(){
+    public double[] getMotorPositions(){
         //create blank list
         List<Double> positions = new ArrayList<Double>();
         //add motor positions in encoder ticks
@@ -116,22 +116,22 @@ public class MotorArray
     }
 
     //Convert speed between -1 and 1 to between 0 and 1 for servos
-    private double ConvertMotorSpeedToServoSpeed(double motorSpeed){
+    private double convertMotorSpeedToServoSpeed(double motorSpeed){
         motorSpeed = clamp(motorSpeed, -1, 1); //clamp speed between -1 and 1
         double servoSpeed = (motorSpeed+1)/2; //convert
         return servoSpeed;
     }
 
     //DC MOTOR MODE SETTING
-    public void RunWithEncodersMode(){
+    public void runWithEncodersMode(){
         for(DcMotor m : motors) {
             m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             useDCMotorEncoders = true;
         }
     }
-    public void RunWithoutEncodersMode(){ for(DcMotor m : motors) m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); }
-    public void StopAndResetEncoders(){ for(DcMotor m : motors) m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); }
-    public void RunToPositionMode(){ for(DcMotor m : motors) m.setMode(DcMotor.RunMode.RUN_TO_POSITION); }
+    public void runWithoutEncodersMode(){ for(DcMotor m : motors) m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); }
+    public void stopAndResetEncoders(){ for(DcMotor m : motors) m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); }
+    public void runToPositionMode(){ for(DcMotor m : motors) m.setMode(DcMotor.RunMode.RUN_TO_POSITION); }
 
     //Clamps a value between a max and a min value
     public static double clamp(double val, double min, double max) {
