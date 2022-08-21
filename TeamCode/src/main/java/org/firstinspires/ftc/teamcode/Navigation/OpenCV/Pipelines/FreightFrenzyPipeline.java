@@ -46,8 +46,8 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
         // Step HSV_Threshold0  (stage 2):
         Mat hsvThresholdInput = blurOutput;
         Scalar[] yellow = OpenCVColors.broaden(OpenCVColors.YellowL,OpenCVColors.YellowH);
-        Scalar lowhsv = OpenCVColors.RedL;
-        Scalar highhsv = OpenCVColors.RedH;
+        Scalar lowhsv = OpenCVColors.MarsGreenL;
+        Scalar highhsv = OpenCVColors.MarsGreenH;
         hsvThreshold(hsvThresholdInput, lowhsv, highhsv, hsvThresholdOutput);
         hsvThresholdOutput=OpenCV.range(blurOutput,lowhsv,highhsv);
 
@@ -100,55 +100,55 @@ public class FreightFrenzyPipeline extends OpenCvPipeline
             }
         }
 
-        // Step HSV_Threshold0  (stage 2):
-        hsvThresholdInput = blurOutput;
-        lowhsv = OpenCVColors.BlueL;
-        highhsv = OpenCVColors.BlueH;
-        hsvThreshold(hsvThresholdInput, lowhsv, highhsv, hsvThresholdOutput);
-        hsvThresholdOutput=OpenCV.range(blurOutput,lowhsv,highhsv);
-
-        // Step Find_Contours0 (stage 3):
-        findContoursInput = hsvThresholdOutput;
-        findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
-        findContoursOutputMat = input.clone();
-        for(int i = 0; i < findContoursOutput.size(); i++) {
-            Imgproc.drawContours(findContoursOutputMat, findContoursOutput, i, new Scalar(255, 255, 255), 2);
-        }
-
-        // Finding largest contour (stage 4):
-        largestArea = -1;
-        largestX = -1;
-        largestY = -1;
-        for(int i = 0; i < findContoursOutput.size(); i++) {
-            MatOfPoint contour = findContoursOutput.get(i);
-            double contourArea = Imgproc.contourArea(contour);
-            if(contourArea > largestArea) {
-                Moments p = Imgproc.moments(contour, false);
-                int x = (int) (p.get_m10() / p.get_m00());
-                int y = (int) (p.get_m01() / p.get_m00());
-
-                largestContourIndex = i;
-                largestX = x;
-                largestY = y;
-                largestArea = contourArea;
-            }
-        }
-//        if(largestContourIndex != -1)
-//            Imgproc.drawContours(finalContourOutputMat, findContoursOutput, largestContourIndex, new Scalar(255, 255, 255), 2);
-        for(int i=0;i<findContoursOutput.size();i++){
-//            Imgproc.drawContours(finalContourOutputMat,findContoursOutput,i,new Scalar(255,255,255),2);
-            Rect rect = Imgproc.boundingRect(findContoursOutput.get(i));
-//            Mat cropped = OpenCV.crop(finalContourOutputMat,rect);
-//            cropped = OpenCV.isolateColor(cropped,OpenCVColors.YellowH,OpenCVColors.YellowL);
-            //double percent = OpenCV.percentColor(OpenCV.convertMatToBitMap(cropped));
-            //if(percent>.7)
-            if(rect.area()>input.width()*input.height()/50) {
-                if ((double) rect.height / rect.width < 1.5 && (double) rect.height / rect.width > (double) 2 / 3)
-                    Imgproc.rectangle(finalContourOutputMat, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 0, 0), 2);
-//                else
-//                    Imgproc.rectangle(finalContourOutputMat, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0), 2);
-            }
-        }
+//        // Step HSV_Threshold0  (stage 2):
+//        hsvThresholdInput = blurOutput;
+//        lowhsv = OpenCVColors.BlueL;
+//        highhsv = OpenCVColors.BlueH;
+//        hsvThreshold(hsvThresholdInput, lowhsv, highhsv, hsvThresholdOutput);
+//        hsvThresholdOutput=OpenCV.range(blurOutput,lowhsv,highhsv);
+//
+//        // Step Find_Contours0 (stage 3):
+//        findContoursInput = hsvThresholdOutput;
+//        findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
+//        findContoursOutputMat = input.clone();
+//        for(int i = 0; i < findContoursOutput.size(); i++) {
+//            Imgproc.drawContours(findContoursOutputMat, findContoursOutput, i, new Scalar(255, 255, 255), 2);
+//        }
+//
+//        // Finding largest contour (stage 4):
+//        largestArea = -1;
+//        largestX = -1;
+//        largestY = -1;
+//        for(int i = 0; i < findContoursOutput.size(); i++) {
+//            MatOfPoint contour = findContoursOutput.get(i);
+//            double contourArea = Imgproc.contourArea(contour);
+//            if(contourArea > largestArea) {
+//                Moments p = Imgproc.moments(contour, false);
+//                int x = (int) (p.get_m10() / p.get_m00());
+//                int y = (int) (p.get_m01() / p.get_m00());
+//
+//                largestContourIndex = i;
+//                largestX = x;
+//                largestY = y;
+//                largestArea = contourArea;
+//            }
+//        }
+////        if(largestContourIndex != -1)
+////            Imgproc.drawContours(finalContourOutputMat, findContoursOutput, largestContourIndex, new Scalar(255, 255, 255), 2);
+//        for(int i=0;i<findContoursOutput.size();i++){
+////            Imgproc.drawContours(finalContourOutputMat,findContoursOutput,i,new Scalar(255,255,255),2);
+//            Rect rect = Imgproc.boundingRect(findContoursOutput.get(i));
+////            Mat cropped = OpenCV.crop(finalContourOutputMat,rect);
+////            cropped = OpenCV.isolateColor(cropped,OpenCVColors.YellowH,OpenCVColors.YellowL);
+//            //double percent = OpenCV.percentColor(OpenCV.convertMatToBitMap(cropped));
+//            //if(percent>.7)
+//            if(rect.area()>input.width()*input.height()/50) {
+//                if ((double) rect.height / rect.width < 1.5 && (double) rect.height / rect.width > (double) 2 / 3)
+//                    Imgproc.rectangle(finalContourOutputMat, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(255, 0, 0), 2);
+////                else
+////                    Imgproc.rectangle(finalContourOutputMat, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0), 2);
+//            }
+//        }
 
         return finalContourOutputMat;
     }

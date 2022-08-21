@@ -79,6 +79,10 @@ public class cameraTesting extends OpMode {
                     telemetry.addData("Going","Found");
                 }
             }
+            else{
+                demobot.getChassis().rawTurn(0);
+                telemetry.addData("Going","None");
+            }
         } catch (InterruptedException e) { // stop button was pressed or we took too long
             e.printStackTrace();
         }
