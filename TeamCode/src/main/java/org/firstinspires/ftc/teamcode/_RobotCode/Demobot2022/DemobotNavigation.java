@@ -84,33 +84,8 @@ class DemobotNavigation
 
     //turns towards the given angle. Returns zero when pid is within certain threshold
     public boolean turnTowards(double targetAngle, double speed, double overrideStopSpeedThreshold, double overrideStopTimeThreshold){
-        double actualAngle = getRobotAngleDegrees();
-        opMode.telemetry.addData("Initial target angle: ", targetAngle);
-        opMode.telemetry.addData("Initial actual angle: ", actualAngle);
+        double turnSpeed = calculateTurnSpeed(targetAngle,speed);
 
-        //fix target angle to bounds within -180 and 180
-        fixAngle(targetAngle);
-
-        //fix delta angle if delta is greater than 180 degrees (so turn the opposite direction)
-        boolean fixedDelta = false;
-        //if the error is greater than 180
-        if(Math.abs(targetAngle-actualAngle) > 180){
-            //add 180 degrees to everything and fix the angles
-            targetAngle += 180;
-            actualAngle += 180;
-            targetAngle = fixAngle(targetAngle);
-            actualAngle = fixAngle(actualAngle);
-            fixedDelta = true;
-        }
-        opMode.telemetry.addData("Fixed delta: ", fixedDelta);
-
-        //calculate turn speed based off of PID
-        double turnSpeed = speed * turningPID.getOutput(actualAngle, targetAngle);
-        //print telemetry
-        opMode.telemetry.addData("ERROR: ", targetAngle-actualAngle);
-        opMode.telemetry.addData("Corrected target angle: ", targetAngle);
-        opMode.telemetry.addData("Corrected actual angle: ", actualAngle);
-        opMode.telemetry.addData("Turn speed ", turnSpeed);
         //turn the robot
         chassis.rawTurn(turnSpeed);
 
@@ -120,23 +95,9 @@ class DemobotNavigation
 
     //turns towards the given angle. Returns zero when pid is within certain threshold
     public boolean moveTowards(double targetX, double targetY, double speed, double overrideStopSpeedThreshold, double overrideStopTimeThreshold){
-        //get robot pose
-        double actualX = getPose().getX();
-        double actualY = getPose().getY();
-        //calculates distance to target
-        double distanceError = getDistance(targetX, targetY, actualX, actualY);
-        //calculates speed based off of distance from target
-        double moveSpeed = speed * movePID.getOutput(distanceError, 0);
-        //calculate the move angle
-        double moveAngle = getPose().getHeading() + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX)));
-
-        //prints telemetry
-
-        opMode.telemetry.addData("Target position: ", targetX + ", " +targetY);
-        opMode.telemetry.addData("Actual position: ", actualX+", "+actualY);
-        opMode.telemetry.addData("Distance error ", distanceError);
-        opMode.telemetry.addData("Move speed ", moveSpeed);
-        opMode.telemetry.addData("Move angle ", moveAngle);
+        double[] moveAngleSpeed = calculateMoveAngleSpeed(targetX,targetY,speed);
+        double moveAngle = moveAngleSpeed[0];
+        double moveSpeed = moveAngleSpeed[1];
 
         //drives
         chassis.rawDrive(moveAngle, moveSpeed, 0);
@@ -149,9 +110,24 @@ class DemobotNavigation
     public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed, double overrideStopSpeedThreshold, double overrideStopTimeThreshold){
         opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetAngle+")");
 
+        //calculate speeds
+        double[] moveAngleSpeed = calculateMoveAngleSpeed(targetX,targetY,speed);
+        double moveAngle = moveAngleSpeed[0];
+        double moveSpeed = moveAngleSpeed[1];
+        double turnSpeed = calculateTurnSpeed(targetAngle,speed);
 
-        ////ANGLE////
+        //drives
+        chassis.rawDrive(moveAngle, moveSpeed, turnSpeed);
+        //if both speeds are very low, stop
+        if(checkIfShouldStop(overrideStopSpeedThreshold, overrideStopTimeThreshold, moveSpeed) &&
+                checkIfShouldStop(overrideStopSpeedThreshold, overrideStopTimeThreshold, turnSpeed))
+            return true;
+        else
+            return false;
+    }
+    public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed){return goTowardsPose(targetX, targetY, targetAngle, speed, stopSpeedThreshold, stopTimeThreshold);}
 
+    private double calculateTurnSpeed(double targetAngle, double speed){
         double actualAngle = getRobotAngleDegrees();
         opMode.telemetry.addData("Initial target angle: ", targetAngle);
         opMode.telemetry.addData("Initial actual angle: ", actualAngle);
@@ -179,10 +155,10 @@ class DemobotNavigation
         opMode.telemetry.addData("Corrected target angle: ", targetAngle);
         opMode.telemetry.addData("Corrected actual angle: ", actualAngle);
         opMode.telemetry.addData("Turn speed ", turnSpeed);
+        return turnSpeed;
+    }
 
-
-        ////POSITION////
-
+    private double[] calculateMoveAngleSpeed(double targetX, double targetY, double speed){
         //get robot pose
         double actualX = getPose().getX();
         double actualY = getPose().getY();
@@ -194,23 +170,15 @@ class DemobotNavigation
         double moveAngle = getPose().getHeading() + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX)));
 
         //prints telemetry
+
         opMode.telemetry.addData("Target position: ", targetX + ", " +targetY);
         opMode.telemetry.addData("Actual position: ", actualX+", "+actualY);
         opMode.telemetry.addData("Distance error ", distanceError);
         opMode.telemetry.addData("Move speed ", moveSpeed);
         opMode.telemetry.addData("Move angle ", moveAngle);
 
-        //drives
-        chassis.rawDrive(moveAngle, moveSpeed, turnSpeed);
-        //if both speeds are very low, stop
-        if(checkIfShouldStop(overrideStopSpeedThreshold, overrideStopTimeThreshold, moveSpeed) &&
-                checkIfShouldStop(overrideStopSpeedThreshold, overrideStopTimeThreshold, turnSpeed))
-            return true;
-        else
-            return false;
+        return new double[] {moveAngle,moveSpeed};
     }
-    public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed){return goTowardsPose(targetX, targetY, targetAngle, speed, stopSpeedThreshold, stopTimeThreshold);}
-
 
     ////UTILITY////
     private double getDistance(double x1, double y1, double x2, double y2){
