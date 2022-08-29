@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
@@ -15,9 +16,15 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
     DcMotor motor1;
     DcMotor motor2;
     Servo loader;
+    ElapsedTime timer;
 
     double servoLoadPos = 0.5;
     double shootSpeed = 1;
+    double speed1;
+    int checkInterval;
+    int prevPosition1;
+    double speed2;
+    int prevPosition2;
 
     @Override
     public void init() {
@@ -26,6 +33,16 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
         motor1 = hardwareMap.dcMotor.get("motor1");
         motor2 = hardwareMap.dcMotor.get("motor2");
         loader = hardwareMap.servo.get("loader");
+        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        checkInterval = 200;
+        prevPosition1 = motor1.getCurrentPosition();
+        prevPosition2 = motor2.getCurrentPosition();
+        speed1=0;
+        speed2=0;
+        timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        timer.reset();
+
     }
 
     @Override
@@ -37,6 +54,18 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
     public void loop() {
         controllerInput1.Loop();
         telemetry.addData("runtime:", getRuntime());
+        if (timer.time() > checkInterval) {
+            speed1 = (double) (motor1.getCurrentPosition() - prevPosition1) / timer.time();
+            speed1 = (speed1*1000*60)/537.7;
+            speed2 = (double) (motor2.getCurrentPosition() - prevPosition2) / timer.time();
+            speed2 = (speed2*1000*60)/537.7;
+            prevPosition1 = motor1.getCurrentPosition();
+            prevPosition2 = motor2.getCurrentPosition();
+            timer.reset();
+        }
+        //537.7 ticks per revolution
+        telemetry.addData("Motor1 Rev per min", speed1);
+        telemetry.addData("Motor2 Rev per min", speed2);
         telemetry.update();
     }
 
@@ -55,6 +84,7 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
             telemetry.addLine("shooting!");
             motor1.setPower(shootSpeed);
             motor2.setPower(-shootSpeed);
+            motor1.getCurrentPosition();
         }
     }
 
@@ -69,4 +99,5 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
             loader.setPosition(0);
         }
     }
+
 }
