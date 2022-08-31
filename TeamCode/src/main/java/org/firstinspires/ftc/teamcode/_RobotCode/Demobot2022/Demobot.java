@@ -47,17 +47,18 @@ public class Demobot extends BaseRobot
             DcMotor intakeMotor = opMode.hardwareMap.dcMotor.get("Intake");
             MotorArray intake = new MotorArray(new DcMotor[]{intakeMotor},new Servo[]{},new double[]{1},false);
             //path
-            DcMotor pathMotor = opMode.hardwareMap.dcMotor.get("Path");
-            MotorArray path = new MotorArray(new DcMotor[]{pathMotor},new Servo[]{},new double[]{1},false);
+            DcMotor pathMotor = opMode.hardwareMap.dcMotor.get("Path Motor");
+            Servo pathServo = opMode.hardwareMap.servo.get("Path Servo");
+            MotorArray path = new MotorArray(new DcMotor[]{pathMotor},new Servo[]{pathServo},new double[]{1,-1},false);
             //loader
-            Servo loaderMotor = opMode.hardwareMap.servo.get("Loader");
-            MotorArray loader = new MotorArray(new DcMotor[]{},new Servo[]{loaderMotor},new double[]{1},false);
+            Servo loaderServo = opMode.hardwareMap.servo.get("Loader");
+            MotorArray loader = new MotorArray(new DcMotor[]{},new Servo[]{loaderServo, pathServo},new double[]{1,-1},false);
             //turret
             DcMotor turretMotor = opMode.hardwareMap.dcMotor.get("Turret");
             EncoderActuator turret = new EncoderActuator(opMode, new _TurretProfile(turretMotor));
             //shooter
             DcMotor shooterMotor = opMode.hardwareMap.dcMotor.get("Shooter");
-            MotorArray shooter = new MotorArray(new DcMotor[]{shooterMotor},new Servo[]{},new double[]{1},false);
+            MotorArray shooter = new MotorArray(new DcMotor[]{shooterMotor},new Servo[]{},new double[]{-1},false);
             //initialize payload
             payload = new DemobotPayload(opMode,intake,path,loader,turret,shooter);
         }
