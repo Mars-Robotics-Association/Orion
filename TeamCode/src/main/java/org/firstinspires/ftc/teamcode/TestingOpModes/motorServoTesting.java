@@ -25,6 +25,8 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
 
     //motor direction controls
     int[] motorSpeedMultipliers = {1,1,1,1};
+    //servo direction controls
+    int[] servoSpeedMultipliers = {1,1,1,1,1,1};
 
 
     private ControllerInput controllerInput1;
@@ -74,6 +76,7 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
         telemetry.addData("To switch servo: ", "left and right on dpad");
         telemetry.addData("To cycle number of motors used: ", "y");
         telemetry.addData("To change motor direction: ", "x");
+        telemetry.addData("To change servo direction: ", "b");
         telemetry.addData("Make sure you are using ", "gamepad 1");
         telemetry.update();
     }
@@ -84,7 +87,9 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
         if(id == 1){
             //Colored buttons
             if(button == ControllerInput.Button.A);
-            if(button == ControllerInput.Button.B);
+            if(button == ControllerInput.Button.B){
+                servoSpeedMultipliers[currentservo] *= -1;
+            }
             if(button == ControllerInput.Button.X){
                 motorSpeedMultipliers[currentmotor] *= -1;
             }
@@ -125,13 +130,13 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
         //controller 1
         if(id == 1){
             //Colored buttons
-            if(button == ControllerInput.Button.A) setServoSpeeds(0.5);
+            if(button == ControllerInput.Button.A) setServoSpeeds(0);
             if(button == ControllerInput.Button.B);
             if(button == ControllerInput.Button.X);
             if(button == ControllerInput.Button.Y);
             //Bumpers
             if(button == ControllerInput.Button.LB) setServoSpeeds(1);
-            if(button == ControllerInput.Button.RB) setServoSpeeds(0);
+            if(button == ControllerInput.Button.RB) setServoSpeeds(-1);
             //Triggers
             if(button == ControllerInput.Button.LT) setMotorSpeeds(gamepad1.left_trigger);
             if(button == ControllerInput.Button.RT) setMotorSpeeds(-gamepad1.right_trigger);
@@ -155,8 +160,8 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
             if(button == ControllerInput.Button.X);
             if(button == ControllerInput.Button.Y);
             //Bumpers
-            if(button == ControllerInput.Button.LB);
-            if(button == ControllerInput.Button.RB);
+            if(button == ControllerInput.Button.LB) setServoSpeeds(0);
+            if(button == ControllerInput.Button.RB) setServoSpeeds(0);
             //Triggers
             if(button == ControllerInput.Button.LT);
             if(button == ControllerInput.Button.RT);
@@ -174,6 +179,8 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
         for (int i = 0; i <= additionalMotors; i++) {
             int servoIndex = i+currentservo;
             if(servoIndex > 5) servoIndex -= 6;
+            speed = speed*servoSpeedMultipliers[servoIndex];
+            speed = (speed + 1)/2;
             servos.getServos()[servoIndex].setPosition(speed);
         }
     }

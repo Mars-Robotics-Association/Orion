@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
@@ -64,20 +65,36 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
     public void loop() {
         controllerInput1.Loop();
         controllerInput2.Loop();
+        //navigator kill switch
+        if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
 
-        ////PRINT TELEMETRY////
+        }
+        //update robot
+        robot.update();
+        //manage driving
+        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+        //telemetry
+        printTelemetry();
+        telemetry.update();
+    }
+
+    //prints a large amount of telemetry for the robot
+    private void printTelemetry() {
         //CONTROLS
         telemetry.addLine("----CONTROLS----");
         telemetry.addData("Drive with: ", "LJS");
         telemetry.addData("Turn with: ", "RJS");
         telemetry.addData("Change speed multiplier: ", "A");
-        telemetry.addData("Reset robot angle: ", "Press RJS");
+        telemetry.addData("Reset robot pose: ", "Press RJS");
         telemetry.addData("Toggle headless mode: ", "Press LJS");
-        telemetry.addData("Reset robot pose:", "Press B");
-        telemetry.addData("Turn towards "+odometryTestAngle+" degrees:", "Hold Right Trigger");
-        telemetry.addData("Move towards ("+odometryTestX+", "+odometryTestY+"):", "Hold Right Bumper");
-        telemetry.addData("Move towards ("+odometryTestX+", "+odometryTestY+", "+odometryTestAngle+"):", "Hold Left Trigger");
-        //DATA
+        telemetry.addData("Load: ", "Hold RT");
+        telemetry.addData("Toggle intake: ", "Press RB");
+        telemetry.addData("Toggle path: ", "Press LB");
+        telemetry.addData("Toggle shooter: ", "Press Y");
+
+        robot.getPayload().printTelemetry();
+
+        /*//DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
         //Dead wheel positions
@@ -91,19 +108,7 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
         telemetry.addLine("Robot pose");
         Pose2d robotPose = robot.getNavigator().getPose();
         telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
-        telemetry.addLine();
-
-        //KILL SWITCH FOR NAVIGATOR
-        if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
-
-        }
-
-        robot.update();
-
-        //Manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
-
-        telemetry.update();
+        telemetry.addLine();*/
     }
 
     @Override
@@ -114,91 +119,50 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
     ////INPUT MAPPING////
     @Override
     public void ButtonPressed(int id, ControllerInput.Button button) {
-        //Colored buttons
-        if(button == Button.A){
-            if (speedMultiplier == 1) speedMultiplier = 0.5;
-            else speedMultiplier = 1; }
-        if(button == Button.B) { //reset robot pose
-            robot.getNavigator().setRobotPose(0, 0, 0);
-            robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
+        switch (button) {
+            case A:// speed multiplier cycling
+                if (speedMultiplier == 1) speedMultiplier = 0.5;
+                else speedMultiplier = 1;
+                break;
+            case B:// reset robot pose
+                break;
+            case LJS:// toggle headless
+                robot.getChassis().switchHeadlessMode();
+                break;
+            case RJS:// reset robot pose
+                robot.getNavigator().setRobotPose(0, 0, 0);
+                robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
+                robot.getChassis().resetGyro();
+                break;
+            case RT:
+                robot.getPayload().setLoaderState(true);
+                break;
+            case RB:
+                robot.getPayload().toggleIntake();
+                break;
+            case LB:
+                robot.getPayload().togglePath();
+                break;
+            case Y:
+                robot.getPayload().toggleShooter();
+                break;
         }
-        if(button == Button.X && robot.USE_PAYLOAD){
-            /*Runnable runnable = () -> { robot.getPayload().Intake(); };
-            Thread myTestThread = new Thread(runnable);
-            myTestThread.start();*/
-        }
-        if(button == Button.Y && robot.USE_PAYLOAD);
-        //Bumpers
-        if(button == Button.LB);
-        if(button == Button.RB);
-        //Triggers
-        if(button == Button.LT) robot.getNavigator().resetTurnPID();
-        if(button == Button.RT) robot.getNavigator().resetTurnPID();
-        //Dpad
-        if(button == Button.DUP && robot.USE_PAYLOAD);
-        if(button == Button.DDOWN && robot.USE_PAYLOAD);
-        if(button == Button.DLEFT);
-        if(button == Button.DRIGHT);
-        //Joystick Buttons
-        if(button == Button.LJS) robot.getChassis().switchHeadlessMode();
-        if(button == Button.RJS && robot.USE_CHASSIS) robot.getChassis().resetGyro();
     }
 
     @Override
     public void ButtonHeld(int id, ControllerInput.Button button) {
-        telemetry.addLine("A button is being held!");
-        if(button == Button.RB) telemetry.addLine("RB held!");
-        //Colored buttons
-        if(button == Button.A);
-        if(button == Button.B);
-        if(button == Button.X);
-        if(button == Button.Y);
-        //Bumpers
-        if(button == Button.LB);
-        if (button == Button.RB) {
-            boolean reached = robot.getNavigator().moveTowards(odometryTestX, odometryTestY, odometryTestSpeed);
-            telemetry.addData("Drive towards ("+odometryTestX+", "+odometryTestY+") reached: ", reached);
+        switch (button){
+
         }
-        //Triggers
-        if(button == Button.LT){
-            boolean reached = robot.getNavigator().goTowardsPose(odometryTestX, odometryTestY, odometryTestAngle, odometryTestSpeed);
-            telemetry.addData("Drive towards ("+odometryTestX+", "+odometryTestY+", "+odometryTestAngle+") reached: ", reached);
-        }
-        if (button == Button.RT) {
-            boolean reached = robot.getNavigator().turnTowards(odometryTestAngle, odometryTestSpeed);
-            telemetry.addData("Turn towards "+odometryTestAngle+ " reached: ", reached);
-        }
-        //Dpad
-        if(button == Button.DUP);
-        if(button == Button.DDOWN);
-        if(button == Button.DLEFT);
-        if(button == Button.DRIGHT);
-        //Joystick Buttons
-        if(button == Button.LJS);
-        if(button == Button.RJS);
     }
 
     @Override
     public void ButtonReleased(int id, ControllerInput.Button button) {
-        //Colored buttons
-        if(button == Button.A);
-        if(button == Button.B);
-        if(button == Button.X);
-        if(button == Button.Y);
-        //Bumpers
-        if(button == Button.LB && robot.USE_PAYLOAD) ;
-        if(button == Button.RB && robot.USE_PAYLOAD);
-        //Triggers
-        if(button == Button.LT && robot.USE_PAYLOAD);
-        if(button == Button.RT && robot.USE_PAYLOAD);
-        //Dpad
-        if(button == Button.DUP);
-        if(button == Button.DDOWN);
-        if(button == Button.DLEFT);
-        if(button == Button.DRIGHT);
-        //Joystick Buttons
-        if(button == Button.LJS);
-        if(button == Button.RJS);
+        switch (button){
+            case RT:
+                robot.getPayload().setLoaderState(false);
+                break;
+        }
     }
 
 
