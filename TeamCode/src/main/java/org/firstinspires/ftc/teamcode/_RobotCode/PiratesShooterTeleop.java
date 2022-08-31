@@ -56,14 +56,15 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
         telemetry.addData("runtime:", getRuntime());
         if (timer.time() > checkInterval) {
             speed1 = (double) (motor1.getCurrentPosition() - prevPosition1) / timer.time();
-            speed1 = (speed1*1000*60)/537.7;
+            speed1 = (speed1*1000*60)/28;
             speed2 = (double) (motor2.getCurrentPosition() - prevPosition2) / timer.time();
-            speed2 = (speed2*1000*60)/537.7;
+            speed2 = (speed2*1000*60)/28;
             prevPosition1 = motor1.getCurrentPosition();
             prevPosition2 = motor2.getCurrentPosition();
             timer.reset();
         }
         //537.7 ticks per revolution
+        //actually 28
         telemetry.addData("Motor1 Rev per min", speed1);
         telemetry.addData("Motor2 Rev per min", speed2);
         telemetry.update();
