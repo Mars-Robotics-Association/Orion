@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 
 @TeleOp
 public class PiratesShooterTeleop extends OpMode implements ControllerInputListener
@@ -17,6 +19,7 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
     DcMotor motor2;
     Servo loader;
     ElapsedTime timer;
+    BlinkinController lights;
 
     double servoLoadPos = 0.5;
     double shootSpeed = 1;
@@ -42,7 +45,7 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
         speed2=0;
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         timer.reset();
-
+        lights = new BlinkinController(this);
     }
 
     @Override
@@ -57,16 +60,25 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
         if (timer.time() > checkInterval) {
             speed1 = (double) (motor1.getCurrentPosition() - prevPosition1) / timer.time();
             speed1 = (speed1*1000*60)/28;
+            speed1 = Math.abs(speed1);
             speed2 = (double) (motor2.getCurrentPosition() - prevPosition2) / timer.time();
             speed2 = (speed2*1000*60)/28;
+            speed2 = Math.abs(speed2);
             prevPosition1 = motor1.getCurrentPosition();
             prevPosition2 = motor2.getCurrentPosition();
             timer.reset();
         }
-        //537.7 ticks per revolution
-        //actually 28
+        //28 ticks per revolution
         telemetry.addData("Motor1 Rev per min", speed1);
         telemetry.addData("Motor2 Rev per min", speed2);
+        if (speed1 > 2000 && speed2 > 2000) {
+            telemetry.addData("READY TO FIRE", "!!!!!");
+            lights.Green();
+        } else if (speed1 > 0 || speed2 > 0) {
+            lights.Red();
+        } else {
+            lights.SetPattern(RevBlinkinLedDriver.BlinkinPattern.BEATS_PER_MINUTE_RAINBOW_PALETTE);
+        }
         telemetry.update();
     }
 
