@@ -37,7 +37,7 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        robot = new Demobot(this,true,true,true);
+        robot = new Demobot(this,true,true,false);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);

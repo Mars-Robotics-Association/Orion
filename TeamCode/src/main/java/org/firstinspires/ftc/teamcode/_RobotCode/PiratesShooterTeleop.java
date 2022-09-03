@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 
 @TeleOp
+@Config
 public class PiratesShooterTeleop extends OpMode implements ControllerInputListener
 {
     private ControllerInput controllerInput1;
@@ -21,31 +23,39 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
     ElapsedTime timer;
     BlinkinController lights;
 
-    double servoLoadPos = 0.5;
-    double shootSpeed = 1;
-    double speed1;
-    int checkInterval;
-    int prevPosition1;
-    double speed2;
-    int prevPosition2;
+    public static double servoLoadPos = 0.5;
+    public static double shootSpeed = 1;
+
+    //motor rpm checking
+    int checkInterval = 200; //ms between checking for target rpm
+    double motor1RPM = 0;
+    double motor2RPM = 0;
+    int motor1PreviousPos;
+    int motor2PreviousPos;
 
     @Override
     public void init() {
+        //init controller input system
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
+        //init motors
+        setUpMotors();
+        //start timer
+        timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        timer.reset();
+        //init lights
+        lights = new BlinkinController(this);
+    }
+
+    //sets up the motors
+    private void setUpMotors() {
         motor1 = hardwareMap.dcMotor.get("motor1");
         motor2 = hardwareMap.dcMotor.get("motor2");
         loader = hardwareMap.servo.get("loader");
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        checkInterval = 200;
-        prevPosition1 = motor1.getCurrentPosition();
-        prevPosition2 = motor2.getCurrentPosition();
-        speed1=0;
-        speed2=0;
-        timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        timer.reset();
-        lights = new BlinkinController(this);
+        motor1PreviousPos = motor1.getCurrentPosition();
+        motor2PreviousPos = motor2.getCurrentPosition();
     }
 
     @Override
@@ -56,30 +66,54 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
     @Override
     public void loop() {
         controllerInput1.Loop();
+
         telemetry.addData("runtime:", getRuntime());
-        if (timer.time() > checkInterval) {
-            speed1 = (double) (motor1.getCurrentPosition() - prevPosition1) / timer.time();
-            speed1 = (speed1*1000*60)/28;
-            speed1 = Math.abs(speed1);
-            speed2 = (double) (motor2.getCurrentPosition() - prevPosition2) / timer.time();
-            speed2 = (speed2*1000*60)/28;
-            speed2 = Math.abs(speed2);
-            prevPosition1 = motor1.getCurrentPosition();
-            prevPosition2 = motor2.getCurrentPosition();
-            timer.reset();
-        }
-        //28 ticks per revolution
-        telemetry.addData("Motor1 Rev per min", speed1);
-        telemetry.addData("Motor2 Rev per min", speed2);
-        if (speed1 > 2000 && speed2 > 2000) {
+
+        updateMotors();
+        updateLights();
+
+        printInstructions();
+
+        telemetry.update();
+    }
+
+    //prints instructions to telemetry
+    private void printInstructions(){
+        telemetry.addLine();
+        telemetry.addLine("----INSTRUCTIONS----");
+        telemetry.addData("Spin up shooter: ", "Right Trigger");
+        telemetry.addData("Fire: ", "Left Trigger");
+        telemetry.addLine("Wait until lights are green to shoot!");
+        telemetry.addLine();
+    }
+
+    private void updateLights() {
+        if (motor1RPM > 2000 && motor2RPM > 2000) {
             telemetry.addData("READY TO FIRE", "!!!!!");
             lights.Green();
-        } else if (speed1 > 0 || speed2 > 0) {
+        } else if (motor1RPM > 0 || motor2RPM > 0) {
             lights.Red();
         } else {
             lights.SetPattern(RevBlinkinLedDriver.BlinkinPattern.BEATS_PER_MINUTE_RAINBOW_PALETTE);
         }
-        telemetry.update();
+    }
+
+    //TODO comment this
+    private void updateMotors() {
+        if (timer.time() > checkInterval) {
+            //28 ticks per revolution
+            motor1RPM = (double) (motor1.getCurrentPosition() - motor1PreviousPos) / timer.time();
+            motor1RPM = (motor1RPM *1000*60)/28;
+            motor1RPM = Math.abs(motor1RPM);
+            motor2RPM = (double) (motor2.getCurrentPosition() - motor2PreviousPos) / timer.time();
+            motor2RPM = (motor2RPM *1000*60)/28;
+            motor2RPM = Math.abs(motor2RPM);
+            motor1PreviousPos = motor1.getCurrentPosition();
+            motor2PreviousPos = motor2.getCurrentPosition();
+            timer.reset();
+        }
+        telemetry.addData("Motor1 Rev per min", motor1RPM);
+        telemetry.addData("Motor2 Rev per min", motor2RPM);
     }
 
     @Override
