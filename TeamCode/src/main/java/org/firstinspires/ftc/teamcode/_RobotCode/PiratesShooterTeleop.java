@@ -28,7 +28,6 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
     double servoLoadPos = 0.5;
     double shootSpeed = 1;
     double speed1;
-    int checkInterval;
     int prevPosition1;
     double speed2;
     int prevPosition2;
@@ -62,9 +61,13 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
     private void setUpMotors() {
         motor1 = hardwareMap.dcMotor.get("motor1");
         motor2 = hardwareMap.dcMotor.get("motor2");
+        motor3 = hardwareMap.dcMotor.get("motor3");
+        motor4 = hardwareMap.dcMotor.get("motor4");
         loader = hardwareMap.servo.get("loader");
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor4.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         checkInterval = 200;
         prevPosition1 = motor1.getCurrentPosition();
         prevPosition2 = motor2.getCurrentPosition();
@@ -109,11 +112,11 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
             timer.reset();
         }
         //28 ticks per revolution
-        telemetry.addData("Motor1 Rev per min", speed1);
-        telemetry.addData("Motor2 Rev per min", speed2);
-        telemetry.addData("Motor 3 Rev per min",speed3);
-        telemetry.addData("Motor 4 Rev per min",speed4);
-        if (speed1 > 2000 && speed2 > 2000 && speed3 > 2000 && speed4 > 2000) {
+        telemetry.addData("Motor 1 Rev per min", speed1);
+        telemetry.addData("Motor 2 Rev per min", speed2);
+        telemetry.addData("Motor 3 Rev per min", speed3);
+        telemetry.addData("Motor 4 Rev per min", speed4);
+        if (speed1 > 2500 && speed2 > 2500) {
             telemetry.addData("READY TO FIRE", "!!!!!");
             lights.Green();
         } else if (speed1 > 0 || speed2 > 0 || speed3 > 0 || speed4 > 0) {
@@ -123,23 +126,23 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
         }
     }
 
-    //TODO comment this
-    private void updateMotors() {
-        if (timer.time() > checkInterval) {
-            //28 ticks per revolution
-            motor1RPM = (double) (motor1.getCurrentPosition() - motor1PreviousPos) / timer.time();
-            motor1RPM = (motor1RPM *1000*60)/28;
-            motor1RPM = Math.abs(motor1RPM);
-            motor2RPM = (double) (motor2.getCurrentPosition() - motor2PreviousPos) / timer.time();
-            motor2RPM = (motor2RPM *1000*60)/28;
-            motor2RPM = Math.abs(motor2RPM);
-            motor1PreviousPos = motor1.getCurrentPosition();
-            motor2PreviousPos = motor2.getCurrentPosition();
-            timer.reset();
-        }
-        telemetry.addData("Motor1 Rev per min", motor1RPM);
-        telemetry.addData("Motor2 Rev per min", motor2RPM);
-    }
+//    //TODO comment this
+//    private void updateMotors() {
+//        if (timer.time() > checkInterval) {
+//            //28 ticks per revolution
+//            motor1RPM = (double) (motor1.getCurrentPosition() - motor1PreviousPos) / timer.time();
+//            motor1RPM = (motor1RPM *1000*60)/28;
+//            motor1RPM = Math.abs(motor1RPM);
+//            motor2RPM = (double) (motor2.getCurrentPosition() - motor2PreviousPos) / timer.time();
+//            motor2RPM = (motor2RPM *1000*60)/28;
+//            motor2RPM = Math.abs(motor2RPM);
+//            motor1PreviousPos = motor1.getCurrentPosition();
+//            motor2PreviousPos = motor2.getCurrentPosition();
+//            timer.reset();
+//        }
+//        telemetry.addData("Motor1 Rev per min", motor1RPM);
+//        telemetry.addData("Motor2 Rev per min", motor2RPM);
+//    }
 
     @Override
     public void ButtonPressed(int id, ControllerInput.Button button) {
