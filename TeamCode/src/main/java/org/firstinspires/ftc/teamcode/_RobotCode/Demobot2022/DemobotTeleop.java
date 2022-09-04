@@ -29,7 +29,7 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
     public static double odometryTestX = 12;
     public static double odometryTestY = 12;
 
-    private double speedMultiplier = 1;
+    private double speedMultiplier = 0.5;
 
     public static int payloadControllerNumber = 1;
 
@@ -58,7 +58,7 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
         robot.getChassis().resetGyro();
         //if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) robot.SetInputOffset(90); //90 is blue, -90 is red
         //else if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) robot.SetInputOffset(-90); //90 is blue, -90 is red
-        robot.getChassis().setHeadlessMode(true);
+        robot.getChassis().setHeadlessMode(false);
     }
 
     @Override
@@ -87,10 +87,11 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Change speed multiplier: ", "A");
         telemetry.addData("Reset robot pose: ", "Press RJS");
         telemetry.addData("Toggle headless mode: ", "Press LJS");
+        telemetry.addData("Intake: ", "Hold LT");
         telemetry.addData("Load: ", "Hold RT");
+        telemetry.addData("Toggle shooter: ", "Press Y");
         telemetry.addData("Toggle intake: ", "Press RB");
         telemetry.addData("Toggle path: ", "Press LB");
-        telemetry.addData("Toggle shooter: ", "Press Y");
 
         robot.getPayload().printTelemetry();
 
@@ -121,13 +122,13 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
     public void ButtonPressed(int id, ControllerInput.Button button) {
         switch (button) {
             case A:// speed multiplier cycling
-                if (speedMultiplier == 1) speedMultiplier = 0.5;
-                else speedMultiplier = 1;
+                /*if (speedMultiplier == 1) speedMultiplier = 0.5;
+                else speedMultiplier = 1;*/
                 break;
             case B:// reset robot pose
                 break;
             case LJS:// toggle headless
-                robot.getChassis().switchHeadlessMode();
+                //robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
                 robot.getNavigator().setRobotPose(0, 0, 0);
@@ -136,6 +137,10 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
                 break;
             case RT:
                 robot.getPayload().setLoaderState(true);
+                break;
+            case LT:
+                robot.getPayload().toggleIntake();
+                robot.getPayload().togglePath();
                 break;
             case RB:
                 robot.getPayload().toggleIntake();
