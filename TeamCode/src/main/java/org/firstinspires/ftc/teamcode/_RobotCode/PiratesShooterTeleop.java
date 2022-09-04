@@ -51,6 +51,8 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
     private void setUpMotors() {
         motor1 = hardwareMap.dcMotor.get("motor1");
         motor2 = hardwareMap.dcMotor.get("motor2");
+        motor3 = hardwareMap.dcMotor.get("motor3");
+        motor4 = hardwareMap.dcMotor.get("motor4");
         loader = hardwareMap.servo.get("loader");
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -98,23 +100,23 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
         }
     }
 
-    //TODO comment this
-    private void updateMotors() {
-        if (timer.time() > checkInterval) {
-            //28 ticks per revolution
-            motor1RPM = (double) (motor1.getCurrentPosition() - motor1PreviousPos) / timer.time();
-            motor1RPM = (motor1RPM *1000*60)/28;
-            motor1RPM = Math.abs(motor1RPM);
-            motor2RPM = (double) (motor2.getCurrentPosition() - motor2PreviousPos) / timer.time();
-            motor2RPM = (motor2RPM *1000*60)/28;
-            motor2RPM = Math.abs(motor2RPM);
-            motor1PreviousPos = motor1.getCurrentPosition();
-            motor2PreviousPos = motor2.getCurrentPosition();
-            timer.reset();
-        }
-        telemetry.addData("Motor1 Rev per min", motor1RPM);
-        telemetry.addData("Motor2 Rev per min", motor2RPM);
-    }
+//    //TODO comment this
+//    private void updateMotors() {
+//        if (timer.time() > checkInterval) {
+//            //28 ticks per revolution
+//            motor1RPM = (double) (motor1.getCurrentPosition() - motor1PreviousPos) / timer.time();
+//            motor1RPM = (motor1RPM *1000*60)/28;
+//            motor1RPM = Math.abs(motor1RPM);
+//            motor2RPM = (double) (motor2.getCurrentPosition() - motor2PreviousPos) / timer.time();
+//            motor2RPM = (motor2RPM *1000*60)/28;
+//            motor2RPM = Math.abs(motor2RPM);
+//            motor1PreviousPos = motor1.getCurrentPosition();
+//            motor2PreviousPos = motor2.getCurrentPosition();
+//            timer.reset();
+//        }
+//        telemetry.addData("Motor1 Rev per min", motor1RPM);
+//        telemetry.addData("Motor2 Rev per min", motor2RPM);
+//    }
 
     @Override
     public void ButtonPressed(int id, ControllerInput.Button button) {
