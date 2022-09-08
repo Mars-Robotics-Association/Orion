@@ -1,0 +1,2 @@
+Put all robot specific code into this folder with a package per each robot. Don't put any outside of this folder.
+If you have general code, it is best to create a general class for it in the Core or Navigation packages.

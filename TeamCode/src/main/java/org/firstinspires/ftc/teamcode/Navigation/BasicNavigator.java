@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Demobot2022;
+package org.firstinspires.ftc.teamcode.Navigation;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -9,14 +9,27 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMotorArray;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.EncoderArray;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.PIDController;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.EncoderArray;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.HolonomicOdometry;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
+/*
+=====EXAMPLE=====
+DO
+NOT
+CHANGE
+THIS
+FILE
+FOR
+SPECIFIC
+ROBOTS
+*/
+
+//A basic navigation class with odometry functions
 @Config
-class DemobotNavigation
+class BasicNavigator
 {
     ////DEPENDENCIES////
     private OpMode opMode;
@@ -50,9 +63,9 @@ class DemobotNavigation
 
     double lastTimeAboveStopThreshold = 0;
 
-    public DemobotNavigation(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor){
+    public BasicNavigator(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor){
         opMode = setOpMode;
-        chassis = new MecanumChassis(setOpMode, new _ChassisProfile(), new HermesLog("Demobot", 200, setOpMode), baseRobot);
+        chassis = new MecanumChassis(setOpMode, new _BasicChassisProfile(), new HermesLog("Demobot", 200, setOpMode), baseRobot);
         odometry = new HolonomicOdometry(trackwidth,centerWheelOffset);
         distancePort = setDistancePort;
         distanceStarboard = setDistanceStarboard;
