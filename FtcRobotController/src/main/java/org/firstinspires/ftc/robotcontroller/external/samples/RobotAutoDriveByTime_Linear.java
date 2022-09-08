@@ -29,40 +29,44 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CompassSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * This file illustrates the concept of calibrating a MR Compass
- *   This code assumes there is a compass configured with the name "compass"
+ * This file illustrates the concept of driving a path based on time.
+ * The code is structured as a LinearOpMode
  *
- *   This code will put the compass into calibration mode, wait three seconds and then attempt
- *   to rotate two full turns clockwise.  This will allow the compass to do a magnetic calibration.
+ * The code assumes that you do NOT have encoders on the wheels,
+ *   otherwise you would use: RobotAutoDriveByEncoder;
  *
- *   Once compete, the program will put the compass back into measurement mode and check to see if the
- *   calibration was successful.
+ *   The desired path in this example is:
+ *   - Drive forward for 3 seconds
+ *   - Spin right for 1.3 seconds
+ *   - Drive Backward for 1 Second
+ *
+ *  The code is written in a simple form with no optimizations.
+ *  However, there are several ways that this type of sequence could be streamlined,
  *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Concept: Compass Calibration", group="Concept")
+@Autonomous(name="Robot: Auto Drive By Time", group="Robot")
 @Disabled
-public class ConceptCompassCalibration extends LinearOpMode {
+public class RobotAutoDriveByTime_Linear extends LinearOpMode {
 
     /* Declare OpMode members. */
-    public DcMotor leftDrive   = null;
-    public DcMotor  rightDrive  = null;
-    private ElapsedTime runtime = new ElapsedTime();
-    CompassSensor       compass;
+    private DcMotor         leftDrive   = null;
+    private DcMotor         rightDrive  = null;
 
-    final static double     MOTOR_POWER   = 0.2; // scale from 0 to 1
-    static final long       HOLD_TIME_MS  = 3000;
-    static final double     CAL_TIME_SEC  = 20;
+    private ElapsedTime     runtime = new ElapsedTime();
+
+
+    static final double     FORWARD_SPEED = 0.6;
+    static final double     TURN_SPEED    = 0.5;
 
     @Override
     public void runOpMode() {
@@ -72,54 +76,53 @@ public class ConceptCompassCalibration extends LinearOpMode {
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
-        // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
+        // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        // get a reference to our Compass Sensor object.
-        compass = hardwareMap.get(CompassSensor.class, "compass");
-
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Status", "Ready to cal");    //
+        telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        // Set the compass to calibration mode
-        compass.setMode(CompassSensor.CompassMode.CALIBRATION_MODE);
-        telemetry.addData("Compass", "Compass in calibration mode");
-        telemetry.update();
+        // Step through each leg of the path, ensuring that the Auto mode has not been stopped along the way
 
-        sleep(HOLD_TIME_MS);  // Just do a sleep while we switch modes
-
-        // Start the robot rotating clockwise
-        telemetry.addData("Compass", "Calibration mode. Turning the robot...");
-        telemetry.update();
-        leftDrive.setPower(MOTOR_POWER);
-        rightDrive.setPower(-MOTOR_POWER);
-
-        // run until time expires OR the driver presses STOP;
+        // Step 1:  Drive forward for 3 seconds
+        leftDrive.setPower(FORWARD_SPEED);
+        rightDrive.setPower(FORWARD_SPEED);
         runtime.reset();
-        while (opModeIsActive() && (runtime.time() < CAL_TIME_SEC)) {
-            idle();
+        while (opModeIsActive() && (runtime.seconds() < 3.0)) {
+            telemetry.addData("Path", "Leg 1: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
         }
 
-        // Stop all motors and turn off claibration
+        // Step 2:  Spin right for 1.3 seconds
+        leftDrive.setPower(TURN_SPEED);
+        rightDrive.setPower(-TURN_SPEED);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 1.3)) {
+            telemetry.addData("Path", "Leg 2: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        // Step 3:  Drive Backward for 1 Second
+        leftDrive.setPower(-FORWARD_SPEED);
+        rightDrive.setPower(-FORWARD_SPEED);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+            telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        // Step 4:  Stop
         leftDrive.setPower(0);
         rightDrive.setPower(0);
-        compass.setMode(CompassSensor.CompassMode.MEASUREMENT_MODE);
-        telemetry.addData("Compass", "Returning to measurement mode");
-        telemetry.update();
 
-        sleep(HOLD_TIME_MS);  // Just do a sleep while we switch modes
-
-        // Report whether the Calibration was successful or not.
-        if (compass.calibrationFailed())
-            telemetry.addData("Compass", "Calibrate Failed. Try Again!");
-        else
-            telemetry.addData("Compass", "Calibrate Passed.");
+        telemetry.addData("Path", "Complete");
         telemetry.update();
+        sleep(1000);
     }
 }
