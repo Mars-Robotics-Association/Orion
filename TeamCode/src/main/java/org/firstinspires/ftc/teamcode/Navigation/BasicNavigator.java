@@ -29,7 +29,7 @@ ROBOTS
 
 //A basic navigation class with odometry functions
 @Config
-class BasicNavigator
+public class BasicNavigator
 {
     ////DEPENDENCIES////
     private OpMode opMode;
