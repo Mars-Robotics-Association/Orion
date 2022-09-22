@@ -48,6 +48,11 @@ public class EncoderActuator
         goToPosition(maxRots);
     }
 
+    //Goes to motor's extreme
+    public void goToMin(){
+        goToPosition(minRots);
+    }
+
     //Resets the motor's encoder
     public void resetToZero(){motors.StopAndResetEncoders();}
 
@@ -63,15 +68,15 @@ public class EncoderActuator
     public void setPowerClamped(double power){
         opMode.telemetry.addData("MOTOR POSITION", getFinalPosition());
         opMode.telemetry.addData("REQUESTED POWER", power);
-        if(power*encoderMultiplier < 0 && getFinalPosition() < minRots){
-            if(useEncoder) goToPosition(minRots * encoderResolution * gearRatio);
-            else motors.SetPowers(0);
+        if(power*encoderMultiplier < 0 && getFinalPosition() < minRots){//+((maxRots-minRots)/10)
+            //if(useEncoder) goToPosition(minRots * encoderResolution * gearRatio);
+            motors.SetPowers(0);
             opMode.telemetry.addData("ADDING POWER", 0);
             return;
         }
-        else if(power*encoderMultiplier > 0 && getFinalPosition() > maxRots){
-            if(useEncoder) goToPosition(maxRots * encoderResolution * gearRatio);
-            else motors.SetPowers(0);
+        else if(power*encoderMultiplier > 0 && getFinalPosition() > maxRots){//-((maxRots-minRots)/10)
+            //if(useEncoder) goToPosition(maxRots * encoderResolution * gearRatio);
+            motors.SetPowers(0);
             opMode.telemetry.addData("ADDING POWER", 0);
             return;
         }
