@@ -22,7 +22,7 @@ import org.opencv.core.Rect;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
-988hfuiewbfiewbfiuewfuilewfuibewuuioil
+
 @TeleOp(name = "camera testing")
 public class cameraTesting extends OpMode {
 
