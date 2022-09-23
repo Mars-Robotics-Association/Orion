@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode._RobotCode.Demobot2022.Demobot;
 
 
@@ -22,7 +23,7 @@ public class ErasmusTeleop extends OpMode implements ControllerInputListener
 
     ////Variables////
     //Tweaking Vars
-    public static double driveSpeed = -1;//used to change how fast robot drives
+    public static double driveSpeed = 1;//used to change how fast robot drives
     public static double turnSpeed = 1;//used to change how fast robot turns
     public static double odometryTestSpeed = -0.5;
     public static double odometryTestAngle = 180;
@@ -37,7 +38,7 @@ public class ErasmusTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        robot = new Erasmus(this,true,false,false);
+        robot = new Erasmus(this,true,true,true);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -82,14 +83,21 @@ public class ErasmusTeleop extends OpMode implements ControllerInputListener
     private void printTelemetry() {
         //CONTROLS
         telemetry.addLine("----CONTROLS----");
+        //chassis
+        telemetry.addLine("Chassis");
         telemetry.addData("Drive with: ", "LJS");
         telemetry.addData("Turn with: ", "RJS");
         telemetry.addData("Change speed multiplier: ", "A");
         telemetry.addData("Reset robot pose: ", "Press RJS");
         telemetry.addData("Toggle headless mode: ", "Press LJS");
+        //payload
+        telemetry.addLine("Payload");
+        telemetry.addData("Move arm: ", "Triggers");
+        telemetry.addData("Toggle gripper: ", "Press RB");
 
 
-        /*//DATA
+
+        //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
         //Dead wheel positions
@@ -103,7 +111,7 @@ public class ErasmusTeleop extends OpMode implements ControllerInputListener
         telemetry.addLine("Robot pose");
         Pose2d robotPose = robot.getNavigator().getPose();
         telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
-        telemetry.addLine();*/
+        telemetry.addLine();
     }
 
     @Override
@@ -125,26 +133,27 @@ public class ErasmusTeleop extends OpMode implements ControllerInputListener
                 robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
-                //robot.getNavigator().setRobotPose(0, 0, 0);
-                //robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
+                robot.getNavigator().setRobotPose(0, 0, 0);
+                robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
-            case RT:
-                break;
-            case LT:
-                break;
             case RB:
-                break;
-            case LB:
-                break;
-            case Y:
-                break;
+                if(robot.USE_PAYLOAD) robot.getPayload().toggleGripper();
+
         }
     }
 
     @Override
     public void ButtonHeld(int id, Button button) {
         switch (button){
+            case RT:
+                //robot.getNavigator().goTowardsPose(odometryTestX,odometryTestY,odometryTestAngle,odometryTestSpeed);
+                if(robot.USE_PAYLOAD)robot.getPayload().moveArm(0.25);
+                break;
+            case LT:
+                //robot.getNavigator().turnTowards(odometryTestAngle,odometryTestSpeed);
+                if(robot.USE_PAYLOAD)robot.getPayload().moveArm(-0.25);
+                break;
 
         }
     }
@@ -153,6 +162,8 @@ public class ErasmusTeleop extends OpMode implements ControllerInputListener
     public void ButtonReleased(int id, Button button) {
         switch (button){
             case RT:
+            case LT:
+                if(robot.USE_PAYLOAD) robot.getPayload().moveArm(0);
                 break;
         }
     }

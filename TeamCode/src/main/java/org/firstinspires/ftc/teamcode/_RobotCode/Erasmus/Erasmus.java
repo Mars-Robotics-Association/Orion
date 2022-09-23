@@ -15,12 +15,13 @@ import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 import org.firstinspires.ftc.teamcode.Navigation.BasicNavigator;
 
 
-public class Erasmus extends BaseRobot
+class Erasmus extends BaseRobot
 {
     ////Dependencies////
     OpMode opMode;
     //Mechanical Components
     BasicNavigator navigator;
+    ArmGripperPayload payload;
 
     //Misc
     FtcDashboard dashboard;
@@ -43,7 +44,10 @@ public class Erasmus extends BaseRobot
         }
 
         if(USE_PAYLOAD){
-
+            DcMotor armMotor = opMode.hardwareMap.dcMotor.get("arm");
+            EncoderActuator arm = new EncoderActuator(opMode,new _ArmGripperProfile(armMotor));
+            Servo gripper = opMode.hardwareMap.servo.get("gripper");
+            payload = new ArmGripperPayload(arm,gripper);
         }
 
         if(USE_NAVIGATOR){}
@@ -76,6 +80,6 @@ public class Erasmus extends BaseRobot
 
     public BasicNavigator getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
-
+    public ArmGripperPayload getPayload(){return payload;}
 
 }
