@@ -29,7 +29,7 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
     public static double odometryTestX = 12;
     public static double odometryTestY = 12;
 
-    private double speedMultiplier = 0.5;
+    private double speedMultiplier = 1;
 
     public static int payloadControllerNumber = 1;
 
@@ -122,13 +122,13 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
     public void ButtonPressed(int id, ControllerInput.Button button) {
         switch (button) {
             case A:// speed multiplier cycling
-                /*if (speedMultiplier == 1) speedMultiplier = 0.5;
-                else speedMultiplier = 1;*/
+                if (speedMultiplier == 1) speedMultiplier = 0.5;
+                else speedMultiplier = 1;
                 break;
             case B:// reset robot pose
                 break;
             case LJS:// toggle headless
-                //robot.getChassis().switchHeadlessMode();
+                robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
                 robot.getNavigator().setRobotPose(0, 0, 0);
