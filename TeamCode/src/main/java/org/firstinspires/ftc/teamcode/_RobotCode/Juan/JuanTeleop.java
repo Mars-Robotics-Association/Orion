@@ -42,9 +42,6 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
 
-        hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.FORWARD);
-        hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.FORWARD);
-
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
 

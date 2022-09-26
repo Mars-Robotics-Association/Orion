@@ -26,10 +26,6 @@ public class Juan extends BaseRobot
         dashboard = FtcDashboard.getInstance();
 
         if(USE_CHASSIS) {
-            //sensors
-//            DistanceSensor portDistance = opMode.hardwareMap.get(DistanceSensor.class, "port distance");
-//            DistanceSensor starboardDistance = opMode.hardwareMap.get(DistanceSensor.class, "starboard distance");
-//            ColorSensor colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
 
             //initialize the chassis & navigator
             navigator = new JuanNavigation(opMode, this);
