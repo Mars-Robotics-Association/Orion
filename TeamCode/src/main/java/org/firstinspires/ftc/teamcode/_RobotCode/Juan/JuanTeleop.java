@@ -1,19 +1,21 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Demobot2022;
+package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
-import org.firstinspires.ftc.teamcode._RobotCode.Demobot2022.Demobot;
 
-@TeleOp(name = "*JOEMAMA TELEOP*", group = "JoeMama")
+
+@TeleOp(name = "*DEMOBOT TELEOP*", group = "Demobot")
 @Config
-public class JoeMamaTest extends OpMode implements ControllerInputListener
+public class JuanTeleop extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
-    private Demobot robot;
+    private Juan robot;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
 
@@ -26,7 +28,7 @@ public class JoeMamaTest extends OpMode implements ControllerInputListener
     public static double odometryTestX = 12;
     public static double odometryTestY = 12;
 
-    private double speedMultiplier = 0.5;
+    private double speedMultiplier = 1;
 
     public static int payloadControllerNumber = 1;
 
@@ -34,14 +36,14 @@ public class JoeMamaTest extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        robot = new Demobot(this,true,false,false);
+        robot = new Juan(this,true,true,false);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
 
-        //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
-        //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
+        hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.FORWARD);
+        hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.FORWARD);
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
@@ -116,16 +118,16 @@ public class JoeMamaTest extends OpMode implements ControllerInputListener
 
     ////INPUT MAPPING////
     @Override
-    public void ButtonPressed(int id, ControllerInput.Button button) {
+    public void ButtonPressed(int id, Button button) {
         switch (button) {
             case A:// speed multiplier cycling
-                /*if (speedMultiplier == 1) speedMultiplier = 0.5;
-                else speedMultiplier = 1;*/
+                if (speedMultiplier == 1) speedMultiplier = 0.5;
+                else speedMultiplier = 1;
                 break;
             case B:// reset robot pose
                 break;
             case LJS:// toggle headless
-                //robot.getChassis().switchHeadlessMode();
+                robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
                 robot.getNavigator().setRobotPose(0, 0, 0);
@@ -152,14 +154,14 @@ public class JoeMamaTest extends OpMode implements ControllerInputListener
     }
 
     @Override
-    public void ButtonHeld(int id, ControllerInput.Button button) {
+    public void ButtonHeld(int id, Button button) {
         switch (button){
 
         }
     }
 
     @Override
-    public void ButtonReleased(int id, ControllerInput.Button button) {
+    public void ButtonReleased(int id, Button button) {
         switch (button){
             case RT:
                 robot.getPayload().setLoaderState(false);
