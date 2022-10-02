@@ -94,9 +94,19 @@ class DemobotPayload
         else shooter.setPowers(0);
         shooterOn = on;
     }
+    public void setShooterState(boolean on, double multiplier) {
+        if(on) shooter.setPowers(1*multiplier);
+        else shooter.setPowers(0);
+        shooterOn = on;
+    }
     //toggles shooter on and off
     public void toggleShooter(){
         if(shooterOn) setShooterState(false);
+        else setShooterState(true);
+    }
+    //toggles shooter on and off
+    public void toggleShooter(double speedMultiplier){
+        if(shooterOn) setShooterState(false,speedMultiplier);
         else setShooterState(true);
     }
 

@@ -72,7 +72,7 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
         //update robot
         robot.update();
         //manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+        //robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
         //telemetry
         printTelemetry();
         telemetry.update();
@@ -149,11 +149,11 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
                 robot.getPayload().togglePath();
                 break;
             case Y:
-                robot.getPayload().toggleShooter();
+                robot.getPayload().toggleShooter(0.6);
                 break;
         }
     }
-
+\
     @Override
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button){
