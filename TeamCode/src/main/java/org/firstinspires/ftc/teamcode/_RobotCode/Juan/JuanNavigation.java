@@ -24,9 +24,6 @@ class JuanNavigation
     public MecanumChassis getChassis(){return chassis;}
     private HolonomicOdometry odometry;
     private EncoderArray encoders;
-    private DistanceSensor distancePort;
-    private DistanceSensor distanceStarboard;
-    private ColorSensor colorSensor;
 
     ////CONFIGURABLE////
     public static double[] encoderMultipliers = {-1,-1,-1};

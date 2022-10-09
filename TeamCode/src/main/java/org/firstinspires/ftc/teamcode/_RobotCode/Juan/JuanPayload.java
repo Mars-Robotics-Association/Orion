@@ -10,7 +10,7 @@ class JuanPayload
     OpMode opMode;
 
     //initializer
-    public JuanPayload(OpMode setOpMode) {
+    public JuanPayload(OpMode setOpMode, EncoderActuator lift) {
         opMode = setOpMode;
     }
 

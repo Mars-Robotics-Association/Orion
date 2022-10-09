@@ -23,16 +23,10 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     //Tweaking Vars
     public static double driveSpeed = 1;//used to change how fast robot drives
     public static double turnSpeed = -1;//used to change how fast robot turns
-    public static double odometryTestSpeed = -0.5;
-    public static double odometryTestAngle = 180;
-    public static double odometryTestX = 12;
-    public static double odometryTestY = 12;
 
     private double speedMultiplier = 1;
 
     public static int payloadControllerNumber = 1;
-
-
 
     @Override
     public void init() {
@@ -117,35 +111,13 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     @Override
     public void ButtonPressed(int id, Button button) {
         switch (button) {
-            case A:// speed multiplier cycling
-                if (speedMultiplier == 1) speedMultiplier = 0.5;
-                else speedMultiplier = 1;
-                break;
-            case B:// reset robot pose
-                break;
-            case LJS:// toggle headless
+            case LJS:
                 robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
                 robot.getNavigator().setRobotPose(0, 0, 0);
                 robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
                 robot.getChassis().resetGyro();
-                break;
-            case RT:
-                robot.getPayload().setLoaderState(true);
-                break;
-            case LT:
-                robot.getPayload().toggleIntake();
-                robot.getPayload().togglePath();
-                break;
-            case RB:
-                robot.getPayload().toggleIntake();
-                break;
-            case LB:
-                robot.getPayload().togglePath();
-                break;
-            case Y:
-                robot.getPayload().toggleShooter();
                 break;
         }
     }
@@ -160,9 +132,7 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     @Override
     public void ButtonReleased(int id, Button button) {
         switch (button){
-            case RT:
-                robot.getPayload().setLoaderState(false);
-                break;
+
         }
     }
 
