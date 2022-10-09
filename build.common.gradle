@@ -49,14 +49,17 @@ android {
         }
     }
 
+    aaptOptions {
+        noCompress "tflite"
+    }
 
     defaultConfig {
         signingConfig signingConfigs.debug
         applicationId 'com.qualcomm.ftcrobotcontroller'
-        minSdkVersion 24 //If this broke anything, I am really sorry
+        minSdkVersion 23
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
-        multiDexEnabled true
+        multiDexEnabled !useProguard
 
         /**
          * We keep the versionCode and versionName of robot controller applications in sync with
@@ -94,7 +97,7 @@ android {
             signingConfig signingConfigs.release
 
             ndk {
-                abiFilters "armeabi-v7a"
+                abiFilters "armeabi-v7a", "arm64-v8a"
             }
 
             if (useProguard) {
@@ -107,9 +110,8 @@ android {
         debug {
             debuggable true
             jniDebuggable true
-            renderscriptDebuggable true
             ndk {
-                abiFilters "armeabi-v7a"
+                abiFilters "armeabi-v7a", "arm64-v8a"
             }
 
             if (useProguard) {
@@ -126,6 +128,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    packagingOptions {
+        pickFirst '**/*.so'
+    }
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir rootProject.file('libs')
