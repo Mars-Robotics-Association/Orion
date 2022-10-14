@@ -11,12 +11,12 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 
-@TeleOp(name = "*DEMOBOT TELEOP*", group = "Demobot")
+@TeleOp(name = "*INGENUITY TELEOP*", group = "ingenuity")
 @Config
 public class IngenuityTeleop extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
-    private Demobot robot;
+    private IngenuityPowerPlayBot robot;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
 
@@ -24,10 +24,6 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     //Tweaking Vars
     public static double driveSpeed = 1;//used to change how fast robot drives
     public static double turnSpeed = -1;//used to change how fast robot turns
-    public static double odometryTestSpeed = -0.5;
-    public static double odometryTestAngle = 180;
-    public static double odometryTestX = 12;
-    public static double odometryTestY = 12;
 
     private double speedMultiplier = 1;
 
@@ -37,7 +33,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        robot = new Demobot(this,true,true,false);
+        robot = new IngenuityPowerPlayBot(this,true,true,false);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -75,7 +71,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
         //telemetry
         printTelemetry();
-        telemetry.update();
+        //telemetry.update();
     }
 
     //prints a large amount of telemetry for the robot
@@ -136,27 +132,26 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
                 robot.getChassis().resetGyro();
                 break;
             case RT:
-                robot.getPayload().setLoaderState(true);
+
                 break;
             case LT:
-                robot.getPayload().toggleIntake();
-                robot.getPayload().togglePath();
+
                 break;
             case RB:
-                robot.getPayload().toggleIntake();
+
                 break;
             case LB:
-                robot.getPayload().togglePath();
+
                 break;
             case Y:
-                robot.getPayload().toggleShooter();
+
                 break;
         }
     }
 
     @Override
     public void ButtonHeld(int id, ControllerInput.Button button) {
-        switch (button){
+        switch (button) {
 
         }
     }
@@ -165,7 +160,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     public void ButtonReleased(int id, ControllerInput.Button button) {
         switch (button){
             case RT:
-                robot.getPayload().setLoaderState(false);
+
                 break;
         }
     }

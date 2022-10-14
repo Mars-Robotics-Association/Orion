@@ -19,8 +19,8 @@ public class IngenuityPowerPlayBot extends BaseRobot
     ////Dependencies////
     OpMode opMode;
     //Mechanical Components
-    DemobotPayload payload;
-    DemobotNavigation navigator;
+    IngenuityPayload payload;
+    IngenuityNavigation navigator;
 
     //Misc
     FtcDashboard dashboard;
@@ -39,28 +39,16 @@ public class IngenuityPowerPlayBot extends BaseRobot
 //            ColorSensor colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
 
             //initialize the chassis & navigator
-            navigator = new DemobotNavigation(opMode, this, null, null, null);
+            navigator = new IngenuityNavigation(opMode, this, null, null, null);
         }
 
         if(USE_PAYLOAD){
             //intake
-            DcMotor intakeMotor = opMode.hardwareMap.dcMotor.get("Intake");
-            MotorArray intake = new MotorArray(new DcMotor[]{intakeMotor},new Servo[]{},new double[]{1},false);
-            //path
-            DcMotor pathMotor = opMode.hardwareMap.dcMotor.get("Path Motor");
-            Servo pathServo = opMode.hardwareMap.servo.get("Path Servo");
-            MotorArray path = new MotorArray(new DcMotor[]{pathMotor},new Servo[]{pathServo},new double[]{1,-1},false);
-            //loader
-            Servo loaderServo = opMode.hardwareMap.servo.get("Loader");
-            MotorArray loader = new MotorArray(new DcMotor[]{},new Servo[]{loaderServo, pathServo},new double[]{1,-1},false);
-            //turret
-            DcMotor turretMotor = opMode.hardwareMap.dcMotor.get("Turret");
-            EncoderActuator turret = new EncoderActuator(opMode, new _TurretProfile(turretMotor));
-            //shooter
-            DcMotor shooterMotor = opMode.hardwareMap.dcMotor.get("Shooter");
-            MotorArray shooter = new MotorArray(new DcMotor[]{shooterMotor},new Servo[]{},new double[]{-1},false);
-            //initialize payload
-            payload = new DemobotPayload(opMode,intake,path,loader,turret,shooter);
+           // DcMotor intakeMotor = opMode.hardwareMap.dcMotor.get("Intake");
+
+           // Servo loaderServo = opMode.hardwareMap.servo.get("Loader");
+
+            payload = new IngenuityPayload(opMode);
         }
 
         if(USE_NAVIGATOR){}
@@ -91,9 +79,9 @@ public class IngenuityPowerPlayBot extends BaseRobot
     }
 
 
-    public DemobotNavigation getNavigator(){return navigator;}
+    public IngenuityNavigation getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
-    public DemobotPayload getPayload(){return payload;}
+    public IngenuityPayload getPayload(){return payload;}
 
 
 }
