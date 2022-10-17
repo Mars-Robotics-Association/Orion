@@ -19,7 +19,6 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     private IngenuityPowerPlayBot robot;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
-
     ////Variables////
     //Tweaking Vars
     public static double driveSpeed = 1;//used to change how fast robot drives
@@ -28,8 +27,6 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     private double speedMultiplier = 1;
 
     public static int payloadControllerNumber = 1;
-
-
 
     @Override
     public void init() {
@@ -162,6 +159,12 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
             case RT:
 
                 break;
+            case X:
+                if(IngenuityPowerPlayBot.servoTarget==0.4){
+                    IngenuityPowerPlayBot.servoTarget=0.8;
+                }
+                else IngenuityPowerPlayBot.servoTarget=0.4;
+                break ;
         }
     }
 

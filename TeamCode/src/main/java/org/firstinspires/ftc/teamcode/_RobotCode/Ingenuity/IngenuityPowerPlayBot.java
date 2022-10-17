@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorA
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 
-
+@Config
 public class IngenuityPowerPlayBot extends BaseRobot
 {
     ////Dependencies////
@@ -21,6 +22,8 @@ public class IngenuityPowerPlayBot extends BaseRobot
     //Mechanical Components
     IngenuityPayload payload;
     IngenuityNavigation navigator;
+    Servo gripperServo ;
+    public static double servoTarget=0.8;
 
     //Misc
     FtcDashboard dashboard;
@@ -47,7 +50,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
            // DcMotor intakeMotor = opMode.hardwareMap.dcMotor.get("Intake");
 
            // Servo loaderServo = opMode.hardwareMap.servo.get("Loader");
-
+            gripperServo= opMode.hardwareMap.servo.get("gripper");
             payload = new IngenuityPayload(opMode);
         }
 
@@ -67,7 +70,11 @@ public class IngenuityPowerPlayBot extends BaseRobot
     public void update(){
 
         if(USE_NAVIGATOR){
-            navigator.update();
+            navigator.update();}
+
+        if(USE_PAYLOAD){
+            gripperServo.setPosition(servoTarget);
+
         }
     }
 
