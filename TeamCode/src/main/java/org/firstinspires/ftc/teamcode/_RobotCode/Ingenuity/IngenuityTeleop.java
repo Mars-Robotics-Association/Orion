@@ -30,7 +30,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        robot = new IngenuityPowerPlayBot(this,true,true,false);
+        robot = new IngenuityPowerPlayBot(this,true,true,true);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -73,7 +73,9 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     //prints a large amount of telemetry for the robot
     private void printTelemetry() {
+        /*
         //CONTROLS
+
         telemetry.addLine("----CONTROLS----");
         telemetry.addData("Drive with: ", "LJS");
         telemetry.addData("Turn with: ", "RJS");
@@ -87,8 +89,8 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Toggle path: ", "Press LB");
 
         robot.getPayload().printTelemetry();
-
-        /*//DATA
+        */
+        //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
         //Dead wheel positions
@@ -102,7 +104,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         telemetry.addLine("Robot pose");
         Pose2d robotPose = robot.getNavigator().getPose();
         telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
-        telemetry.addLine();*/
+        telemetry.addLine();
     }
 
     @Override
