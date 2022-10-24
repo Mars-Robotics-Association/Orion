@@ -53,7 +53,7 @@ class JuanNavigation
         odometry = new HolonomicOdometry(trackwidth,centerWheelOffset);
 
         //get the drive motors in order (LEFT, RIGHT, HORIZONTAL) encoder
-        DcMotor[] driveMotors = new DcMotor[]{
+        DcMotor[] driveMotors = {
                 chassis.driveMotors.getMotors()[0],
                 chassis.driveMotors.getMotors()[1],
                 chassis.driveMotors.getMotors()[2]};

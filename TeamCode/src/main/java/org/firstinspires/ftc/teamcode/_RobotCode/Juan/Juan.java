@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
@@ -18,10 +20,10 @@ public class Juan extends BaseRobot
     //Misc
     FtcDashboard dashboard;
 
-    public Juan(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
+    public Juan(OpMode opMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
         super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
-        opMode = setOpMode;
+        this.opMode = opMode;
 
         dashboard = FtcDashboard.getInstance();
 
@@ -32,10 +34,12 @@ public class Juan extends BaseRobot
         }
 
         if(USE_PAYLOAD){
-            payload = new JuanPayload(opMode);
+            DcMotor lift = opMode.hardwareMap.dcMotor.get("lift");
+            Servo gripper = opMode.hardwareMap.servo.get("gripper");
+            payload = new JuanPayload(opMode, lift, gripper);
         }
 
-        if(USE_NAVIGATOR){}
+        //if(USE_NAVIGATOR){}
     }
 
     //SETUP METHODS//
@@ -66,6 +70,4 @@ public class Juan extends BaseRobot
     public JuanNavigation getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
     public JuanPayload getPayload(){return payload;}
-
-
 }

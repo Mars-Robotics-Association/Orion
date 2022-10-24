@@ -1,16 +1,17 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
 
-@TeleOp(name = "*DEMOBOT TELEOP*", group = "Demobot")
+@TeleOp(name = "*JUAN TELEOP*", group = "JUAN")
 @Config
 public class JuanTeleop extends OpMode implements ControllerInputListener
 {
@@ -18,6 +19,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     private Juan robot;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
+    private Camera camera;
+    private FtcDashboard dash;
 
     ////Variables////
     //Tweaking Vars
@@ -31,6 +34,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     @Override
     public void init() {
         robot = new Juan(this,true,true,false);
+        camera = new Camera(this,"Webcam 1",false);
+        dash = FtcDashboard.getInstance();
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -46,8 +51,6 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     public void start(){
         robot.start();
         robot.getChassis().resetGyro();
-        //if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) robot.SetInputOffset(90); //90 is blue, -90 is red
-        //else if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) robot.SetInputOffset(-90); //90 is blue, -90 is red
         robot.getChassis().setHeadlessMode(false);
     }
 
@@ -55,6 +58,13 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     public void loop() {
         controllerInput1.Loop();
         controllerInput2.Loop();
+
+        try {
+            dash.sendImage(camera.GetImage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         //navigator kill switch
         if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
 
@@ -77,13 +87,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Change speed multiplier: ", "A");
         telemetry.addData("Reset robot pose: ", "Press RJS");
         telemetry.addData("Toggle headless mode: ", "Press LJS");
-        telemetry.addData("Intake: ", "Hold LT");
-        telemetry.addData("Load: ", "Hold RT");
-        telemetry.addData("Toggle shooter: ", "Press Y");
-        telemetry.addData("Toggle intake: ", "Press RB");
-        telemetry.addData("Toggle path: ", "Press LB");
 
-        robot.getPayload().printTelemetry();
+        if(robot.getChassis().isUSE_PAYLOAD())robot.getPayload().printTelemetry();
 
         /*//DATA
         telemetry.addLine();
@@ -115,10 +120,36 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
                 robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
-                robot.getNavigator().setRobotPose(0, 0, 0);
-                robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
+                if(robot.USE_NAVIGATOR)robot.getNavigator().setRobotPose(0, 0, 0);
+                robot.getChassis().driveMotors.StopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
+        }
+        if(robot.USE_PAYLOAD) {
+            JuanPayload payload = robot.getPayload();
+            JuanPayload.LiftController lift = payload.getLift();
+            JuanPayload.GripperController gripper = payload.getGripper();
+
+            switch (button) {
+                case A:
+                    lift.goToAbsoluteBottom();
+                    break;
+                case X:
+                    lift.goToPreset(JuanPayload.LiftController.LiftHeight.LOW);
+                    break;
+                case Y:
+                    lift.goToPreset(JuanPayload.LiftController.LiftHeight.MEDIUM);
+                    break;
+                case B:
+                    lift.goToPreset(JuanPayload.LiftController.LiftHeight.HIGH);
+                    break;
+                case LT:
+                    gripper.grab();
+                    break;
+                case RT:
+                    gripper.release();
+                    break;
+            }
         }
     }
 

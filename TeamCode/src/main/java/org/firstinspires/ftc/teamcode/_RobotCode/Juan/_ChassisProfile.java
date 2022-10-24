@@ -4,9 +4,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.Chas
 
 class _ChassisProfile implements ChassisProfile
 {
-    public _ChassisProfile(){
-
-    }
+    public _ChassisProfile(){}
 
     @Override
     public boolean flipIMU() { return true; }
