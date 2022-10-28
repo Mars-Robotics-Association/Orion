@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 
-@TeleOp(name = "*DEMOBOT TELEOP*", group = "Demobot")
+@TeleOp(name = "*JUAN TELEOP*", group = "JUAN")
 @Config
 public class JuanTeleop extends OpMode implements ControllerInputListener
 {

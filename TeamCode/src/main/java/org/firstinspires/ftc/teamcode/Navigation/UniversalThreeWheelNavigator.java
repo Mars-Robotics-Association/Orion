@@ -28,8 +28,7 @@ ROBOTS
 */
 
 //A basic navigation class with odometry functions
-@Config
-public class BasicNavigator
+public class UniversalThreeWheelNavigator
 {
     ////DEPENDENCIES////
     private OpMode opMode;
@@ -42,20 +41,20 @@ public class BasicNavigator
     private ColorSensor colorSensor;
 
     ////CONFIGURABLE////
-    public static double[] encoderMultipliers = {-1,-1,-1};
-    public static double trackwidth = 10.8;
-    public static double centerWheelOffset = -6.8;
+    protected static double[] encoderMultipliers = {-1,-1,-1}; //left right horizontal
+    protected static double trackwidth = 10.8;
+    protected static double centerWheelOffset = -6.8;
 
-    public static double turnPID_P = 0.035;
-    public static double turnPID_I = 0;
-    public static double turnPID_D = -0.1;
+    protected static double turnPID_P = 0.035;
+    protected static double turnPID_I = 0;
+    protected static double turnPID_D = -0.1;
 
-    public static double movePID_D = 0.1;
-    public static double movePID_I = 0;
-    public static double movePID_P = 0.3;
+    protected static double movePID_D = 0.1;
+    protected static double movePID_I = 0;
+    protected static double movePID_P = 0.3;
 
-    double stopSpeedThreshold = 0.1; //how slow the robot needs to be moving before it stops
-    double stopTimeThreshold = 0.2; //how long it needs to be below speed threshold
+    protected static double stopSpeedThreshold = 0.1; //how slow the robot needs to be moving before it stops
+    protected static double stopTimeThreshold = 0.2; //how long it needs to be below speed threshold
 
     ////INTERNAL////
     PIDController turningPID;
@@ -63,7 +62,7 @@ public class BasicNavigator
 
     double lastTimeAboveStopThreshold = 0;
 
-    public BasicNavigator(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor){
+    public void InitializeNavigator(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor){
         opMode = setOpMode;
         chassis = new MecanumChassis(setOpMode, new _BasicChassisProfile(), new HermesLog("Demobot", 200, setOpMode), baseRobot);
         odometry = new HolonomicOdometry(trackwidth,centerWheelOffset);
@@ -140,7 +139,7 @@ public class BasicNavigator
     }
     public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed){return goTowardsPose(targetX, targetY, targetAngle, speed, stopSpeedThreshold, stopTimeThreshold);}
 
-    private double calculateTurnSpeed(double targetAngle, double speed){
+    protected double calculateTurnSpeed(double targetAngle, double speed){
         double actualAngle = getRobotAngleDegrees();
         opMode.telemetry.addData("Initial target angle: ", targetAngle);
         opMode.telemetry.addData("Initial actual angle: ", actualAngle);
@@ -171,7 +170,7 @@ public class BasicNavigator
         return turnSpeed;
     }
 
-    private double[] calculateMoveAngleSpeed(double targetX, double targetY, double speed){
+    protected double[] calculateMoveAngleSpeed(double targetX, double targetY, double speed){
         //get robot pose
         double actualX = getPose().getX();
         double actualY = getPose().getY();

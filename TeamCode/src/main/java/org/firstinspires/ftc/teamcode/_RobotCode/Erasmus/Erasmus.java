@@ -9,10 +9,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
-import org.firstinspires.ftc.teamcode.Navigation.BasicNavigator;
+import org.firstinspires.ftc.teamcode.Navigation.SampleNavigator;
+import org.firstinspires.ftc.teamcode.Navigation.UniversalThreeWheelNavigator;
 
 
 class Erasmus extends BaseRobot
@@ -20,7 +20,7 @@ class Erasmus extends BaseRobot
     ////Dependencies////
     OpMode opMode;
     //Mechanical Components
-    BasicNavigator navigator;
+    UniversalThreeWheelNavigator navigator;
     ArmGripperPayload payload;
 
     //Misc
@@ -40,7 +40,7 @@ class Erasmus extends BaseRobot
             ColorSensor colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
 
             //initialize the chassis & navigator
-            navigator = new BasicNavigator(opMode, this, portDistance, starboardDistance, colorSensor);
+            navigator = new SampleNavigator(opMode, this, portDistance, starboardDistance, colorSensor);
         }
 
         if(USE_PAYLOAD){
@@ -78,7 +78,7 @@ class Erasmus extends BaseRobot
     }
 
 
-    public BasicNavigator getNavigator(){return navigator;}
+    public UniversalThreeWheelNavigator getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
     public ArmGripperPayload getPayload(){return payload;}
 

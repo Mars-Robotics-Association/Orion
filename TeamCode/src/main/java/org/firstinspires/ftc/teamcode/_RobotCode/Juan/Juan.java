@@ -32,7 +32,7 @@ public class Juan extends BaseRobot
         }
 
         if(USE_PAYLOAD){
-            payload = new JuanPayload(opMode);
+            //payload = new JuanPayload(opMode);
         }
 
         if(USE_NAVIGATOR){}
