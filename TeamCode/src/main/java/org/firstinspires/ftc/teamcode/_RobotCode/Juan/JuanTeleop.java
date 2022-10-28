@@ -25,7 +25,7 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     ////Variables////
     //Tweaking Vars
     public static double driveSpeed = 1;//used to change how fast robot drives
-    public static double turnSpeed = -1;//used to change how fast robot turns
+    public static double turnSpeed = 1;//used to change how fast robot turns
 
     private double speedMultiplier = 1;
 
@@ -120,7 +120,6 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
                 robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
-                if(robot.USE_NAVIGATOR)robot.getNavigator().setRobotPose(0, 0, 0);
                 robot.getChassis().driveMotors.StopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;

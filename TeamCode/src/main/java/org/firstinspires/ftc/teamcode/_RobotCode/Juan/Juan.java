@@ -19,6 +19,7 @@ public class Juan extends BaseRobot
 
     //Misc
     FtcDashboard dashboard;
+    private JuanNavigation navigator1;
 
     public Juan(OpMode opMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
@@ -49,7 +50,6 @@ public class Juan extends BaseRobot
 
     public void start(){
         getChassis().startChassis();
-        getNavigator().setRobotPose(0,0,0);
     }
 
     public void update(){
@@ -65,7 +65,6 @@ public class Juan extends BaseRobot
             navigator.getChassis().stop();
         }
     }
-
 
     public JuanNavigation getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}

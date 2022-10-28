@@ -11,7 +11,7 @@ class _ChassisProfile implements ChassisProfile
     @Override
     public String[] motorNames() { return new String[]{"FR", "FL", "RR", "RL"}; }
     @Override
-    public boolean[] flipMotors() {return new boolean[] {true,true,true,true}; }
+    public boolean[] flipMotors() {return new boolean[] {false,true,false,true}; }
     @Override
     public double[] poseXYPID() { return new double[]{0, 0, 0}; }
     @Override

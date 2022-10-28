@@ -33,24 +33,4 @@ public class TestAutonomous extends LinearOpMode
 
         robot.stop();
     }
-
-    private void move(double x, double y){
-        while (!robot.getNavigator().moveTowards(x,y,speed,driveSpeedThresh,driveSpeedTime)&&!isStopRequested()){
-            robot.update();
-            telemetry.addData("Moving to ", "("+x+", "+y+")");
-            telemetry.update();
-        }
-    }
-    private void turn(double degrees){
-        while (!robot.getNavigator().turnTowards(degrees,speed,turnSpeedThresh,turnSpeedTime)&&!isStopRequested()){
-            robot.update();
-            telemetry.addData("Turning to ", degrees);
-            telemetry.update();
-        }
-    }
-    private void goTo(double x, double y, double degrees){
-        robot.update();
-        telemetry.addData("Going to to ", "("+x+", "+y+", "+degrees+")");
-        telemetry.update();
-    }
 }

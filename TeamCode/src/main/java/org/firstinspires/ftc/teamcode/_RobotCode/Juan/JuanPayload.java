@@ -24,7 +24,6 @@ class JuanPayload
 
     static class LiftController extends Controller{
         enum LiftHeight {
-            BASE,
             LOW,
             MEDIUM,
             HIGH
@@ -32,10 +31,9 @@ class JuanPayload
 
         private EncoderActuator actuator;
 
-        private double basePos = 80;
-        private double lowPos = 173;
-        private double mediumPos = 1566;
-        private double highPos = 2349;
+        private final double lowPos = 173;
+        private final double mediumPos = 1566;
+        private final double highPos = 2349;
 
         LiftController(JuanPayload payload, DcMotor motor) {
             super(payload);
@@ -58,9 +56,6 @@ class JuanPayload
             double height = 0;
 
             switch(preset) {
-                case BASE:
-                    height = basePos;
-                    break;
                 case LOW:
                     height = lowPos;
                     break;
@@ -93,7 +88,7 @@ class JuanPayload
 
         private GripperState state = GripperState.OPEN;
         private double openPos = .2;
-        private double closePos = -0.2;
+        private double closePos = -0.3;
 
         public void grab(){
             servo.setPosition(closePos);
