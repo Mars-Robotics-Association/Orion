@@ -149,7 +149,10 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
     public void ButtonHeld(int id, Button button) {
         switch (button) {
             case X:
-                robot.getNavigator().moveTowards(4, 1, 0.4) ;
+                robot.getNavigator().moveTowards(16, 6, 0.4) ;
+                break ;
+            case Y:
+                robot.getNavigator().moveTowards(0, 0, 0.4) ;
                 break ;
         }
     }
