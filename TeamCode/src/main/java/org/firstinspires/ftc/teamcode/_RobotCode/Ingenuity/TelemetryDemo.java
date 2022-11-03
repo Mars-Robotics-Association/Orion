@@ -5,16 +5,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
-import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 
-@TeleOp(name = "*INGENUITY TELEOP*", group = "ingenuity")
+@TeleOp(name = "*Telemetry Demo*", group = "ingenuity")
 @Config
-public class IngenuityTeleop extends OpMode implements ControllerInputListener
+public class TelemetryDemo extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
     private IngenuityPowerPlayBot robot;
@@ -24,16 +23,12 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     //Tweaking Vars
     public static double driveSpeed = 1;//used to change how fast robot drives
     public static double turnSpeed = -1;//used to change how fast robot turns
-
     private double speedMultiplier = 1;
-
     public static int payloadControllerNumber = 1;
-
-    public DcMotor midEncoder ;
 
     @Override
     public void init() {
-        robot = new IngenuityPowerPlayBot(this,true,true,true);
+        robot = new IngenuityPowerPlayBot(this,true,false,true);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -41,12 +36,9 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
         //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
         //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
-
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
 
-        midEncoder = hardwareMap.dcMotor.get("RL") ;
-        midEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         msStuckDetectLoop = 5000;
     }
 
@@ -103,8 +95,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
         telemetry.addData("LEFT dead wheel: ", deadWheelPositions[0]+" inches");
         telemetry.addData("RIGHT dead wheel: ", deadWheelPositions[1]+" inches");
-        //telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
-        telemetry.addData("HORIZONTAL dead wheel: ", midEncoder.getCurrentPosition());
+        telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
         //Odometry estimated pose
         telemetry.addLine();
         telemetry.addLine("Robot pose");
@@ -120,7 +111,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     ////INPUT MAPPING////
     @Override
-    public void ButtonPressed(int id, ControllerInput.Button button) {
+    public void ButtonPressed(int id, Button button) {
         switch (button) {
             case A:// speed multiplier cycling
                 if (speedMultiplier == 1) speedMultiplier = 0.5;
@@ -155,23 +146,20 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     }
 
     @Override
-    public void ButtonHeld(int id, ControllerInput.Button button) {
+    public void ButtonHeld(int id, Button button) {
         switch (button) {
 
         }
     }
 
     @Override
-    public void ButtonReleased(int id, ControllerInput.Button button) {
+    public void ButtonReleased(int id, Button button) {
         switch (button){
-            case RT:
-
+            case Y:
+                robot.navigator.moveTowards()
                 break;
             case X:
-                if(IngenuityPowerPlayBot.servoTarget==0.4){
-                    IngenuityPowerPlayBot.servoTarget=0.8;
-                }
-                else IngenuityPowerPlayBot.servoTarget=0.4;
+
                 break ;
         }
     }
