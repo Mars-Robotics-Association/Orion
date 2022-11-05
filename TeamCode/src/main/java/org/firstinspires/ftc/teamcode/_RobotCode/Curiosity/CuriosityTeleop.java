@@ -21,8 +21,6 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     ////Variables////
     //Tweaking Vars
-    public static double driveSpeed = 1;//used to change how fast robot drives
-    public static double turnSpeed = -1;//used to change how fast robot turns
     public static double odometryTestSpeed = -0.5;
     public static double odometryTestAngle = 180;
     public static double odometryTestX = 12;
@@ -71,7 +69,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //update robot
         robot.update();
         //manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+        robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         //telemetry
         printTelemetry();
         telemetry.update();

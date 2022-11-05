@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.Navigation;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMotorArray;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.EncoderArray;
@@ -41,6 +41,7 @@ public class UniversalThreeWheelNavigator
     private ColorSensor colorSensor;
 
     ////CONFIGURABLE////
+
     protected static double[] encoderMultipliers = {-1,-1,-1}; //left right horizontal
     protected static double trackwidth = 10.8;
     protected static double centerWheelOffset = -6.8;
@@ -61,6 +62,8 @@ public class UniversalThreeWheelNavigator
     PIDController movePID;
 
     double lastTimeAboveStopThreshold = 0;
+
+    double controllerOffsetDegrees = 0;
 
     public void InitializeNavigator(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor){
         opMode = setOpMode;
@@ -93,6 +96,8 @@ public class UniversalThreeWheelNavigator
         setTurnPID(turnPID_P, turnPID_I, turnPID_D);
         setMovePID(movePID_P, movePID_I, movePID_D);
     }
+
+    ////NAVIGATION FUNCTIONS////
 
     //turns towards the given angle. Returns zero when pid is within certain threshold
     public boolean turnTowards(double targetAngle, double speed, double overrideStopSpeedThreshold, double overrideStopTimeThreshold){
@@ -138,6 +143,41 @@ public class UniversalThreeWheelNavigator
             return false;
     }
     public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed){return goTowardsPose(targetX, targetY, targetAngle, speed, stopSpeedThreshold, stopTimeThreshold);}
+
+    public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed, ControllerInput controllerInput, double controllerWeight){
+        opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetAngle+")");
+
+        //calculate speeds
+        double[] moveAngleSpeed = calculateMoveAngleSpeed(targetX,targetY,speed);
+        double[] controllerAngleSpeedTurn = calculateControllerInputAngleSpeedTurn(controllerInput, controllerWeight);
+        double moveAngle = moveAngleSpeed[0] + controllerAngleSpeedTurn[0];
+        double moveSpeed = moveAngleSpeed[1] + controllerAngleSpeedTurn[1];
+        double turnSpeed = calculateTurnSpeed(targetAngle,speed) + controllerAngleSpeedTurn[2];
+
+        //drives
+        chassis.rawDrive(moveAngle, moveSpeed, turnSpeed);
+        //if both speeds are very low, stop
+        if(checkIfShouldStop(stopSpeedThreshold, stopTimeThreshold, moveSpeed) &&
+                checkIfShouldStop(stopSpeedThreshold, stopTimeThreshold, turnSpeed))
+            return true;
+        else
+            return false;
+    }
+
+    public double[] calculateControllerInputAngleSpeedTurn(ControllerInput controllerInput, double speedMultiplier){
+        double[] angleSpeedTurn = {0,0,0};
+        angleSpeedTurn = new double[]{ //drives at (angle, speed, turnOffset)
+                controllerInput.CalculateLJSAngle() + controllerOffsetDegrees * speedMultiplier,
+                controllerInput.CalculateLJSMag() * speedMultiplier * chassis.profile.moveSpeed() * speedMultiplier,
+                controllerInput.GetRJSX() * speedMultiplier * chassis.profile.turnSpeed() * speedMultiplier
+        };
+        return angleSpeedTurn;
+    }
+    public void setControllerOffset(double degrees){
+        controllerOffsetDegrees = degrees;
+    }
+
+    ////INTERNAL////
 
     protected double calculateTurnSpeed(double targetAngle, double speed){
         double actualAngle = getRobotAngleDegrees();

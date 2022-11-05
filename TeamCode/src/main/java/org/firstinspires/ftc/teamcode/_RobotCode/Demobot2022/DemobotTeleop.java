@@ -72,7 +72,7 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
         //update robot
         robot.update();
         //manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+        robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         //telemetry
         printTelemetry();
         telemetry.update();
