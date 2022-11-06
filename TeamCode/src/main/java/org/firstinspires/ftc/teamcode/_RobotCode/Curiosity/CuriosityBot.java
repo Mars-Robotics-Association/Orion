@@ -3,16 +3,12 @@ package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
-import org.firstinspires.ftc.teamcode.Navigation.BasicNavigator;
+import org.firstinspires.ftc.teamcode.Navigation.UniversalThreeWheelNavigator;
 
 
 public class CuriosityBot extends BaseRobot
@@ -20,7 +16,7 @@ public class CuriosityBot extends BaseRobot
     ////Dependencies////
     OpMode opMode;
     //Mechanical Components
-    BasicNavigator navigator;
+    CuriosityNavigator navigator;
 
     //Misc
     FtcDashboard dashboard;
@@ -39,7 +35,7 @@ public class CuriosityBot extends BaseRobot
             ColorSensor colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
 
             //initialize the chassis & navigator
-            navigator = new BasicNavigator(opMode, this, portDistance, starboardDistance, colorSensor);
+            navigator = new CuriosityNavigator(opMode, this, portDistance, starboardDistance, colorSensor);
         }
 
         if(USE_PAYLOAD){
@@ -74,7 +70,7 @@ public class CuriosityBot extends BaseRobot
     }
 
 
-    public BasicNavigator getNavigator(){return navigator;}
+    public CuriosityNavigator getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
 
 

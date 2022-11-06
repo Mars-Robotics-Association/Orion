@@ -148,7 +148,12 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
     @Override
     public void ButtonHeld(int id, Button button) {
         switch (button) {
-
+            case X:
+                robot.getNavigator().moveTowards(16, 6, 0.4) ;
+                break ;
+            case Y:
+                robot.getNavigator().moveTowards(0, 0, 0.4) ;
+                break ;
         }
     }
 
@@ -156,7 +161,7 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
     public void ButtonReleased(int id, Button button) {
         switch (button){
             case Y:
-                robot.navigator.moveTowards()
+
                 break;
             case X:
 

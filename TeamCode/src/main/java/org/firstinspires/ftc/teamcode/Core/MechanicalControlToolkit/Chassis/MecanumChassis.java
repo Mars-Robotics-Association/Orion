@@ -121,15 +121,19 @@ public class MecanumChassis
     }
 
     //TODO: UNIVERSAL PUBLIC METHODS
-    public void driveWithGamepad(ControllerInput controllerInput, double driveSpeed, double turnSpeed, double speedMultiplier) {
+    public void driveWithGamepad(ControllerInput controllerInput, double speedMultiplier) {
         //MOVE if left joystick magnitude > 0.1
         if (controllerInput.CalculateLJSMag() > 0.1) {
-            rawDrive(controllerInput.CalculateLJSAngle()+inputOffset, controllerInput.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
+            rawDrive(
+                    controllerInput.CalculateLJSAngle()+inputOffset,
+                    controllerInput.CalculateLJSMag() * profile.moveSpeed() * speedMultiplier,
+                    controllerInput.GetRJSX() * profile.turnSpeed() * speedMultiplier);//drives at (angle, speed, turnOffset)
+
             opMode.telemetry.addData("Moving at ", controllerInput.CalculateLJSAngle());
         }
         //TURN if right joystick magnitude > 0.1 and not moving
         else if (Math.abs(controllerInput.GetRJSX()) > 0.1) {
-            rawTurn(controllerInput.GetRJSX() * turnSpeed * speedMultiplier);//turns at speed according to rjs1
+            rawTurn(controllerInput.GetRJSX() * profile.turnSpeed() * speedMultiplier);//turns at speed according to rjs1
             opMode.telemetry.addData("Turning", true);
         }
         else {

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 
 @TeleOp(name = "*CURIOSITY TELEOP*", group = "Curiosity")
@@ -20,12 +21,10 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     ////Variables////
     //Tweaking Vars
-    public static double driveSpeed = 1;//used to change how fast robot drives
-    public static double turnSpeed = -1;//used to change how fast robot turns
     public static double odometryTestSpeed = -0.5;
     public static double odometryTestAngle = 180;
     public static double odometryTestX = 12;
-    public static double odometryTestY = 12;
+    public static double odometryTestY = 0;
 
     private double speedMultiplier = 1;
 
@@ -35,7 +34,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        robot = new CuriosityBot(this,true,false,false);
+        robot = new CuriosityBot(this,true,false,true);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -70,7 +69,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //update robot
         robot.update();
         //manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+        robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         //telemetry
         printTelemetry();
         telemetry.update();
@@ -92,7 +91,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Toggle path: ", "Press LB");
 
 
-        /*//DATA
+        //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
         //Dead wheel positions
@@ -106,7 +105,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.addLine("Robot pose");
         Pose2d robotPose = robot.getNavigator().getPose();
         telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
-        telemetry.addLine();*/
+        telemetry.addLine();
     }
 
     @Override
@@ -119,13 +118,12 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void ButtonPressed(int id, Button button) {
         switch (button) {
             case A:// speed multiplier cycling
-                /*if (speedMultiplier == 1) speedMultiplier = 0.5;
-                else speedMultiplier = 1;*/
+                if (speedMultiplier == 1) speedMultiplier = 0.5;
+                else speedMultiplier = 1;
                 break;
-            case B:// reset robot pose
-                break;
+
             case LJS:// toggle headless
-                //robot.getChassis().switchHeadlessMode();
+                robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
                 robot.getNavigator().setRobotPose(0, 0, 0);
@@ -139,7 +137,14 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void ButtonHeld(int id, Button button) {
         switch (button){
-
+            case Y:// go to target area
+                if(!robot.USE_NAVIGATOR)break;
+                robot.navigator.moveTowards(odometryTestX,odometryTestY,odometryTestSpeed);
+                break;
+            case B:// go to target area
+                if(!robot.USE_NAVIGATOR)break;
+                robot.navigator.turnTowards(odometryTestAngle,odometryTestSpeed);
+                break;
         }
     }
 

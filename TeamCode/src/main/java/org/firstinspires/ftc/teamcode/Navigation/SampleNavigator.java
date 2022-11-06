@@ -1,16 +1,16 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
+package org.firstinspires.ftc.teamcode.Navigation;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
-import org.firstinspires.ftc.teamcode.Navigation.UniversalThreeWheelNavigator;
 
-class IngenuityNavigation extends UniversalThreeWheelNavigator
+public class SampleNavigator extends UniversalThreeWheelNavigator
 {
+
     ////Variables////
-    public static double[] nav_encoderMultipliers = {1, -1, 1}; //left right horizontal
+    public static double[] nav_encoderMultipliers = {1, 1, -1}; //left right horizontal
     public static double nav_trackwidth = 10.7;
     public static double nav_centerWheelOffset = -3;
 
@@ -25,7 +25,7 @@ class IngenuityNavigation extends UniversalThreeWheelNavigator
     public static double nav_stopSpeedThreshold = 0.1; //how slow the robot needs to be moving before it stops
     public static double nav_stopTimeThreshold = 0.2; //how long it needs to be below speed threshold
 
-    public IngenuityNavigation(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor) {
+    public SampleNavigator(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor) {
 
         ////CONFIGURABLE////
         encoderMultipliers = nav_encoderMultipliers;
@@ -54,13 +54,6 @@ class IngenuityNavigation extends UniversalThreeWheelNavigator
 
     @Override
     protected double[] calculateMoveAngleSpeed(double targetX, double targetY, double speed){
-        return super.calculateMoveAngleSpeed(targetX, targetY, -speed);
+        return super.calculateMoveAngleSpeed(targetX, targetY, speed);
     }
-
-    /*  =================  AVAILABLE METHODS  =====================
-
-    turnTowards(double targetAngle, double speed){return turnTowards(targetAngle, speed, stopSpeedThreshold, stopTimeThreshold)
-    moveTowards(double targetX, double targetY, double speed)
-    goTowardsPose(double targetX, double targetY, double targetAngle, double speed)
-    */
 }

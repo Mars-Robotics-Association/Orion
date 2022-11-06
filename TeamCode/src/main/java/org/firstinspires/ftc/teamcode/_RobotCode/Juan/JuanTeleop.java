@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
 
-@TeleOp(name = "*JUAN TELEOP*", group = "Juan")
+@TeleOp(name = "*JUAN TELEOP*", group = "JUAN")
 @Config
 public class JuanTeleop extends OpMode implements ControllerInputListener
 {
@@ -62,7 +62,7 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         //update robot
         robot.update();
         //manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+        robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         //telemetry
         printTelemetry();
         telemetry.update();
