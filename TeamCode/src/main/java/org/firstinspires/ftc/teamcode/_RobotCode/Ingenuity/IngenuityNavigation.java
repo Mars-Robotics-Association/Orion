@@ -49,12 +49,12 @@ class IngenuityNavigation extends UniversalThreeWheelNavigator
     //make these speeds negative if going wrong direction
     @Override
     protected double calculateTurnSpeed(double targetAngle, double speed){
-        return super.calculateTurnSpeed(targetAngle,-speed);
+        return super.calculateTurnSpeed(targetAngle,speed);
     }
 
     @Override
     protected double[] calculateMoveAngleSpeed(double targetX, double targetY, double speed){
-        return super.calculateMoveAngleSpeed(targetX, targetY, -speed);
+        return super.calculateMoveAngleSpeed(targetX, targetY, speed);
     }
 
     /*  =================  AVAILABLE METHODS  =====================

@@ -37,19 +37,19 @@ public class IngenuityPowerPlayBot extends BaseRobot
 
         if(USE_CHASSIS) {
             //sensors
-//            DistanceSensor portDistance = opMode.hardwareMap.get(DistanceSensor.class, "port distance");
-//            DistanceSensor starboardDistance = opMode.hardwareMap.get(DistanceSensor.class, "starboard distance");
-//            ColorSensor colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
+            //DistanceSensor portDistance = opMode.hardwareMap.get(DistanceSensor.class, "port distance");
+            //DistanceSensor starboardDistance = opMode.hardwareMap.get(DistanceSensor.class, "starboard distance");
+            //ColorSensor colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
 
             //initialize the chassis & navigator
+            setChassisProfile(new _ChassisProfile());
             navigator = new IngenuityNavigation(opMode, this, null, null, null);
         }
 
         if(USE_PAYLOAD){
             //intake
-           // DcMotor intakeMotor = opMode.hardwareMap.dcMotor.get("Intake");
-
-           // Servo loaderServo = opMode.hardwareMap.servo.get("Loader");
+            // DcMotor intakeMotor = opMode.hardwareMap.dcMotor.get("Intake");
+            // Servo loaderServo = opMode.hardwareMap.servo.get("Loader");
             gripperServo= opMode.hardwareMap.servo.get("gripper");
             payload = new IngenuityPayload(opMode);
         }
