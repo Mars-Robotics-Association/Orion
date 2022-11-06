@@ -94,22 +94,6 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Toggle path: ", "Press LB");
 
         robot.getPayload().printTelemetry();
-
-        /*//DATA
-        telemetry.addLine();
-        telemetry.addLine("----DATA----");
-        //Dead wheel positions
-        telemetry.addLine("Dead wheel positions");
-        double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
-        telemetry.addData("LEFT dead wheel: ", deadWheelPositions[0]+" inches");
-        telemetry.addData("RIGHT dead wheel: ", deadWheelPositions[1]+" inches");
-        telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
-        //Odometry estimated pose
-        telemetry.addLine();
-        telemetry.addLine("Robot pose");
-        Pose2d robotPose = robot.getNavigator().getPose();
-        telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
-        telemetry.addLine();*/
     }
 
     @Override

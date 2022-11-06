@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -23,52 +24,43 @@ class JuanPayload
     }
 
     static class LiftController extends Controller{
-        enum LiftHeight {
-            LOW,
-            MEDIUM,
-            HIGH
+        private DcMotor motor;
+
+        enum PresetHeight{
+            BOTTOM(10),
+            LOW(173),
+            MEDIUM(1566),
+            HIGH(2349);
+
+            final int position;
+
+            PresetHeight(int position){
+                this.position = position;
+            }
         }
-
-        private EncoderActuator actuator;
-
-        private final double lowPos = 173;
-        private final double mediumPos = 1566;
-        private final double highPos = 2349;
 
         LiftController(JuanPayload payload, DcMotor motor) {
             super(payload);
-            _LiftProfile profile = new _LiftProfile(motor);
-            actuator = new EncoderActuator(payload.opMode, profile);
+            this.motor = motor;
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
         @Override
         void printTelemetry() {
             Telemetry telemetry = getTelemetry();
-            telemetry.addData("Current final position: ", actuator.getFinalPosition());
+            telemetry.addData("Current power: ", motor.getPower());
+            telemetry.addData("Current position: ", motor.getCurrentPosition());
+            telemetry.addData("Target position: ", motor.getTargetPosition());
         }
 
-        public void goToAbsoluteTop(){actuator.goToMax();lockActuator();}
-        public void goToAbsoluteBottom(){actuator.goToMin();}
+        public void setPower(double power){
+            motor.setPower(power);
+        }
 
-        public void lockActuator(){actuator.lock();}
-
-        public void goToPreset(LiftHeight preset){
-            double height = 0;
-
-            switch(preset) {
-                case LOW:
-                    height = lowPos;
-                    break;
-                case MEDIUM:
-                    height = mediumPos;
-                    break;
-                case HIGH:
-                    height = highPos;
-                    break;
-            }
-
-            actuator.goToPosition(height);
-            lockActuator();
+        public void goToPreset(PresetHeight height){
+            motor.setTargetPosition(height.position);
         }
     }
 
@@ -81,14 +73,13 @@ class JuanPayload
         GripperController(JuanPayload payload, Servo servo) {
             super(payload);
             this.servo = servo;
-            servo.setPosition(0);
         }
 
         private final Servo servo;
 
         private GripperState state = GripperState.OPEN;
-        private double openPos = .2;
-        private double closePos = -0.3;
+        private final double openPos = .2;
+        private final double closePos = .1;
 
         public void grab(){
             servo.setPosition(closePos);
@@ -115,6 +106,7 @@ class JuanPayload
             Telemetry telemetry = getTelemetry();
             telemetry.addData("Gripper State", state == GripperState.OPEN ? "OPEN" : "CLOSED");
             telemetry.addData("Position", servo.getPosition());
+            telemetry.addData("Direction", servo.getDirection());
         }
     }
 
@@ -136,9 +128,9 @@ class JuanPayload
     //print telemetry
     public void printTelemetry(){
         opMode.telemetry.addLine("----PAYLOAD----");
-        opMode.telemetry.addLine("!!LIFT");
+        opMode.telemetry.addLine("<LIFT>");
         liftController.printTelemetry();
-        opMode.telemetry.addLine("!!GRIPPER");
+        opMode.telemetry.addLine("<GRIPPER>");
         gripperController.printTelemetry();
     }
 }

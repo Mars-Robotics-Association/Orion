@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMotorArray;
 
