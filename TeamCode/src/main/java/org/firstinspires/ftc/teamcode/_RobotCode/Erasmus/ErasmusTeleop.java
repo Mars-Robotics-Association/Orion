@@ -162,6 +162,7 @@ public class ErasmusTeleop extends OpMode implements ControllerInputListener
     public void ButtonReleased(int id, Button button) {
         switch (button){
             case RT:
+
             case LT:
                 if(robot.USE_PAYLOAD) robot.getPayload().moveArm(0);
                 break;

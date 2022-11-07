@@ -11,9 +11,9 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 
-@TeleOp(name = "*Telemetry Demo*", group = "ingenuity")
+@TeleOp(name = "*Odometry Demo*", group = "ingenuity")
 @Config
-public class TelemetryDemo extends OpMode implements ControllerInputListener
+public class OdometryDemo extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
     private IngenuityPowerPlayBot robot;
@@ -149,10 +149,12 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
     public void ButtonHeld(int id, Button button) {
         switch (button) {
             case X:
-                robot.getNavigator().moveTowards(16, 6, 0.4) ;
+                //robot.getNavigator().moveTowards(16, 6, 0.4) ;
+
                 break ;
             case Y:
-                robot.getNavigator().moveTowards(0, 0, 0.4) ;
+                robot.getNavigator().moveTowards(16, 6, 0.4) ;
+                //robot.getNavigator().moveTowards(0, 0, 0.4) ;
                 break ;
         }
     }
@@ -164,10 +166,22 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
 
                 break;
             case X:
-
+                autoDrive();
                 break ;
         }
     }
 
+    public void autoDrive() {
+        // Move in rectangle, clockwise around the post
+        // Move forward to 16x, 0y
+        while(! robot.getNavigator().moveTowards(16, 0, 0.4));
+        // Strafe right to 16v, 16y
+        while(! robot.getNavigator().moveTowards(16, 16, 0.4));
+        // Move backward to 0x, 16y
+        while(! robot.getNavigator().moveTowards(0, 16, 0.4));
+        // strafe left to 0x, 0y
+        while(! robot.getNavigator().moveTowards(0, 0, 0.4));
+
+    }
 
 }

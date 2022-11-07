@@ -85,10 +85,15 @@ public class IngenuityPowerPlayBot extends BaseRobot
         }
     }
 
+    public void toggleGripper() {
+        if(IngenuityPowerPlayBot.servoTarget==0.4){
+            IngenuityPowerPlayBot.servoTarget=0.8;
+        }
+        else IngenuityPowerPlayBot.servoTarget=0.4 ;
+    }
+
 
     public IngenuityNavigation getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
     public IngenuityPayload getPayload(){return payload;}
-
-
 }

@@ -54,7 +54,7 @@ class IngenuityNavigation extends UniversalThreeWheelNavigator
 
     @Override
     protected double[] calculateMoveAngleSpeed(double targetX, double targetY, double speed){
-        return super.calculateMoveAngleSpeed(targetX, targetY, speed);
+        return super.calculateMoveAngleSpeed(targetX, targetY, -speed);
     }
 
     /*  =================  AVAILABLE METHODS  =====================
