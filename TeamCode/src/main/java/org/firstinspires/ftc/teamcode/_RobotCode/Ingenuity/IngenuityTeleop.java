@@ -103,8 +103,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
         telemetry.addData("LEFT dead wheel: ", deadWheelPositions[0]+" inches");
         telemetry.addData("RIGHT dead wheel: ", deadWheelPositions[1]+" inches");
-        //telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
-        telemetry.addData("HORIZONTAL dead wheel: ", midEncoder.getCurrentPosition());
+        telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
         //Odometry estimated pose
         telemetry.addLine();
         telemetry.addLine("Robot pose");
@@ -169,7 +168,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void ButtonReleased(int id, ControllerInput.Button button) {
-        switch (button){IngenuityPowerPlayBot.servoTarget=
+        switch (button) {
             case RT:
                 armMotor.setPower(0);
                 break;
