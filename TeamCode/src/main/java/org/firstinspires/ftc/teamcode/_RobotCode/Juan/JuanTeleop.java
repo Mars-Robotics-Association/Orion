@@ -58,21 +58,26 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         controllerInput1.Loop();
         controllerInput2.Loop();
 
-        //cancel out when both buttons are pressed
+        boolean raiseLiftP1 = gamepad1.y || gamepad1.right_bumper;
+        boolean raiseLiftP2 = gamepad1.y || gamepad1.right_bumper;
+
+        boolean lowerLiftP1 = gamepad1.a || gamepad1.left_bumper;
+        boolean lowerLiftP2 = gamepad1.a || gamepad1.left_bumper;
+
         int liftDirection = 0;
-        if(raiseLift)liftDirection++;
-        if(lowerLift)liftDirection--;
+        if(raiseLiftP1 || raiseLiftP2)liftDirection++;
+        if(lowerLiftP1 || lowerLiftP2)liftDirection--;
 
         double appliedPower = liftDirection * liftOverrideSpeed;
 
-        if(liftDirection != 0)robot.getPayload().getLift().setPower(appliedPower);
+        robot.getPayload().getLift().setPower(appliedPower);
 
         telemetry.addData("Lift applied power", appliedPower);
 
         //update robot
         robot.update();
         //manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+        robot.navigator.dualGamepadDrive(controllerInput1, controllerInput2, driveSpeed, turnSpeed);
         //telemetry
         printTelemetry();
         telemetry.update();
@@ -95,9 +100,6 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     public void stop(){
         robot.stop();
     }
-
-    private boolean raiseLift = false;
-    private boolean lowerLift = false;
 
     ////INPUT MAPPING////
     @Override
@@ -123,14 +125,6 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
                     break;
                 case RT:
                     gripper.release();
-                    break;
-                case LB:
-                case A:
-                    lowerLift = true;
-                    break;
-                case RB:
-                case B:
-                    raiseLift = true;
             }
         }
     }
@@ -145,11 +139,7 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     @Override
     public void ButtonReleased(int id, Button button) {
         switch (button){
-            case LB:
-                lowerLift = false;
-                break;
-            case RB:
-                raiseLift = false;
+
         }
     }
 

@@ -45,7 +45,7 @@ class JuanNavigation
     private double driveMag = 0;
     private double turnAngle = 0;
 
-    private void blendGamepadInputs(
+    private void combineGamepadInputs(
             double driveAngle1,
             double driveAngle2,
             double driveMag1,
@@ -62,7 +62,7 @@ class JuanNavigation
     }
 
     public void dualGamepadDrive(ControllerInput input1, ControllerInput input2, double driveSpeed, double turnSpeed){
-        blendGamepadInputs(
+        combineGamepadInputs(
                 input1.CalculateLJSAngle(),
                 input2.CalculateLJSAngle(),
                 input1.CalculateLJSMag(),
