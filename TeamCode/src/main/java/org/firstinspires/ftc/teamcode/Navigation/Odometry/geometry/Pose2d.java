@@ -241,4 +241,15 @@ public class Pose2d extends Point{
     public Point to_point() {
         return new Point(this);
     }
+
+    public void setPose(double x, double y, double angle){
+        m_translation.equals(new Translation2d(x,y));
+        m_rotation.equals(new Rotation2d(angle));
+    }
+    public void setXY(double x, double y){
+        m_translation.equals(new Translation2d(x,y));
+    }
+    public void setAngle(double angle){
+        m_rotation.equals(new Rotation2d(angle));
+    }
 }

@@ -60,7 +60,7 @@ class Erasmus extends BaseRobot
 
     public void start(){
         getChassis().startChassis();
-        getNavigator().setRobotPose(0,0,0);
+        getNavigator().setMeasuredPose(0,0,0);
     }
 
     public void update(){

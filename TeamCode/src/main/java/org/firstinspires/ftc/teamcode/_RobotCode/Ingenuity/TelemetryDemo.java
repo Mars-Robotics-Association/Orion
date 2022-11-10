@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
@@ -62,7 +61,7 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
         //update robot
         robot.update();
         //manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, speedMultiplier);
+        robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         //telemetry
         printTelemetry();
         //telemetry.update();
@@ -99,7 +98,7 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
         //Odometry estimated pose
         telemetry.addLine();
         telemetry.addLine("Robot pose");
-        Pose2d robotPose = robot.getNavigator().getPose();
+        Pose2d robotPose = robot.getNavigator().getMeasuredPose();
         telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
         telemetry.addLine();
     }
@@ -123,7 +122,7 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
                 robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
-                robot.getNavigator().setRobotPose(0, 0, 0);
+                robot.getNavigator().setMeasuredPose(0, 0, 0);
                 robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;

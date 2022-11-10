@@ -5,16 +5,18 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
-import org.firstinspires.ftc.teamcode.Navigation.UniversalThreeWheelNavigator;
 
 
 public class CuriosityBot extends BaseRobot
 {
     ////Dependencies////
     OpMode opMode;
+    HermesLog hermesLog;
     //Mechanical Components
     CuriosityNavigator navigator;
 
@@ -27,6 +29,7 @@ public class CuriosityBot extends BaseRobot
         opMode = setOpMode;
 
         dashboard = FtcDashboard.getInstance();
+        hermesLog = new HermesLog("Curiosity", 200, opMode);
 
         if(USE_CHASSIS) {
             //sensors
@@ -52,13 +55,20 @@ public class CuriosityBot extends BaseRobot
 
     public void start(){
         getChassis().startChassis();
-        getNavigator().setRobotPose(0,0,0);
+        getNavigator().setMeasuredPose(0,0,0);
+        hermesLog.start();
     }
 
     public void update(){
 
         if(USE_NAVIGATOR){
             navigator.update();
+            RobotPose robotPose = new RobotPose(navigator.getTargetPose().getX(),
+                    navigator.getTargetPose().getY(),navigator.getTargetPose().getHeading(),
+                    navigator.getMeasuredPose().getX(), navigator.getMeasuredPose().getY(),navigator.getMeasuredPose().getHeading());
+            Object[] data = {robotPose};
+            hermesLog.addData(data);
+            hermesLog.Update();
         }
     }
 
