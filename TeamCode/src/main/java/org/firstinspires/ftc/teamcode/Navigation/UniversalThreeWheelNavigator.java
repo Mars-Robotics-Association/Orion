@@ -67,7 +67,7 @@ public class UniversalThreeWheelNavigator
 
     public void InitializeNavigator(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor){
         opMode = setOpMode;
-        chassis = new MecanumChassis(setOpMode, new _BasicChassisProfile(), new HermesLog("Demobot", 200, setOpMode), baseRobot);
+        chassis = new MecanumChassis(setOpMode, baseRobot.getChassisProfile(), new HermesLog("Demobot", 200, setOpMode), baseRobot);
         odometry = new HolonomicOdometry(trackwidth,centerWheelOffset);
         distancePort = setDistancePort;
         distanceStarboard = setDistanceStarboard;

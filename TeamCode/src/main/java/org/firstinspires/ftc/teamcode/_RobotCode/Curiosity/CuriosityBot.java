@@ -38,6 +38,7 @@ public class CuriosityBot extends BaseRobot
             ColorSensor colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
 
             //initialize the chassis & navigator
+            setChassisProfile(new _ChassisProfile());
             navigator = new CuriosityNavigator(opMode, this, portDistance, starboardDistance, colorSensor);
         }
 

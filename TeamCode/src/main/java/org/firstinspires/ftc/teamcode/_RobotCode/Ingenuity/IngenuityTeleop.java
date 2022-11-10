@@ -26,8 +26,8 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     private double speedMultiplier = 1;
 
     public static int payloadControllerNumber = 1;
-
-    public DcMotor midEncoder ;
+//i am going to be using a dc motor and its name is going to be armMotor
+    public DcMotor armMotor ;
 
     @Override
     public void init() {
@@ -43,8 +43,8 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
 
-        midEncoder = hardwareMap.dcMotor.get("RL") ;
-        midEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        armMotor = hardwareMap.dcMotor.get("armMotor") ;
+        armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         msStuckDetectLoop = 5000;
     }
 
@@ -101,8 +101,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
         telemetry.addData("LEFT dead wheel: ", deadWheelPositions[0]+" inches");
         telemetry.addData("RIGHT dead wheel: ", deadWheelPositions[1]+" inches");
-        //telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
-        telemetry.addData("HORIZONTAL dead wheel: ", midEncoder.getCurrentPosition());
+        telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
         //Odometry estimated pose
         telemetry.addLine();
         telemetry.addLine("Robot pose");
@@ -155,24 +154,34 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
+            case RT:
+                armMotor.setPower(0.3);
+                break ;
+            case LT:
+                armMotor.setPower(-0.3);
+                break ;
 
         }
     }
 
     @Override
     public void ButtonReleased(int id, ControllerInput.Button button) {
-        switch (button){
+        switch (button) {
             case RT:
-
+                armMotor.setPower(0);
                 break;
+            case LT:
+                armMotor.setPower(0);
+                break ;
+
             case X:
-                if(IngenuityPowerPlayBot.servoTarget==0.4){
-                    IngenuityPowerPlayBot.servoTarget=0.8;
-                }
-                else IngenuityPowerPlayBot.servoTarget=0.4;
+                robot.toggleGripper();
                 break ;
         }
     }
+
+
+
 
 
 }

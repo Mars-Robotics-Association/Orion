@@ -40,6 +40,7 @@ class Erasmus extends BaseRobot
             ColorSensor colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
 
             //initialize the chassis & navigator
+            setChassisProfile(new _ChassisProfile());
             navigator = new SampleNavigator(opMode, this, portDistance, starboardDistance, colorSensor);
         }
 
