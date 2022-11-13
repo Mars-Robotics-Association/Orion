@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -7,23 +8,24 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Navigation.UniversalThreeWheelNavigator;
 
+@Config
 class IngenuityNavigation extends UniversalThreeWheelNavigator
 {
     ////Variables////
-    public static double[] nav_encoderMultipliers = {1, -1, 1}; //left right horizontal
-    public static double nav_trackwidth = 10.7;
-    public static double nav_centerWheelOffset = -3;
+    public static double[] nav_encoderMultipliers = {1, -1, 1} ; //left right horizontal
+    public static double nav_trackwidth = 7.3 ;
+    public static double nav_centerWheelOffset = 1 ;  // Check for Ingy
 
-    public static double nav_turnPID_P = 0.035;
-    public static double nav_turnPID_I = 0;
-    public static double nav_turnPID_D = -0.1;
+    public static double nav_turnPID_P = 0.075 ;  // Default = 0.035
+    public static double nav_turnPID_I = 0 ;  // Default = 0
+    public static double nav_turnPID_D = -0.3 ;  // Default = -0.1
 
-    public static double nav_movePID_D = 0.1;
-    public static double nav_movePID_I = 0;
-    public static double nav_movePID_P = 0.3;
+    public static double nav_movePID_D = 0.2 ;  // Default = 0.1
+    public static double nav_movePID_I = 0 ;  // Default = 0
+    public static double nav_movePID_P = 0.3 ;  // Default = 0.3
 
-    public static double nav_stopSpeedThreshold = 0.1; //how slow the robot needs to be moving before it stops
-    public static double nav_stopTimeThreshold = 0.2; //how long it needs to be below speed threshold
+    public static double nav_stopSpeedThreshold = 0.15 ; //how slow the robot needs to be moving before it stops
+    public static double nav_stopTimeThreshold = 0.2 ; //how long it needs to be below speed threshold
 
     public IngenuityNavigation(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor) {
 
@@ -49,7 +51,7 @@ class IngenuityNavigation extends UniversalThreeWheelNavigator
     //make these speeds negative if going wrong direction
     @Override
     protected double calculateTurnSpeed(double targetAngle, double speed){
-        return super.calculateTurnSpeed(targetAngle,speed);
+        return super.calculateTurnSpeed(targetAngle,-speed);
     }
 
     @Override
