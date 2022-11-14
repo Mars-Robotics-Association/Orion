@@ -14,7 +14,7 @@ public class HermesTestingOpMode extends OpMode
 
     @Override
     public void init() {
-        log = new HermesLog("HERMES TESTING", 200, this);
+        log = new HermesLog("HERMES TESTING", 50, this);
     }
 
     @Override
@@ -25,9 +25,11 @@ public class HermesTestingOpMode extends OpMode
     @Override
     public void loop() {
         RobotPose robotPose = new RobotPose(Math.sin(getRuntime()*0.5)*70,
-                Math.cos(getRuntime())*70, fixAngle(getRuntime()*45),
+                Math.cos(getRuntime())*70,
+                fixAngle(Math.cos(getRuntime())*70),
                 (Math.sin(getRuntime()*0.5)*70)+2,
-                (Math.cos(getRuntime())*70)+2, (fixAngle(getRuntime())*45)+2);
+                (Math.cos(getRuntime())*70)+2,
+                fixAngle(Math.cos(getRuntime())*70));
         //Base64Image imgToSend = new Base64Image("eggs");
         Object[] data = {robotPose};
         log.addData(data);

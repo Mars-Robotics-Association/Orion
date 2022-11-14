@@ -122,7 +122,7 @@ public class HermesLog
         String stringToSend = finalJson.toString();
 
         //Send the final json to the websocket as a string
-        opMode.telemetry.addData("Message", stringToSend);
+        //opMode.telemetry.addData("Message", stringToSend);
         DashboardWebSocketServer.getInstance().send(stringToSend);
         Log.i(tag, stringToSend);
         opMode.telemetry.update();
