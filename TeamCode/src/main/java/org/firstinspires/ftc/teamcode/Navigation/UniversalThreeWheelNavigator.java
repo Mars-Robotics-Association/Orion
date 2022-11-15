@@ -62,8 +62,8 @@ public class UniversalThreeWheelNavigator
     PIDController movePID;
 
     double lastTimeAboveStopThreshold = 0;
-
     double controllerOffsetDegrees = 0;
+    Pose2d targetPose;
 
     public void InitializeNavigator(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor){
         opMode = setOpMode;
@@ -89,6 +89,9 @@ public class UniversalThreeWheelNavigator
         resetTurnPID();
         movePID = new PIDController(movePID_P, movePID_I, movePID_D);
         resetMovePID();
+
+        //initialize pose objects
+        targetPose = new Pose2d();
     }
 
     public void update(){
@@ -179,7 +182,9 @@ public class UniversalThreeWheelNavigator
 
     ////INTERNAL////
 
+    //angle is in degrees
     protected double calculateTurnSpeed(double targetAngle, double speed){
+        targetPose.setAngle(targetAngle);
         double actualAngle = getRobotAngleDegrees();
         opMode.telemetry.addData("Initial target angle: ", targetAngle);
         opMode.telemetry.addData("Initial actual angle: ", actualAngle);
@@ -211,15 +216,16 @@ public class UniversalThreeWheelNavigator
     }
 
     protected double[] calculateMoveAngleSpeed(double targetX, double targetY, double speed){
+        targetPose.setXY(targetX,targetY);
         //get robot pose
-        double actualX = getPose().getX();
-        double actualY = getPose().getY();
+        double actualX = getMeasuredPose().getX();
+        double actualY = getMeasuredPose().getY();
         //calculates distance to target
         double distanceError = getDistance(targetX, targetY, actualX, actualY);
         //calculates speed based off of distance from target
         double moveSpeed = speed * movePID.getOutput(distanceError, 0);
         //calculate the move angle
-        double moveAngle = getPose().getHeading() + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX)));
+        double moveAngle = getMeasuredPose().getHeading() + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX)));
 
         //prints telemetry
 
@@ -264,8 +270,9 @@ public class UniversalThreeWheelNavigator
     //gets the positions of the dead wheels
     public double[] getDeadWheelPositions(){return encoders.getPositions();}
 
-    public void setRobotPose(double x, double y, double angle){odometry.updatePose(new Pose2d(x,y,angle));}
-    public Pose2d getPose(){return odometry.getPose();}
+    public void setMeasuredPose(double x, double y, double angle){odometry.updatePose(new Pose2d(x,y,angle));}
+    public Pose2d getMeasuredPose(){return odometry.getPose();}
+    public Pose2d getTargetPose(){return targetPose;}
     public double getRobotAngleDegrees(){return Math.toDegrees(odometry.getPose().getHeading());}
 
     //sets PIDs
