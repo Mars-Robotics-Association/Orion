@@ -149,10 +149,10 @@ public class OdometryDemo extends OpMode implements ControllerInputListener
     public void ButtonHeld(int id, Button button) {
         switch (button) {
             case X:
-                telemetry.addData("LEFT dead wheel: ", robot.getNavigator().goTowardsPose(16, 6, 0, 0.3) ) ;
+                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(16, 6, 0, 0.3) ) ;
                 break ;
             case Y:
-                telemetry.addData("LEFT dead wheel: ", robot.getNavigator().goTowardsPose(0, 0, 0, 0.3) ) ;
+                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(0, 0, 0, 0.3) ) ;
                 break ;
         }
     }
