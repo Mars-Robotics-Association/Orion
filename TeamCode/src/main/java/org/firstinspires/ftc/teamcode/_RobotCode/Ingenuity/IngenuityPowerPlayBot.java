@@ -5,6 +5,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
@@ -19,15 +21,19 @@ public class IngenuityPowerPlayBot extends BaseRobot
     IngenuityNavigation navigator;
     Servo gripperServo ;
     public static double servoTarget=0.8;
+    public static double servoTarget1=0.8;
+    public static double servoTarget2=0.8;
 
     //Misc
     FtcDashboard dashboard;
+    HermesLog log;
 
     public IngenuityPowerPlayBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
         super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
         opMode = setOpMode;
 
+        log = new HermesLog("Ingenuity", 50, opMode);
         dashboard = FtcDashboard.getInstance();
 
         if(USE_CHASSIS) {
@@ -49,7 +55,9 @@ public class IngenuityPowerPlayBot extends BaseRobot
             payload = new IngenuityPayload(opMode);
         }
 
-        if(USE_NAVIGATOR){}
+        if(USE_NAVIGATOR){
+
+        }
     }
 
     //SETUP METHODS//
@@ -60,12 +68,14 @@ public class IngenuityPowerPlayBot extends BaseRobot
     public void start(){
         getChassis().startChassis();
         getNavigator().setMeasuredPose(0,0,0);
+        log.start();
     }
 
     public void update(){
 
         if(USE_NAVIGATOR){
-            navigator.update();}
+            navigator.update();
+        }
 
         if(USE_PAYLOAD){
             gripperServo.setPosition(servoTarget);
@@ -81,10 +91,10 @@ public class IngenuityPowerPlayBot extends BaseRobot
     }
 
     public void toggleGripper() {
-        if(IngenuityPowerPlayBot.servoTarget==0.4){
-            IngenuityPowerPlayBot.servoTarget=0.8;
+        if(IngenuityPowerPlayBot.servoTarget==servoTarget1){
+            IngenuityPowerPlayBot.servoTarget=servoTarget2;
         }
-        else IngenuityPowerPlayBot.servoTarget=0.4 ;
+        else IngenuityPowerPlayBot.servoTarget=servoTarget1 ;
     }
 
 
