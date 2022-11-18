@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,10 +11,10 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
-
-@TeleOp(name = "*INGENUITY TELEOP*", group = "ingenuity")
+@Disabled
+@TeleOp(name = "*INGENUITY Demo*", group = "ingenuity")
 @Config
-public class IngenuityTeleop extends OpMode implements ControllerInputListener
+public class IngenuityDemo extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
     private IngenuityPowerPlayBot robot;
@@ -56,7 +57,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         robot.getChassis().resetGyro();
         //if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) robot.SetInputOffset(90); //90 is blue, -90 is red
         //else if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) robot.SetInputOffset(-90); //90 is blue, -90 is red
-        robot.getChassis().setHeadlessMode(false);
+        robot.getChassis().setHeadlessMode(true);
     }
 
     @Override
@@ -99,7 +100,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         telemetry.addLine();
         telemetry.addLine("----DATA----");
         telemetry.addData("Gripper: ", robot.servoTarget);
-        telemetry.addData("Arm:     ", armMotor.getCurrentPosition());
+        //telemetry.addData("Arm:     ", armMotor.getCurrentPosition());
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
