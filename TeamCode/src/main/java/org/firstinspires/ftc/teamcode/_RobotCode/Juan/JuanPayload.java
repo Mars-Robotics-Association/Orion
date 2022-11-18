@@ -23,25 +23,27 @@ class JuanPayload
         abstract void printTelemetry();
     }
 
-    static class LiftController extends Controller{
-        private DcMotor motor;
+    enum PresetHeight{
+        BOTTOM(10),
+        LOW(1800),
+        MEDIUM(3100),
+        HIGH(4500);
 
-        enum PresetHeight{
-            BOTTOM(10),
-            LOW(173),
-            MEDIUM(1566),
-            HIGH(2349);
+        final int position;
 
-            final int position;
-
-            PresetHeight(int position){
-                this.position = position;
-            }
+        PresetHeight(int position){
+            this.position = position;
         }
+    }
 
-        LiftController(JuanPayload payload, DcMotor motor) {
+    static class LiftController extends Controller{
+        private double power;
+        private final DcMotor motor;
+
+        LiftController(JuanPayload payload, DcMotor motor, double power) {
             super(payload);
             this.motor = motor;
+            this.power = power;
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -56,19 +58,23 @@ class JuanPayload
         }
 
         public void setPower(double power){
-            motor.setPower(power);
+            this.power = power;
         }
 
         public void goToPreset(PresetHeight height){
             motor.setTargetPosition(height.position);
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motor.setPower(power);
         }
     }
 
+    enum GripperState{
+        OPEN,
+        CLOSED
+    }
+
     static class GripperController extends Controller{
-        enum GripperState{
-            OPEN,
-            CLOSED
-        }
+
 
         GripperController(JuanPayload payload, Servo servo) {
             super(payload);
@@ -79,7 +85,7 @@ class JuanPayload
 
         private GripperState state = GripperState.OPEN;
         private final double openPos = .2;
-        private final double closePos = .1;
+        private final double closePos = -.2;
 
         public void grab(){
             servo.setPosition(closePos);
@@ -113,10 +119,10 @@ class JuanPayload
     OpMode opMode;
 
     //initializer
-    public JuanPayload(OpMode opMode, DcMotor lift, Servo gripper) {
+    public JuanPayload(OpMode opMode, DcMotor lift, Servo gripper, double liftPower) {
         this.opMode = opMode;
 
-        liftController = new LiftController(this, lift);
+        liftController = new LiftController(this, lift, liftPower);
         gripperController = new GripperController(this, gripper);
     }
 

@@ -13,14 +13,15 @@ public class ColorPipe extends OpenCvPipeline {
     Scalar low = OpenCVColors.RedL;
     @Override
     public Mat processFrame(Mat input) {
-        Mat hsvMat = new Mat();
-        Mat mask = new Mat();
-        Mat last = new Mat();
         Imgproc.cvtColor(input,hsvMat,Imgproc.COLOR_RGB2HSV);
         Core.inRange(hsvMat,low,high,mask);
         Core.bitwise_and(input,input,last,mask);
         return last;
     }
+
+    Mat last = new Mat();
+    Mat hsvMat = new Mat();
+    Mat mask = new Mat();
 
     public void onViewportTapped()
     {
@@ -56,8 +57,6 @@ public class ColorPipe extends OpenCvPipeline {
 
     public Mat range(Mat input)
     {
-        Mat hsvMat = new Mat();
-        Mat mask = new Mat();
         Imgproc.cvtColor(input,hsvMat,Imgproc.COLOR_RGB2HSV);
         Core.inRange(hsvMat,low,high,mask);
         return mask;

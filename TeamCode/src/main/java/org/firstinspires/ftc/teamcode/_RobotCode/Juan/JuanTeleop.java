@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
-import com.acmerobotics.dashboard.FtcDashboard;
+import android.os.Build;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,15 +9,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
-import org.firstinspires.ftc.teamcode.Navigation.Camera;
-
-import javax.tools.JavaCompiler;
 
 
 @TeleOp(name = "*JUAN TELEOP*", group = "JUAN")
 @Config
 public class JuanTeleop extends OpMode implements ControllerInputListener
 {
+    private static final String VERSION = "1.9";
+
     ////Dependencies////
     private Juan robot;
     private ControllerInput controllerInput1;
@@ -55,29 +55,17 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void loop() {
+        telemetry.addData("Version", VERSION);
+
         controllerInput1.Loop();
         controllerInput2.Loop();
 
-        boolean raiseLiftP1 = gamepad1.y || gamepad1.right_bumper;
-        boolean raiseLiftP2 = gamepad1.y || gamepad1.right_bumper;
 
-        boolean lowerLiftP1 = gamepad1.a || gamepad1.left_bumper;
-        boolean lowerLiftP2 = gamepad1.a || gamepad1.left_bumper;
-
-        int liftDirection = 0;
-        if(raiseLiftP1 || raiseLiftP2)liftDirection++;
-        if(lowerLiftP1 || lowerLiftP2)liftDirection--;
-
-        double appliedPower = liftDirection * liftOverrideSpeed;
-
-        robot.getPayload().getLift().setPower(appliedPower);
-
-        telemetry.addData("Lift applied power", appliedPower);
 
         //update robot
         robot.update();
         //manage driving
-        robot.navigator.dualGamepadDrive(controllerInput1, controllerInput2, driveSpeed, turnSpeed);
+        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, 1);
         //telemetry
         printTelemetry();
         telemetry.update();
@@ -104,17 +92,7 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     ////INPUT MAPPING////
     @Override
     public void ButtonPressed(int id, Button button) {
-        switch (button) {
-            case LJS:
-                robot.getChassis().switchHeadlessMode();
-                break;
-            case RJS:// reset robot pose
-                robot.getChassis().driveMotors.StopAndResetEncoders();
-                robot.getChassis().resetGyro();
-                break;
-        }
-
-        if(robot.USE_PAYLOAD) {
+        if(!robot.USE_PAYLOAD)return;
             JuanPayload payload = robot.getPayload();
             JuanPayload.LiftController lift = payload.getLift();
             JuanPayload.GripperController gripper = payload.getGripper();
@@ -125,8 +103,20 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
                     break;
                 case RT:
                     gripper.release();
+                    break;
+                case A:
+                    lift.goToPreset(JuanPayload.PresetHeight.BOTTOM);
+                    break;
+                case B:
+                    lift.goToPreset(JuanPayload.PresetHeight.LOW);
+                    break;
+                case Y:
+                    lift.goToPreset(JuanPayload.PresetHeight.MEDIUM);
+                    break;
+                case X:
+                    lift.goToPreset(JuanPayload.PresetHeight.HIGH);
             }
-        }
+
     }
 
     @Override

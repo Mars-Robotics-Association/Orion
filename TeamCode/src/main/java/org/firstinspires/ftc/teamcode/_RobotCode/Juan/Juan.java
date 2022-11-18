@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 
 public class Juan extends BaseRobot
 {
+    private static final String VERSION = "1.9";
+
     ////Dependencies////
     OpMode opMode;
     //Mechanical Components
@@ -19,7 +21,8 @@ public class Juan extends BaseRobot
 
     //Misc
     FtcDashboard dashboard;
-    private JuanNavigation navigator1;
+
+    static final double liftPower = 0;
 
     public Juan(OpMode opMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
@@ -37,7 +40,7 @@ public class Juan extends BaseRobot
         if(USE_PAYLOAD){
             DcMotor lift = opMode.hardwareMap.dcMotor.get("lift");
             Servo gripper = opMode.hardwareMap.servo.get("gripper");
-            payload = new JuanPayload(opMode, lift, gripper);
+            payload = new JuanPayload(opMode, lift, gripper, liftPower);
         }
 
         //if(USE_NAVIGATOR){}

@@ -27,6 +27,4 @@ public class Pipeline extends OpenCvPipeline {
     public int GetResults(){
         return lastresult;
     }
-
-
 }
