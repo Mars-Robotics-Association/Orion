@@ -16,13 +16,16 @@ public class IngenuityPowerPlayBot extends BaseRobot
 {
     ////Dependencies////
     OpMode opMode;
+
     //Mechanical Components
     IngenuityPayload payload;
     IngenuityNavigation navigator;
+
+    // Gripper
     Servo gripperServo ;
-    public static double servoTarget=0.8;
-    public static double servoTarget1=0.8;
-    public static double servoTarget2=0.8;
+    public static double servoTarget=0.5;
+    public static double servoTarget1=0.4;
+    public static double servoTarget2=0.6;
 
     //Misc
     FtcDashboard dashboard;
@@ -48,9 +51,9 @@ public class IngenuityPowerPlayBot extends BaseRobot
         }
 
         if(USE_PAYLOAD){
+
+
             //intake
-            // DcMotor intakeMotor = opMode.hardwareMap.dcMotor.get("Intake");
-            // Servo loaderServo = opMode.hardwareMap.servo.get("Loader");
             gripperServo= opMode.hardwareMap.servo.get("gripper");
             payload = new IngenuityPayload(opMode);
         }
