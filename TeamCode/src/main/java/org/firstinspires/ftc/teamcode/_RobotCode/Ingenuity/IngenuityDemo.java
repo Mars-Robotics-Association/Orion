@@ -29,6 +29,8 @@ public class IngenuityDemo extends OpMode implements ControllerInputListener
 
     public static int payloadControllerNumber = 1;
 
+    public static double armPower = 0.5 ;
+
     @Override
     public void init() {
         robot = new IngenuityDemoRobot(this,true,true,true);
@@ -154,11 +156,11 @@ public class IngenuityDemo extends OpMode implements ControllerInputListener
         switch (button) {
             case RT:
                 robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
-                robot.armMotor.setPower(0.3);
+                robot.armMotor.setPower(armPower);
                 break ;
             case LT:
                 robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
-                robot.armMotor.setPower(-0.3);
+                robot.armMotor.setPower(-armPower);
                 break ;
             case B:
                 telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(-24, -10, 0, 0.4) ) ;

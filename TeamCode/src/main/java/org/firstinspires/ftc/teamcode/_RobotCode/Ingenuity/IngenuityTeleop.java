@@ -30,6 +30,8 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 //i am going to be using a dc motor and its name is going to be armMotor
     public DcMotor armMotor ;
 
+    public static double armPower = 0.5 ;
+
     @Override
     public void init() {
         robot = new IngenuityPowerPlayBot(this,true,true,true);
@@ -159,10 +161,10 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
             case RT:
-                armMotor.setPower(0.3);
+                armMotor.setPower(armPower);
                 break ;
             case LT:
-                armMotor.setPower(-0.3);
+                armMotor.setPower(-armPower);
                 break ;
 
         }
@@ -179,6 +181,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
                 break ;
             case X:
                 robot.toggleGripper();
+                //robot.gripperServo.setPosition(robot.servoTarget) ;
                 break ;
         }
     }
