@@ -49,7 +49,6 @@ class JuanPayload
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        @Override
         void printTelemetry() {
             Telemetry telemetry = getTelemetry();
             telemetry.addData("Current power: ", motor.getPower());
@@ -107,7 +106,6 @@ class JuanPayload
             }
         }
 
-        @Override
         void printTelemetry() {
             Telemetry telemetry = getTelemetry();
             telemetry.addData("Gripper State", state == GripperState.OPEN ? "OPEN" : "CLOSED");

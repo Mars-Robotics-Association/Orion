@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 
 public class Juan extends BaseRobot
 {
-    private static final String VERSION = "1.9";
+    private static final String VERSION = "1.11";
 
     ////Dependencies////
     OpMode opMode;
@@ -22,7 +22,7 @@ public class Juan extends BaseRobot
     //Misc
     FtcDashboard dashboard;
 
-    static final double liftPower = 0;
+    static final double liftPower = 5;
 
     public Juan(OpMode opMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
