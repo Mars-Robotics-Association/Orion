@@ -55,7 +55,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
 
             //intake
             gripperServo= opMode.hardwareMap.servo.get("gripper");
-            payload = new IngenuityPayload(opMode);
+            //payload = new IngenuityPayload(opMode);
         }
 
         if(USE_NAVIGATOR){
@@ -94,10 +94,10 @@ public class IngenuityPowerPlayBot extends BaseRobot
     }
 
     public void toggleGripper() {
-        if(IngenuityPowerPlayBot.servoTarget==servoTarget1){
-            IngenuityPowerPlayBot.servoTarget=servoTarget2;
+        if(servoTarget==servoTarget1){
+            servoTarget=servoTarget2;
         }
-        else IngenuityPowerPlayBot.servoTarget=servoTarget1 ;
+        else servoTarget=servoTarget1 ;
     }
 
 
