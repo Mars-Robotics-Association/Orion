@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 @Config
 public class JuanTeleop extends OpMode implements ControllerInputListener
 {
-    private static final String VERSION = "1.10";
+    private static final String VERSION = "1.12";
 
     ////Dependencies////
     private Juan robot;

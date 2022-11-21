@@ -84,7 +84,7 @@ class JuanPayload
 
         private GripperState state = GripperState.OPEN;
         private final double openPos = .2;
-        private final double closePos = -.2;
+        private final double closePos = -.4;
 
         public void grab(){
             servo.setPosition(closePos);

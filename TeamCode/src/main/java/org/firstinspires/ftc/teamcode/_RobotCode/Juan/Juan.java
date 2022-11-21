@@ -22,7 +22,7 @@ public class Juan extends BaseRobot
     //Misc
     FtcDashboard dashboard;
 
-    static final double liftPower = 5;
+    static final double liftPower = 2;
 
     public Juan(OpMode opMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
