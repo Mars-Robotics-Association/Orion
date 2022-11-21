@@ -100,13 +100,14 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
+        telemetry.addData("color ",String.valueOf(robot.colorSensor.red()),String.valueOf(robot.colorSensor.green()),String.valueOf(robot.colorSensor.blue()));
         telemetry.addData("Gripper: ", robot.servoTarget);
         telemetry.addData("Arm:     ", armMotor.getCurrentPosition());
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
-        telemetry.addData("LEFT dead wheel: ", deadWheelPositions[0]+" inches");
-        telemetry.addData("RIGHT dead wheel: ", deadWheelPositions[1]+" inches");
+        telemetry.addData("LEFT dead wheel:       ", deadWheelPositions[0]+" inches");
+        telemetry.addData("RIGHT dead wheel:      ", deadWheelPositions[1]+" inches");
         telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
         //Odometry estimated pose
         telemetry.addLine();

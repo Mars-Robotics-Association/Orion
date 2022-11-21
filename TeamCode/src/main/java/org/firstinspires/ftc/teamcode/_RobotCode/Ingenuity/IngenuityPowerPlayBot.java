@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
@@ -26,6 +27,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
     public static double servoTarget=0.5;
     public static double servoTarget1=0.4;
     public static double servoTarget2=0.6;
+    ColorSensor colorSensor;
 
     //Misc
     FtcDashboard dashboard;
@@ -55,6 +57,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
 
             //intake
             gripperServo= opMode.hardwareMap.servo.get("gripper");
+            colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
             //payload = new IngenuityPayload(opMode);
         }
 
