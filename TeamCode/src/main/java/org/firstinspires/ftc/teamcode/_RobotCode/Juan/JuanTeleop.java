@@ -60,8 +60,6 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         controllerInput1.Loop();
         controllerInput2.Loop();
 
-
-
         //update robot
         robot.update();
         //manage driving
@@ -77,9 +75,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         telemetry.addLine("----CONTROLS----");
         telemetry.addData("Drive with: ", "LJS");
         telemetry.addData("Turn with: ", "RJS");
-        telemetry.addData("Change speed multiplier: ", "A");
-        telemetry.addData("Reset robot pose: ", "Press RJS");
-        telemetry.addData("Toggle headless mode: ", "Press LJS");
+        telemetry.addData("Toggle headless mode: ", "Press LOGITECH");
+        telemetry.addData("HEADLESS MODE", robot.getNavigator().HEADLESS_MODE);
 
         if(robot.USE_PAYLOAD)robot.getPayload().printTelemetry();
     }
@@ -98,6 +95,9 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
             JuanPayload.GripperController gripper = payload.getGripper();
 
             switch (button) {
+                case GUIDE:
+                    robot.getNavigator().toggleHeadless();
+                    break;
                 case LT:
                     gripper.grab();
                     break;

@@ -21,7 +21,7 @@ public class JuanAutonomous extends LinearOpMode
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Demobot(this,true,true,true);
+        robot = new Demobot(this,true,true, false);
         robot.init();
         camera = new Camera(this,"Webcam 1",false);
 

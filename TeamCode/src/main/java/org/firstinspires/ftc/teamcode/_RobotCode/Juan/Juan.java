@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 
 public class Juan extends BaseRobot
 {
-    private static final String VERSION = "1.11";
+    private static final String VERSION = "1.13";
 
     ////Dependencies////
     OpMode opMode;
