@@ -30,6 +30,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     public static int payloadControllerNumber = 1;
 
+    //Reference
+    private double lastRuntime = 0;
+
 
 
     @Override
@@ -67,12 +70,17 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
         }
         //update robot
-        robot.update();
+        try {
+            robot.update();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         //manage driving
         robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         //telemetry
         printTelemetry();
         telemetry.update();
+        lastRuntime = getRuntime();
     }
 
     //prints a large amount of telemetry for the robot
@@ -94,6 +102,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
+        //runtime
+        telemetry.addData("Loop time ms: ", (getRuntime()-lastRuntime)*1000);
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
@@ -103,7 +113,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //Odometry estimated pose
         telemetry.addLine();
         telemetry.addLine("Robot pose");
-        Pose2d robotPose = robot.getNavigator().getPose();
+        Pose2d robotPose = robot.getNavigator().getMeasuredPose();
         telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
         telemetry.addLine();
     }
@@ -126,7 +136,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
-                robot.getNavigator().setRobotPose(0, 0, 0);
+                robot.getNavigator().setMeasuredPose(0, 0, 0);
                 robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;

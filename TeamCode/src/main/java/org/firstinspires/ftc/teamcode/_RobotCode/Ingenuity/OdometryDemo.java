@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
@@ -11,9 +10,9 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 
-@TeleOp(name = "*Telemetry Demo*", group = "ingenuity")
+@TeleOp(name = "*Odometry Demo*", group = "ingenuity")
 @Config
-public class TelemetryDemo extends OpMode implements ControllerInputListener
+public class OdometryDemo extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
     private IngenuityPowerPlayBot robot;
@@ -39,7 +38,8 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
 
-        msStuckDetectLoop = 5000;
+        //msStuckDetectLoop = 5000;
+        msStuckDetectLoop = 10000;   // TODO: Change back after testing
     }
 
     @Override
@@ -88,8 +88,8 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
         robot.getPayload().printTelemetry();
         */
         //DATA
-        telemetry.addLine();
-        telemetry.addLine("----DATA----");
+        //telemetry.addLine();
+        //telemetry.addLine("----DATA----");
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
@@ -99,7 +99,7 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
         //Odometry estimated pose
         telemetry.addLine();
         telemetry.addLine("Robot pose");
-        Pose2d robotPose = robot.getNavigator().getPose();
+        Pose2d robotPose = robot.getNavigator().getMeasuredPose();
         telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
         telemetry.addLine();
     }
@@ -123,7 +123,7 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
                 robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
-                robot.getNavigator().setRobotPose(0, 0, 0);
+                robot.getNavigator().setMeasuredPose(0, 0, 0);
                 robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
@@ -149,10 +149,10 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
     public void ButtonHeld(int id, Button button) {
         switch (button) {
             case X:
-                robot.getNavigator().moveTowards(16, 6, 0.4) ;
+                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(16, 6, 0, 0.3) ) ;
                 break ;
             case Y:
-                robot.getNavigator().moveTowards(0, 0, 0.4) ;
+                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(0, 0, 0, 0.3) ) ;
                 break ;
         }
     }
@@ -163,11 +163,35 @@ public class TelemetryDemo extends OpMode implements ControllerInputListener
             case Y:
 
                 break;
-            case X:
-
+            case B:
+                autoDrive();
                 break ;
         }
     }
 
+    public void autoDrive() {
+        // Move in rectangle, clockwise around the post
+        // Move forward to 16x, 0y
+        while(! robot.getNavigator().goTowardsPose(20, 0, 0, 0.3)) {
+            robot.update() ;
+            telemetry.update() ;
+        }
+        // Strafe right to 16v, 16y
+        while(! robot.getNavigator().goTowardsPose(20, 20, 0, 0.3)) {
+            robot.update() ;
+            telemetry.update() ;
+        }
+        // Move backward to 0x, 16y
+        while(! robot.getNavigator().goTowardsPose(0, 20, 0, 0.3)) {
+            robot.update() ;
+            telemetry.update() ;
+        }
+        // strafe left to 0x, 0y
+        while(! robot.getNavigator().goTowardsPose(0, 0, 0, 0.3)) {
+            robot.update() ;
+            telemetry.update() ;
+        }
+
+    }
 
 }

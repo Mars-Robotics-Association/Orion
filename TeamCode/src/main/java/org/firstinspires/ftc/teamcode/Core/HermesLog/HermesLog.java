@@ -36,7 +36,7 @@ public class HermesLog
     boolean accumulateData = false;
 
     private String tag = "LOG";
-    private double updateTime = 500;
+    private double updateTime = 200;
     private double lastSendTime = 0;
     private OpMode opMode;
 
@@ -63,7 +63,7 @@ public class HermesLog
         }
     }
 
-    public void Start() {
+    public void start() {
         runtime.reset();
     }
 
@@ -71,14 +71,14 @@ public class HermesLog
     public void Update(){
         if(runtime.milliseconds() >= lastSendTime + updateTime) {
             lastSendTime = runtime.milliseconds();
-            SendDataImmediate(accumulatedData.toArray());
+            sendDataImmediate(accumulatedData.toArray());
             accumulatedData.clear();
         }
         if(!accumulateData) accumulatedData.clear();
     }
 
     //Adds data to be sent on the next update
-    public void AddData(Object[] data){
+    public void addData(Object[] data){
         if(data == null) return;
 
         for (int i=0; i<data.length; i++) {
@@ -88,7 +88,7 @@ public class HermesLog
     }
 
     //Sends json containing the public member variables from an array of public objects
-    public void SendDataImmediate(Object[] data) {
+    public void sendDataImmediate(Object[] data) {
         if(data == null) return;
 
         //Add a timestamp to the data
@@ -113,7 +113,7 @@ public class HermesLog
         //Combines the json into one block
         JSONObject finalJson = null;
         try {
-            finalJson = CombineJSON(jsonObjects);
+            finalJson = combineJSON(jsonObjects);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -122,7 +122,7 @@ public class HermesLog
         String stringToSend = finalJson.toString();
 
         //Send the final json to the websocket as a string
-        opMode.telemetry.addData("Message", stringToSend);
+        //opMode.telemetry.addData("Message", stringToSend);
         DashboardWebSocketServer.getInstance().send(stringToSend);
         Log.i(tag, stringToSend);
         opMode.telemetry.update();
@@ -130,7 +130,7 @@ public class HermesLog
     }
 
     //Combines a list of json objects into a single json object
-    public JSONObject CombineJSON(List<JSONObject> data) throws JSONException {
+    public JSONObject combineJSON(List<JSONObject> data) throws JSONException {
         JSONObject merged = new JSONObject();
         //For each object, iterate through all its keys and add them to the final json object
         for (JSONObject obj : data) {

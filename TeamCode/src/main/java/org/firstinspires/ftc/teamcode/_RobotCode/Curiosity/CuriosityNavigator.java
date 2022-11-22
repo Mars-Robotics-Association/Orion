@@ -13,7 +13,7 @@ public class CuriosityNavigator extends UniversalThreeWheelNavigator
 {
     ////Variables////
     public static double[] nav_encoderMultipliers = {1, 1, -1}; //left right horizontal
-    public static double nav_trackwidth = 10.7;
+    public static double nav_trackwidth = 9.6;
     public static double nav_centerWheelOffset = -3;
 
     public static double nav_turnPID_P = 0.035;

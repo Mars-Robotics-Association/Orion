@@ -275,7 +275,7 @@ public class TensorFlowImageProcessorOpMode extends OpMode
                     Base64Image base = new Base64Image(msg);
                     ConfidenceLevel conf = new ConfidenceLevel(percent);
                     Object[] data ={base,conf};
-                    hermes.AddData(data);
+                    hermes.addData(data);
                     hermes.Update();
 
 

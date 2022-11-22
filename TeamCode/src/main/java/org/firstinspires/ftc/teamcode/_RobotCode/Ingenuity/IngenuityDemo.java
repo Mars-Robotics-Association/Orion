@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,13 +11,13 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
-
-@TeleOp(name = "*INGENUITY TELEOP*", group = "ingenuity")
+//@Disabled
+@TeleOp(name = "*INGENUITY Demo*", group = "ingenuity")
 @Config
-public class IngenuityTeleop extends OpMode implements ControllerInputListener
+public class IngenuityDemo extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
-    private IngenuityPowerPlayBot robot;
+    private IngenuityDemoRobot robot;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
     ////Variables////
@@ -27,14 +28,12 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     private double speedMultiplier = 1;
 
     public static int payloadControllerNumber = 1;
-//i am going to be using a dc motor and its name is going to be armMotor
-    public DcMotor armMotor ;
 
     public static double armPower = 0.5 ;
 
     @Override
     public void init() {
-        robot = new IngenuityPowerPlayBot(this,true,true,true);
+        robot = new IngenuityDemoRobot(this,true,true,true);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -46,19 +45,14 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
 
-        armMotor = hardwareMap.dcMotor.get("armMotor") ;
-        armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
-        armMotor.setDirection(DcMotorSimple.Direction.REVERSE) ;
-        msStuckDetectLoop = 5000 ;
+        msStuckDetectLoop = 10000 ;  // Default = 5000
     }
 
     @Override
     public void start(){
         robot.start();
         robot.getChassis().resetGyro();
-        //if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) robot.SetInputOffset(90); //90 is blue, -90 is red
-        //else if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) robot.SetInputOffset(-90); //90 is blue, -90 is red
-        robot.getChassis().setHeadlessMode(false);
+        robot.getChassis().setHeadlessMode(true);
     }
 
     @Override
@@ -100,14 +94,13 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
-        telemetry.addData("color ",String.valueOf(robot.colorSensor.red()),String.valueOf(robot.colorSensor.green()),String.valueOf(robot.colorSensor.blue()));
         telemetry.addData("Gripper: ", robot.servoTarget);
-        telemetry.addData("Arm:     ", armMotor.getCurrentPosition());
+        telemetry.addData("Arm:     ", robot.armMotor.getCurrentPosition());
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
-        telemetry.addData("LEFT dead wheel:       ", deadWheelPositions[0]+" inches");
-        telemetry.addData("RIGHT dead wheel:      ", deadWheelPositions[1]+" inches");
+        telemetry.addData("LEFT dead wheel: ", deadWheelPositions[0]+" inches");
+        telemetry.addData("RIGHT dead wheel: ", deadWheelPositions[1]+" inches");
         telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
         //Odometry estimated pose
         telemetry.addLine();
@@ -162,27 +155,47 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
             case RT:
-                armMotor.setPower(armPower);
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.armMotor.setPower(armPower);
                 break ;
             case LT:
-                armMotor.setPower(-armPower);
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.armMotor.setPower(-armPower);
                 break ;
-
+            case B:
+                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(-24, -10, 0, 0.4) ) ;
+                break ;
+            case Y:
+                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(0, 0, 0, 0.4) ) ;
+                break ;
         }
     }
 
     @Override
     public void ButtonReleased(int id, ControllerInput.Button button) {
         switch (button) {
-            case RT:
-                armMotor.setPower(0);
+            case RT:  // Raise arm manually
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.armMotor.setPower(0) ;
                 break ;
-            case LT:
-                armMotor.setPower(0);
+            case LT:  // Lower arm manually
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.armMotor.setPower(0) ;
                 break ;
-            case X:
+            case X:  // Toggle the gripper manually (open/close)
                 robot.toggleGripper();
-                //robot.gripperServo.setPosition(robot.servoTarget) ;
+                break ;
+            case DUP:  // Close the gripper and raise the arm to deliver high
+                robot.closeGripper() ;
+                robot.waitForTime(0.2) ;
+                robot.armTarget = robot.armHigh ;
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                break ;
+            case DDOWN:
+                robot.openGripper() ;
+                robot.waitForTime(0.2) ;
+                robot.armTarget = robot.armLow ;
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
                 break ;
         }
     }
