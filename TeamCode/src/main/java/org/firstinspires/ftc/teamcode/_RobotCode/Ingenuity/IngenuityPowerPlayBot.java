@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
+import android.graphics.Color;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -25,7 +27,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
     // Gripper
     Servo gripperServo ;
     public static double servoTarget=0.5;
-    public static double servoTarget1=0.4;
+    public static double servoTarget1=0.37;
     public static double servoTarget2=0.6;
     ColorSensor colorSensor;
 
@@ -103,6 +105,16 @@ public class IngenuityPowerPlayBot extends BaseRobot
         else servoTarget=servoTarget1 ;
     }
 
+    public int readSignal(){
+        int result = 2 ;
+        float[] hsvValues = new float[3];
+        Color.RGBToHSV(colorSensor.red(),colorSensor.green(),colorSensor.blue(),hsvValues);
+        opMode.telemetry.addData("hsv ",hsvValues[0]);
+        if (hsvValues[0]<80) {result =1;}
+        else if (hsvValues[0]>190) {result =3;}
+        opMode.telemetry.addData("result",result);
+     return result;
+    }
 
     public IngenuityNavigation getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
