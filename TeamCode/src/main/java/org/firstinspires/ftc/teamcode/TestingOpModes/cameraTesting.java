@@ -6,20 +6,11 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.ChassisProfile;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
-import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
-import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCV;
-import org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines.BoundingPipe;
 import org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines.FreightFrenzyPipeline;
-import org.firstinspires.ftc.teamcode.Navigation.OpenCV.Pipelines.Pipeline;
 import org.firstinspires.ftc.teamcode._RobotCode.Demobot2022.Demobot;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
-import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 
@@ -33,7 +24,7 @@ public class cameraTesting extends OpMode {
 
     @Override
     public void init() {
-        camera = new Camera(this,"Webcam 1",false);
+        camera = new Camera(this,"Webcam 1");
         dash = FtcDashboard.getInstance();
         msStuckDetectLoop = 50000;
         demobot = new Demobot(this,true,false,false);
@@ -47,8 +38,8 @@ public class cameraTesting extends OpMode {
         Bitmap img = null;
         Mat imageMat = null;
         try {
-            img = camera.GetImage();
-            img = camera.ShrinkBitmap(img, img.getWidth() / 10,img.getHeight() / 10);
+            img = camera.getImage();
+            img = camera.shrinkBitmap(img, img.getWidth() / 10,img.getHeight() / 10);
             imageMat = camera.convertBitmapToMat(img);
             imageMat = pipeline.processFrame(imageMat);
             img = camera.convertMatToBitMap(imageMat);
