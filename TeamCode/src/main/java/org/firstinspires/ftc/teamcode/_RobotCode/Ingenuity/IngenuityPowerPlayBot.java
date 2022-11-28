@@ -27,8 +27,8 @@ public class IngenuityPowerPlayBot extends BaseRobot
     // Gripper
     Servo gripperServo ;
     public static double servoTarget=0.5;
-    public static double servoTarget1=0.37;
-    public static double servoTarget2=0.6;
+    public static double servoTarget1=0.37;//closed
+    public static double servoTarget2=0.7;//open
     ColorSensor colorSensor;
 
     //Misc
@@ -106,15 +106,16 @@ public class IngenuityPowerPlayBot extends BaseRobot
     }
 
     public int readSignal(){
-        int result = 2 ;
+        int result = 3 ;//green
         float[] hsvValues = new float[3];
         Color.RGBToHSV(colorSensor.red(),colorSensor.green(),colorSensor.blue(),hsvValues);
         opMode.telemetry.addData("hsv ",hsvValues[0]);
-        if (hsvValues[0]<80) {result =1;}
-        else if (hsvValues[0]>190) {result =3;}
+        if (hsvValues[0]<80) result =2;//red
+        else if (hsvValues[0]>190) result =1;//blue
         opMode.telemetry.addData("result",result);
      return result;
     }
+
 
     public IngenuityNavigation getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
