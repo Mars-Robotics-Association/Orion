@@ -12,14 +12,7 @@ import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.path.PathPoint;
 public class IngenuityAutonomous extends LinearOpMode
 {
     IngenuityPowerPlayBot robot;
-    public static double speed = -0.5;
-
-
-    public static double driveSpeedThresh = 0.1;
-    public static double driveSpeedTime = 0.2;
-
-    public static double turnSpeedThresh = 0.1;
-    public static double turnSpeedTime = 0.2;
+    public static double speed = 0.3;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -31,30 +24,31 @@ public class IngenuityAutonomous extends LinearOpMode
 
         robot.getChassis().setHeadlessMode(true);
 
-
+        autoDrive();
 
         robot.stop();
     }
 
-    private void move(double x, double y){
-        while (!robot.getNavigator().moveTowards(x,y,speed,driveSpeedThresh,driveSpeedTime)&&!isStopRequested()){
+    private void goToPose(double x, double y, double angle) {
+        while(! robot.getNavigator().goTowardsPose(x, y, angle,0.3) && !isStopRequested()) {
             robot.update();
-            telemetry.addData("Moving to ", "("+x+", "+y+")");
+            telemetry.addData("Going to to ", "("+x+", "+y+", "+angle+")");
             telemetry.update();
         }
     }
-    private void turn(double a){
-        while (!robot.getNavigator().turnTowards(a,speed,turnSpeedThresh,turnSpeedTime)&&!isStopRequested()){
-            robot.update();
-            telemetry.addData("Turning to ", a);
-            telemetry.update();
-        }
-    }
-    private void goTo(double x, double y, double a){
-        while (!robot.getNavigator().goTowardsPose(x,y,a,speed,turnSpeedThresh,turnSpeedTime)&&!isStopRequested()){
-            robot.update();
-            telemetry.addData("Going to to ", "("+x+", "+y+", "+a+")");
-            telemetry.update();
-        }
+
+    public void autoDrive() {
+        // Move in rectangle, clockwise around the post
+        // Move forward to 16x, 0y
+        goToPose(20,0,0);
+
+        // Strafe right to 16v, 16y
+        goToPose(20,20,0);
+
+        // Move backward to 0x, 16y
+        goToPose(0,20,0);
+
+        // strafe left to 0x, 0y
+        goToPose(0,0,0);
     }
 }
