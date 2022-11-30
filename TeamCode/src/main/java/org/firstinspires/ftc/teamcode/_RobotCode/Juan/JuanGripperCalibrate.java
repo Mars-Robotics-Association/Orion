@@ -3,15 +3,18 @@ package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 
-@TeleOp(name = "*JUAN TELEOP*", group = "JUAN")
+@TeleOp(name = "*JUAN Gripper Calibrate*", group = "JUAN")
 @Config
-public class JuanTeleop extends OpMode implements ControllerInputListener
+public class JuanGripperCalibrate extends OpMode implements ControllerInputListener
 {
-    private static final String VERSION = "1.12";
+    private static final String VERSION = "1.13";
 
     ////Dependencies////
     private Juan robot;
@@ -27,6 +30,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     private final double liftOverrideSpeed = 5;
 
     public static int payloadControllerNumber = 1;
+
+    public static double gripperPosition;
 
     @Override
     public void init() {
@@ -58,8 +63,6 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
         //update robot
         robot.update();
-        //manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, 1);
         //telemetry
         printTelemetry();
         telemetry.update();
@@ -90,29 +93,27 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
             JuanPayload.LiftController lift = payload.getLift();
             JuanPayload.GripperController gripper = payload.getGripper();
 
-            switch (button) {
-                case GUIDE:
-                    robot.getNavigator().toggleHeadless();
-                    break;
-                case LT:
-                    gripper.grab();
-                    break;
-                case RT:
-                    gripper.release();
-                    break;
-                case A:
-                    lift.goToPreset(JuanPayload.PresetHeight.BOTTOM);
-                    break;
-                case B:
-                    lift.goToPreset(JuanPayload.PresetHeight.LOW);
-                    break;
-                case Y:
-                    lift.goToPreset(JuanPayload.PresetHeight.MEDIUM);
-                    break;
-                case X:
-                    lift.goToPreset(JuanPayload.PresetHeight.HIGH);
-            }
+        Servo servo = gripper.getServo();
 
+        gripperPosition = servo.getPosition();
+
+        switch (button) {
+            case GUIDE:
+                robot.getNavigator().toggleHeadless();
+                break;
+            case LT:
+                gripper.grab();
+                break;
+            case RT:
+                gripper.release();
+                break;
+            case X:
+                servo.setPosition(servo.getPosition()-0.1);
+                break;
+            case B:
+                servo.setPosition(servo.getPosition()+0.1);
+                break;
+        }
     }
 
     @Override

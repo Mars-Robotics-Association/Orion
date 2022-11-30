@@ -73,8 +73,6 @@ class JuanPayload
     }
 
     static class GripperController extends Controller{
-
-
         GripperController(JuanPayload payload, Servo servo) {
             super(payload);
             this.servo = servo;
@@ -82,9 +80,11 @@ class JuanPayload
 
         private final Servo servo;
 
-        private GripperState state = GripperState.OPEN;
-        private final double openPos = 0;
-        private final double closePos = -0.8;
+        public Servo getServo(){return servo;}
+
+        private GripperState state = GripperState.CLOSED;
+        private double openPos = 0;
+        private double closePos = 0.8;
 
         public void grab(){
             servo.setPosition(closePos);
@@ -96,15 +96,16 @@ class JuanPayload
             state = GripperState.CLOSED;
         }
 
-        public void toggle(){
-            switch(state){
-                case OPEN:
-                    grab();
-                    break;
-                case CLOSED:
-                    release();
-            }
-        }
+//        public void toggle(){
+//            switch(state){
+//                case OPEN:
+//                    grab();
+//                    break;
+//                case CLOSED:
+//                    release();
+//
+//            }
+//        }
 
         void printTelemetry() {
             Telemetry telemetry = getTelemetry();
