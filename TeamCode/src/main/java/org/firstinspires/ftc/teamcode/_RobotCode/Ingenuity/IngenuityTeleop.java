@@ -74,6 +74,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         //manage driving
         robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         //telemetry
+        robot.readSignal();
         printTelemetry();
         //telemetry.update();
     }
