@@ -61,6 +61,8 @@ public class JuanGripperCalibrate extends OpMode implements ControllerInputListe
         controllerInput1.Loop();
         controllerInput2.Loop();
 
+        telemetry.addData("Servo Position", gripperPosition);
+
         //update robot
         robot.update();
         //telemetry
@@ -74,8 +76,6 @@ public class JuanGripperCalibrate extends OpMode implements ControllerInputListe
         telemetry.addLine("----CONTROLS----");
         telemetry.addData("Drive with: ", "LJS");
         telemetry.addData("Turn with: ", "RJS");
-        telemetry.addData("Toggle headless mode: ", "Press LOGITECH");
-        telemetry.addData("HEADLESS MODE", robot.getNavigator().HEADLESS_MODE);
 
         if(robot.USE_PAYLOAD)robot.getPayload().printTelemetry();
     }
@@ -89,24 +89,12 @@ public class JuanGripperCalibrate extends OpMode implements ControllerInputListe
     @Override
     public void ButtonPressed(int id, Button button) {
         if(!robot.USE_PAYLOAD)return;
-            JuanPayload payload = robot.getPayload();
-            JuanPayload.LiftController lift = payload.getLift();
-            JuanPayload.GripperController gripper = payload.getGripper();
+        JuanPayload payload = robot.getPayload();
+        JuanPayload.GripperController gripper = payload.getGripper();
 
         Servo servo = gripper.getServo();
 
-        gripperPosition = servo.getPosition();
-
         switch (button) {
-            case GUIDE:
-                robot.getNavigator().toggleHeadless();
-                break;
-            case LT:
-                gripper.grab();
-                break;
-            case RT:
-                gripper.release();
-                break;
             case X:
                 servo.setPosition(servo.getPosition()-0.1);
                 break;
@@ -114,6 +102,8 @@ public class JuanGripperCalibrate extends OpMode implements ControllerInputListe
                 servo.setPosition(servo.getPosition()+0.1);
                 break;
         }
+
+        gripperPosition = servo.getPosition();
     }
 
     @Override

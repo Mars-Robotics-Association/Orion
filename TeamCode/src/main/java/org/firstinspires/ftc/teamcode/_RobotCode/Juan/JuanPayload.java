@@ -2,11 +2,9 @@ package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 
 class JuanPayload
 {
@@ -45,7 +43,6 @@ class JuanPayload
             this.motor = motor;
             this.power = power;
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
@@ -56,14 +53,23 @@ class JuanPayload
             telemetry.addData("Target position: ", motor.getTargetPosition());
         }
 
-        public void setPower(double power){
-            this.power = power;
+        public void setSpeed(double speed){
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setPower(speed);
+        }
+
+        public void reset(){
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
         public void goToPreset(PresetHeight height){
             motor.setTargetPosition(height.position);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motor.setPower(power);
+        }
+
+        public void manualMove(){
+
         }
     }
 
@@ -83,17 +89,31 @@ class JuanPayload
         public Servo getServo(){return servo;}
 
         private GripperState state = GripperState.CLOSED;
-        private double openPos = 0;
-        private double closePos = 0.8;
+        private final double openPos = 0;
+        private final double closePos = 0.8;
+
+        private final double increment = 0.1;
 
         public void grab(){
             servo.setPosition(closePos);
             state = GripperState.OPEN;
         }
 
+        public void grabMore(){
+            servo.setPosition(servo.getPosition() + increment);
+        }
+
         public void release(){
             servo.setPosition(openPos);
             state = GripperState.CLOSED;
+        }
+
+        public void releaseMore(){
+            servo.setPosition(servo.getPosition() - increment);
+        }
+
+        public double getPosition(){
+            return servo.getPosition();
         }
 
 //        public void toggle(){
