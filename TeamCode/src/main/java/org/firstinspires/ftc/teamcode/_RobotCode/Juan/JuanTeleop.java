@@ -6,12 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 
 @TeleOp(name = "*JUAN TELEOP*", group = "JUAN")
 @Config
 public class JuanTeleop extends OpMode implements ControllerInputListener
 {
-    private static final String VERSION = "1.12";
+    private static final String VERSION = "1.14";
 
     ////Dependencies////
     private Juan robot;
@@ -38,8 +39,6 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
-
-        msStuckDetectLoop = 5000;
     }
 
     @Override
@@ -53,13 +52,27 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     public void loop() {
         telemetry.addData("Version", VERSION);
 
+        MecanumChassis chassis = robot.getChassis();
+
         controllerInput1.Loop();
         controllerInput2.Loop();
 
         //update robot
         robot.update();
         //manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, 1);
+        if(gamepad2.atRest()){
+            chassis.driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, 1);
+        }else{
+            chassis.driveWithGamepad(controllerInput2, driveSpeed, turnSpeed, 1);
+        }
+
+        telemetry.addData("Gripper Position", robot.getPayload().getGripper().getPosition());
+
+        int direction = 0;
+        if(gamepad1.dpad_up || gamepad2.dpad_up)direction++;
+        if(gamepad1.dpad_down || gamepad2.dpad_down)direction++;
+        robot.getPayload().getLift().setSpeed(direction * liftOverrideSpeed);
+
         //telemetry
         printTelemetry();
         telemetry.update();
@@ -72,7 +85,6 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Drive with: ", "LJS");
         telemetry.addData("Turn with: ", "RJS");
         telemetry.addData("Toggle headless mode: ", "Press LOGITECH");
-        telemetry.addData("HEADLESS MODE", robot.getNavigator().HEADLESS_MODE);
 
         if(robot.USE_PAYLOAD)robot.getPayload().printTelemetry();
     }
@@ -91,14 +103,20 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
             JuanPayload.GripperController gripper = payload.getGripper();
 
             switch (button) {
-                case GUIDE:
-                    robot.getNavigator().toggleHeadless();
-                    break;
-                case LT:
+                case LB:
                     gripper.grab();
                     break;
-                case RT:
+                case RB:
                     gripper.release();
+                    break;
+                case LT:
+                    gripper.grabMore();
+                    break;
+                case RT:
+                    gripper.releaseMore();
+                    break;
+                case GUIDE:
+                    lift.reset();
                     break;
                 case A:
                     lift.goToPreset(JuanPayload.PresetHeight.BOTTOM);
@@ -111,6 +129,12 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
                     break;
                 case X:
                     lift.goToPreset(JuanPayload.PresetHeight.HIGH);
+                    break;
+                case DUP:
+                    lift.setSpeed(liftOverrideSpeed);
+                    break;
+                case DDOWN:
+                    lift.setSpeed(-liftOverrideSpeed);
             }
 
     }
