@@ -279,7 +279,7 @@ public class Camera
 
                     opmode.telemetry.addData("left,top:  ", "%d, %d", left, top);
                     opmode.telemetry.addData("dx,dy:  ", "%d, %d", dx, dy);
-                    opmode.telemetry.update();
+                    //opmode.telemetry.update();
                 }
             }
         }

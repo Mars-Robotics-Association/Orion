@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.path.Path;
 import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.path.PathPoint;
@@ -32,26 +33,32 @@ public class IngenuityAutonomous extends LinearOpMode
         waitForStart();
         robot.start();
 
-        //go forward to the signal
-        while(! robot.getNavigator().goTowardsPose(18,3,0,0.22)&& !isStopRequested()) {
+        EncoderActuator arm = robot.getPayload().getArm();
+        arm.goToPosition(0.3);
+        while (arm.getPosition()<0.2){
             robot.update();
-            printTelemetry();
-
+            telemetry.update();
         }
+
+        //go forward to the signal
+        goToPose(22,0,0);
         //read the signal
         signalZone=robot.readSignal();
+        //wait
+        sleep(1000);
         //move forward
-        goToPose(25,0,0) ;
+        //goToPose(25,0,0) ;
+        //turn(90);
         //strafe to signal zone
         switch(signalZone){
             case 1 :
-                goToPose(25,-15,0);
+                goToPose(22,-25,0);
                 break;
             case 3:
-                goToPose(25,15,0);
+                goToPose(25,25,0);
                 break;
             default:
-                goToPose(30,0,0);
+                goToPose(22,0,0);
         }
 
         // Move in rectangle, clockwise around the post
@@ -68,14 +75,28 @@ public class IngenuityAutonomous extends LinearOpMode
 
         //autoDrive();
 
+        while (!isStopRequested()){
+            telemetry.addData("SIGNAL READ: ", signalZone);
+            telemetry.update();
+        }
+
         robot.stop();
     }
 
     private void goToPose(double x, double y, double angle) {
         while(! robot.getNavigator().goTowardsPose(x, y, angle,0.25) && !isStopRequested()) {
             robot.update();
-            robot.opMode.telemetry.addData("Going to to ", "("+x+", "+y+", "+angle+")");
-            robot.opMode.telemetry.update();
+            telemetry.addData("SIGNAL READ: ", signalZone);
+            telemetry.addData("Going to to ", "("+x+", "+y+", "+angle+")");
+            telemetry.update();
+        }
+        robot.getChassis().stop();
+    }
+    private void turn(double angle) {
+        while(! robot.getNavigator().turnTowards(angle,0.25) && !isStopRequested()) {
+            robot.update();
+            telemetry.addData("SIGNAL READ: ", signalZone);
+            telemetry.update();
         }
     }
 

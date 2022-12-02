@@ -47,83 +47,88 @@ public class ControllerInput
     private boolean LJSDown = false;
 
     //GETTERS
-    public double GetLJSX()
+    public Gamepad getGamepad(){return gamepad;}
+    public double getLJSX()
     {
         return gamepad.left_stick_x;
     }
-    public double GetLJSY()
+    public double getLJSY()
     {
         return gamepad.left_stick_y;
     }
-    public double GetRJSX()
+    public double getRJSX()
     {
         return gamepad.right_stick_x;
     }
-    public double GetRJSY()
+    public double getRJSY()
     {
         return gamepad.right_stick_y;
     }
+    public boolean getLT(){return LTDown;}
+    public boolean getRT(){return RTDown;}
+    public boolean getLB(){return LBDown;}
+    public boolean getRB(){return RBDown;}
 
     //INTERNAL
-    void Pressed(Button button){
+    void pressed(Button button){
         for(ControllerInputListener listener : listeners) listener.ButtonPressed(id,button);
     }
-    void Held(Button button){
+    void held(Button button){
         for(ControllerInputListener listener : listeners) listener.ButtonHeld(id,button);
     }
-    void Released(Button button){
+    void released(Button button){
         for(ControllerInputListener listener : listeners) listener.ButtonReleased(id,button);
     }
 
-    public void Loop(){
+    public void loop(){
         //DETECT EVENTS
         //Pressed
-        if(gamepad.a == true && ADown == false) Pressed(Button.A);
-        if(gamepad.b == true && BDown == false) Pressed(Button.B);
-        if(gamepad.x == true && XDown == false) Pressed(Button.X);
-        if(gamepad.y == true && YDown == false) Pressed(Button.Y);
-        if(gamepad.left_bumper == true && LBDown == false) Pressed(Button.LB);
-        if(gamepad.right_bumper == true && RBDown == false) Pressed(Button.RB);
-        if(gamepad.left_trigger > TriggerThreshold && LTDown == false) Pressed(Button.LT);
-        if(gamepad.right_trigger > TriggerThreshold && RTDown == false) Pressed(Button.RT);
-        if(gamepad.dpad_up == true && DUpDown == false) Pressed(Button.DUP);
-        if(gamepad.dpad_down == true && DDownDown == false) Pressed(Button.DDOWN);
-        if(gamepad.dpad_left == true && DLeftDown == false) Pressed(Button.DLEFT);
-        if(gamepad.dpad_right == true && DRightDown == false) Pressed(Button.DRIGHT);
-        if(gamepad.left_stick_button == true && LJSDown == false) Pressed(Button.LJS);
-        if(gamepad.right_stick_button == true && RJSDown == false) Pressed(Button.RJS);
+        if(gamepad.a == true && ADown == false) pressed(Button.A);
+        if(gamepad.b == true && BDown == false) pressed(Button.B);
+        if(gamepad.x == true && XDown == false) pressed(Button.X);
+        if(gamepad.y == true && YDown == false) pressed(Button.Y);
+        if(gamepad.left_bumper == true && LBDown == false) pressed(Button.LB);
+        if(gamepad.right_bumper == true && RBDown == false) pressed(Button.RB);
+        if(gamepad.left_trigger > TriggerThreshold && LTDown == false) pressed(Button.LT);
+        if(gamepad.right_trigger > TriggerThreshold && RTDown == false) pressed(Button.RT);
+        if(gamepad.dpad_up == true && DUpDown == false) pressed(Button.DUP);
+        if(gamepad.dpad_down == true && DDownDown == false) pressed(Button.DDOWN);
+        if(gamepad.dpad_left == true && DLeftDown == false) pressed(Button.DLEFT);
+        if(gamepad.dpad_right == true && DRightDown == false) pressed(Button.DRIGHT);
+        if(gamepad.left_stick_button == true && LJSDown == false) pressed(Button.LJS);
+        if(gamepad.right_stick_button == true && RJSDown == false) pressed(Button.RJS);
 
         //Held
-        if(gamepad.a == true) Held(Button.A);
-        if(gamepad.b == true) Held(Button.B);
-        if(gamepad.x == true) Held(Button.X);
-        if(gamepad.y == true) Held(Button.Y);
-        if(gamepad.left_bumper == true) Held(Button.LB);
-        if(gamepad.right_bumper == true) Held(Button.RB);
-        if(gamepad.left_trigger > TriggerThreshold) Held(Button.LT);
-        if(gamepad.right_trigger > TriggerThreshold) Held(Button.RT);
-        if(gamepad.dpad_up == true) Held(Button.DUP);
-        if(gamepad.dpad_down == true) Held(Button.DDOWN);
-        if(gamepad.dpad_left == true) Held(Button.DLEFT);
-        if(gamepad.dpad_right == true) Held(Button.DRIGHT);
-        if(gamepad.left_stick_button == true) Held(Button.LJS);
-        if(gamepad.right_stick_button == true) Held(Button.RJS);
+        if(gamepad.a == true) held(Button.A);
+        if(gamepad.b == true) held(Button.B);
+        if(gamepad.x == true) held(Button.X);
+        if(gamepad.y == true) held(Button.Y);
+        if(gamepad.left_bumper == true) held(Button.LB);
+        if(gamepad.right_bumper == true) held(Button.RB);
+        if(gamepad.left_trigger > TriggerThreshold) held(Button.LT);
+        if(gamepad.right_trigger > TriggerThreshold) held(Button.RT);
+        if(gamepad.dpad_up == true) held(Button.DUP);
+        if(gamepad.dpad_down == true) held(Button.DDOWN);
+        if(gamepad.dpad_left == true) held(Button.DLEFT);
+        if(gamepad.dpad_right == true) held(Button.DRIGHT);
+        if(gamepad.left_stick_button == true) held(Button.LJS);
+        if(gamepad.right_stick_button == true) held(Button.RJS);
 
         //Released
-        if(gamepad.a == false && ADown == true) Released(Button.A);
-        if(gamepad.b == false && BDown == true) Released(Button.B);
-        if(gamepad.x == false && XDown == true) Released(Button.X);
-        if(gamepad.y == false && YDown == true) Released(Button.Y);
-        if(gamepad.left_bumper == false && LBDown == true) Released(Button.LB);
-        if(gamepad.right_bumper == false && RBDown == true) Released(Button.RB);
-        if(gamepad.left_trigger <= TriggerThreshold && LTDown == true) Released(Button.LT);
-        if(gamepad.right_trigger <= TriggerThreshold && RTDown == true) Released(Button.RT);
-        if(gamepad.dpad_up == false && DUpDown == true) Released(Button.DUP);
-        if(gamepad.dpad_down == false && DDownDown == true) Released(Button.DDOWN);
-        if(gamepad.dpad_left == false && DLeftDown == true) Released(Button.DLEFT);
-        if(gamepad.dpad_right == false && DRightDown == true) Released(Button.DRIGHT);
-        if(gamepad.left_stick_button == false && LJSDown == true) Released(Button.LJS);
-        if(gamepad.right_stick_button == false && RJSDown == true) Released(Button.RJS);
+        if(gamepad.a == false && ADown == true) released(Button.A);
+        if(gamepad.b == false && BDown == true) released(Button.B);
+        if(gamepad.x == false && XDown == true) released(Button.X);
+        if(gamepad.y == false && YDown == true) released(Button.Y);
+        if(gamepad.left_bumper == false && LBDown == true) released(Button.LB);
+        if(gamepad.right_bumper == false && RBDown == true) released(Button.RB);
+        if(gamepad.left_trigger <= TriggerThreshold && LTDown == true) released(Button.LT);
+        if(gamepad.right_trigger <= TriggerThreshold && RTDown == true) released(Button.RT);
+        if(gamepad.dpad_up == false && DUpDown == true) released(Button.DUP);
+        if(gamepad.dpad_down == false && DDownDown == true) released(Button.DDOWN);
+        if(gamepad.dpad_left == false && DLeftDown == true) released(Button.DLEFT);
+        if(gamepad.dpad_right == false && DRightDown == true) released(Button.DRIGHT);
+        if(gamepad.left_stick_button == false && LJSDown == true) released(Button.LJS);
+        if(gamepad.right_stick_button == false && RJSDown == true) released(Button.RJS);
 
 
         //SET VARS TO CURRENT VALUES
@@ -143,7 +148,7 @@ public class ControllerInput
         RJSDown = gamepad.right_stick_button;
     }
 
-    public double CalculateLJSAngle(){
+    public double calculateLJSAngle(){
         //Calculate angle of left joystick
         double Y = gamepad.left_stick_y; //X input
         double X = gamepad.left_stick_x; //Y input
@@ -162,9 +167,9 @@ public class ControllerInput
         return leftStickBaring;
     }
 
-    public double CalculateLJSMag(){
+    public double calculateLJSMag(){
         //Calculate magnitude of the left joystick
         //Distance formula for calculating joystick power
-        return Math.abs(Math.sqrt(Math.pow(GetLJSX() - 0, 2) + Math.pow(GetLJSY() - 0, 2)));
+        return Math.abs(Math.sqrt(Math.pow(getLJSX() - 0, 2) + Math.pow(getLJSY() - 0, 2)));
     }
 }

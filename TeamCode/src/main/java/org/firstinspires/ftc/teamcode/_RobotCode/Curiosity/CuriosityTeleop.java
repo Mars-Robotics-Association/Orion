@@ -37,11 +37,12 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        robot = new CuriosityBot(this,true,false,true);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
+        robot = new CuriosityBot(this,controllerInput1,true,true,true);
+
 
         //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
         //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
@@ -63,8 +64,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void loop() {
-        controllerInput1.Loop();
-        controllerInput2.Loop();
+        controllerInput1.loop();
+        controllerInput2.loop();
         //navigator kill switch
         if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
 
@@ -92,11 +93,11 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Change speed multiplier: ", "A");
         telemetry.addData("Reset robot pose: ", "Press RJS");
         telemetry.addData("Toggle headless mode: ", "Press LJS");
-        telemetry.addData("Intake: ", "Hold LT");
-        telemetry.addData("Load: ", "Hold RT");
-        telemetry.addData("Toggle shooter: ", "Press Y");
-        telemetry.addData("Toggle intake: ", "Press RB");
-        telemetry.addData("Toggle path: ", "Press LB");
+        telemetry.addData("Gripper: ", "Bumpers");
+        telemetry.addData("Arm: ", "Triggers");
+        telemetry.addData("Load: ", "Press Y");
+        telemetry.addData("Place: ", "Press B");
+        telemetry.addData("Set Arm mode to raw control: ", "Press X");
 
 
         //DATA
@@ -140,6 +141,12 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
+            case Y: //load
+                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
+            case B: //place
+                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
+            case X: //raw control arm
+                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
 
         }
     }
@@ -147,14 +154,14 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void ButtonHeld(int id, Button button) {
         switch (button){
-            case Y:// go to target area
+            /*case Y:// go to target area
                 if(!robot.USE_NAVIGATOR)break;
                 robot.navigator.moveTowards(odometryTestX,odometryTestY,odometryTestSpeed);
                 break;
             case B:// go to target area
                 if(!robot.USE_NAVIGATOR)break;
                 robot.navigator.turnTowards(odometryTestAngle,odometryTestSpeed);
-                break;
+                break;*/
         }
     }
 

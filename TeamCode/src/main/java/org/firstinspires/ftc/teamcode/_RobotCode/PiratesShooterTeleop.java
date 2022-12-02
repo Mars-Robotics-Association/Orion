@@ -65,7 +65,7 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
 
     @Override
     public void loop() {
-        controllerInput1.Loop();
+        controllerInput1.loop();
 
         telemetry.addData("runtime:", getRuntime());
 
