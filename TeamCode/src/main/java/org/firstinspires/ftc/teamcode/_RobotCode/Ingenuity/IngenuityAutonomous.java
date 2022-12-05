@@ -37,7 +37,8 @@ public class IngenuityAutonomous extends LinearOpMode
             robot.update();
             printTelemetry();
 
-        }
+        //go forward to the signal
+        goToPose(21,0,0);
         //read the signal
         signalZone=robot.readSignal();
         //move forward
@@ -45,13 +46,13 @@ public class IngenuityAutonomous extends LinearOpMode
         //strafe to signal zone
         switch(signalZone){
             case 1 :
-                goToPose(25,-15,0);
+                goToPose(23,-25,0);
                 break;
             case 3:
                 goToPose(25,15,0);
                 break;
             default:
-                goToPose(30,0,0);
+                goToPose(23,0,0);
         }
 
         // Move in rectangle, clockwise around the post
