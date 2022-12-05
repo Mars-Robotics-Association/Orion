@@ -33,6 +33,8 @@ public class JuanGripperCalibrate extends OpMode implements ControllerInputListe
 
     public static double gripperPosition;
 
+    private JuanPayload.GripperController gripper;
+
     @Override
     public void init() {
         robot = new Juan(this,true,true,false);
@@ -43,6 +45,8 @@ public class JuanGripperCalibrate extends OpMode implements ControllerInputListe
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
+
+        gripper = robot.getPayload().getGripper();
 
         msStuckDetectLoop = 5000;
     }
@@ -62,6 +66,8 @@ public class JuanGripperCalibrate extends OpMode implements ControllerInputListe
         controllerInput2.Loop();
 
         telemetry.addData("Servo Position", gripperPosition);
+
+        gripper.getServo().setPosition(gripperPosition);
 
         //update robot
         robot.update();
@@ -88,22 +94,7 @@ public class JuanGripperCalibrate extends OpMode implements ControllerInputListe
     ////INPUT MAPPING////
     @Override
     public void ButtonPressed(int id, Button button) {
-        if(!robot.USE_PAYLOAD)return;
-        JuanPayload payload = robot.getPayload();
-        JuanPayload.GripperController gripper = payload.getGripper();
 
-        Servo servo = gripper.getServo();
-
-        switch (button) {
-            case X:
-                servo.setPosition(servo.getPosition()-0.1);
-                break;
-            case B:
-                servo.setPosition(servo.getPosition()+0.1);
-                break;
-        }
-
-        gripperPosition = servo.getPosition();
     }
 
     @Override

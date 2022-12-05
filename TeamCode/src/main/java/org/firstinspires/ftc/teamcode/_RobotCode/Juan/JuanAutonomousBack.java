@@ -6,37 +6,40 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
-import org.firstinspires.ftc.teamcode._RobotCode.Demobot2022.Demobot;
 import org.opencv.core.Mat;
 
-@Autonomous(name = "JUAN Test Autonomous", group = "JUAN")
+@Autonomous(name = "JUAN BACK", group = "JUAN")
 @Config
-public class JuanAutonomous extends LinearOpMode
+public class JuanAutonomousBack extends LinearOpMode
 {
     ScanRect rectScanner;
-    Demobot robot;
+    Juan robot;
     Camera camera;
 
     Mat cameraMat = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Demobot(this,true,true, false);
+        robot = new Juan(this,true,true, false);
         robot.init();
-        camera = new Camera(this,"Webcam 1",false);
-
-        rectScanner = new ScanRect(){{
-            int x1 = 0;
-            int y1 = 0;
-            int x2 = 0;
-            int y2 = 0;
-        }};
-
-        rectScanner.processFrame(camera.convertBitmapToMat(camera.GetImage()));
+//        camera = new Camera(this,"Webcam 1",false);
+//
+//        rectScanner = new ScanRect(){{
+//            int x1 = 0;
+//            int y1 = 0;
+//            int x2 = 0;
+//            int y2 = 0;
+//        }};
+//
+//        rectScanner.processFrame(camera.convertBitmapToMat(camera.GetImage()));
 
         waitForStart();
         robot.start();
         robot.getChassis().setHeadlessMode(true);
+
+        robot.getChassis().rawDrive(0, 5, 0);
+        sleep(500);
+        robot.getChassis().rawDrive(0, 0, 0);
     }
 
     private ConeState readConeState(){

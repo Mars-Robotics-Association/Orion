@@ -38,12 +38,14 @@ class JuanPayload
         private double power;
         private final DcMotor motor;
 
+        double c = 5;
+
         LiftController(JuanPayload payload, DcMotor motor, double power) {
             super(payload);
             this.motor = motor;
             this.power = power;
-            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
         void printTelemetry() {
@@ -68,8 +70,9 @@ class JuanPayload
             motor.setPower(power);
         }
 
-        public void manualMove(){
-
+        public void manualMove(int direction){
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motor.setPower(direction);
         }
     }
 
@@ -89,10 +92,10 @@ class JuanPayload
         public Servo getServo(){return servo;}
 
         private GripperState state = GripperState.CLOSED;
-        private final double openPos = 0;
-        private final double closePos = 0.8;
+        private final double openPos = 0.55;
+        private final double closePos = 0.7;
 
-        private final double increment = 0.1;
+        private final double increment = 0.005;
 
         public void grab(){
             servo.setPosition(closePos);

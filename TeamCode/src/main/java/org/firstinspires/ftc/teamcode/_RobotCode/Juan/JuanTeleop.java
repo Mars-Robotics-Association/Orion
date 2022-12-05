@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.Meca
 @Config
 public class JuanTeleop extends OpMode implements ControllerInputListener
 {
-    private static final String VERSION = "1.14";
+    private static final String VERSION = "1.15";
 
     ////Dependencies////
     private Juan robot;
@@ -29,6 +29,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
     public static int payloadControllerNumber = 1;
 
+    private JuanPayload payload;
+
     @Override
     public void init() {
         robot = new Juan(this,true,true,false);
@@ -36,6 +38,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
+
+        payload = robot.getPayload();
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
@@ -47,6 +51,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         robot.getChassis().resetGyro();
         robot.getChassis().setHeadlessMode(false);
     }
+
+    boolean lastRun = false;
 
     @Override
     public void loop() {
@@ -60,18 +66,26 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         //update robot
         robot.update();
         //manage driving
-        if(gamepad2.atRest()){
-            chassis.driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, 1);
-        }else{
+
+        boolean isP2 = controllerInput2.CalculateLJSMag() > 0.1 || Math.abs(controllerInput2.GetRJSX()) > 0.1;
+
+        if(isP2){
             chassis.driveWithGamepad(controllerInput2, driveSpeed, turnSpeed, 1);
+        }else{
+            chassis.driveWithGamepad(controllerInput1, driveSpeed, turnSpeed, 1);
         }
 
         telemetry.addData("Gripper Position", robot.getPayload().getGripper().getPosition());
 
         int direction = 0;
         if(gamepad1.dpad_up || gamepad2.dpad_up)direction++;
-        if(gamepad1.dpad_down || gamepad2.dpad_down)direction++;
-        robot.getPayload().getLift().setSpeed(direction * liftOverrideSpeed);
+        if(gamepad1.dpad_down || gamepad2.dpad_down)direction--;
+        if(lastRun || direction != 0){
+            robot.getPayload().getLift().manualMove(direction);
+
+        }
+
+        lastRun = direction != 0;
 
         //telemetry
         printTelemetry();
@@ -129,12 +143,6 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
                     break;
                 case X:
                     lift.goToPreset(JuanPayload.PresetHeight.HIGH);
-                    break;
-                case DUP:
-                    lift.setSpeed(liftOverrideSpeed);
-                    break;
-                case DDOWN:
-                    lift.setSpeed(-liftOverrideSpeed);
             }
 
     }
