@@ -8,10 +8,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
+import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
 public class Juan extends BaseRobot
 {
-    private static final String VERSION = "1.13";
+    public static final String VERSION = "1.15";
 
     ////Dependencies////
     OpMode opMode;
@@ -21,6 +22,12 @@ public class Juan extends BaseRobot
 
     //Misc
     FtcDashboard dashboard;
+    Camera camera;
+
+    public static final int x1 = 0;
+    public static final int y1 = 0;
+    public static final int x2 = 0;
+    public static final int y2 = 0;
 
     static final double liftPower = 2;
 
