@@ -4,11 +4,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
-import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
-import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 
 @TeleOp(name = "*DEMOBOT TELEOP*", group = "Demobot")
@@ -63,8 +60,8 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void loop() {
-        controllerInput1.Loop();
-        controllerInput2.Loop();
+        controllerInput1.loop();
+        controllerInput2.loop();
         //navigator kill switch
         if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
 

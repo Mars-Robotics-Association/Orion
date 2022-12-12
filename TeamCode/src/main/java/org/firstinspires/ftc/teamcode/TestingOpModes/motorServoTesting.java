@@ -21,7 +21,7 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
 
     int currentmotor = 0;
     int currentservo = 0;
-    int additionalMotors = 1;
+    int additionalMotors = 0;
 
     //motor direction controls
     int[] motorSpeedMultipliers = {1,1,1,1};
@@ -56,7 +56,7 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
 
     @Override
     public void loop() {
-        controllerInput1.Loop();
+        controllerInput1.loop();
         if(gamepad1.right_trigger<0.1 && gamepad1.left_trigger<0.1){
             telemetry.addLine("STOP MOTORS");
             motors.SetPowers(0);

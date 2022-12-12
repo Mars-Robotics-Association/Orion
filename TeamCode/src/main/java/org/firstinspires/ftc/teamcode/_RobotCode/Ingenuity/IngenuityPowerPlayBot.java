@@ -6,6 +6,8 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
@@ -13,12 +15,14 @@ import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
+import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
 @Config
 public class IngenuityPowerPlayBot extends BaseRobot
 {
     ////Dependencies////
     OpMode opMode;
+    HermesLog log;
 
     //Mechanical Components
     IngenuityPayload payload;
@@ -33,7 +37,6 @@ public class IngenuityPowerPlayBot extends BaseRobot
 
     //Misc
     FtcDashboard dashboard;
-    HermesLog log;
 
     public IngenuityPowerPlayBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
@@ -60,7 +63,9 @@ public class IngenuityPowerPlayBot extends BaseRobot
             //intake
             gripperServo= opMode.hardwareMap.servo.get("gripper");
             colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
-            //payload = new IngenuityPayload(opMode);
+            DcMotor armMotor = opMode.hardwareMap.dcMotor.get("armMotor") ;
+            armMotor.setDirection(DcMotorSimple.Direction.REVERSE) ;
+            payload = new IngenuityPayload(opMode, armMotor);
         }
 
         if(USE_NAVIGATOR){
@@ -83,6 +88,15 @@ public class IngenuityPowerPlayBot extends BaseRobot
 
         if(USE_NAVIGATOR){
             navigator.update();
+            RobotPose robotPose = new RobotPose(navigator.getTargetPose().getX(),
+                    navigator.getTargetPose().getY(),navigator.getTargetPose().getHeading(),
+                    navigator.getMeasuredPose().getX(), navigator.getMeasuredPose().getY(),navigator.getMeasuredPose().getHeading());
+            //converts camera footage to base 64 for gui
+            //Base64Image cameraData = new Base64Image(
+            //camera.convertBitmapToBase64(camera.shrinkBitmap(camera.getImage(),240,135),0));
+            Object[] data = {robotPose};
+            log.addData(data);
+            log.Update();
         }
 
         if(USE_PAYLOAD){
@@ -110,7 +124,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
         float[] hsvValues = new float[3];
         Color.RGBToHSV(colorSensor.red(),colorSensor.green(),colorSensor.blue(),hsvValues);
         opMode.telemetry.addData("hsv ",hsvValues[0]);
-        if (hsvValues[0]<80) result =2;//red
+        if (hsvValues[0]<90) result =2;//red
         else if (hsvValues[0]>190) result =1;//blue
         opMode.telemetry.addData("result",result);
      return result;
