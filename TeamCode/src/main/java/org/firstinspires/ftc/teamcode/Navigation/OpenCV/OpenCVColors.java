@@ -23,6 +23,15 @@ public class OpenCVColors {
     public final static Scalar BlueH = new Scalar(188,255,189);
     public final static Scalar BlueL = new Scalar(103,101,47);
 
+    public final static Scalar ConeGreenH = new Scalar(105,217,181);
+    public final static Scalar ConeGreenL = new Scalar(62,69,0);
+
+    public final static Scalar ConeOrangeH = new Scalar(21,184,219);
+    public final static Scalar ConeOrangeL = new Scalar(0,82,154);
+
+    public final static Scalar ConePurpleH = new Scalar(149,165,200);
+    public final static Scalar ConePurpleL = new Scalar(110,88,143);
+
     public static Scalar[] broaden(Scalar l,Scalar h)
     {
         Scalar[] val = new Scalar[2];
