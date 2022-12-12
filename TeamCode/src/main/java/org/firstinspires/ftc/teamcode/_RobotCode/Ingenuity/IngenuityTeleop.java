@@ -30,6 +30,10 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     public static double armPower = 0.5 ;
 
+    private int armSetpointIdx = 0;
+    private double[] armStops = {0.0, 0.1355, 0.23177, 0.3476};
+
+
     @Override
     public void init() {
         robot = new IngenuityPowerPlayBot(this,true,true,true);
@@ -143,10 +147,10 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
                 break;
             case RB:
-
+                if (this.armSetpointIdx < 3) armSetpointIdx += 1;
                 break;
             case LB:
-
+                if (this.armSetpointIdx > 0) armSetpointIdx -= 1;
                 break;
             case Y:
 
