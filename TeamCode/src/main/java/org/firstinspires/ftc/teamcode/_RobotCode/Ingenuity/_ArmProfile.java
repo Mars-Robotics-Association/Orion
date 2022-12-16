@@ -15,8 +15,10 @@ class _ArmProfile implements EncoderActuatorProfile
     boolean REVERSE_ENCODER = false;
     boolean USE_ENCODER = true;
 
-    public _ArmProfile(DcMotor motor){
+    public _ArmProfile(DcMotor motor, double startPos){
         MOTORS = new DCMotorArray(new DcMotor[]{motor}, new double[]{1},USE_ENCODER);
+        MAX_ROTS -= startPos;
+        MIN_ROTS -= startPos;
     }
 
     @Override

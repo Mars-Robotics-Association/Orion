@@ -17,9 +17,9 @@ class IngenuityPayload
     boolean shooterOn = false;
 
     //initializer
-    public IngenuityPayload(OpMode setOpMode, DcMotor armMotor){
-        opMode=setOpMode;
-        arm = new EncoderActuator(opMode, new _ArmProfile(armMotor));
+    public IngenuityPayload(OpMode setOpMode, DcMotor armMotor, double armPos) {
+        opMode = setOpMode;
+        arm = new EncoderActuator(opMode, new _ArmProfile(armMotor, armPos));
     }
 
 

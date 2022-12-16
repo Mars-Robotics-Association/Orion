@@ -27,7 +27,7 @@ public class OdometryDemo extends OpMode implements ControllerInputListener
 
     @Override
     public void init() {
-        robot = new IngenuityPowerPlayBot(this,true,false,true);
+        robot = new IngenuityPowerPlayBot(this,true,false,true,0);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
