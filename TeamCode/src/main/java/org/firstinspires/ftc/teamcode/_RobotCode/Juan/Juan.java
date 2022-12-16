@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
 public class Juan extends BaseRobot
 {
-    public static final String VERSION = "1.15";
+    public static final String VERSION = "1.16";
 
     ////Dependencies////
     OpMode opMode;
@@ -47,7 +47,8 @@ public class Juan extends BaseRobot
         if(USE_PAYLOAD){
             DcMotor lift = opMode.hardwareMap.dcMotor.get("lift");
             Servo gripper = opMode.hardwareMap.servo.get("gripper");
-            payload = new JuanPayload(opMode, lift, gripper, liftPower);
+            Camera camera = new Camera(opMode, "Webcam 1", false);
+            payload = new JuanPayload(opMode, lift, gripper, liftPower, camera);
         }
 
         //if(USE_NAVIGATOR){}

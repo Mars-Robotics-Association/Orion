@@ -1,10 +1,17 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
+import android.os.Build;
+
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Navigation.Camera;
+import org.opencv.core.Mat;
+
+import java.util.Arrays;
 
 class JuanPayload
 {
@@ -22,7 +29,7 @@ class JuanPayload
     }
 
     enum PresetHeight{
-        BOTTOM(10),
+        BOTTOM(200),
         LOW(1800),
         MEDIUM(3100),
         HIGH(4500);
@@ -82,7 +89,7 @@ class JuanPayload
     }
 
     static class GripperController extends Controller{
-        GripperController(JuanPayload payload, Servo servo) {
+        GripperController(JuanPayload payload, Servo servo){
             super(payload);
             this.servo = servo;
         }
@@ -138,20 +145,117 @@ class JuanPayload
         }
     }
 
+    static class SleeveScanner{
+        private final SleeveReader sleeveReader;
+        private final Camera camera;
+        private final FtcDashboard dashboard;
+
+        SleeveScanner(Camera camera){
+            this.camera = camera;
+            this.sleeveReader = new SleeveReader();
+            this.dashboard = FtcDashboard.getInstance();
+        }
+
+        public Camera getCamera(){
+            return camera;
+        }
+
+        static class ColorCertaintyTuple implements Comparable {
+            public SleeveColor color;
+            public double certainty;
+
+            ColorCertaintyTuple(SleeveColor color, double certainty){
+                this.color = color;
+                this.certainty = certainty;
+            }
+
+            @Override
+            public int compareTo(Object o) {
+                ColorCertaintyTuple tuple = (ColorCertaintyTuple) o;
+                return Double.compare(this.certainty, tuple.certainty);
+            }
+        }
+
+        private ColorCertaintyTuple[] colorTuples = {
+                new ColorCertaintyTuple(SleeveColor.GREEN, 0),
+                new ColorCertaintyTuple(SleeveColor.ORANGE, 0),
+                new ColorCertaintyTuple(SleeveColor.PURPLE, 0)
+        };
+
+        public ColorCertaintyTuple runScan() throws InterruptedException {
+            Mat mat = new Mat();
+            Mat combined = new Mat();
+            camera.convertBitmapToMat(camera.GetImage());
+
+            Mat mat1 = testColor(mat, SleeveColor.GREEN);
+            colorTuples[0].color = SleeveColor.GREEN;
+            colorTuples[0].certainty = sleeveReader.certainty;
+            Mat mat2 = testColor(mat, SleeveColor.ORANGE);
+            colorTuples[1].color = SleeveColor.ORANGE;
+            colorTuples[1].certainty = sleeveReader.certainty;
+            Mat mat3 = testColor(mat, SleeveColor.PURPLE);
+            colorTuples[2].color = SleeveColor.PURPLE;
+            colorTuples[2].certainty = sleeveReader.certainty;
+
+            sleeveReader.joinComparisons(mat, mat1, mat2, mat3, combined);
+            dashboard.sendImage(camera.convertMatToBitMap(combined));
+
+            return colorTuples[0];
+        }
+
+        private Mat testColor(Mat input, SleeveColor color){
+            sleeveReader.setRange(
+                    color.highColor,
+                    color.lowColor
+            );
+
+            return sleeveReader.processFrame(input);
+        }
+
+        enum ScanResult{
+            GREEN,
+            ORANGE,
+            PURPLE,
+            INVALID;
+
+            boolean isInvalid(){
+                return this == ScanResult.INVALID;
+            }
+
+            SleeveColor unwrap(){
+               switch (this) {
+                   case GREEN:
+                       return SleeveColor.GREEN;
+                   case ORANGE:
+                       return SleeveColor.ORANGE;
+                   case PURPLE:
+                       return SleeveColor.PURPLE;
+               }
+
+               throw new RuntimeException("No valid color found.");
+            }
+        }
+
+        ScanResult lastColor = ScanResult.INVALID;
+    }
+
     OpMode opMode;
 
     //initializer
-    public JuanPayload(OpMode opMode, DcMotor lift, Servo gripper, double liftPower) {
+    public JuanPayload(OpMode opMode, DcMotor lift, Servo gripper, double liftPower, Camera camera) {
         this.opMode = opMode;
 
         liftController = new LiftController(this, lift, liftPower);
         gripperController = new GripperController(this, gripper);
+        sleeveScanner = new SleeveScanner(camera);
     }
 
     private final LiftController liftController;
     private final GripperController gripperController;
+    private final SleeveScanner sleeveScanner;
     public LiftController getLift(){return liftController;}
     public GripperController getGripper(){return gripperController;}
+    public SleeveScanner getScanner(){return sleeveScanner;}
 
     //print telemetry
     public void printTelemetry(){

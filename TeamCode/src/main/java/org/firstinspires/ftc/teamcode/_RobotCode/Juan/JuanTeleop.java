@@ -12,8 +12,6 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.Meca
 @Config
 public class JuanTeleop extends OpMode implements ControllerInputListener
 {
-    private static final String VERSION = "1.15";
-
     ////Dependencies////
     private Juan robot;
     private ControllerInput controllerInput1;
@@ -56,7 +54,7 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void loop() {
-        telemetry.addData("Version", VERSION);
+        telemetry.addData("Version", Juan.VERSION);
 
         MecanumChassis chassis = robot.getChassis();
 
@@ -80,10 +78,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         int direction = 0;
         if(gamepad1.dpad_up || gamepad2.dpad_up)direction++;
         if(gamepad1.dpad_down || gamepad2.dpad_down)direction--;
-        if(lastRun || direction != 0){
+        if(lastRun || direction != 0)
             robot.getPayload().getLift().manualMove(direction);
-
-        }
 
         lastRun = direction != 0;
 
@@ -118,16 +114,16 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
             switch (button) {
                 case LB:
-                    gripper.grab();
-                    break;
-                case RB:
                     gripper.release();
                     break;
+                case RB:
+                    gripper.grab();
+                    break;
                 case LT:
-                    gripper.grabMore();
+                    gripper.releaseMore();
                     break;
                 case RT:
-                    gripper.releaseMore();
+                    gripper.grabMore();
                     break;
                 case GUIDE:
                     lift.reset();
