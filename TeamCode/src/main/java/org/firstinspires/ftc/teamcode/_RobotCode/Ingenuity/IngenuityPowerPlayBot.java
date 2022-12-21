@@ -58,8 +58,6 @@ public class IngenuityPowerPlayBot extends BaseRobot
         }
 
         if(USE_PAYLOAD){
-
-
             //intake
             gripperServo= opMode.hardwareMap.servo.get("gripper");
             colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");

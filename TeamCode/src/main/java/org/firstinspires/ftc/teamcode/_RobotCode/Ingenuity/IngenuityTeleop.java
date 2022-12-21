@@ -29,7 +29,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
 
     public static double armPower = 0.5;
 
-    private double armStartPos = 0.3;
+    private double armStartPos = 0.0;
     private int armSetpointIdx = 0;
     private double[] armStops = {0.0, 0.1355, 0.23177, 0.3476};
 

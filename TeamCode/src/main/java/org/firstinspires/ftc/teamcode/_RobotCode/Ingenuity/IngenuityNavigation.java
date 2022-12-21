@@ -12,15 +12,15 @@ import org.firstinspires.ftc.teamcode.Navigation.UniversalThreeWheelNavigator;
 class IngenuityNavigation extends UniversalThreeWheelNavigator
 {
     ////Variables////
-    public static double[] nav_encoderMultipliers = {1, -1, 1} ; //left right horizontal
+    public static double[] nav_encoderMultipliers = {-1, -1, 1} ; //left right horizontal
     public static double nav_trackwidth = 7.3 ;
-    public static double nav_centerWheelOffset = 1 ;  // Check for Ingy
+    public static double nav_centerWheelOffset = -2 ;  // Check for Ingy
 
     public static double nav_turnPID_P = 0.075 ;  // Default = 0.035
     public static double nav_turnPID_I = 0 ;  // Default = 0
-    public static double nav_turnPID_D = -0.3 ;  // Default = -0.1
+    public static double nav_turnPID_D = 0.03 ;  // Default = -0.1
 
-    public static double nav_movePID_D = 0.2 ;  // Default = 0.1
+    public static double nav_movePID_D = 0.02 ;  // Default = 0.1
     public static double nav_movePID_I = 0 ;  // Default = 0
     public static double nav_movePID_P = 0.3 ;  // Default = 0.3
 
@@ -51,7 +51,7 @@ class IngenuityNavigation extends UniversalThreeWheelNavigator
     //make these speeds negative if going wrong direction
     @Override
     protected double calculateTurnSpeed(double targetAngle, double speed){
-        return super.calculateTurnSpeed(targetAngle,speed);
+        return super.calculateTurnSpeed(targetAngle,-speed);
     }
 
     @Override

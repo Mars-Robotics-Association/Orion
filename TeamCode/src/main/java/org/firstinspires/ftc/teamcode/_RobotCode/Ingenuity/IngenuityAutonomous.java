@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.path.PathPoint;
 @Config
 public class IngenuityAutonomous extends LinearOpMode
 {
-    public static double speed = 0.3;
+    public static double speed = 0.2;
     IngenuityPowerPlayBot robot;
     //public DcMotor armMotor ;
     int signalZone = 0;
@@ -52,28 +52,16 @@ public class IngenuityAutonomous extends LinearOpMode
         //strafe to signal zone
         switch(signalZone){
             case 1 :
-                goToPose(22,-25,0);
+                goToPose(25,-25,0);
                 break;
             case 3:
                 goToPose(25,25,0);
                 break;
             default:
-                goToPose(22,0,0);
+                goToPose(25,0,0);
         }
 
-        // Move in rectangle, clockwise around the post
-        // Move forward to 16x, 0y
-
-        // Strafe right to 16v, 16y
-        //goToPose(20,20,0);
-
-        // Move backward to 0x, 16y
-        //goToPose(0,20,0);
-
-        // strafe left to 0x, 0y
-        //goToPose(0,0,0);
-
-        //autoDrive();
+        arm.goToPosition(0.0);
 
         while (!isStopRequested()){
             telemetry.addData("SIGNAL READ: ", signalZone);
