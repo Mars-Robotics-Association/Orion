@@ -13,8 +13,7 @@ import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 @TeleOp(name = "*INGENUITY TELEOP*", group = "ingenuity")
 @Config
-public class IngenuityTeleop extends OpMode implements ControllerInputListener
-{
+public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     ////Dependencies////
     private IngenuityPowerPlayBot robot;
     private ControllerInput controllerInput1;
@@ -27,14 +26,16 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     private double speedMultiplier = 1;
 
     public static int payloadControllerNumber = 1;
-//i am going to be using a dc motor and its name is going to be armMotor
-    public DcMotor armMotor ;
 
-    public static double armPower = 0.5 ;
+    public static double armPower = 0.5;
+
+    private double armStartPos = 0.3;
+    private int armSetpointIdx = 0;
+    private double[] armStops = {0.0, 0.1355, 0.23177, 0.3476};
 
     @Override
     public void init() {
-        robot = new IngenuityPowerPlayBot(this,true,true,true);
+        robot = new IngenuityPowerPlayBot(this, true, true, true, armStartPos);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -46,14 +47,11 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
 
-        armMotor = hardwareMap.dcMotor.get("armMotor") ;
-        armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
-        armMotor.setDirection(DcMotorSimple.Direction.REVERSE) ;
-        msStuckDetectLoop = 5000 ;
+        msStuckDetectLoop = 5000;
     }
 
     @Override
-    public void start(){
+    public void start() {
         robot.start();
         robot.getChassis().resetGyro();
         //if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) robot.SetInputOffset(90); //90 is blue, -90 is red
@@ -63,10 +61,10 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void loop() {
-        controllerInput1.Loop();
-        controllerInput2.Loop();
+        controllerInput1.loop();
+        controllerInput2.loop();
         //navigator kill switch
-        if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
+        if (gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
 
         }
         //update robot
@@ -74,8 +72,9 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         //manage driving
         robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         //telemetry
+        robot.readSignal();
         printTelemetry();
-        //telemetry.update();
+        telemetry.update();
     }
 
     //prints a large amount of telemetry for the robot
@@ -100,15 +99,15 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
         //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
-        telemetry.addData("color ",String.valueOf(robot.colorSensor.red()),String.valueOf(robot.colorSensor.green()),String.valueOf(robot.colorSensor.blue()));
+        telemetry.addData("color ", String.valueOf(robot.colorSensor.red()), String.valueOf(robot.colorSensor.green()), String.valueOf(robot.colorSensor.blue()));
         telemetry.addData("Gripper: ", robot.servoTarget);
-        telemetry.addData("Arm:     ", armMotor.getCurrentPosition());
+        telemetry.addData("Arm:     ", robot.getPayload().getArm().getPosition());
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
-        telemetry.addData("LEFT dead wheel:       ", deadWheelPositions[0]+" inches");
-        telemetry.addData("RIGHT dead wheel:      ", deadWheelPositions[1]+" inches");
-        telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
+        telemetry.addData("LEFT dead wheel:       ", deadWheelPositions[0] + " inches");
+        telemetry.addData("RIGHT dead wheel:      ", deadWheelPositions[1] + " inches");
+        telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2] + " inches");
         //Odometry estimated pose
         telemetry.addLine();
         telemetry.addLine("Robot pose");
@@ -118,7 +117,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     }
 
     @Override
-    public void stop(){
+    public void stop() {
         robot.stop();
     }
 
@@ -147,10 +146,16 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
 
                 break;
             case RB:
-
+                if (this.armSetpointIdx < 3) {
+                    armSetpointIdx += 1;
+                    robot.getPayload().getArm().goToPosition(armStops[armSetpointIdx] - armStartPos);
+                }
                 break;
             case LB:
-
+                if (this.armSetpointIdx > 0) {
+                    armSetpointIdx -= 1;
+                    robot.getPayload().getArm().goToPosition(armStops[armSetpointIdx] - armStartPos);
+                }
                 break;
             case Y:
 
@@ -162,11 +167,11 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
             case RT:
-                armMotor.setPower(armPower);
-                break ;
+                robot.getPayload().getArm().setPowerRaw(armPower);
+                break;
             case LT:
-                armMotor.setPower(-armPower);
-                break ;
+                robot.getPayload().getArm().setPowerRaw(-armPower);
+                break;
 
         }
     }
@@ -175,20 +180,15 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener
     public void ButtonReleased(int id, ControllerInput.Button button) {
         switch (button) {
             case RT:
-                armMotor.setPower(0);
-                break ;
             case LT:
-                armMotor.setPower(0);
-                break ;
+                robot.getPayload().getArm().setPowerRaw(0);
+                break;
             case X:
                 robot.toggleGripper();
                 //robot.gripperServo.setPosition(robot.servoTarget) ;
-                break ;
+                break;
         }
     }
-
-
-
 
 
 }

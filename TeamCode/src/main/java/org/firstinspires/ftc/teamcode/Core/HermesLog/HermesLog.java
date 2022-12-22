@@ -125,7 +125,7 @@ public class HermesLog
         //opMode.telemetry.addData("Message", stringToSend);
         DashboardWebSocketServer.getInstance().send(stringToSend);
         Log.i(tag, stringToSend);
-        opMode.telemetry.update();
+        //opMode.telemetry.update();
 
     }
 

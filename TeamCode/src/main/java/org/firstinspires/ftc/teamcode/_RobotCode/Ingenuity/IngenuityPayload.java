@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
@@ -8,11 +9,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorA
 class IngenuityPayload
 {
     OpMode opMode;
-    MotorArray intake;
-    MotorArray path;
-    MotorArray loader;
-    EncoderActuator turret;
-    MotorArray shooter;
+    EncoderActuator arm;
 
     //internal
     boolean intakeOn = false;
@@ -20,18 +17,14 @@ class IngenuityPayload
     boolean shooterOn = false;
 
     //initializer
-    public IngenuityPayload(OpMode setOpMode){
-
+    public IngenuityPayload(OpMode setOpMode, DcMotor armMotor, double armPos) {
+        opMode = setOpMode;
+        arm = new EncoderActuator(opMode, new _ArmProfile(armMotor, armPos));
     }
 
 
     ////BASIC FUNCTIONS////
-    //print telemetry
-    public void printTelemetry(){
 
-
-    }
-
-    ////SENSORS////
+    public EncoderActuator getArm(){return arm;}
 
 }

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
@@ -53,8 +52,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void loop() {
-        controllerInput1.Loop();
-        controllerInput2.Loop();
+        controllerInput1.loop();
+        controllerInput2.loop();
         //navigator kill switch
         if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
 

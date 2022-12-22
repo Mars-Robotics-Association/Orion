@@ -129,6 +129,7 @@ public class UniversalThreeWheelNavigator
     //turns towards the given angle. Returns zero when pid is within certain threshold
     public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed, double overrideStopSpeedThreshold, double overrideStopTimeThreshold){
         opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetAngle+")");
+        targetPose.setPose(targetX,targetY,targetAngle);
 
         //calculate speeds
         double[] moveAngleSpeed = calculateMoveAngleSpeed(targetX,targetY,speed);
@@ -170,9 +171,9 @@ public class UniversalThreeWheelNavigator
     public double[] calculateControllerInputAngleSpeedTurn(ControllerInput controllerInput, double speedMultiplier){
         double[] angleSpeedTurn = {0,0,0};
         angleSpeedTurn = new double[]{ //drives at (angle, speed, turnOffset)
-                controllerInput.CalculateLJSAngle() + controllerOffsetDegrees * speedMultiplier,
-                controllerInput.CalculateLJSMag() * speedMultiplier * chassis.profile.moveSpeed() * speedMultiplier,
-                controllerInput.GetRJSX() * speedMultiplier * chassis.profile.turnSpeed() * speedMultiplier
+                controllerInput.calculateLJSAngle() + controllerOffsetDegrees * speedMultiplier,
+                controllerInput.calculateLJSMag() * speedMultiplier * chassis.profile.moveSpeed() * speedMultiplier,
+                controllerInput.getRJSX() * speedMultiplier * chassis.profile.turnSpeed() * speedMultiplier
         };
         return angleSpeedTurn;
     }

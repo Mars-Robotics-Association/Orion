@@ -7,10 +7,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
+import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
 @Config
 public class IngenuityDemoRobot extends BaseRobot
@@ -21,6 +24,8 @@ public class IngenuityDemoRobot extends BaseRobot
     //Mechanical Components
     IngenuityPayload payload;
     IngenuityNavigation navigator;
+    Camera camera;
+    HermesLog hermesLog;
 
     // Gripper
     Servo gripperServo ;
@@ -42,15 +47,15 @@ public class IngenuityDemoRobot extends BaseRobot
 
     //Misc
     FtcDashboard dashboard;
-    HermesLog log;
 
     public IngenuityDemoRobot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
         super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
         opMode = setOpMode;
 
-        log = new HermesLog("Ingenuity", 50, opMode);
+        hermesLog = new HermesLog("Ingenuity", 200, opMode);
         dashboard = FtcDashboard.getInstance();
+        camera = new Camera(opMode,"Webcam 1");
 
         if(USE_CHASSIS) {
             //sensors
@@ -88,13 +93,29 @@ public class IngenuityDemoRobot extends BaseRobot
     public void start(){
         getChassis().startChassis();
         getNavigator().setMeasuredPose(0,0,0);
-        log.start();
+        hermesLog.start();
     }
 
     public void update(){
 
         if(USE_NAVIGATOR){
             navigator.update();
+            //hermes logging code
+            //configures robot code
+            RobotPose robotPose = new RobotPose(navigator.getTargetPose().getX(),
+                    navigator.getTargetPose().getY(),navigator.getTargetPose().getHeading(),
+                    navigator.getMeasuredPose().getX(), navigator.getMeasuredPose().getY(),navigator.getMeasuredPose().getHeading());
+            //converts camera footage to base 64 for gui
+            Base64Image cameraData = null;
+            try {
+                cameraData = new Base64Image(
+                        camera.convertBitmapToBase64(camera.shrinkBitmap(camera.getImage(),480,270),10));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Object[] data = {robotPose, cameraData};
+            hermesLog.addData(data);
+            hermesLog.Update();
         }
 
         if(USE_PAYLOAD){

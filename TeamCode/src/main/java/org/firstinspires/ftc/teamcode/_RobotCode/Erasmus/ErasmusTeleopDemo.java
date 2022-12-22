@@ -56,8 +56,8 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
 
     @Override
     public void loop() {
-        controllerInput1.Loop();
-        controllerInput2.Loop();
+        controllerInput1.loop();
+        controllerInput2.loop();
         //navigator kill switch
         if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
 
