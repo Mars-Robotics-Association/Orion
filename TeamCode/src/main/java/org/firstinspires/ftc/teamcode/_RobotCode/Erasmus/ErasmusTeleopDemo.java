@@ -1,33 +1,38 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
+package org.firstinspires.ftc.teamcode._RobotCode.Erasmus;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
-import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
+import org.firstinspires.ftc.teamcode._RobotCode.Erasmus.ErasmusRobot;
 
-
-@TeleOp(name = "*Odometry Demo*", group = "ingenuity")
+//@Disabled
+@TeleOp(name = "Erasmus Demo", group = "Erasmus")
 @Config
-public class OdometryDemo extends OpMode implements ControllerInputListener
+public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
-    private IngenuityPowerPlayBot robot;
+    private ErasmusRobot robot;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
     ////Variables////
     //Tweaking Vars
     public static double driveSpeed = 1;//used to change how fast robot drives
     public static double turnSpeed = -1;//used to change how fast robot turns
-    private double speedMultiplier = 1;
+
+    private double speedMultiplier = 0.5;
+
     public static int payloadControllerNumber = 1;
+
+    public static double armPower = 0.8 ;
 
     @Override
     public void init() {
-        robot = new IngenuityPowerPlayBot(this,true,false,true);
+        robot = new ErasmusRobot(this,true,true,true);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -35,19 +40,17 @@ public class OdometryDemo extends OpMode implements ControllerInputListener
 
         //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
         //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
+
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
 
-        //msStuckDetectLoop = 5000;
-        msStuckDetectLoop = 10000;   // TODO: Change back after testing
+        msStuckDetectLoop = 10000 ;  // Default = 5000
     }
 
     @Override
     public void start(){
         robot.start();
         robot.getChassis().resetGyro();
-        //if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) robot.SetInputOffset(90); //90 is blue, -90 is red
-        //else if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) robot.SetInputOffset(-90); //90 is blue, -90 is red
         robot.getChassis().setHeadlessMode(false);
     }
 
@@ -88,8 +91,10 @@ public class OdometryDemo extends OpMode implements ControllerInputListener
         robot.getPayload().printTelemetry();
         */
         //DATA
-        //telemetry.addLine();
-        //telemetry.addLine("----DATA----");
+        telemetry.addLine();
+        telemetry.addLine("----DATA----");
+        telemetry.addData("Gripper: ", robot.servoTarget);
+        telemetry.addData("Arm:     ", robot.armMotor.getCurrentPosition());
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
@@ -111,7 +116,7 @@ public class OdometryDemo extends OpMode implements ControllerInputListener
 
     ////INPUT MAPPING////
     @Override
-    public void ButtonPressed(int id, Button button) {
+    public void ButtonPressed(int id, ControllerInput.Button button) {
         switch (button) {
             case A:// speed multiplier cycling
                 if (speedMultiplier == 1) speedMultiplier = 0.5;
@@ -146,52 +151,76 @@ public class OdometryDemo extends OpMode implements ControllerInputListener
     }
 
     @Override
-    public void ButtonHeld(int id, Button button) {
+    public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
-            case X:
-                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(16, 6, 0, 0.3) ) ;
+            case RT:
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.armMotor.setPower(armPower);
+                telemetry.addLine("Right Trigger Held");
+                break ;
+            case LT:
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.armMotor.setPower(-armPower);
+                telemetry.addLine("Left Trigger Held");
+                break ;
+            case RB:
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.liftMotor.setPower(armPower);
+                telemetry.addLine("Right Bumper Held");
+                break ;
+            case LB:
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.liftMotor.setPower(-armPower);
+                telemetry.addLine("Left Bumper Held");
+                break ;
+            case B:
+                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(-24, -10, 0, 0.4) ) ;
                 break ;
             case Y:
-                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(0, 0, 0, 0.3) ) ;
+                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(0, 0, 0, 0.4) ) ;
                 break ;
         }
     }
 
     @Override
-    public void ButtonReleased(int id, Button button) {
-        switch (button){
-            case Y:
-
-                break;
-            case B:
-                autoDrive();
+    public void ButtonReleased(int id, ControllerInput.Button button) {
+        switch (button) {
+            case RT:  // Raise arm manually
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.armMotor.setPower(0) ;
+                break ;
+            case LT:  // Lower arm manually
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.armMotor.setPower(0) ;
+                break ;
+            case RB:  // Raise arm manually
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.liftMotor.setPower(0) ;
+                break ;
+            case LB:  // Lower arm manually
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.liftMotor.setPower(0) ;
+                break ;
+            case X:  // Toggle the gripper manually (open/close)
+                robot.toggleGripper();
+                break ;
+            case DUP:  // Close the gripper and raise the arm to deliver high
+                robot.closeGripper() ;
+                robot.waitForTime(0.2) ;
+                robot.armTarget = robot.armHigh ;
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                break ;
+            case DDOWN:
+                robot.openGripper() ;
+                robot.waitForTime(0.2) ;
+                robot.armTarget = robot.armBottom ;
+                robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
                 break ;
         }
     }
 
-    public void autoDrive() {
-        // Move in rectangle, clockwise around the post
-        // Move forward to 16x, 0y
-        while(! robot.getNavigator().goTowardsPose(20, 0, 0, 0.3)) {
-            robot.update() ;
-            telemetry.update() ;
-        }
-        // Strafe right to 16v, 16y
-        while(! robot.getNavigator().goTowardsPose(20, 20, 0, 0.3)) {
-            robot.update() ;
-            telemetry.update() ;
-        }
-        // Move backward to 0x, 16y
-        while(! robot.getNavigator().goTowardsPose(0, 20, 0, 0.3)) {
-            robot.update() ;
-            telemetry.update() ;
-        }
-        // strafe left to 0x, 0y
-        while(! robot.getNavigator().goTowardsPose(0, 0, 0, 0.3)) {
-            robot.update() ;
-            telemetry.update() ;
-        }
 
-    }
+
+
 
 }
