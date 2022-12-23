@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
 import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCVColors;
 import org.opencv.core.Mat;
@@ -14,25 +15,53 @@ import org.opencv.core.Mat;
 public class CuriosityAuto extends LinearOpMode {
 
     private CuriosityBot robot;
+    private boolean isRed;
+    private boolean isLeft;
+    private int xMultiplier;
 
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new CuriosityBot(this,null,true,true,true);
         robot.init();
+        isRed=false;
+        if(robot.getFieldSide().equals(BaseRobot.FieldSide.RED)){isRed=true;}
+        isLeft=false;
+        if(robot.getLrSide().equals(BaseRobot.LRSide.LEFT)){isLeft=true;}
+        xMultiplier=1;
+        if(isLeft){xMultiplier=-1;}
 
         waitForStart();
         robot.start();
         robot.getChassis().resetGyro();
         double coneSide = getConeSide(robot.camera);
+        robot.getChassis().rawDrive(0,1,0);
+        //wait for time/color sensor
+        robot.getChassis().stop();
+        robot.getChassis().rawTurn(xMultiplier);
+        //wait for time/color sensor
+        //get block
+
+        //go to high pole
+        //place
+        //go back to blocks
+        //get block
+        //go back to pole
+        //place
 
 
+        //spot 1(green)
         if(coneSide==1) {
+            //go left
 
         }
+        //spot 2(purple)
         else if(coneSide==2){
+            //stay in center
 
         }
+        //spot 3(orange)
         else{
+            //go right
 
         }
     }

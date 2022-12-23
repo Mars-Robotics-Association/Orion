@@ -35,7 +35,7 @@ public class CuriosityBot extends BaseRobot
 
     public CuriosityBot(OpMode setOpMode, ControllerInput setGamepad, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
-        super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
+        super(FieldSide.BLUE,LRSide.LEFT,new Pose(0,0,0),usePayload,useChassis,useNavigator);
         opMode = setOpMode;
 
         gamepad = setGamepad;
