@@ -32,7 +32,7 @@ public class CuriosityPayload
     double armBaseSpeed = 1;
     double armSlowSpeed = 0.5;
     double gripperOpenPos = 0;
-    double gripperClosedPos = 0.5;
+    double gripperClosedPos = 0.3;
     double gripperTriggerDistance = 0.5;
     double defaultCooldown = 0.4;
 
@@ -48,6 +48,7 @@ public class CuriosityPayload
     boolean hasCone = false;
     double gripperCooldown = defaultCooldown;
     double armCooldown = defaultCooldown;
+    boolean gripperOpen = false;
 
 
     public CuriosityPayload(OpMode setOpMode, ControllerInput setGamepad, InputAxis setArmControlAxis, InputAxis setGripperControlAxis,
@@ -91,10 +92,10 @@ public class CuriosityPayload
     }
 
     void manage_raw_control(){
-        arm.setPowerClamped(armControlAxis.getValue());
-        double gripperTargetPos = (gripperControlAxis.getValue()+1)/2;
-        if(gripperTargetPos == 1 && gripper.getPosition() == gripperOpenPos) gripper.setPosition(gripperClosedPos);
-        else if (gripperTargetPos == 0 && gripper.getPosition() == gripperClosedPos) gripper.setPosition(gripperOpenPos);
+        arm.setPowerRaw(armControlAxis.getValue());
+        double gripperInput = gripperControlAxis.getValue();
+        if(gripperInput == 1) gripper.setPosition(gripperClosedPos);
+        else if (gripperInput == -1) gripper.setPosition(gripperOpenPos);
     }
 
     public void stop(){
@@ -172,5 +173,21 @@ public class CuriosityPayload
 
     double getDeltaTime(){
         return opMode.getRuntime() - lastLoopTime;
+    }
+
+    public void toggleGripper(boolean open){
+        if(open) {
+            gripper.setPosition(gripperOpenPos);
+            gripperOpen = true;
+        }
+        else {
+            gripper.setPosition(gripperClosedPos);
+            gripperOpen = false;
+        }
+    }
+
+    public void toggleGripper(){
+        if(gripperOpen) toggleGripper(false);
+        else toggleGripper(true);
     }
 }

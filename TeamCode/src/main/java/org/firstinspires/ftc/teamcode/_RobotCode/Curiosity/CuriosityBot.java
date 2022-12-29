@@ -55,8 +55,9 @@ public class CuriosityBot extends BaseRobot
         }
 
         if(USE_PAYLOAD){
-            DcMotor armMotor = opMode.hardwareMap.dcMotor.get("Arm");
-            EncoderActuator arm = new EncoderActuator(opMode, new _ArmProfile(armMotor));
+            DcMotor armMotor1 = opMode.hardwareMap.dcMotor.get("Arm 1");
+            DcMotor armMotor2 = opMode.hardwareMap.dcMotor.get("Arm 2");
+            EncoderActuator arm = new EncoderActuator(opMode, new _ArmProfile(armMotor1,armMotor2));
             Servo gripper = opMode.hardwareMap.servo.get("gripper");
             DistanceSensor gripperDist = opMode.hardwareMap.get(DistanceSensor.class, "gripper distance");
             DistanceSensor armLevelDist = opMode.hardwareMap.get(DistanceSensor.class, "arm level distance");;

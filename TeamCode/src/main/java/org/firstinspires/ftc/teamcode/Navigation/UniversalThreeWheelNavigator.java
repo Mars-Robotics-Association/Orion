@@ -207,7 +207,8 @@ public class UniversalThreeWheelNavigator
         opMode.telemetry.addData("Fixed delta: ", fixedDelta);
 
         //calculate turn speed based off of PID
-        double turnSpeed = speed * turningPID.getOutput(actualAngle, targetAngle);
+        double turnSpeed = (speed * turningPID.getOutput(actualAngle, targetAngle));
+        turnSpeed += (0.2*Math.signum(turnSpeed));
         //print telemetry
         opMode.telemetry.addData("ERROR: ", targetAngle-actualAngle);
         opMode.telemetry.addData("Corrected target angle: ", targetAngle);
@@ -225,11 +226,11 @@ public class UniversalThreeWheelNavigator
         double distanceError = getDistance(targetX, targetY, actualX, actualY);
         //calculates speed based off of distance from target
         double moveSpeed = speed * movePID.getOutput(distanceError, 0);
+        moveSpeed += (0.2*Math.signum(moveSpeed));
         //calculate the move angle
         double moveAngle = getMeasuredPose().getHeading() + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX)));
 
         //prints telemetry
-
         opMode.telemetry.addData("Target position: ", targetX + ", " +targetY);
         opMode.telemetry.addData("Actual position: ", actualX+", "+actualY);
         opMode.telemetry.addData("Distance error ", distanceError);

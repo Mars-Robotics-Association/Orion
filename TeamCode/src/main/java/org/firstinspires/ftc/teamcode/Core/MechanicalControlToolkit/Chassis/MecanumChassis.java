@@ -253,6 +253,8 @@ public class MecanumChassis
          * the wheels need to go) with a positive 45 or negative 45 shift, depending on the wheel. This works
          * so that no matter the degrees, it will always come out with the right value. A turn offset is added
          * to the end for corkscrewing, or turning while driving*/
+        double strafeBonusMultiplier = (Math.abs(Math.sin(Math.toRadians(degrees)))*0.4)+1;
+
         double FRP = -Math.cos(Math.toRadians(degrees + 45)) * speed + turnSpeed;
         double FLP = Math.cos(Math.toRadians(degrees - 45)) * speed + turnSpeed;
         double RRP = -Math.cos(Math.toRadians(degrees - 45)) * speed + turnSpeed;

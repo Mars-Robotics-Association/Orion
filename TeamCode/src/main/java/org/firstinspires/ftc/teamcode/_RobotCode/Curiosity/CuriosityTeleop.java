@@ -143,10 +143,13 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 break;
             case Y: //load
                 robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
+                break;
             case B: //place
                 robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
+                break;
             case X: //raw control arm
                 robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
+                break;
 
         }
     }
