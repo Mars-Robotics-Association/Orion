@@ -67,29 +67,12 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
         //manage driving
         robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         //telemetry
-        printTelemetry();
+        //printTelemetry();
         //telemetry.update();
     }
 
     //prints a large amount of telemetry for the robot
     private void printTelemetry() {
-        /*
-        //CONTROLS
-
-        telemetry.addLine("----CONTROLS----");
-        telemetry.addData("Drive with: ", "LJS");
-        telemetry.addData("Turn with: ", "RJS");
-        telemetry.addData("Change speed multiplier: ", "A");
-        telemetry.addData("Reset robot pose: ", "Press RJS");
-        telemetry.addData("Toggle headless mode: ", "Press LJS");
-        telemetry.addData("Intake: ", "Hold LT");
-        telemetry.addData("Load: ", "Hold RT");
-        telemetry.addData("Toggle shooter: ", "Press Y");
-        telemetry.addData("Toggle intake: ", "Press RB");
-        telemetry.addData("Toggle path: ", "Press LB");
-
-        robot.getPayload().printTelemetry();
-        */
         //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
@@ -118,12 +101,6 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
     @Override
     public void ButtonPressed(int id, ControllerInput.Button button) {
         switch (button) {
-            case A:// speed multiplier cycling
-                if (speedMultiplier == 1) speedMultiplier = 0.5;
-                else speedMultiplier = 1;
-                break;
-            case B:// reset robot pose
-                break;
             case LJS:// toggle headless
                 robot.getChassis().switchHeadlessMode();
                 break;
@@ -132,21 +109,6 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
                 robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
-            case RT:
-
-                break;
-            case LT:
-
-                break;
-            case RB:
-
-                break;
-            case LB:
-
-                break;
-            case Y:
-
-                break;
         }
     }
 
@@ -154,24 +116,36 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
             case RT:
+                /*
                 robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
                 robot.armMotor.setPower(armPower);
                 telemetry.addLine("Right Trigger Held");
+                 */
+                robot.armTarget += 2 ;
                 break ;
             case LT:
+                /*
                 robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
                 robot.armMotor.setPower(-armPower);
                 telemetry.addLine("Left Trigger Held");
+                */
+                robot.armTarget -= 2 ;
                 break ;
             case RB:
+                /*
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
                 robot.liftMotor.setPower(armPower);
                 telemetry.addLine("Right Bumper Held");
+                */
+                robot.liftTarget += 0.1 ;
                 break ;
             case LB:
+                /*
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
                 robot.liftMotor.setPower(-armPower);
                 telemetry.addLine("Left Bumper Held");
+                */
+                robot.liftTarget -= 0.1 ;
                 break ;
             case B:
                 telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(-24, -10, 0, 0.4) ) ;
@@ -185,36 +159,48 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
     @Override
     public void ButtonReleased(int id, ControllerInput.Button button) {
         switch (button) {
-            case RT:  // Raise arm manually
-                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
-                robot.armMotor.setPower(0) ;
-                break ;
-            case LT:  // Lower arm manually
-                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
-                robot.armMotor.setPower(0) ;
-                break ;
-            case RB:  // Raise arm manually
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
-                robot.liftMotor.setPower(0) ;
-                break ;
-            case LB:  // Lower arm manually
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
-                robot.liftMotor.setPower(0) ;
-                break ;
+            case A:// speed multiplier cycling
+                if (speedMultiplier == 1) speedMultiplier = 0.5;
+                else speedMultiplier = 1;
+                break;
             case X:  // Toggle the gripper manually (open/close)
                 robot.toggleGripper();
                 break ;
+            case RT:  // Raise arm manually
+                //robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                //robot.armMotor.setPower(0) ;
+                //robot.armTarget =robot.armMotor.getCurrentPosition() ;
+                //robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                break ;
+            case LT:  // Lower arm manually
+                //robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                //robot.armMotor.setPower(0) ;
+                //robot.armTarget =robot.armMotor.getCurrentPosition() ;
+                //robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                break ;
+            case RB:  // Raise arm manually
+                //robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                //robot.liftMotor.setPower(0) ;
+                //robot.liftTarget =robot.liftMotor.getCurrentPosition() ;
+                //robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                break ;
+            case LB:  // Lower arm manually
+                //robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                //robot.liftMotor.setPower(0) ;
+                //robot.liftTarget =robot.liftMotor.getCurrentPosition() ;
+                //robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                break ;
             case DUP:  // Close the gripper and raise the arm to deliver high
-                robot.closeGripper() ;
-                robot.waitForTime(0.2) ;
+                //robot.closeGripper() ;
+                //robot.waitForTime(0.2) ;
                 robot.armTarget = robot.armHigh ;
-                robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                robot.liftTarget = robot.liftHigh ;
                 break ;
             case DDOWN:
-                robot.openGripper() ;
-                robot.waitForTime(0.2) ;
+                //robot.openGripper() ;
+                //robot.waitForTime(0.2) ;
                 robot.armTarget = robot.armBottom ;
-                robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                robot.liftTarget = robot.liftBottom ;
                 break ;
         }
     }

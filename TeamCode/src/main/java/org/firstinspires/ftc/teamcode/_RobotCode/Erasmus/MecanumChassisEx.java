@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
@@ -124,17 +123,17 @@ public class MecanumChassisEx
     //TODO: UNIVERSAL PUBLIC METHODS
     public void driveWithGamepad(ControllerInput controllerInput, double speedMultiplier) {
         //MOVE if left joystick magnitude > 0.1
-        if (controllerInput.CalculateLJSMag() > 0.1) {
+        if (controllerInput.calculateLJSMag() > 0.1) {
             rawDrive(
-                    controllerInput.CalculateLJSAngle()+inputOffset,
-                    controllerInput.CalculateLJSMag() * profile.moveSpeed() * speedMultiplier,
-                    controllerInput.GetRJSX() * profile.turnSpeed() * speedMultiplier);//drives at (angle, speed, turnOffset)
+                    controllerInput.calculateLJSAngle()+inputOffset,
+                    controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier,
+                    controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//drives at (angle, speed, turnOffset)
 
-            opMode.telemetry.addData("Moving at ", controllerInput.CalculateLJSAngle());
+            opMode.telemetry.addData("Moving at ", controllerInput.calculateLJSAngle());
         }
         //TURN if right joystick magnitude > 0.1 and not moving
-        else if (Math.abs(controllerInput.GetRJSX()) > 0.1) {
-            rawTurn(controllerInput.GetRJSX() * profile.turnSpeed() * speedMultiplier);//turns at speed according to rjs1
+        else if (Math.abs(controllerInput.getRJSX()) > 0.1) {
+            rawTurn(controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//turns at speed according to rjs1
             opMode.telemetry.addData("Turning", true);
         }
         else {

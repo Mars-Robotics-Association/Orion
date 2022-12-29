@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Navigation.UniversalThreeWheelNavigator;
 
@@ -33,11 +32,12 @@ class ErasmusNavigation extends UniversalThreeWheelNavigator
     public static double minDriveSpeed = 0.15 ; //TODO: Added by EA
     public static double minTurnSpeed = 0.3 ; //TODO: Added by EA
     public static double rampSpeedIncrement = 0.04 ;
-    private double lastSpeed = 0 ;
-    private double lastDistance = 0 ;
+    private double lastSpeed = 0 ; // This is used to calculate ramp speed
+    //private double lastDistance = 0 ;  // This is used to calculate if we stopped (stuck). The concept is very problematic.
+    // TODO:  I think a better way is to have a time limit on the move to pose method (or the calling one), like in FLL.
+    private OpMode opMode ;
 
     public ErasmusNavigation(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor) {
-
         ////CONFIGURABLE////
         encoderMultipliers = nav_encoderMultipliers;
         trackwidth = nav_trackwidth;
@@ -53,26 +53,23 @@ class ErasmusNavigation extends UniversalThreeWheelNavigator
 
         stopSpeedThreshold = nav_stopSpeedThreshold; //how slow the robot needs to be moving before it stops
         stopTimeThreshold = nav_stopTimeThreshold; //how long it needs to be below speed threshold
-        stopDistanceThreshold = nav_stopDistanceThreshold ;
+        //stopDistanceThreshold = nav_stopDistanceThreshold ;
+        //opMode = setOpMode ;  // TODO: Delete when we remember how inheritance works with composition :)
         InitializeNavigator(setOpMode, baseRobot, setDistancePort, setDistanceStarboard, setColorSensor);
     }
-
 
     public boolean moveToPose( double targetX, double targetY, double targetHeading, double targetSpeed) {
         opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetHeading+")");
         update() ;
         double[] driveVector = calculateVector(targetX, targetY) ;
-
         if (areWeThereYet(driveVector[0])) {
             // We are there. Stop driving/turning.
             lastSpeed = 0 ;
-            lastDistance = 0 ;
+            //lastDistance = 0 ;
             return true ;
         }
-
         getChassis().rawDrive( driveVector[1], calculateScalarSpeed(driveVector[0], targetSpeed), calculateTurnSpeed(targetHeading, targetSpeed) ) ;
-        // We are there. Stop driving/turning.
-
+        // Not there yet => Keep going...
         return false ;
     }
 
@@ -113,18 +110,9 @@ class ErasmusNavigation extends UniversalThreeWheelNavigator
         else {
             if(opMode.getRuntime() - lastTimeNotThere > nav_stopTimeThreshold) return true ;
         }
-        lastDistance = (lastDistance+distance)/2 ;
+        //lastDistance = (lastDistance+distance)/2 ;
         return false ;
     }
-
-
-    // ------- Utilities ---------
-    private double getDistance(double x1, double y1, double x2, double y2){
-        double xError = x1-x2;
-        double yError = y1-y2;
-        return Math.sqrt((xError*xError)+(yError*yError)); //return distance
-    }
-
 
     // -------------- Overrides ------------------
     //make these speeds negative if going wrong direction
@@ -138,10 +126,4 @@ class ErasmusNavigation extends UniversalThreeWheelNavigator
         return super.calculateMoveAngleSpeed(targetX, targetY, -speed);
     }
 
-    /*  =================  AVAILABLE METHODS  =====================
-
-    turnTowards(double targetAngle, double speed){return turnTowards(targetAngle, speed, stopSpeedThreshold, stopTimeThreshold)
-    moveTowards(double targetX, double targetY, double speed)
-    goTowardsPose(double targetX, double targetY, double targetAngle, double speed)
-    */
 }
