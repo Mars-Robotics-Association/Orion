@@ -149,6 +149,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
+            //uncomment when diatance sensor is fixed
+            /*
             case Y: //load
                 robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
                 break;
@@ -158,7 +160,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             case X: //raw control arm
                 robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
                 break;
-
+            */
         }
     }
 
