@@ -125,6 +125,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
         Color.RGBToHSV(colorSensor.red(),colorSensor.green(),colorSensor.blue(),hsvValues);
         opMode.telemetry.addData("hsv ",hsvValues[0]);
         if (hsvValues[0]<90) result =2;//red
+        else if (hsvValues[0]>300) result =2;//red wraps back around: it's centered on 0/360 degrees
         else if (hsvValues[0]>190) result =1;//blue
         opMode.telemetry.addData("result",result);
      return result;
