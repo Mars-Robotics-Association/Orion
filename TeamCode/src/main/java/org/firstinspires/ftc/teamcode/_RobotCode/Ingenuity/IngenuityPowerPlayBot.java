@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
@@ -34,6 +35,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
     public static double servoTarget1=0.37;//closed
     public static double servoTarget2=0.7;//open
     ColorSensor colorSensor;
+    DistanceSensor sensorDistance ;
 
     //Misc
     FtcDashboard dashboard;
@@ -63,6 +65,8 @@ public class IngenuityPowerPlayBot extends BaseRobot
             //intake
             gripperServo= opMode.hardwareMap.servo.get("gripper");
             colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
+            sensorDistance = opMode.hardwareMap.get(DistanceSensor.class, "colorSensor");
+
             DcMotor armMotor = opMode.hardwareMap.dcMotor.get("armMotor") ;
             armMotor.setDirection(DcMotorSimple.Direction.REVERSE) ;
             payload = new IngenuityPayload(opMode, armMotor, armPos);
