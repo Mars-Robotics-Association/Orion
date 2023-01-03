@@ -15,9 +15,9 @@ public class BaseRobot
    public boolean USE_NAVIGATOR = false;
    ChassisProfile chassisProfile;
 
-   public BaseRobot(FieldSide setSide, LRSide setLR, Pose setPose, boolean SET_USE_PAYLOAD, boolean SET_USE_CHASSIS, boolean SET_USE_NAVIGATOR){
+   public BaseRobot(FieldSide setSide, Pose setPose, boolean SET_USE_PAYLOAD, boolean SET_USE_CHASSIS, boolean SET_USE_NAVIGATOR){
       fieldSide = setSide;
-      lrSide = setLR;
+      lrSide = LRSide.LEFT;
       USE_PAYLOAD = SET_USE_PAYLOAD;
       USE_CHASSIS = SET_USE_CHASSIS;
       USE_NAVIGATOR = SET_USE_NAVIGATOR;
@@ -27,4 +27,8 @@ public class BaseRobot
    public ChassisProfile getChassisProfile(){return chassisProfile;}
    public FieldSide getFieldSide(){return fieldSide;}
    public LRSide getLrSide(){return lrSide;}
+   public void changeLrSide(){
+      if(lrSide==LRSide.LEFT)lrSide=LRSide.RIGHT;
+      else lrSide=LRSide.LEFT;
+   }
 }

@@ -87,7 +87,7 @@ public class CuriosityPayload
         lastLoopTime = opMode.getRuntime();
     }
 
-    double getPoleHeight(Pole pole){
+    public static double getPoleHeight(Pole pole){
         if (pole == Pole.LOW) return 15;
         else if (pole == Pole.MID) return 24;
         else return 36;

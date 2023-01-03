@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -79,9 +80,16 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //manage driving
         robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         //telemetry
+
         printTelemetry();
         telemetry.update();
         lastRuntime = getRuntime();
+
+        try {
+            robot.dashboard.sendImage(robot.camera.getImage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     //prints a large amount of telemetry for the robot
@@ -141,6 +149,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
+            //uncomment when diatance sensor is fixed
+            /*
             case Y: //load
                 robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
                 break;
@@ -150,7 +160,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             case X: //raw control arm
                 robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
                 break;
-
+            */
         }
     }
 
