@@ -45,7 +45,7 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
         Servo servo6 = hardwareMap.servo.get("servo 6");
 
         motors = new DCMotorArray(new DcMotor[]{motor1,motor2,motor3,motor4}, new double[]{1,1,1,1}, false);
-        motors.RunWithoutEncodersMode();
+        motors.runWithoutEncodersMode();
 
         servos = new ServoArray(new Servo[]{servo1,servo2,servo3,servo4,servo5,servo6}, new double[]{.5,.5,.5,.5,.5,.5});
         servos.GoToPosition(0.5);
@@ -59,7 +59,7 @@ public class motorServoTesting extends OpMode implements ControllerInputListener
         controllerInput1.loop();
         if(gamepad1.right_trigger<0.1 && gamepad1.left_trigger<0.1){
             telemetry.addLine("STOP MOTORS");
-            motors.SetPowers(0);
+            motors.setPowers(0);
         }
 
         telemetry.addData("current motor: ", currentmotor + "and " + (additionalMotors) + " more");

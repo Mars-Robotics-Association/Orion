@@ -18,16 +18,16 @@ public class DCMotorArray
         speedMultipliers = setSpeedMultipliers;
         useEncoders = isUseEncoders;
 
-        if(useEncoders) RunWithEncodersMode();
-        else RunWithoutEncodersMode();
+        if(useEncoders) runWithEncodersMode();
+        else runWithoutEncodersMode();
     }
 
-    public void SetSpeedMultipliers(double[] setSpeedMultipliers){
+    public void setSpeedMultipliers(double[] setSpeedMultipliers){
         speedMultipliers = setSpeedMultipliers;
     }
 
     //Sets the powers of the motors based off an array using the speedMultipliers array
-    public void SetPowers(double[] setSpeeds){
+    public void setPowers(double[] setSpeeds){
         int i = 0;
         for (DcMotor m: motors) {
             m.setPower(setSpeeds[i]*speedMultipliers[i]);
@@ -36,7 +36,7 @@ public class DCMotorArray
     }
 
     //Sets the powers of the motors to the same value
-    public void SetPowers(double speed){
+    public void setPowers(double speed){
         int i = 0;
         for (DcMotor m: motors) {
             m.setPower(speed*speedMultipliers[i]);
@@ -45,11 +45,11 @@ public class DCMotorArray
     }
 
     //Stops the motors
-    public void StopMotors(){
-        SetPowers(0);
+    public void stopMotors(){
+        setPowers(0);
     }
 
-    public void SetTargetPositions(int[] positions, boolean runToPositionsImmediate){
+    public void setTargetPositions(int[] positions, boolean runToPositionsImmediate){
         if(!useEncoders) return;
         int i = 0;
         for (DcMotor m: motors) {
@@ -57,11 +57,11 @@ public class DCMotorArray
             i++;
         }
         if(runToPositionsImmediate) {
-            SetPowers(1);
-            RunToPositionMode();
+            setPowers(1);
+            runToPositionMode();
         }
     }
-    public void SetTargetPosition(int position, boolean runToPositionImmediate){
+    public void setTargetPosition(int position, boolean runToPositionImmediate){
         if(!useEncoders) return;
         int i = 0;
         for (DcMotor m: motors) {
@@ -69,12 +69,12 @@ public class DCMotorArray
             i++;
         }
         if(runToPositionImmediate) {
-            SetPowers(1);
-            RunToPositionMode();
+            setPowers(1);
+            runToPositionMode();
         }
     }
 
-    public int[] GetMotorPositions(){
+    public int[] getMotorPositions(){
         List<Integer> positions = new ArrayList<Integer>();
         for(DcMotor m : motors) positions.add(m.getCurrentPosition());
         int[] array = new int[positions.size()];
@@ -83,19 +83,19 @@ public class DCMotorArray
     }
 
     //Mode setting
-    public void RunWithEncodersMode(){
+    public void runWithEncodersMode(){
         for(DcMotor m : motors) {
             m.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             useEncoders = true;
         }
     }
-    public void RunWithoutEncodersMode(){
+    public void runWithoutEncodersMode(){
         for(DcMotor m : motors) m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-    public void StopAndResetEncoders(){
+    public void stopAndResetEncoders(){
         for(DcMotor m : motors) m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
-    public void RunToPositionMode(){
+    public void runToPositionMode(){
         for(DcMotor m : motors) m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 }
