@@ -23,7 +23,6 @@ public class CuriosityBot extends BaseRobot
 {
     ////Dependencies////
     OpMode opMode;
-    HermesLog hermesLog;
     //Mechanical Components
     CuriosityPayload payload;
     CuriosityNavigator navigator;
@@ -40,7 +39,7 @@ public class CuriosityBot extends BaseRobot
 
         gamepad = setGamepad;
         dashboard = FtcDashboard.getInstance();
-        hermesLog = new HermesLog("Curiosity", 200, opMode);
+        setLog(new HermesLog("Curiosity", 200, opMode));
         camera = new Camera(opMode,"Webcam 1");
 
 
@@ -78,7 +77,7 @@ public class CuriosityBot extends BaseRobot
     public void start(){
         getChassis().startChassis();
         getNavigator().setMeasuredPose(0,0,0);
-        hermesLog.start();
+        log.start();
     }
 
     public void update() throws InterruptedException {
@@ -95,8 +94,8 @@ public class CuriosityBot extends BaseRobot
             //Base64Image cameraData = new Base64Image(
                     //camera.convertBitmapToBase64(camera.shrinkBitmap(camera.getImage(),240,135),0));
             Object[] data = {robotPose};
-            hermesLog.addData(data);
-            hermesLog.Update();
+            log.addData(data);
+            log.Update();
         }
         if(USE_PAYLOAD){
             payload.update();
