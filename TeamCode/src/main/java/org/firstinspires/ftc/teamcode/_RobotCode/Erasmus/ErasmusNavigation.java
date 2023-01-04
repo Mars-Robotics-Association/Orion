@@ -35,6 +35,7 @@ class ErasmusNavigation extends UniversalThreeWheelNavigator
     private double lastSpeed = 0 ; // This is used to calculate ramp speed
     //private double lastDistance = 0 ;  // This is used to calculate if we stopped (stuck). The concept is very problematic.
     // TODO:  I think a better way is to have a time limit on the move to pose method (or the calling one), like in FLL.
+    //        I also think this would be best implemented in the calling method (outside this class).
     private OpMode opMode ;
 
     public ErasmusNavigation(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor) {
@@ -59,18 +60,26 @@ class ErasmusNavigation extends UniversalThreeWheelNavigator
     }
 
     public boolean moveToPose( double targetX, double targetY, double targetHeading, double targetSpeed) {
+        /* -----------------------------------------------------------------------------
+        Main driving method.
+        1. Calculates the vector needed to drive to target position (no rotation) - calculateVector()
+        2. Determine if we are at the target position/pose (rotation).
+        3. If still not there, calculate the drive speed - calculateScalarSpeed() - and
+            the rotation - calculateTurnSpeed() - to reach the target pose.
+        4. Send the drive instruction to the chassis - getChassis().rawDrive().
+        --------------------------------------------------------------------------------- */
+        // TODO: Write our own calculateTurnSpeed().
         opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetHeading+")");
         update() ;
         double[] driveVector = calculateVector(targetX, targetY) ;
         if (areWeThereYet(driveVector[0])) {
             // We are there. Stop driving/turning.
             lastSpeed = 0 ;
-            //lastDistance = 0 ;
+            //lastDistance = 0 ; // TODO: Delete or keep ???
             return true ;
         }
         getChassis().rawDrive( driveVector[1], calculateScalarSpeed(driveVector[0], targetSpeed), calculateTurnSpeed(targetHeading, targetSpeed) ) ;
-        // Not there yet => Keep going...
-        return false ;
+        return false ; // Not there yet => Keep going...
     }
 
     public double[] calculateVector(double targetX, double targetY) {
@@ -84,15 +93,18 @@ class ErasmusNavigation extends UniversalThreeWheelNavigator
     }
 
     public double calculateScalarSpeed( double distance, double maxSpeed ) {
-        double finalSpeed = kProportional*distance*maxSpeed ; // This converts the distance error into a speed
-        if (Math.abs(finalSpeed) > Math.abs(maxSpeed)) finalSpeed = maxSpeed ;  // Limit speed to the maxSpeed provided
-        else if (Math.abs(distance) < nav_stopDistanceThreshold) finalSpeed = 0 ;  // Stop driving if the robot is there (maybe waiting to turn)
-        else if (Math.abs(finalSpeed) < minDriveSpeed) finalSpeed = minDriveSpeed ;  // When close, make sure we're still driving enough to move
+        double finalSpeed = kProportional*distance*maxSpeed ;                           // Convert the distance error into a speed
+        if (Math.abs(finalSpeed) > Math.abs(maxSpeed)) finalSpeed = maxSpeed ;          // Cap the speed to the maxSpeed provided
+        else if (Math.abs(distance) < nav_stopDistanceThreshold) finalSpeed = 0 ;       // Stop driving if the robot is there (maybe waiting to finish rotating)
+        else if (Math.abs(finalSpeed) < minDriveSpeed) finalSpeed = minDriveSpeed ;     // When close, make sure we're still driving enough to move
 
-        if (lastSpeed < (finalSpeed-0.05)) finalSpeed = finalSpeed*rampSpeedIncrement + lastSpeed ;
+        if (lastSpeed < (finalSpeed-0.05)) finalSpeed = finalSpeed*rampSpeedIncrement + lastSpeed ; // Ramp the speed if it is increasing
+        lastSpeed = finalSpeed ;
+
+        // Telemetry. TODO: Consider moving this or disabling by default
         opMode.telemetry.addData("=> Distance ", distance);
         opMode.telemetry.addData("=>    Speed ", finalSpeed);
-        lastSpeed = finalSpeed ;
+
         return finalSpeed ;
     }
 
@@ -105,12 +117,11 @@ class ErasmusNavigation extends UniversalThreeWheelNavigator
     public boolean areWeThereYet( double distance ) {
         // If the robot is not at the destination AND it is not stuck...
         if (Math.abs(distance) > nav_stopDistanceThreshold ) lastTimeNotThere = opMode.getRuntime();
-        //if(Math.abs(distance) > nav_stopDistanceThreshold && Math.abs(distance-lastDistance) > nav_stopSpeedThreshold ) lastTimeNotThere = opMode.getRuntime();
         // If we are there, check how long it has been there - to make sure we're not just passing through...
         else {
             if(opMode.getRuntime() - lastTimeNotThere > nav_stopTimeThreshold) return true ;
         }
-        //lastDistance = (lastDistance+distance)/2 ;
+        // TODO: Add a component for rotation
         return false ;
     }
 
