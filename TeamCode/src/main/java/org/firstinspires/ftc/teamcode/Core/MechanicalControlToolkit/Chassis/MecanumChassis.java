@@ -90,10 +90,10 @@ public class MecanumChassis
             }
 
             //resets motors
-            driveMotors.StopAndResetEncoders();
-            if(profile.useEncoders()) driveMotors.RunWithEncodersMode();
-            else driveMotors.RunWithoutEncodersMode();
-            driveMotors.SetPowers(new double[]{0,0,0,0});
+            driveMotors.stopAndResetEncoders();
+            if(profile.useEncoders()) driveMotors.runWithEncodersMode();
+            else driveMotors.runWithoutEncodersMode();
+            driveMotors.setPowers(new double[]{0,0,0,0});
 
             //setup PIDs
             poseXYPID = new PIDController(0,0,0);//Create the pid controller.
@@ -151,7 +151,7 @@ public class MecanumChassis
         opMode.telemetry.addData("FINAL ANGLE ", finalAngle);
 
         //Sets the mode so that robot can drive and record encoder values
-        driveMotors.RunWithoutEncodersMode();
+        driveMotors.runWithoutEncodersMode();
 
         //HEADING PID//
         //Uses pid controller to correct for heading error using (currentAngle, targetAngle)
@@ -187,7 +187,7 @@ public class MecanumChassis
 
 
         //Use motors and record encoder values
-        driveMotors.RunWithoutEncodersMode();
+        driveMotors.runWithoutEncodersMode();
 
         //Set motor speeds all equal, as this causes it to do a spot turn
         setMotorSpeeds(speed, -speed, speed, -speed);
@@ -233,7 +233,7 @@ public class MecanumChassis
     //PRIVATE METHODS
     //Utility
     public void setMotorSpeeds(double fr, double fl, double rr, double rl){
-        driveMotors.SetPowers(new double[]{fr, -fl, rr, -rl});
+        driveMotors.setPowers(new double[]{fr, -fl, rr, -rl});
     }
 
     public void setPoseXYPID(double p, double i, double d){poseXYPID.setPID(p,i,d);}
@@ -253,12 +253,12 @@ public class MecanumChassis
          * the wheels need to go) with a positive 45 or negative 45 shift, depending on the wheel. This works
          * so that no matter the degrees, it will always come out with the right value. A turn offset is added
          * to the end for corkscrewing, or turning while driving*/
-        double strafeBonusMultiplier = (Math.abs(Math.sin(Math.toRadians(degrees)))*0.4)+1;
+        double strafeFactor = (Math.abs(Math.sin(Math.toRadians(degrees)))*0.4)+1;
 
-        double FRP = -Math.cos(Math.toRadians(degrees + 45)) * speed + turnSpeed;
-        double FLP = Math.cos(Math.toRadians(degrees - 45)) * speed + turnSpeed;
-        double RRP = -Math.cos(Math.toRadians(degrees - 45)) * speed + turnSpeed;
-        double RLP = Math.cos(Math.toRadians(degrees + 45)) * speed + turnSpeed;
+        double FRP = (-Math.cos(Math.toRadians(degrees + 45))*strafeFactor) * speed + turnSpeed;
+        double FLP = (Math.cos(Math.toRadians(degrees - 45))*strafeFactor) * speed + turnSpeed;
+        double RRP = (-Math.cos(Math.toRadians(degrees - 45))*strafeFactor) * speed + turnSpeed;
+        double RLP = (Math.cos(Math.toRadians(degrees + 45))*strafeFactor) * speed + turnSpeed;
 
         double[] vals = {FRP, FLP, RRP, RLP};
         return vals;
@@ -266,10 +266,10 @@ public class MecanumChassis
 
     public double[] getEncoderTicks(){
         double[] returnVal = new double[4];
-        returnVal[0] = driveMotors.GetMotorPositions()[0];
-        returnVal[1] = driveMotors.GetMotorPositions()[1];
-        returnVal[2] = driveMotors.GetMotorPositions()[2];
-        returnVal[3] = driveMotors.GetMotorPositions()[3];
+        returnVal[0] = driveMotors.getMotorPositions()[0];
+        returnVal[1] = driveMotors.getMotorPositions()[1];
+        returnVal[2] = driveMotors.getMotorPositions()[2];
+        returnVal[3] = driveMotors.getMotorPositions()[3];
         return returnVal;
     }
 

@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.InputAxis;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 
 public class CuriosityPayload
 {
@@ -19,6 +20,7 @@ public class CuriosityPayload
     ControllerInput gamepad;
     InputAxis armControlAxis;
     InputAxis gripperControlAxis;
+    BlinkinController lights;
 
     enum PayloadState {RAW_CONTROL, STOPPED, LOADING, STORAGE, PLACING}
     enum Pole {GROUND, LOW, MID, HIGH}
@@ -39,7 +41,18 @@ public class CuriosityPayload
     //variables
     PayloadState payloadState = PayloadState.RAW_CONTROL;
     Pole targetPole = Pole.MID;
-    public void setPayloadState(PayloadState state){payloadState = state;}
+    public void setPayloadState(PayloadState state){
+        payloadState = state;
+        switch (payloadState){
+            case RAW_CONTROL: lights.green(); break;
+            case STOPPED: lights.red(); break;
+            case LOADING: lights.yellow(); break;
+            case STORAGE: lights.blue(); break;
+            case PLACING: lights.purple(); break;
+
+        }
+        lights.setCooldown(1);
+    }
     public void setTargetPole(Pole pole){targetPole = pole;}
 
     //STATES
@@ -145,13 +158,19 @@ public class CuriosityPayload
         arm.goToPosition(poleHeight);
 
         //allows for user tweaking if the arm should move
-        if(hasCone) arm.setPowerClamped(armControlAxis.getValue());
+        if(hasCone){
+            arm.motors.runWithEncodersMode();
+            arm.setPowerClamped(armControlAxis.getValue());
+        }
 
         //waits for user input to drop
-        if(gripperControlAxis.getValue() != 1) return;
+        if(hasCone && gripperControlAxis.getValue() != 1) return;
 
         //opens the gripper and waits for it to finish
         gripper.setPosition(gripperOpenPos);
+        //it has dropped cone
+        hasCone = false;
+
         if(gripperCooldown > 0){
             gripperCooldown-=getDeltaTime(); //stay still for a bit to let gripper open
             return;
@@ -159,12 +178,14 @@ public class CuriosityPayload
         else{ //then when gripper is fully open move to next state
             gripperCooldown = defaultCooldown;
             payloadState = PayloadState.RAW_CONTROL;
-            hasCone = false;
             arm.goToPosition(arm.getPosition()+armClearHeight); //move the arm up to avoid hitting
         }
 
         //wait for the arm to clear top
-        if(armCooldown > 0) armCooldown-=getDeltaTime(); //stay still for a bit to let arm go up
+        if(armCooldown > 0) {
+            armCooldown-=getDeltaTime(); //stay still for a bit to let arm go up
+            return;
+        }
         else{ //then when arm is up a little bit we can move on
             armCooldown = defaultCooldown;
             payloadState = PayloadState.RAW_CONTROL;
