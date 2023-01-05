@@ -210,7 +210,7 @@ public class UniversalThreeWheelNavigator
     public double calculateScalarMoveSpeed(double error, double minSpeed, double maxSpeed){
         double finalSpeed = moveCoefficient*error*maxSpeed; //calculate base final speed based off proportional coefficient
         Math.max(minSpeed, Math.min(maxSpeed, finalSpeed)); //clamp speed between max and min
-        if(Math.abs(error)>Math.abs(stopDistance)) finalSpeed = 0; //if within stop area, set speed to zero
+        if(Math.abs(error)<Math.abs(stopDistance)) finalSpeed = 0; //if within stop area, set speed to zero
 
         if(lastMoveSpeed<(finalSpeed-0.05)) finalSpeed = finalSpeed*moveSmoothCoefficient + lastMoveSpeed; //ramps up speed when target speed is increasing- this smooths out movement
         lastMoveSpeed = finalSpeed;
@@ -239,7 +239,7 @@ public class UniversalThreeWheelNavigator
     //returns true if value within threshold for given amount of time
     private boolean checkIfShouldStop(double distanceError, double turnError) {
         //if far enough away, reset countdown
-        if(Math.abs(distanceError) > stopDistance && Math.abs(turnError) > stopDegrees) lastTimeAboveStopThreshold = opMode.getRuntime();
+        if(Math.abs(distanceError) > stopDistance || Math.abs(turnError) > stopDegrees) lastTimeAboveStopThreshold = opMode.getRuntime();
         //if close enough
         else{
             //and countdown has run out
@@ -252,7 +252,7 @@ public class UniversalThreeWheelNavigator
         if(!useDistance) distanceError = 0;
         if(!useAngle) angleError = 0;
         //if far enough away, reset countdown
-        if(Math.abs(distanceError) > stopDistance && Math.abs(angleError) > stopDegrees) lastTimeAboveStopThreshold = opMode.getRuntime();
+        if(Math.abs(distanceError) > stopDistance || Math.abs(angleError) > stopDegrees) lastTimeAboveStopThreshold = opMode.getRuntime();
             //if close enough
         else{
             //and countdown has run out
