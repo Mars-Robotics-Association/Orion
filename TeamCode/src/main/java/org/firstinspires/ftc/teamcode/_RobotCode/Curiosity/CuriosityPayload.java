@@ -33,8 +33,8 @@ public class CuriosityPayload
     double armSlowDistance = 5;
     double armBaseSpeed = 1;
     double armSlowSpeed = 0.5;
-    double gripperOpenPos = 0;
-    double gripperClosedPos = 0.3;
+    double gripperOpenPos = 1;
+    double gripperClosedPos = 0;
     double gripperTriggerDistance = 0.5;
     double defaultCooldown = 0.4;
 
@@ -107,8 +107,8 @@ public class CuriosityPayload
     void manage_raw_control(){
         arm.setPowerRaw(armControlAxis.getValue());
         double gripperInput = gripperControlAxis.getValue();
-        if(gripperInput == 1) gripper.setPosition(gripperClosedPos);
-        else if (gripperInput == -1) gripper.setPosition(gripperOpenPos);
+        if(gripperInput == 1) gripper.setPosition(gripperOpenPos);
+        else if (gripperInput == -1) gripper.setPosition(gripperClosedPos);
     }
 
     public void stop(){

@@ -42,7 +42,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
-        robot = new CuriosityBot(this,controllerInput1,true,true,true);
+        robot = new CuriosityBot(this,controllerInput1,true,true,false);
 
 
         //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
@@ -85,11 +85,6 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.update();
         lastRuntime = getRuntime();
 
-        try {
-            robot.dashboard.sendImage(robot.camera.getImage());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     //prints a large amount of telemetry for the robot
@@ -149,18 +144,17 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
-            //uncomment when diatance sensor is fixed
-            /*
+
             case Y: //load
-                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
+                //robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
                 break;
             case B: //place
-                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
+                //robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
                 break;
             case X: //raw control arm
                 robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
                 break;
-            */
+
         }
     }
 
