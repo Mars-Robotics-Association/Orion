@@ -18,8 +18,6 @@ public class CuriosityPayload
     DistanceSensor gripperSensor;
     DistanceSensor armLevelSensor;
     ControllerInput gamepad;
-    InputAxis armControlAxis;
-    InputAxis gripperControlAxis;
     BlinkinController lights;
 
     enum PayloadState {RAW_CONTROL, STOPPED, LOADING, STORAGE, PLACING}
@@ -64,7 +62,7 @@ public class CuriosityPayload
     boolean gripperOpen = false;
 
 
-    public CuriosityPayload(OpMode setOpMode, ControllerInput setGamepad, InputAxis setArmControlAxis, InputAxis setGripperControlAxis,
+    public CuriosityPayload(OpMode setOpMode, ControllerInput setGamepad,
                             EncoderActuator setArm, Servo setGripper, DistanceSensor setGripperSensor, DistanceSensor setArmLevelSensor){
         opMode = setOpMode;
         arm = setArm;
@@ -72,17 +70,19 @@ public class CuriosityPayload
         gripperSensor = setGripperSensor;
         armLevelSensor = setArmLevelSensor;
         gamepad = setGamepad;
-        armControlAxis = setArmControlAxis;
-        gripperControlAxis = setGripperControlAxis;
     }
 
-    public void update(){
+    public void update(double armInput){
+        //clamps inputs to correct range
+        armInput*=armBaseSpeed;
+        armInput = Math.max(-armBaseSpeed, Math.min(armBaseSpeed, armInput));
+        //manage payload states
         switch (payloadState) {
-            case RAW_CONTROL: manage_raw_control(); break;
+            case RAW_CONTROL: manage_raw_control(armInput); break;
             case STOPPED: stop(); break;
-            case LOADING: manageLoading(); break;
-            case STORAGE: manageStorage(); break;
-            case PLACING: manageTarget(getPoleHeight(targetPole)); break;
+            case LOADING: manageLoading(armInput); break;
+            case STORAGE: manageStorage(armInput); break;
+            case PLACING: manageTarget(getPoleHeight(targetPole), armInput); break;
         }
         lastLoopTime = opMode.getRuntime();
     }
@@ -104,11 +104,8 @@ public class CuriosityPayload
         arm.goToPosition(armTargetPosition);
     }
 
-    void manage_raw_control(){
-        arm.setPowerRaw(armControlAxis.getValue());
-        double gripperInput = gripperControlAxis.getValue();
-        if(gripperInput == 1) gripper.setPosition(gripperOpenPos);
-        else if (gripperInput == -1) gripper.setPosition(gripperClosedPos);
+    void manage_raw_control(double armInput){
+        arm.setPowerRaw(armInput);
     }
 
     public void stop(){
@@ -116,7 +113,7 @@ public class CuriosityPayload
         arm.setPowerRaw(0);
     }
 
-    void manageLoading(){
+    void manageLoading(double armInput){
         //resets arm to loading position and opens gripper
         gripper.setPosition(gripperOpenPos);
         double armDistanceFromGround = armLevelSensor.getDistance(DistanceUnit.INCH);
@@ -133,7 +130,7 @@ public class CuriosityPayload
         }
 
         //allows for user tweaking
-        arm.setPowerClamped(armControlAxis.getValue());
+        arm.setPowerClamped(armInput);
 
         //when distance sensor detects freight, closes gripper and switches to storage state
         if(gripperSensor.getDistance(DistanceUnit.INCH)<=gripperTriggerDistance){//close the gripper
@@ -147,24 +144,24 @@ public class CuriosityPayload
         }
     }
 
-    void manageStorage(){
+    void manageStorage(double armInput){
         //moves arm to neutral state for driving around
         arm.goToPosition(storageHeight);
         gripper.setPosition(gripperClosedPos);
     }
 
-    void manageTarget(double poleHeight){
+    void manageTarget(double poleHeight, double armInput){
         //moves arm to ground target height
         arm.goToPosition(poleHeight);
 
         //allows for user tweaking if the arm should move
         if(hasCone){
             arm.motors.runWithEncodersMode();
-            arm.setPowerClamped(armControlAxis.getValue());
+            arm.setPowerClamped(armInput);
         }
 
         //waits for user input to drop
-        if(hasCone && gripperControlAxis.getValue() != 1) return;
+        if(hasCone && gripper.getPosition() != gripperOpenPos) return;
 
         //opens the gripper and waits for it to finish
         gripper.setPosition(gripperOpenPos);

@@ -111,8 +111,8 @@ public class MecanumChassisEx
 
     //Call this on Start()
     public void startChassis(){
-        imu.Start();
-        imu.ResetGyro();
+        imu.start();
+        imu.resetGyro();
     }
 
     //Call this on Loop()
@@ -146,8 +146,8 @@ public class MecanumChassisEx
     //This is called continuously while the robot is driving.
     public void rawDrive(double inputAngle, double speed, double turnOffset){
         double finalAngle = inputAngle;
-        if(headlessMode) finalAngle += imu.GetRobotAngle();
-        opMode.telemetry.addData("ROBOT ANGLE ", imu.GetRobotAngle());
+        if(headlessMode) finalAngle += imu.getRobotAngle();
+        opMode.telemetry.addData("ROBOT ANGLE ", imu.getRobotAngle());
         opMode.telemetry.addData("FINAL ANGLE ", finalAngle);
 
         //Sets the mode so that robot can drive and record encoder values
@@ -155,7 +155,7 @@ public class MecanumChassisEx
 
         //HEADING PID//
         //Uses pid controller to correct for heading error using (currentAngle, targetAngle)
-        double headingPIDOffset = poseXYPID.getOutput(turnOffset, imu.GetAngularVelocity());
+        double headingPIDOffset = poseXYPID.getOutput(turnOffset, imu.getAngularVelocity());
         //if the number is not real, reset pid controller
         if(!(headingPIDOffset > 0 || headingPIDOffset <= 0)){
             poseXYPID.reset();
@@ -197,7 +197,7 @@ public class MecanumChassisEx
         if(targetHeading > 180) targetHeading = -360+targetHeading;
         else if(targetHeading < -180) targetHeading = 360+targetHeading;
         //calculate error and turn speed
-        double error = targetHeading - imu.GetRobotAngle();
+        double error = targetHeading - imu.getRobotAngle();
 
         return error;
     }
@@ -211,12 +211,12 @@ public class MecanumChassisEx
         if(targetHeading > 180) targetHeading = -360+targetHeading;
         else if(targetHeading < -180) targetHeading = 360+targetHeading;
         //calculate if within range
-        double error = targetHeading - imu.GetRobotAngle();
+        double error = targetHeading - imu.getRobotAngle();
         if(Math.abs(error)<threshold) return true;
         else return false;
     }
     //Offsets the gryo so the current heading can be zero with GetRobotAngle()
-    public void resetGyro(){imu.ResetGyro();}
+    public void resetGyro(){imu.resetGyro();}
     public void switchHeadlessMode(){headlessMode = !headlessMode;}
     public void setHeadlessMode(boolean set){headlessMode = set;}
 

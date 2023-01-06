@@ -172,4 +172,29 @@ public class ControllerInput
         //Distance formula for calculating joystick power
         return Math.abs(Math.sqrt(Math.pow(getLJSX() - 0, 2) + Math.pow(getLJSY() - 0, 2)));
     }
+
+    public double calculateRJSAngle(){
+        //Calculate angle of left joystick
+        double Y = -gamepad.right_stick_y; //X input
+        double X = gamepad.right_stick_x; //Y input
+
+        //return telemetry for debug
+        /*opMode.telemetry.addData("Joystick X ", X);
+        opMode.telemetry.addData("Joystick Y ", Y);*/
+
+        double rightStickBaring = Math.atan2(Y,X); //get measurement of joystick angle
+        rightStickBaring = Math.toDegrees(rightStickBaring);
+        rightStickBaring -= 90;
+        if(rightStickBaring < 0)//convert degrees to positive if needed
+        {
+            rightStickBaring = 360 + rightStickBaring;
+        }
+        return rightStickBaring;
+    }
+
+    public double calculateRJSMag(){
+        //Calculate magnitude of the left joystick
+        //Distance formula for calculating joystick power
+        return Math.abs(Math.sqrt(Math.pow(getRJSX() - 0, 2) + Math.pow(getRJSY() - 0, 2)));
+    }
 }
