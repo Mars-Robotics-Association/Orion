@@ -21,6 +21,12 @@ import org.firstinspires.ftc.teamcode.Navigation.Camera;
 @Config
 public class IngenuityPowerPlayBot extends BaseRobot
 {
+    public enum SignalColor {
+        BLUE,
+        RED,
+        GREEN
+    }
+
     ////Dependencies////
     OpMode opMode;
     HermesLog log;
@@ -123,16 +129,17 @@ public class IngenuityPowerPlayBot extends BaseRobot
         else servoTarget=servoTarget1 ;
     }
 
-    public int readSignal(){
-        int result = 3 ;//green
+    public SignalColor readSignal() {
+        SignalColor result = SignalColor.GREEN;
         float[] hsvValues = new float[3];
-        Color.RGBToHSV(colorSensor.red(),colorSensor.green(),colorSensor.blue(),hsvValues);
-        opMode.telemetry.addData("hsv ",hsvValues[0]);
-        if (hsvValues[0]<90) result =2;//red
-        else if (hsvValues[0]>300) result =2;//red wraps back around: it's centered on 0/360 degrees
-        else if (hsvValues[0]>190) result =1;//blue
-        opMode.telemetry.addData("result",result);
-     return result;
+        Color.RGBToHSV(colorSensor.red(), colorSensor.green(), colorSensor.blue(), hsvValues);
+        opMode.telemetry.addData("hsv ", hsvValues[0]);
+        if (hsvValues[0] < 90) result = SignalColor.RED;
+        else if (hsvValues[0] > 300)
+            result = SignalColor.RED;//red wraps back around: it's centered on 0/360 degrees
+        else if (hsvValues[0] > 190) result = SignalColor.BLUE;
+        opMode.telemetry.addData("result", result);
+        return result;
     }
 
 
