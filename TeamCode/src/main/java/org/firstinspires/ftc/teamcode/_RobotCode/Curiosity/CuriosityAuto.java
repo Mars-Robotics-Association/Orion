@@ -48,62 +48,74 @@ public class CuriosityAuto extends LinearOpMode {
         double coneSide = getConeSide(robot.camera);
         telemetry.addData("Position",coneSide);
         telemetry.update();
-        //wait for time/color sensor
-        driveForTime(1500,1);
+        //place
+        while(robot.getNavigator().goTowardsPose(-1,2,xMultiplier*135,1)) {}
+        arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
+        robot.getChassis().rawDrive(0,.1,0);
+        sleep(1000);
+        robot.getChassis().stop();
+        robot.getPayload().toggleGripper(true);
 
-
-
-        turnToAngle(90);
         //get block
-        driveForTime(1000,1);
+        while(robot.getNavigator().goTowardsPose(1,2,xMultiplier*-90,1)){}
         arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.GROUND)+8);
         robot.getPayload().toggleGripper(true);
-        driveForTime(1000,.1);
+        robot.getChassis().rawDrive(0,.1,0);
+        sleep(100);
+        robot.getChassis().stop();
         robot.getPayload().toggleGripper();
-        driveForTime(100,-1);
+        robot.getChassis().rawDrive(0,-.1,0);
+        sleep(100);
+        robot.getChassis().stop();
         //go to high pole
-        turnToAngle(-90);
+        while(robot.getNavigator().goTowardsPose(-1,2,xMultiplier*135,1))
         //place
-        driveForTime(2000,1);
         arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
-        turnToAngle(-135);
-        driveForTime(1000,.1);
+        robot.getChassis().rawDrive(0,.1,0);
+        sleep(1000);
+        robot.getChassis().stop();
         robot.getPayload().toggleGripper();
-        //go back to blocks
-        driveForTime(100,-1);
-        turnToAngle(90);
+        robot.getChassis().rawDrive(0,-.1,0);
+        sleep(1000);
+        robot.getChassis().stop();
+
         //get block
+        while(robot.getNavigator().goTowardsPose(1,2,-90*xMultiplier,1)){}
         arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.GROUND)+6);
         robot.getPayload().toggleGripper(true);
-        driveForTime(1000,.1);
+        robot.getChassis().rawDrive(0,.1,0);
+        sleep(100);
+        robot.getChassis().stop();
         robot.getPayload().toggleGripper();
-        driveForTime(100,-1);
-        //go back to pole
-        turnToAngle(-90);
-        driveForTime(2000,1);
-        arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
-        turnToAngle(-135);
-        driveForTime(1000,.1);
-        robot.getPayload().toggleGripper();
+        robot.getChassis().rawDrive(0,-.1,0);
+        sleep(100);
+        robot.getChassis().stop();
         //place
-        driveForTime(100,-1);
-        turnToAngle(90);
+        while(robot.getNavigator().goTowardsPose(-1,2,xMultiplier*135,0))
+        arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
+        robot.getChassis().rawDrive(0,.1,0);
+        sleep(1000);
+        robot.getChassis().stop();
+        robot.getPayload().toggleGripper();
+        robot.getChassis().rawDrive(0,-.1,0);
+        sleep(1000);
+        robot.getChassis().stop();
 
 
         //spot 1(green)
         if(coneSide==1) {
             //stay
-
+            while(robot.getNavigator().goTowardsPose(-1,2,0,1));
         }
         //spot 2(purple)
         else if(coneSide==2){
             //go to center
-            driveForTime(1000,1);
+            while(robot.getNavigator().goTowardsPose(0,2,0,1)){}
         }
         //spot 3(orange)
         else{
             //go to far right
-            driveForTime(2000,1);
+            while(robot.getNavigator().goTowardsPose(1,2,0,1)){}
         }
     }
 
@@ -131,9 +143,5 @@ public class CuriosityAuto extends LinearOpMode {
         }
     }
 
-    void driveForTime(int ms, double speed){
-        robot.getChassis().rawDrive(0,speed,0);
-        sleep(ms);
-        robot.getChassis().stop();
-    }
+
 }
