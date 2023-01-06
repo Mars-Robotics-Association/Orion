@@ -46,9 +46,6 @@ public class IngenuityAutonomous extends LinearOpMode
         signalZone=robot.readSignal();
         //wait
         sleep(1000);
-        //move forward
-        //goToPose(25,0,0) ;
-        //turn(90);
         //strafe to signal zone
         switch (signalZone) {
             case BLUE:
@@ -60,20 +57,6 @@ public class IngenuityAutonomous extends LinearOpMode
             default:
                 goToPose(25, 25, 0);
         }
-
-        // Move in rectangle, clockwise around the post
-        // Move forward to 16x, 0y
-
-        // Strafe right to 16v, 16y
-        //goToPose(20,20,0);
-
-        // Move backward to 0x, 16y
-        //goToPose(0,20,0);
-
-        // strafe left to 0x, 0y
-        //goToPose(0,0,0);
-
-        //autoDrive();
 
         while (!isStopRequested()){
             telemetry.addData("SIGNAL READ: ", signalZone);
