@@ -19,7 +19,7 @@ public class CuriosityNavigator extends UniversalThreeWheelNavigator
     public static double nav_minSpeed = 0.2; //the min speed to move if not at the target location or rotation
     public static double nav_moveCoefficient = 0.1; //how aggressively to move
     public static double nav_moveSmoothCoefficient = 0.1; //how much to ramp movement into its final speed
-    public static double nav_turnCoefficient = 0.1; //how aggressively to turn
+    public static double nav_turnCoefficient = 0.01; //how aggressively to turn
     public static double nav_turnSmoothCoefficient = 0.1; //how much to ramp turning into its final speed
 
 

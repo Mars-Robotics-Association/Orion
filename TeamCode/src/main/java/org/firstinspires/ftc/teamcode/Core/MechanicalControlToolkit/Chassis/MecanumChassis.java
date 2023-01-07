@@ -111,8 +111,8 @@ public class MecanumChassis
 
     //Call this on Start()
     public void startChassis(){
-        imu.Start();
-        imu.ResetGyro();
+        imu.start();
+        imu.resetGyro();
     }
 
     //Call this on Loop()
@@ -124,10 +124,18 @@ public class MecanumChassis
     public void driveWithGamepad(ControllerInput controllerInput, double speedMultiplier) {
         //MOVE if left joystick magnitude > 0.1
         if (controllerInput.calculateLJSMag() > 0.1) {
+            //initial values
+            double driveAngle = controllerInput.calculateLJSAngle()+inputOffset;
+            double driveSpeed = controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier;
+            double driveTurnOffset = controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier;
+            //if in headless mode, enable absolute movement
+            if(headlessMode) {
+                driveAngle += imu.getRobotAngle();
+            }
             rawDrive(
-                    controllerInput.calculateLJSAngle()+inputOffset,
-                    controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier,
-                    controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//drives at (angle, speed, turnOffset)
+                    driveAngle,
+                    driveSpeed,
+                    driveTurnOffset);//drives at (angle, speed, turnOffset)
 
             opMode.telemetry.addData("Moving at ", controllerInput.calculateLJSAngle());
         }
@@ -146,16 +154,16 @@ public class MecanumChassis
     //This is called continuously while the robot is driving.
     public void rawDrive(double inputAngle, double speed, double turnOffset){
         double finalAngle = inputAngle;
-        if(headlessMode) finalAngle += imu.GetRobotAngle();
-        opMode.telemetry.addData("ROBOT ANGLE ", imu.GetRobotAngle());
         opMode.telemetry.addData("FINAL ANGLE ", finalAngle);
+        opMode.telemetry.addData("FINAL SPEED ", speed);
+        opMode.telemetry.addData("FINAL TURN ", turnOffset);
 
         //Sets the mode so that robot can drive and record encoder values
         driveMotors.runWithoutEncodersMode();
 
         //HEADING PID//
         //Uses pid controller to correct for heading error using (currentAngle, targetAngle)
-        double headingPIDOffset = poseXYPID.getOutput(turnOffset, imu.GetAngularVelocity());
+        double headingPIDOffset = poseXYPID.getOutput(turnOffset, imu.getAngularVelocity());
         //if the number is not real, reset pid controller
         if(!(headingPIDOffset > 0 || headingPIDOffset <= 0)){
             poseXYPID.reset();
@@ -197,7 +205,7 @@ public class MecanumChassis
         if(targetHeading > 180) targetHeading = -360+targetHeading;
         else if(targetHeading < -180) targetHeading = 360+targetHeading;
         //calculate error and turn speed
-        double error = targetHeading - imu.GetRobotAngle();
+        double error = targetHeading - imu.getRobotAngle();
 
         return error;
     }
@@ -211,12 +219,12 @@ public class MecanumChassis
         if(targetHeading > 180) targetHeading = -360+targetHeading;
         else if(targetHeading < -180) targetHeading = 360+targetHeading;
         //calculate if within range
-        double error = targetHeading - imu.GetRobotAngle();
+        double error = targetHeading - imu.getRobotAngle();
         if(Math.abs(error)<threshold) return true;
         else return false;
     }
     //Offsets the gryo so the current heading can be zero with GetRobotAngle()
-    public void resetGyro(){imu.ResetGyro();}
+    public void resetGyro(){imu.resetGyro();}
     public void switchHeadlessMode(){headlessMode = !headlessMode;}
     public void setHeadlessMode(boolean set){headlessMode = set;}
 
@@ -272,6 +280,8 @@ public class MecanumChassis
         returnVal[3] = driveMotors.getMotorPositions()[3];
         return returnVal;
     }
-
+    public double getInputOffset(){return inputOffset;}
+    public ChassisProfile getProfile(){return profile;}
+    public boolean getIsHeadless(){return headlessMode;}
 
 }

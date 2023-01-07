@@ -30,7 +30,7 @@ class _ChassisProfile implements ChassisProfile
 
     @Override
     public boolean[] flipMotors() {
-        return new boolean[] {false,false,false,false};
+        return new boolean[] {true,true,true,true};
     }
 
     @Override
