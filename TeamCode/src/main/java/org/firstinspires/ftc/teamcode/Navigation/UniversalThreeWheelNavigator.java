@@ -47,7 +47,8 @@ public class UniversalThreeWheelNavigator
     public static double turnCoefficient = 0.01; //how aggressively to turn
     public static double turnSmoothCoefficient = 0.1; //how much to ramp turning into its final speed
 
-
+    public static double slowDistance = 4; //when to start slowing down
+    public static double slowDegrees = 30; //when to start slowing down
     public static double stopDistance = 0.2; //inches away for robot to stop
     public static double stopDegrees = 2; //degrees away for robot to stop
     public static double stopTime = 0.05; //how long it needs to be below speed threshold
@@ -343,10 +344,13 @@ public class UniversalThreeWheelNavigator
 
     public double calculateScalarMoveSpeed(double error, double minSpeed, double maxSpeed){
         double finalSpeed = moveCoefficient*error*maxSpeed; //calculate base final speed based off proportional coefficient
+        if(Math.abs(error)<slowDistance) finalSpeed = finalSpeed*(error/slowDistance); //slows when gets close to target
+
         finalSpeed = Math.max(minSpeed, Math.min(maxSpeed, finalSpeed)); //clamp speed between max and min
         if(Math.abs(error)<Math.abs(stopDistance)) finalSpeed = 0; //if within stop area, set speed to zero
 
-        if(lastMoveSpeed<(finalSpeed-0.05)) finalSpeed = finalSpeed*moveSmoothCoefficient + lastMoveSpeed; //ramps up speed when target speed is increasing- this smooths out movement
+
+        if(lastMoveSpeed<(finalSpeed-0.05)&&!(Math.abs(error)<slowDistance)) finalSpeed = finalSpeed*moveSmoothCoefficient + lastMoveSpeed; //ramps up speed when target speed is increasing- this smooths out movement
         lastMoveSpeed = finalSpeed;
 
         return finalSpeed;
@@ -354,15 +358,18 @@ public class UniversalThreeWheelNavigator
 
     public double calculateTurnSpeed(double error, double minSpeed, double maxSpeed){
         double finalSpeed = turnCoefficient*error*maxSpeed; //calculate base final speed based off proportional coefficient
-        if(finalSpeed > 0) finalSpeed = Math.max(minSpeed, Math.min(maxSpeed, finalSpeed)); //clamp speed between max and min in both positive and nagative
+        if(Math.abs(error)<slowDegrees) finalSpeed = finalSpeed*Math.abs((error/slowDegrees)); //slows when gets close to target
+
+        //clamp speed between max and min in both positive and negative
+        if(finalSpeed > 0) finalSpeed = Math.max(minSpeed, Math.min(maxSpeed, finalSpeed));
         if(finalSpeed < 0) finalSpeed = Math.max(-maxSpeed, Math.min(-minSpeed, finalSpeed));
 
         if(Math.abs(error)<Math.abs(stopDegrees)) finalSpeed = 0; //if within stop area, set speed to zero
 
-        if(Math.abs(lastTurnSpeed)<Math.abs(finalSpeed-0.05)) finalSpeed = finalSpeed*turnSmoothCoefficient + lastTurnSpeed; //ramps up speed when target speed is increasing- this smooths out movement
-        lastTurnSpeed = finalSpeed;
 
-        //finalSpeed = Math.max(minSpeed, Math.min(maxSpeed, finalSpeed)); //clamp speed between max and min
+        //ramps up speed when target speed is increasing- this smooths out movement
+        if(Math.abs(lastTurnSpeed)<Math.abs(finalSpeed-0.05)&&!(Math.abs(error)<slowDegrees)) finalSpeed = finalSpeed*turnSmoothCoefficient + lastTurnSpeed;
+        lastTurnSpeed = finalSpeed;
 
         return finalSpeed;
     }

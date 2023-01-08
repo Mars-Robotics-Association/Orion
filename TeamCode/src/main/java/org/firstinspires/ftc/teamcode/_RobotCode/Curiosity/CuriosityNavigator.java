@@ -23,9 +23,9 @@ public class CuriosityNavigator extends UniversalThreeWheelNavigator
     public static double nav_turnSmoothCoefficient = 0.1; //how much to ramp turning into its final speed
 
 
-    public static double nav_stopDistance = 0.2; //inches away for robot to stop
+    public static double nav_stopDistance = .5; //inches away for robot to stop
     public static double nav_stopDegrees = 2; //degrees away for robot to stop
-    public static double nav_stopTime = 0.05; //how long it needs to be below speed threshold
+    public static double nav_stopTime = 0.1; //how long it needs to be below speed threshold
 
     public CuriosityNavigator(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor) {
 

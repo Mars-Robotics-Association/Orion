@@ -22,7 +22,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     ////Variables////
     //Tweaking Vars
-    public static double odometryTestSpeed = 0.5;
+    public static double odometryTestSpeed = 1;
     public static double odometryTestAngle = 180;
     public static double odometryTestX = 12;
     public static double odometryTestY = 0;
@@ -158,7 +158,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 //robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
                 break;
             case X: //raw control arm
-                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
+                //robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
                 break;
 
             case RB:
@@ -183,8 +183,14 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 break;
             case Y:
                 robot.navigator.goTowardsPose(odometryTestX, odometryTestY, odometryTestAngle, odometryTestSpeed);
-                //robot.navigator.moveTowards(odometryTestX, odometryTestY, odometryTestSpeed);
-                //robot.navigator.turnTowards(odometryTestAngle, odometryTestSpeed);
+                isBusy = true;
+                break;
+            case B:
+                robot.navigator.moveTowards(odometryTestX, odometryTestY, odometryTestSpeed);
+                isBusy = true;
+                break;
+            case X:
+                robot.navigator.turnTowards(odometryTestAngle, odometryTestSpeed);
                 isBusy = true;
                 break;
         }
@@ -195,6 +201,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         switch (button){
             case LB:
             case Y:
+            case B:
+            case X:
                 isBusy = false;
                 break;
             case RT:
