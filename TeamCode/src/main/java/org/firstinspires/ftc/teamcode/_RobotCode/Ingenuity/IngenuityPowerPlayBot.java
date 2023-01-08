@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
@@ -20,6 +21,12 @@ import org.firstinspires.ftc.teamcode.Navigation.Camera;
 @Config
 public class IngenuityPowerPlayBot extends BaseRobot
 {
+    public enum SignalColor {
+        BLUE,
+        RED,
+        GREEN
+    }
+
     ////Dependencies////
     OpMode opMode;
     HermesLog log;
@@ -34,6 +41,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
     public static double servoTarget1=0.37;//closed
     public static double servoTarget2=0.7;//open
     ColorSensor colorSensor;
+    DistanceSensor sensorDistance ;
 
     //Misc
     FtcDashboard dashboard;
@@ -61,6 +69,8 @@ public class IngenuityPowerPlayBot extends BaseRobot
             //intake
             gripperServo= opMode.hardwareMap.servo.get("gripper");
             colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
+            sensorDistance = opMode.hardwareMap.get(DistanceSensor.class, "colorSensor");
+
             DcMotor armMotor = opMode.hardwareMap.dcMotor.get("armMotor") ;
             armMotor.setDirection(DcMotorSimple.Direction.REVERSE) ;
             payload = new IngenuityPayload(opMode, armMotor, armPos);
@@ -117,15 +127,17 @@ public class IngenuityPowerPlayBot extends BaseRobot
         else servoTarget=servoTarget1 ;
     }
 
-    public int readSignal(){
-        int result = 3 ;//green
+    public SignalColor readSignal() {
+        SignalColor result = SignalColor.GREEN;
         float[] hsvValues = new float[3];
-        Color.RGBToHSV(colorSensor.red(),colorSensor.green(),colorSensor.blue(),hsvValues);
-        opMode.telemetry.addData("hsv ",hsvValues[0]);
-        if (hsvValues[0]<90) result =2;//red
-        else if (hsvValues[0]>190) result =1;//blue
-        opMode.telemetry.addData("result",result);
-     return result;
+        Color.RGBToHSV(colorSensor.red(), colorSensor.green(), colorSensor.blue(), hsvValues);
+        opMode.telemetry.addData("hsv ", hsvValues[0]);
+        if (hsvValues[0] < 90) result = SignalColor.RED;
+        else if (hsvValues[0] > 300)
+            result = SignalColor.RED;//red wraps back around: it's centered on 0/360 degrees
+        else if (hsvValues[0] > 190) result = SignalColor.BLUE;
+        opMode.telemetry.addData("result", result);
+        return result;
     }
 
 

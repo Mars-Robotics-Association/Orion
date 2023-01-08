@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
@@ -99,9 +100,10 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
-        telemetry.addData("color ", String.valueOf(robot.colorSensor.red()), String.valueOf(robot.colorSensor.green()), String.valueOf(robot.colorSensor.blue()));
-        telemetry.addData("Gripper: ", robot.servoTarget);
-        telemetry.addData("Arm:     ", robot.getPayload().getArm().getPosition());
+        telemetry.addData("Distance: ", robot.sensorDistance.getDistance(DistanceUnit.MM));
+
+        telemetry.addData("Gripper:  ", robot.servoTarget);
+        telemetry.addData("Arm:      ", robot.getPayload().getArm().getPosition());
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();

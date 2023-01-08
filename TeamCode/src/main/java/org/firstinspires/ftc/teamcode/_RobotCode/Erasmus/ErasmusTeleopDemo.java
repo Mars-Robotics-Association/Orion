@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
+package org.firstinspires.ftc.teamcode._RobotCode.Erasmus;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -8,14 +8,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
+import org.firstinspires.ftc.teamcode._RobotCode.Erasmus.ErasmusRobot;
 
 //@Disabled
-@TeleOp(name = "*INGENUITY Demo*", group = "ingenuity")
+@TeleOp(name = "Erasmus Demo", group = "Erasmus")
 @Config
-public class IngenuityDemo extends OpMode implements ControllerInputListener
+public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
-    private IngenuityDemoRobot robot;
+    private ErasmusRobot robot;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
     ////Variables////
@@ -23,15 +24,15 @@ public class IngenuityDemo extends OpMode implements ControllerInputListener
     public static double driveSpeed = 1;//used to change how fast robot drives
     public static double turnSpeed = -1;//used to change how fast robot turns
 
-    private double speedMultiplier = 1;
+    private double speedMultiplier = 0.5;
 
     public static int payloadControllerNumber = 1;
 
-    public static double armPower = 0.5 ;
+    public static double armPower = 0.8 ;
 
     @Override
     public void init() {
-        robot = new IngenuityDemoRobot(this,true,true,true);
+        robot = new ErasmusRobot(this,true,true,true);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -50,7 +51,7 @@ public class IngenuityDemo extends OpMode implements ControllerInputListener
     public void start(){
         robot.start();
         robot.getChassis().resetGyro();
-        robot.getChassis().setHeadlessMode(true);
+        robot.getChassis().setHeadlessMode(false);
     }
 
     @Override
@@ -66,29 +67,12 @@ public class IngenuityDemo extends OpMode implements ControllerInputListener
         //manage driving
         robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         //telemetry
-        printTelemetry();
+        //printTelemetry();
         //telemetry.update();
     }
 
     //prints a large amount of telemetry for the robot
     private void printTelemetry() {
-        /*
-        //CONTROLS
-
-        telemetry.addLine("----CONTROLS----");
-        telemetry.addData("Drive with: ", "LJS");
-        telemetry.addData("Turn with: ", "RJS");
-        telemetry.addData("Change speed multiplier: ", "A");
-        telemetry.addData("Reset robot pose: ", "Press RJS");
-        telemetry.addData("Toggle headless mode: ", "Press LJS");
-        telemetry.addData("Intake: ", "Hold LT");
-        telemetry.addData("Load: ", "Hold RT");
-        telemetry.addData("Toggle shooter: ", "Press Y");
-        telemetry.addData("Toggle intake: ", "Press RB");
-        telemetry.addData("Toggle path: ", "Press LB");
-
-        robot.getPayload().printTelemetry();
-        */
         //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
@@ -117,12 +101,6 @@ public class IngenuityDemo extends OpMode implements ControllerInputListener
     @Override
     public void ButtonPressed(int id, ControllerInput.Button button) {
         switch (button) {
-            case A:// speed multiplier cycling
-                if (speedMultiplier == 1) speedMultiplier = 0.5;
-                else speedMultiplier = 1;
-                break;
-            case B:// reset robot pose
-                break;
             case LJS:// toggle headless
                 robot.getChassis().switchHeadlessMode();
                 break;
@@ -131,21 +109,6 @@ public class IngenuityDemo extends OpMode implements ControllerInputListener
                 robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
-            case RT:
-
-                break;
-            case LT:
-
-                break;
-            case RB:
-
-                break;
-            case LB:
-
-                break;
-            case Y:
-
-                break;
         }
     }
 
@@ -153,12 +116,36 @@ public class IngenuityDemo extends OpMode implements ControllerInputListener
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
             case RT:
+                /*
                 robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
                 robot.armMotor.setPower(armPower);
+                telemetry.addLine("Right Trigger Held");
+                 */
+                robot.armTarget += 2 ;
                 break ;
             case LT:
+                /*
                 robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
                 robot.armMotor.setPower(-armPower);
+                telemetry.addLine("Left Trigger Held");
+                */
+                robot.armTarget -= 2 ;
+                break ;
+            case RB:
+                /*
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.liftMotor.setPower(armPower);
+                telemetry.addLine("Right Bumper Held");
+                */
+                robot.liftTarget += 0.1 ;
+                break ;
+            case LB:
+                /*
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                robot.liftMotor.setPower(-armPower);
+                telemetry.addLine("Left Bumper Held");
+                */
+                robot.liftTarget -= 0.1 ;
                 break ;
             case B:
                 telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(-24, -10, 0, 0.4) ) ;
@@ -172,28 +159,48 @@ public class IngenuityDemo extends OpMode implements ControllerInputListener
     @Override
     public void ButtonReleased(int id, ControllerInput.Button button) {
         switch (button) {
-            case RT:  // Raise arm manually
-                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
-                robot.armMotor.setPower(0) ;
-                break ;
-            case LT:  // Lower arm manually
-                robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
-                robot.armMotor.setPower(0) ;
-                break ;
+            case A:// speed multiplier cycling
+                if (speedMultiplier == 1) speedMultiplier = 0.5;
+                else speedMultiplier = 1;
+                break;
             case X:  // Toggle the gripper manually (open/close)
                 robot.toggleGripper();
                 break ;
+            case RT:  // Raise arm manually
+                //robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                //robot.armMotor.setPower(0) ;
+                //robot.armTarget =robot.armMotor.getCurrentPosition() ;
+                //robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                break ;
+            case LT:  // Lower arm manually
+                //robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                //robot.armMotor.setPower(0) ;
+                //robot.armTarget =robot.armMotor.getCurrentPosition() ;
+                //robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                break ;
+            case RB:  // Raise arm manually
+                //robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                //robot.liftMotor.setPower(0) ;
+                //robot.liftTarget =robot.liftMotor.getCurrentPosition() ;
+                //robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                break ;
+            case LB:  // Lower arm manually
+                //robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
+                //robot.liftMotor.setPower(0) ;
+                //robot.liftTarget =robot.liftMotor.getCurrentPosition() ;
+                //robot.liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                break ;
             case DUP:  // Close the gripper and raise the arm to deliver high
-                robot.closeGripper() ;
-                robot.waitForTime(0.2) ;
+                //robot.closeGripper() ;
+                //robot.waitForTime(0.2) ;
                 robot.armTarget = robot.armHigh ;
-                robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                robot.liftTarget = robot.liftHigh ;
                 break ;
             case DDOWN:
-                robot.openGripper() ;
-                robot.waitForTime(0.2) ;
-                robot.armTarget = robot.armLow ;
-                robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
+                //robot.openGripper() ;
+                //robot.waitForTime(0.2) ;
+                robot.armTarget = robot.armBottom ;
+                robot.liftTarget = robot.liftBottom ;
                 break ;
         }
     }
