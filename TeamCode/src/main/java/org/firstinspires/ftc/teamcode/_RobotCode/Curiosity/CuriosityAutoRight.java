@@ -15,9 +15,9 @@ import org.firstinspires.ftc.teamcode.Navigation.Camera;
 import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCVColors;
 import org.opencv.core.Mat;
 
-@Autonomous(name="Curiostiy Autonomous",group="Curiosity")
+@Autonomous(name="*CURIOSITY AUTONOMOUS RIGHT*",group="Curiosity")
 @Config
-public class CuriosityAuto extends LinearOpMode {
+public class CuriosityAutoRight extends LinearOpMode {
 
     private CuriosityBot robot;
     private boolean isRed;
@@ -37,8 +37,7 @@ public class CuriosityAuto extends LinearOpMode {
         gripper = robot.getPayload().gripper;
         isRed=false;
         if(robot.getFieldSide().equals(BaseRobot.FieldSide.RED)){isRed=true;}
-        isLeft=false;
-        if(robot.getLrSide().equals(BaseRobot.LRSide.LEFT)){isLeft=true;}
+        isLeft=true;
         xMultiplier=1;
         if(isLeft){xMultiplier=-1;}
 
