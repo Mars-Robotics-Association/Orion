@@ -13,11 +13,12 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
 import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCVColors;
+import org.firstinspires.ftc.teamcode._RobotCode.Curiosity.CuriosityBot;
 import org.opencv.core.Mat;
 
-@Autonomous(name="Curiostiy Autonomous",group="Curiosity")
+@Autonomous(name="CAutoTest",group="Curiosity")
 @Config
-public class CuriosityAuto extends LinearOpMode {
+public class CAutoTest extends LinearOpMode {
 
     private CuriosityBot robot;
     private boolean isRed;
@@ -47,75 +48,22 @@ public class CuriosityAuto extends LinearOpMode {
         robot.getChassis().resetGyro();
         double coneSide = getConeSide(robot.camera);
         telemetry.addData("Position",coneSide);
-        telemetry.update();
-        //place
-        while(robot.getNavigator().goTowardsPose(-1,2,xMultiplier*135,1)) {}
-        arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
-        robot.getChassis().rawDrive(0,.1,0);
-        sleep(1000);
-        robot.getChassis().stop();
-        robot.getPayload().toggleGripper(true);
-
-        //get block
-        while(robot.getNavigator().goTowardsPose(1,2,xMultiplier*-90,1)){}
-        arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.GROUND)+8);
-        robot.getPayload().toggleGripper(true);
-        robot.getChassis().rawDrive(0,.1,0);
-        sleep(100);
-        robot.getChassis().stop();
-        robot.getPayload().toggleGripper();
-        robot.getChassis().rawDrive(0,-.1,0);
-        sleep(100);
-        robot.getChassis().stop();
-        //go to high pole
-        while(robot.getNavigator().goTowardsPose(-1,2,xMultiplier*135,1))
-        //place
-        arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
-        robot.getChassis().rawDrive(0,.1,0);
-        sleep(1000);
-        robot.getChassis().stop();
-        robot.getPayload().toggleGripper();
-        robot.getChassis().rawDrive(0,-.1,0);
-        sleep(1000);
-        robot.getChassis().stop();
-
-        //get block
-        while(robot.getNavigator().goTowardsPose(1,2,-90*xMultiplier,1)){}
-        arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.GROUND)+6);
-        robot.getPayload().toggleGripper(true);
-        robot.getChassis().rawDrive(0,.1,0);
-        sleep(100);
-        robot.getChassis().stop();
-        robot.getPayload().toggleGripper();
-        robot.getChassis().rawDrive(0,-.1,0);
-        sleep(100);
-        robot.getChassis().stop();
-        //place
-        while(robot.getNavigator().goTowardsPose(-1,2,xMultiplier*135,0))
-        arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
-        robot.getChassis().rawDrive(0,.1,0);
-        sleep(1000);
-        robot.getChassis().stop();
-        robot.getPayload().toggleGripper();
-        robot.getChassis().rawDrive(0,-.1,0);
-        sleep(1000);
-        robot.getChassis().stop();
 
 
         //spot 1(green)
         if(coneSide==1) {
             //stay
-            while(robot.getNavigator().goTowardsPose(-1,2,0,1));
+
         }
         //spot 2(purple)
         else if(coneSide==2){
             //go to center
-            while(robot.getNavigator().goTowardsPose(0,2,0,1)){}
+
         }
         //spot 3(orange)
         else{
             //go to far right
-            while(robot.getNavigator().goTowardsPose(1,2,0,1)){}
+
         }
     }
 
