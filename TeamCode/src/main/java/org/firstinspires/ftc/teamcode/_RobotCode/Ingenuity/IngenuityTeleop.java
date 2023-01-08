@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
@@ -138,7 +136,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
                 break;
             case RJS:// reset robot pose
                 robot.getNavigator().setMeasuredPose(0, 0, 0);
-                robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
+                robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
             case RT:

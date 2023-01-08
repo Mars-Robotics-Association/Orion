@@ -17,8 +17,6 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRo
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
-import org.firstinspires.ftc.teamcode._RobotCode.Erasmus.ErasmusNavigation;
-import org.firstinspires.ftc.teamcode._RobotCode.Erasmus._LiftProfile;
 
 @Config
 public class ErasmusRobot extends BaseRobot
@@ -31,9 +29,9 @@ public class ErasmusRobot extends BaseRobot
 
     // Gripper
     Servo gripperServo ;
-    public static double servoTarget=0.5 ;
-    public static double servoTarget1=0.4 ;
-    public static double servoTarget2=0.73 ;
+    public static double servoTarget=0.6 ;
+    public static double servoTargetOpen =0.55 ;
+    public static double servoTargetClosed =0.73 ;
 
     // Gripper rotation
     Servo gripperRotate ;
@@ -186,14 +184,14 @@ public class ErasmusRobot extends BaseRobot
     }
 
     public void toggleGripper() {
-        if(servoTarget==servoTarget1){
-            servoTarget=servoTarget2 ;
+        if(servoTarget== servoTargetOpen){
+            servoTarget= servoTargetClosed;
         }
-        else servoTarget=servoTarget1 ;
+        else servoTarget= servoTargetOpen;
     }
 
     public void openGripper() {
-        servoTarget=servoTarget1 ;
+        servoTarget= servoTargetOpen;
         update() ;
     }
 
@@ -203,7 +201,7 @@ public class ErasmusRobot extends BaseRobot
     }
 
     public void closeGripper() {
-        servoTarget=servoTarget2 ;
+        servoTarget= servoTargetClosed;
         update() ;
     }
 

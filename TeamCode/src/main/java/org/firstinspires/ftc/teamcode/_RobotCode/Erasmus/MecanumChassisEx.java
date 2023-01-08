@@ -90,10 +90,10 @@ public class MecanumChassisEx
             }
 
             //resets motors
-            driveMotors.StopAndResetEncoders();
-            if(profile.useEncoders()) driveMotors.RunWithEncodersMode();
-            else driveMotors.RunWithoutEncodersMode();
-            driveMotors.SetPowers(new double[]{0,0,0,0});
+            driveMotors.stopAndResetEncoders();
+            if(profile.useEncoders()) driveMotors.runWithEncodersMode();
+            else driveMotors.runWithoutEncodersMode();
+            driveMotors.setPowers(new double[]{0,0,0,0});
 
             //setup PIDs
             poseXYPID = new PIDController(0,0,0);//Create the pid controller.
@@ -111,8 +111,8 @@ public class MecanumChassisEx
 
     //Call this on Start()
     public void startChassis(){
-        imu.Start();
-        imu.ResetGyro();
+        imu.start();
+        imu.resetGyro();
     }
 
     //Call this on Loop()
@@ -146,16 +146,16 @@ public class MecanumChassisEx
     //This is called continuously while the robot is driving.
     public void rawDrive(double inputAngle, double speed, double turnOffset){
         double finalAngle = inputAngle;
-        if(headlessMode) finalAngle += imu.GetRobotAngle();
-        opMode.telemetry.addData("ROBOT ANGLE ", imu.GetRobotAngle());
+        if(headlessMode) finalAngle += imu.getRobotAngle();
+        opMode.telemetry.addData("ROBOT ANGLE ", imu.getRobotAngle());
         opMode.telemetry.addData("FINAL ANGLE ", finalAngle);
 
         //Sets the mode so that robot can drive and record encoder values
-        driveMotors.RunWithoutEncodersMode();
+        driveMotors.runWithoutEncodersMode();
 
         //HEADING PID//
         //Uses pid controller to correct for heading error using (currentAngle, targetAngle)
-        double headingPIDOffset = poseXYPID.getOutput(turnOffset, imu.GetAngularVelocity());
+        double headingPIDOffset = poseXYPID.getOutput(turnOffset, imu.getAngularVelocity());
         //if the number is not real, reset pid controller
         if(!(headingPIDOffset > 0 || headingPIDOffset <= 0)){
             poseXYPID.reset();
@@ -187,7 +187,7 @@ public class MecanumChassisEx
 
 
         //Use motors and record encoder values
-        driveMotors.RunWithoutEncodersMode();
+        driveMotors.runWithoutEncodersMode();
 
         //Set motor speeds all equal, as this causes it to do a spot turn
         setMotorSpeeds(speed, -speed, speed, -speed);
@@ -197,7 +197,7 @@ public class MecanumChassisEx
         if(targetHeading > 180) targetHeading = -360+targetHeading;
         else if(targetHeading < -180) targetHeading = 360+targetHeading;
         //calculate error and turn speed
-        double error = targetHeading - imu.GetRobotAngle();
+        double error = targetHeading - imu.getRobotAngle();
 
         return error;
     }
@@ -211,12 +211,12 @@ public class MecanumChassisEx
         if(targetHeading > 180) targetHeading = -360+targetHeading;
         else if(targetHeading < -180) targetHeading = 360+targetHeading;
         //calculate if within range
-        double error = targetHeading - imu.GetRobotAngle();
+        double error = targetHeading - imu.getRobotAngle();
         if(Math.abs(error)<threshold) return true;
         else return false;
     }
     //Offsets the gryo so the current heading can be zero with GetRobotAngle()
-    public void resetGyro(){imu.ResetGyro();}
+    public void resetGyro(){imu.resetGyro();}
     public void switchHeadlessMode(){headlessMode = !headlessMode;}
     public void setHeadlessMode(boolean set){headlessMode = set;}
 
@@ -233,7 +233,7 @@ public class MecanumChassisEx
     //PRIVATE METHODS
     //Utility
     public void setMotorSpeeds(double fr, double fl, double rr, double rl){
-        driveMotors.SetPowers(new double[]{fr, -fl, rr, -rl});
+        driveMotors.setPowers(new double[]{fr, -fl, rr, -rl});
     }
 
     public void setPoseXYPID(double p, double i, double d){poseXYPID.setPID(p,i,d);}
@@ -265,10 +265,10 @@ public class MecanumChassisEx
 
     public double[] getEncoderTicks(){
         double[] returnVal = new double[4];
-        returnVal[0] = driveMotors.GetMotorPositions()[0];
-        returnVal[1] = driveMotors.GetMotorPositions()[1];
-        returnVal[2] = driveMotors.GetMotorPositions()[2];
-        returnVal[3] = driveMotors.GetMotorPositions()[3];
+        returnVal[0] = driveMotors.getMotorPositions()[0];
+        returnVal[1] = driveMotors.getMotorPositions()[1];
+        returnVal[2] = driveMotors.getMotorPositions()[2];
+        returnVal[3] = driveMotors.getMotorPositions()[3];
         return returnVal;
     }
 

@@ -102,8 +102,8 @@ public class IngenuityDemoRobot extends BaseRobot
             navigator.update();
             //hermes logging code
             //configures robot code
-            RobotPose robotPose = new RobotPose(navigator.getTargetPose().getX(),
-                    navigator.getTargetPose().getY(),navigator.getTargetPose().getHeading(),
+            RobotPose robotPose = new RobotPose(navigator.getTargetPose()[0],
+                    navigator.getTargetPose()[1],navigator.getTargetPose()[2],
                     navigator.getMeasuredPose().getX(), navigator.getMeasuredPose().getY(),navigator.getMeasuredPose().getHeading());
             //converts camera footage to base 64 for gui
             Base64Image cameraData = null;

@@ -106,7 +106,7 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
                 break;
             case RJS:// reset robot pose
                 robot.getNavigator().setMeasuredPose(0, 0, 0);
-                robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
+                robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
         }

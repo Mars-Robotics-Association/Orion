@@ -37,7 +37,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
-import org.firstinspires.ftc.teamcode._RobotCode.Erasmus.ErasmusRobot;
 
 
 /**
@@ -47,9 +46,9 @@ import org.firstinspires.ftc.teamcode._RobotCode.Erasmus.ErasmusRobot;
  * class is instantiated on the Robot Controller and executed.
  */
 @Config
-@Autonomous(name="Erasmus Auto RED LEFT", group="Erasmus")
+@Autonomous(name="Erasmus Auto TESTER", group="Erasmus")
 //@Disabled
-public class AutonomousRedLeft extends LinearOpMode {
+public class AutonomousTester extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -73,7 +72,7 @@ public class AutonomousRedLeft extends LinearOpMode {
 
     // Variables specific to autonomous
     public int signalResult = 0;
-    public static double FORWARDSPEED = 0.8 ;
+    public static double FORWARDSPEED = 0.5 ;
     public static double STRAFESPEED = 0.6 ;
     public static double TURNSPEED = 0.4 ;
     public static boolean DELIVERING = false ;
@@ -102,38 +101,10 @@ public class AutonomousRedLeft extends LinearOpMode {
         // ================== This is where our autonomous sequences happen =====================
         // V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V
         robot.closeGripper(0.2);
-        robot.armTarget = robot.armMid ;
+        //robot.armTarget = robot.armMid ;
         // ----------------------- Read signal ---------------------------
         goTo(23, 0, 0, FORWARDSPEED) ;          // Drive forward toward signal
-        signalResult = robot.checkSignal();   // Read the signal
-        // ------------------ Deliver preload to mid junction ----------------------
-        goTo(24, 10, 0, FORWARDSPEED) ;         // Strafe right to deliver to mid junction
-        robot.openGripper() ;  // Release preloaded cone
-        // --------------------- Drive to side depot ----------------------
-        goTo(26, 0, 0, FORWARDSPEED) ;          // Strafe to the middle of the signal tile
-        robot.armTarget = robot.armLow ;
-        robot.armTarget = 800 ;
-        goTo(46, 0, 0, FORWARDSPEED) ;          // Drive just a bit forward to clear the turn
-        goTo(51, -16, -90, FORWARDSPEED) ;      // Drive and turn toward the side depot cones
-        // ------------- Pick up and deliver a cone from the side depot ---------------
-        robot.closeGripper(0.2);
-        robot.armTarget = robot.armLow ;
-        goTo(51, 4, -90, FORWARDSPEED) ;        // Backup away from the depot
-        goTo(46, 4, -90, FORWARDSPEED) ;        // Strafe to the low junction
-        robot.openGripper(0.2) ;
-        robot.armTarget = robot.armHigh-400 ;
-        goTo(51, 0, 0, FORWARDSPEED) ;          // Drive forward toward signal
-        // Drive to zone, based on signal
-        switch (signalResult) {
-            case 1:
-                goTo(51, -20, 0, STRAFESPEED) ;
-                break;
-            case 3:
-                goTo(51, 20, 0, STRAFESPEED) ;
-                break;
-            default:
-                break;
-        }
+
 
 
         // Keep telemetry going till the end
@@ -145,6 +116,8 @@ public class AutonomousRedLeft extends LinearOpMode {
         }
         robot.stop();
     }
+    // ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
+    // ===========================================================================================
 
 
     // ========================== Support Methods =================================

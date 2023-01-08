@@ -16,47 +16,32 @@ class IngenuityNavigation extends UniversalThreeWheelNavigator
     public static double nav_trackwidth = 7.3 ;
     public static double nav_centerWheelOffset = -2 ;  // Check for Ingy
 
-    public static double nav_turnPID_P = 0.075 ;  // Default = 0.035
-    public static double nav_turnPID_I = 0 ;  // Default = 0
-    public static double nav_turnPID_D = 0.03 ;  // Default = -0.1
+    public static double nav_minSpeed = 0.2; //the min speed to move if not at the target location or rotation
+    public static double nav_moveCoefficient = 0.1; //how aggressively to move
+    public static double nav_moveSmoothCoefficient = 0.1; //how much to ramp movement into its final speed
+    public static double nav_turnCoefficient = 0.1; //how aggressively to turn
+    public static double nav_turnSmoothCoefficient = 0.1; //how much to ramp turning into its final speed
 
-    public static double nav_movePID_D = 0.02 ;  // Default = 0.1
-    public static double nav_movePID_I = 0 ;  // Default = 0
-    public static double nav_movePID_P = 0.3 ;  // Default = 0.3
 
-    public static double nav_stopSpeedThreshold = 0.15 ; //how slow the robot needs to be moving before it stops
-    public static double nav_stopTimeThreshold = 0.2 ; //how long it needs to be below speed threshold
+    public static double nav_stopDistance = 0.2; //inches away for robot to stop
+    public static double nav_stopDegrees = 2; //degrees away for robot to stop
+    public static double nav_stopTime = 0.05; //how long it needs to be below speed threshold
 
     public IngenuityNavigation(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor) {
 
-        ////CONFIGURABLE////
         encoderMultipliers = nav_encoderMultipliers;
         trackwidth = nav_trackwidth;
         centerWheelOffset = nav_centerWheelOffset;
+        minSpeed = nav_minSpeed;
+        moveCoefficient = nav_moveCoefficient;
+        moveSmoothCoefficient = nav_moveSmoothCoefficient;
+        turnCoefficient = nav_turnCoefficient;
+        turnSmoothCoefficient = nav_turnSmoothCoefficient;
+        stopDistance = nav_stopDistance;
+        stopDegrees = nav_stopDegrees;
+        stopTime = nav_stopTime;
 
-        turnPID_P = nav_turnPID_P;
-        turnPID_I = nav_turnPID_I;
-        turnPID_D = nav_turnPID_D;
-
-        movePID_D = nav_movePID_D;
-        movePID_I = nav_movePID_I;
-        movePID_P = nav_movePID_P;
-
-        stopSpeedThreshold = nav_stopSpeedThreshold; //how slow the robot needs to be moving before it stops
-        stopTimeThreshold = nav_stopTimeThreshold; //how long it needs to be below speed threshold
-
-        InitializeNavigator(setOpMode, baseRobot, setDistancePort, setDistanceStarboard, setColorSensor);
-    }
-
-    //make these speeds negative if going wrong direction
-    @Override
-    protected double calculateTurnSpeed(double targetAngle, double speed){
-        return super.calculateTurnSpeed(targetAngle,-speed);
-    }
-
-    @Override
-    protected double[] calculateMoveAngleSpeed(double targetX, double targetY, double speed){
-        return super.calculateMoveAngleSpeed(targetX, targetY, -speed);
+        InitializeNavigator(setOpMode, baseRobot);
     }
 
     /*  =================  AVAILABLE METHODS  =====================

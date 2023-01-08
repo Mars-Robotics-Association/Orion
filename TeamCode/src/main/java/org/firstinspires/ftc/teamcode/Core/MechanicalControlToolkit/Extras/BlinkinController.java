@@ -30,14 +30,9 @@
 package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.internal.system.Deadline;
-
-import java.util.concurrent.TimeUnit;
 
 public class BlinkinController
 {
@@ -70,35 +65,35 @@ public class BlinkinController
         display.setValue(displayKind.toString());
     }
 
-    public void SetPattern(RevBlinkinLedDriver.BlinkinPattern pattern){
+    public void setPattern(RevBlinkinLedDriver.BlinkinPattern pattern){
         blinkinLedDriver.setPattern(pattern);
     }
 
-    public void SetCooldown(double seconds){cooldownTime = opMode.getRuntime()+seconds;}
-    boolean IsCooldownUp(){return cooldownTime<opMode.getRuntime();}
+    public void setCooldown(double seconds){cooldownTime = opMode.getRuntime()+seconds;}
+    boolean isCooldownUp(){return cooldownTime<opMode.getRuntime();}
 
-    public void Blue(){
-        if(!IsCooldownUp()) return;
+    public void blue(){
+        if(!isCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
     }
-    public void Red(){
-        if(!IsCooldownUp()) return;
+    public void red(){
+        if(!isCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
     }
-    public void Green(){
-        if(!IsCooldownUp()) return;
+    public void green(){
+        if(!isCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
     }
-    public void Lime(){
-        if(!IsCooldownUp()) return;
+    public void lime(){
+        if(!isCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
     }
-    public void Yellow(){
-        if(!IsCooldownUp()) return;
+    public void yellow(){
+        if(!isCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
     }
-    public void Purple(){
-        if(!IsCooldownUp()) return;
+    public void purple(){
+        if(!isCooldownUp()) return;
         blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
     }
 }

@@ -12,11 +12,11 @@ class _ArmProfile implements EncoderActuatorProfile
     double MIN_ROTS = 0;
     double GEAR_RATIO = 0.2; //0.2 inches per rotation
     double ENCODER_RESOLUTION = 537.7; //gobilda 19.2:1
-    boolean REVERSE_ENCODER = true;
+    boolean REVERSE_ENCODER = false;
     boolean USE_ENCODER = true;
 
-    public _ArmProfile(DcMotor motor){
-        MOTORS = new DCMotorArray(new DcMotor[]{motor}, new double[]{1},USE_ENCODER);
+    public _ArmProfile(DcMotor motor1, DcMotor motor2){
+        MOTORS = new DCMotorArray(new DcMotor[]{motor1,motor2}, new double[]{1,1},USE_ENCODER);
     }
 
     @Override
