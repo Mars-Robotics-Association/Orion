@@ -22,7 +22,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     ////Variables////
     //Tweaking Vars
-    public static double odometryTestSpeed = -0.5;
+    public static double odometryTestSpeed = 0.5;
     public static double odometryTestAngle = 180;
     public static double odometryTestX = 12;
     public static double odometryTestY = 0;
@@ -45,6 +45,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
         robot = new CuriosityBot(this,controllerInput1,true,true,true);
+        robot.getChassis().setInputOffset(180);
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
@@ -181,7 +182,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 armInput = -1;
                 break;
             case Y:
-                robot.navigator.moveTowards(odometryTestX, odometryTestY, odometryTestSpeed);
+                robot.navigator.goTowardsPose(odometryTestX, odometryTestY, odometryTestAngle, odometryTestSpeed);
+                //robot.navigator.moveTowards(odometryTestX, odometryTestY, odometryTestSpeed);
+                //robot.navigator.turnTowards(odometryTestAngle, odometryTestSpeed);
                 isBusy = true;
                 break;
         }

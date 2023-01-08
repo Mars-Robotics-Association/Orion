@@ -127,7 +127,7 @@ public class MecanumChassis
             //initial values
             double driveAngle = controllerInput.calculateLJSAngle()+inputOffset;
             double driveSpeed = controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier;
-            double driveTurnOffset = controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier;
+            double driveTurnOffset = -controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier;
             //if in headless mode, enable absolute movement
             if(headlessMode) {
                 driveAngle += imu.getRobotAngle();
@@ -141,7 +141,7 @@ public class MecanumChassis
         }
         //TURN if right joystick magnitude > 0.1 and not moving
         else if (Math.abs(controllerInput.getRJSX()) > 0.1) {
-            rawTurn(controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//turns at speed according to rjs1
+            rawTurn(-controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//turns at speed according to rjs1
             opMode.telemetry.addData("Turning", true);
         }
         else {

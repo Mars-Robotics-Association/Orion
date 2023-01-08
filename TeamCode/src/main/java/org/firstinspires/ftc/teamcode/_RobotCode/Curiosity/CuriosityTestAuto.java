@@ -20,9 +20,26 @@ public class CuriosityTestAuto extends LinearOpMode
     public void runOpMode() throws InterruptedException {
         controllerInput1 = new ControllerInput(gamepad1, 1);
         robot = new CuriosityBot(this,controllerInput1,true,true,true);
-        waitForStart();
 
-        while(robot.navigator.goTowardsPose(p1[0],p1[1],p1[2],0.5))
-        robot.navigator.goTowardsPose(p2[0],p2[1],p2[2],0.5);
+        waitForStart();
+        //START
+        robot.start();
+        robot.getNavigator().setMeasuredPose(0, 0, 0);
+        robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
+        robot.getChassis().resetGyro();
+        robot.getChassis().setHeadlessMode(true);
+
+        //MAIN CODE
+
+        goToPose(p1[0],p1[1],p1[2],0.5);
+        goToPose(p2[0],p2[1],p2[2],0.5);
+    }
+
+    void goToPose(double x, double y, double angle, double speed) throws InterruptedException {
+        while(robot.navigator.goTowardsPose(x,y,angle,speed)) {
+            robot.update();
+            robot.getPayload().update(0);
+            telemetry.update();
+        }
     }
 }
