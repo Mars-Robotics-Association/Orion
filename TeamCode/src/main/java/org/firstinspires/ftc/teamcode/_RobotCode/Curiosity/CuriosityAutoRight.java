@@ -27,6 +27,9 @@ public class CuriosityAutoRight extends LinearOpMode {
     private Servo gripper;
     private FtcDashboard dash;
 
+
+    //IMPORTANT: ANY CHANGES MADE HERE SHOULD BE COPIED INTO CuriosityAutoLeft
+    //Only difference between the two autos should be the value of isLeft
     @Override
     public void runOpMode() throws InterruptedException {
         dash = FtcDashboard.getInstance();
@@ -138,8 +141,9 @@ public class CuriosityAutoRight extends LinearOpMode {
         else{return 3;}
     }
 
+    //use coordinate system for input for this
     void goToPose(double x, double y, double angle, double speed) throws InterruptedException {
-        while(robot.navigator.goTowardsPose(x,y,angle,speed)) {
+        while(robot.navigator.goTowardsPose(x*24,y*24,angle,speed)) {
             robot.update();
             robot.getPayload().update(0);
             telemetry.update();
