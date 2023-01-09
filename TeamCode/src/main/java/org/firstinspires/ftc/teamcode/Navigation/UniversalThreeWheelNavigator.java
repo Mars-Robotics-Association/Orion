@@ -92,7 +92,7 @@ public class UniversalThreeWheelNavigator
 
         //use absolute drive turn offset if and only if joystick magnitude is big
         double turnSpeed = 0;
-        if(controllerInput.calculateRJSMag() > 0.5){
+        if(controllerInput.calculateRJSMag() > 0.1){
             //gets target angle from joystick
             double targetAngle = controllerInput.calculateRJSAngle();
             //get error
