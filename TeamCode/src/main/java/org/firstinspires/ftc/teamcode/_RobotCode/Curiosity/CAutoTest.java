@@ -21,11 +21,6 @@ import org.opencv.core.Mat;
 public class CAutoTest extends LinearOpMode {
 
     private CuriosityBot robot;
-    private boolean isRed;
-    private boolean isLeft;
-    private int xMultiplier;
-    private EncoderActuator arm;
-    private Servo gripper;
     private FtcDashboard dash;
 
     @Override
@@ -34,18 +29,9 @@ public class CAutoTest extends LinearOpMode {
 
         robot = new CuriosityBot(this,null,true,true,true);
         robot.init();
-        arm = robot.getPayload().arm;
-        gripper = robot.getPayload().gripper;
-        isRed=false;
-        if(robot.getFieldSide().equals(BaseRobot.FieldSide.RED)){isRed=true;}
-        isLeft=false;
-        if(robot.getLrSide().equals(BaseRobot.LRSide.LEFT)){isLeft=true;}
-        xMultiplier=1;
-        if(isLeft){xMultiplier=-1;}
 
         waitForStart();
         robot.start();
-        robot.getChassis().resetGyro();
         double coneSide = getConeSide(robot.camera);
         telemetry.addData("Position",coneSide);
 
