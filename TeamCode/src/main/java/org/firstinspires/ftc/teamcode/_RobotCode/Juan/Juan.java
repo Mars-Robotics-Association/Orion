@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
+import static java.lang.Thread.sleep;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,7 +14,9 @@ import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
 public class Juan extends BaseRobot
 {
-    public static final String VERSION = "1.16";
+    public static final String VERSION = "1.17";
+    public static final SleeveReader.POST_PROCESS POST_PROCESS = SleeveReader.POST_PROCESS.BEAUTIFUL;
+    public static final JuanPayload.LiftMode LIFT_MODE = JuanPayload.LiftMode.VERSION_1;
 
     ////Dependencies////
     OpMode opMode;
@@ -24,6 +28,12 @@ public class Juan extends BaseRobot
     FtcDashboard dashboard;
     Camera camera;
 
+    private void t(int num) throws InterruptedException {
+        opMode.telemetry.addData("line", num);
+        opMode.telemetry.update();
+        sleep(1000);
+    }
+
     public static final int x1 = 0;
     public static final int y1 = 0;
     public static final int x2 = 0;
@@ -32,23 +42,31 @@ public class Juan extends BaseRobot
     static final double liftPower = 2;
 
     public Juan(OpMode opMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
+
         //set up robot state parent
         super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
-        this.opMode = opMode;
+        opMode.telemetry.addLine("JUAN");
+        opMode.telemetry.update();
 
-        dashboard = FtcDashboard.getInstance();
+        try {
+        t(0);this.opMode = opMode;
 
-        if(USE_CHASSIS) {
+        t(1);dashboard = FtcDashboard.getInstance();
 
-            //initialize the chassis & navigator
-            navigator = new JuanNavigation(opMode, this);
-        }
+        t(2);if(USE_CHASSIS) {
 
-        if(USE_PAYLOAD){
-            DcMotor lift = opMode.hardwareMap.dcMotor.get("lift");
-            Servo gripper = opMode.hardwareMap.servo.get("gripper");
-            Camera camera = new Camera(opMode, "Webcam 1", false);
-            payload = new JuanPayload(opMode, lift, gripper, liftPower, camera);
+        t(3);    //initialize the chassis & navigator
+        t(4);    navigator = new JuanNavigation(opMode, this);
+        t(5);}
+
+        t(6);if(USE_PAYLOAD){
+        t(7);    DcMotor lift = opMode.hardwareMap.dcMotor.get("lift");
+        t(8);    Servo gripper = opMode.hardwareMap.servo.get("gripper");
+        t(9);    Camera camera = new Camera(opMode, "Webcam 1", false);
+        t(10);    payload = new JuanPayload(opMode, false, lift, gripper, liftPower, camera);
+        t(11);}
+        }catch(InterruptedException e){
+            e.printStackTrace();
         }
 
         //if(USE_NAVIGATOR){}
@@ -72,9 +90,10 @@ public class Juan extends BaseRobot
 
     //make sure to stop everything!
     public void stop(){
-        if(USE_CHASSIS){
-            navigator.getChassis().stop();
-        }
+//        if(USE_CHASSIS){
+//            navigator.getChassis().stop();
+//        }
+
     }
 
     public JuanNavigation getNavigator(){return navigator;}

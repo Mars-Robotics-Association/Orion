@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
+import static java.lang.Thread.sleep;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -29,18 +31,36 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
     private JuanPayload payload;
 
+    private void t(int num) throws InterruptedException {
+        telemetry.addData("line", num);
+        telemetry.update();
+        sleep(1000);
+    }
+
     @Override
     public void init() {
-        robot = new Juan(this,true,true,false);
-        controllerInput1 = new ControllerInput(gamepad1, 1);
-        controllerInput1.addListener(this);
-        controllerInput2 = new ControllerInput(gamepad2, 2);
-        controllerInput2.addListener(this);
+        try {
+            telemetry.setAutoClear(false);
+            t(0);
+            telemetry.addData("Speed Multiplier", speedMultiplier);
+            t(1);
+            robot = new Juan(this, false, false, false);
+            t(2);
+            controllerInput1 = new ControllerInput(gamepad1, 1);
+            t(3);
+            controllerInput1.addListener(this);
+            t(4);
+            controllerInput2 = new ControllerInput(gamepad2, 2);
+            t(5);
+            controllerInput2.addListener(this);
 
-        payload = robot.getPayload();
+            payload = robot.getPayload();
 
-        telemetry.addData("Speed Multiplier", speedMultiplier);
-        telemetry.update();
+            telemetry.addData("Speed Multiplier", speedMultiplier);
+            telemetry.update();
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -101,6 +121,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
     @Override
     public void stop(){
+        telemetry.addData("line", "STOP");
+        telemetry.update();
         robot.stop();
     }
 
@@ -108,38 +130,38 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     @Override
     public void ButtonPressed(int id, Button button) {
         if(!robot.USE_PAYLOAD)return;
-            JuanPayload payload = robot.getPayload();
-            JuanPayload.LiftController lift = payload.getLift();
-            JuanPayload.GripperController gripper = payload.getGripper();
+        JuanPayload payload = robot.getPayload();
+        JuanPayload.LiftController lift = payload.getLift();
+        JuanPayload.GripperController gripper = payload.getGripper();
 
-            switch (button) {
-                case LB:
-                    gripper.release();
-                    break;
-                case RB:
-                    gripper.grab();
-                    break;
-                case LT:
-                    gripper.releaseMore();
-                    break;
-                case RT:
-                    gripper.grabMore();
-                    break;
-                case GUIDE:
-                    lift.reset();
-                    break;
-                case A:
-                    lift.goToPreset(JuanPayload.PresetHeight.BOTTOM);
-                    break;
-                case B:
-                    lift.goToPreset(JuanPayload.PresetHeight.LOW);
-                    break;
-                case Y:
-                    lift.goToPreset(JuanPayload.PresetHeight.MEDIUM);
-                    break;
-                case X:
-                    lift.goToPreset(JuanPayload.PresetHeight.HIGH);
-            }
+        switch (button) {
+            case LB:
+                gripper.release();
+                break;
+            case RB:
+                gripper.grab();
+                break;
+            case LT:
+                gripper.releaseMore();
+                break;
+            case RT:
+                gripper.grabMore();
+                break;
+            case GUIDE:
+                lift.reset();
+                break;
+            case A:
+                lift.goToPreset(JuanPayload.LiftHeight.BOTTOM);
+                break;
+            case B:
+                lift.goToPreset(JuanPayload.LiftHeight.LOW);
+                break;
+            case Y:
+                lift.goToPreset(JuanPayload.LiftHeight.MEDIUM);
+                break;
+            case X:
+                lift.goToPreset(JuanPayload.LiftHeight.HIGH);
+        }
 
     }
 

@@ -27,7 +27,7 @@ public class JuanAutonomousCamera extends LinearOpMode
 
         robot.getChassis().rawDrive(0, -5, 0);
         sleep(500);
-        SleeveColor color = scanner.runScan().color;
+        SleeveColor color = scanner.runScan();
 
         doSomething(color.ordinal() + 1);
     }
