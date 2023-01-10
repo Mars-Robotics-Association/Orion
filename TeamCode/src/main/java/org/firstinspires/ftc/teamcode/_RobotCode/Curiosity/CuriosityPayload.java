@@ -122,7 +122,6 @@ public class CuriosityPayload
 
     void managePlacing(double armInput){
         arm.goToPosition(getPoleHeight(targetPole));
-        //arm.setPowerRaw(armBaseSpeed);
     }
 
     void manageLoading(double armInput){
@@ -166,14 +165,13 @@ public class CuriosityPayload
                 hasCone = true;
                 armReset = false;
                 stop();
-                setPayloadState(PayloadState.RAW_CONTROL);
+                setPayloadState(PayloadState.STORAGE);
             }
         }
     }
 
     void manageStorage(double armInput){
         //moves arm to neutral state for driving around
-        arm.setPowerRaw(armBaseSpeed);
         arm.goToPosition(storageHeight);
         gripper.setPosition(gripperClosedPos);
     }
@@ -187,7 +185,6 @@ public class CuriosityPayload
             opMode.telemetry.addData("Going to target", poleHeight);
             opMode.telemetry.addData("Current height", arm.getPosition());
             arm.goToPosition(poleHeight);
-            arm.setPowerRaw(armBaseSpeed);
             //waits until its gotten high enough
             if(Math.abs(arm.getPosition()-poleHeight)<1) {
                 armArrivedAtHeight = true;
@@ -220,19 +217,20 @@ public class CuriosityPayload
         else{ //then when gripper is fully open move to next state
             gripperCooldown = defaultCooldown;
             arm.goToPosition(arm.getPosition()+armClearHeight); //move the arm up to avoid hitting
-        }
-
-        //wait for the arm to clear top
-        if(armCooldown > 0) {
-            opMode.telemetry.addLine("Waiting for arm to clear top");
-            armCooldown-=getDeltaTime(); //stay still for a bit to let arm go up
-            return;
-        }
-        else{ //then when arm is up a little bit we can move on
-            armCooldown = defaultCooldown;
             armArrivedAtHeight = false;
             setPayloadState(PayloadState.RAW_CONTROL);
         }
+
+//        //wait for the arm to clear top
+//        if(armCooldown > 0) {
+//            opMode.telemetry.addLine("Waiting for arm to clear top");
+//            armCooldown-=getDeltaTime(); //stay still for a bit to let arm go up
+//            return;
+//        }
+//        else{ //then when arm is up a little bit we can move on
+//            armCooldown = defaultCooldown;
+//
+//        }
     }
 
     double getDeltaTime(){
