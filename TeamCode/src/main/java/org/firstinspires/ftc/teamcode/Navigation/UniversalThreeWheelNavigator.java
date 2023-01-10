@@ -47,7 +47,8 @@ public class UniversalThreeWheelNavigator
     public static double turnCoefficient = 0.01; //how aggressively to turn
     public static double turnSmoothCoefficient = 0.1; //how much to ramp turning into its final speed
 
-
+    public static double slowDistance = 4; //when to start slowing down
+    public static double slowDegrees = 30; //when to start slowing down
     public static double stopDistance = 0.2; //inches away for robot to stop
     public static double stopDegrees = 2; //degrees away for robot to stop
     public static double stopTime = 0.05; //how long it needs to be below speed threshold
@@ -55,7 +56,7 @@ public class UniversalThreeWheelNavigator
     ////INTERNAL////
     double lastTimeAboveStopThreshold = 0;
     double controllerOffsetDegrees = 0;
-    Pose2d targetPose;
+    double[] targetPose;
     double lastMoveSpeed = 0;
     double lastTurnSpeed = 0;
 
@@ -76,7 +77,7 @@ public class UniversalThreeWheelNavigator
                 new DCMotorArray(driveMotors,new double[]{1,1,1},true),
                 encoderMultipliers, 8192, 0.25);
         //initialize pose objects
-        targetPose = new Pose2d();
+        targetPose = new double[]{0,0,0};
     }
 
     public void update(){
@@ -91,13 +92,13 @@ public class UniversalThreeWheelNavigator
 
         //use absolute drive turn offset if and only if joystick magnitude is big
         double turnSpeed = 0;
-        if(controllerInput.calculateRJSMag() > 0.8){
+        if(controllerInput.calculateRJSMag() > 0.1){
             //gets target angle from joystick
             double targetAngle = controllerInput.calculateRJSAngle();
             //get error
             double turnError = calculateTurnError(targetAngle, chassis.getImu().getRobotAngle());
             //calculate speeds
-            turnSpeed = calculateTurnSpeed(turnError, minSpeed, speed);
+            turnSpeed = -calculateTurnSpeed(turnError, minSpeed, speed)*chassisProfile.turnSpeed()*controllerInput.calculateRJSMag();
             //prints telemetry
             opMode.telemetry.addData("GOING TO ANGLE:", targetAngle);
             opMode.telemetry.addData("TURN ERROR:", turnError);
@@ -121,13 +122,13 @@ public class UniversalThreeWheelNavigator
     }
 
     public boolean turnTowards(double targetAngle, double speed){
-        targetPose.setAngle(targetAngle);
+        targetPose[2] = targetAngle;
 
         //get errors
         double turnError = calculateTurnError(targetAngle);
 
         //calculate speeds
-        double turnSpeed = calculateTurnSpeed(turnError, minSpeed, speed);
+        double turnSpeed = calculateTurnSpeed(turnError, minSpeed, speed)*chassis.getProfile().turnSpeed();
 
         //turns
         chassis.rawTurn(turnSpeed);
@@ -141,13 +142,14 @@ public class UniversalThreeWheelNavigator
         return !(shouldStop(0,turnError));
     }
     public boolean moveTowards(double targetX, double targetY, double speed){
-        targetPose.setXY(targetX,targetY);
+        targetPose[0] = targetX;
+        targetPose[1] = targetY;
 
         //get errors
         double[] moveDistanceAngleError = calculateMoveError(targetX,targetY);
 
         //calculate speeds
-        double moveSpeed = calculateScalarMoveSpeed(moveDistanceAngleError[0], minSpeed, speed);
+        double moveSpeed = calculateScalarMoveSpeed(moveDistanceAngleError[0], minSpeed, speed)*chassis.getProfile().moveSpeed();
 
         //drives
         chassis.rawDrive(moveDistanceAngleError[1], moveSpeed, 0);
@@ -161,21 +163,24 @@ public class UniversalThreeWheelNavigator
         return !(shouldStop(moveDistanceAngleError[0],0));
     }
     public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed){
-        targetPose.setPose(targetX,targetY,targetAngle);
+        targetPose[0] = targetX;
+        targetPose[1] = targetY;
+        targetPose[2] = targetAngle;
 
         //get errors
         double[] moveDistanceAngleError = calculateMoveError(targetX,targetY);
         double turnError = calculateTurnError(targetAngle);
 
         //calculate speeds
-        double moveSpeed = calculateScalarMoveSpeed(moveDistanceAngleError[0], minSpeed, speed);
-        double turnSpeed = calculateTurnSpeed(turnError, minSpeed, speed);
+        double moveSpeed = calculateScalarMoveSpeed(moveDistanceAngleError[0], minSpeed, speed)*chassis.getProfile().moveSpeed();
+        double turnSpeed = calculateTurnSpeed(turnError, minSpeed, speed)*chassis.getProfile().turnSpeed();
 
         //drives
         chassis.rawDrive(moveDistanceAngleError[1], moveSpeed, turnSpeed);
 
         //prints telemetry
-        opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetAngle+")");
+        //opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetAngle+")");
+        opMode.telemetry.addData("GOING TO POSE:", "("+targetPose[0]+", "+targetPose[1]+", "+targetPose[2]+")");
         opMode.telemetry.addData("MOVE ERROR:", moveDistanceAngleError[0]);
         opMode.telemetry.addData("MOVE SPEED:", moveSpeed);
         opMode.telemetry.addData("MOVE ANGLE:", moveDistanceAngleError[1]);
@@ -187,16 +192,17 @@ public class UniversalThreeWheelNavigator
     }
     public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed, ControllerInput controllerInput, double controllerWeight){
         opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetAngle+")");
-        targetPose.setPose(targetX,targetY,targetAngle);
-
+        targetPose[0] = targetX;
+        targetPose[1] = targetY;
+        targetPose[2] = targetAngle;
 
         //get errors
         double[] moveDistanceAngleError = calculateMoveError(targetX,targetY);
-        double turnError = calculateTurnError(targetAngle-180);
+        double turnError = calculateTurnError(targetAngle);
 
         //calculate speeds
-        double moveSpeed = calculateScalarMoveSpeed(moveDistanceAngleError[0], minSpeed, speed);
-        double turnSpeed = calculateTurnSpeed(turnError, minSpeed, speed);
+        double moveSpeed = calculateScalarMoveSpeed(moveDistanceAngleError[0], minSpeed, speed)*chassis.getProfile().moveSpeed();
+        double turnSpeed = calculateTurnSpeed(turnError, minSpeed, speed)*chassis.getProfile().turnSpeed();
 
         //prints telemetry
         opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetAngle+")");
@@ -313,7 +319,7 @@ public class UniversalThreeWheelNavigator
         opMode.telemetry.addData("Corrected actual angle: ", actualAngle);
 
         //returns error
-        return targetAngle-actualAngle;
+        return (targetAngle-actualAngle);
     }
 
     public double[] calculateMoveError(double targetX, double targetY){
@@ -323,7 +329,7 @@ public class UniversalThreeWheelNavigator
         //calculates distance to target
         double distanceError = getDistance(targetX, targetY, actualX, actualY);
         //calculate the move angle
-        double moveAngleError = getMeasuredPose().getHeading() + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX)));
+        double moveAngleError = fixAngle(-Math.toDegrees(getMeasuredPose().getHeading()) + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX))));
 
         //prints telemetry
         opMode.telemetry.addData("Target position: ", targetX + ", " +targetY);
@@ -337,10 +343,12 @@ public class UniversalThreeWheelNavigator
 
     public double calculateScalarMoveSpeed(double error, double minSpeed, double maxSpeed){
         double finalSpeed = moveCoefficient*error*maxSpeed; //calculate base final speed based off proportional coefficient
+        if(Math.abs(error)<slowDistance) finalSpeed = finalSpeed*(error/slowDistance); //slows when gets close to target
+
         finalSpeed = Math.max(minSpeed, Math.min(maxSpeed, finalSpeed)); //clamp speed between max and min
         if(Math.abs(error)<Math.abs(stopDistance)) finalSpeed = 0; //if within stop area, set speed to zero
 
-        if(lastMoveSpeed<(finalSpeed-0.05)) finalSpeed = finalSpeed*moveSmoothCoefficient + lastMoveSpeed; //ramps up speed when target speed is increasing- this smooths out movement
+        if(lastMoveSpeed<(finalSpeed-0.05)&&!(Math.abs(error)<slowDistance)) finalSpeed = finalSpeed*moveSmoothCoefficient + lastMoveSpeed; //ramps up speed when target speed is increasing- this smooths out movement
         lastMoveSpeed = finalSpeed;
 
         return finalSpeed;
@@ -348,14 +356,18 @@ public class UniversalThreeWheelNavigator
 
     public double calculateTurnSpeed(double error, double minSpeed, double maxSpeed){
         double finalSpeed = turnCoefficient*error*maxSpeed; //calculate base final speed based off proportional coefficient
-        if(finalSpeed > 0) finalSpeed = Math.max(minSpeed, Math.min(maxSpeed, finalSpeed)); //clamp speed between max and min in both positive and nagative
-        else finalSpeed = Math.max(-maxSpeed, Math.min(-minSpeed, finalSpeed));
+        if(Math.abs(error)<slowDegrees) finalSpeed = finalSpeed*Math.abs((error/slowDegrees)); //slows when gets close to target
+
+        //clamp speed between max and min in both positive and negative
+        if(finalSpeed > 0) finalSpeed = Math.max(minSpeed, Math.min(maxSpeed, finalSpeed));
+        if(finalSpeed < 0) finalSpeed = Math.max(-maxSpeed, Math.min(-minSpeed, finalSpeed));
+
         if(Math.abs(error)<Math.abs(stopDegrees)) finalSpeed = 0; //if within stop area, set speed to zero
 
-        if(Math.abs(lastTurnSpeed)<Math.abs(finalSpeed-0.05)) finalSpeed = finalSpeed*turnSmoothCoefficient + lastTurnSpeed; //ramps up speed when target speed is increasing- this smooths out movement
-        lastTurnSpeed = finalSpeed;
 
-        //finalSpeed = Math.max(minSpeed, Math.min(maxSpeed, finalSpeed)); //clamp speed between max and min
+        //ramps up speed when target speed is increasing- this smooths out movement
+        if(Math.abs(lastTurnSpeed)<Math.abs(finalSpeed-0.05)&&!(Math.abs(error)<slowDegrees)) finalSpeed = finalSpeed*turnSmoothCoefficient + lastTurnSpeed;
+        lastTurnSpeed = finalSpeed;
 
         return finalSpeed;
     }
@@ -393,7 +405,7 @@ public class UniversalThreeWheelNavigator
     public double[] getDeadWheelPositions(){return encoders.getPositions();}
     public void setMeasuredPose(double x, double y, double angle){odometry.updatePose(new Pose2d(x,y,angle));}
     public Pose2d getMeasuredPose(){return odometry.getPose();}
-    public Pose2d getTargetPose(){return targetPose;}
+    public double[] getTargetPose(){return targetPose;}
     public double getRobotAngleDegrees(){return Math.toDegrees(odometry.getPose().getHeading());}
 
 }

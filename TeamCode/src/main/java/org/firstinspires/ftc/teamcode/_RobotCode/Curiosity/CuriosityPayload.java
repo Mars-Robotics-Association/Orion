@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.InputAxis;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 
+@Config
 public class CuriosityPayload
 {
     OpMode opMode;
@@ -24,32 +26,32 @@ public class CuriosityPayload
     enum Pole {GROUND, LOW, MID, HIGH}
 
     //config
-    double loadHeight = 5;
-    double storageHeight = 15;
-    double armClearHeight = 5;
-    double armLevelDistance = 2;
-    double armSlowDistance = 5;
-    double armBaseSpeed = 1;
-    double armSlowSpeed = 0.5;
-    double gripperOpenPos = 1;
-    double gripperClosedPos = 0;
-    double gripperTriggerDistance = 0.5;
-    double defaultCooldown = 0.4;
+    public static double loadHeight = 2;
+    public static double storageHeight = 15;
+    public static double armClearHeight = 5;
+    public static double armLevelDistance = 3;
+    public static double armSlowDistance = 10;
+    public static double armBaseSpeed = 1;
+    public static double armSlowSpeed = 0.5;
+    public static double gripperOpenPos = 1;
+    public static double gripperClosedPos = 0;
+    public static double gripperTriggerDistance = 5;
+    public static double defaultCooldown = 0.4;
 
     //variables
     PayloadState payloadState = PayloadState.RAW_CONTROL;
     Pole targetPole = Pole.MID;
     public void setPayloadState(PayloadState state){
         payloadState = state;
-        switch (payloadState){
-            case RAW_CONTROL: lights.green(); break;
-            case STOPPED: lights.red(); break;
-            case LOADING: lights.yellow(); break;
-            case STORAGE: lights.blue(); break;
-            case PLACING: lights.purple(); break;
-
-        }
-        lights.setCooldown(1);
+//        switch (payloadState){
+//            case RAW_CONTROL: lights.green(); break;
+//            case STOPPED: lights.red(); break;
+//            case LOADING: lights.yellow(); break;
+//            case STORAGE: lights.blue(); break;
+//            case PLACING: lights.purple(); break;
+//
+//        }
+//        lights.setCooldown(1);
     }
     public void setTargetPole(Pole pole){targetPole = pole;}
 
@@ -60,6 +62,7 @@ public class CuriosityPayload
     double gripperCooldown = defaultCooldown;
     double armCooldown = defaultCooldown;
     boolean gripperOpen = false;
+    boolean armArrivedAtHeight = false;
 
 
     public CuriosityPayload(OpMode setOpMode, ControllerInput setGamepad,
@@ -73,6 +76,7 @@ public class CuriosityPayload
     }
 
     public void update(double armInput){
+        opMode.telemetry.addData("CURRENT TARGET POLE", targetPole);
         //clamps inputs to correct range
         armInput*=armBaseSpeed;
         armInput = Math.max(-armBaseSpeed, Math.min(armBaseSpeed, armInput));
@@ -82,7 +86,7 @@ public class CuriosityPayload
             case STOPPED: stop(); break;
             case LOADING: manageLoading(armInput); break;
             case STORAGE: manageStorage(armInput); break;
-            case PLACING: manageTarget(getPoleHeight(targetPole), armInput); break;
+            case PLACING: managePlacing(armInput); break;
         }
         lastLoopTime = opMode.getRuntime();
     }
@@ -105,41 +109,63 @@ public class CuriosityPayload
     }
 
     void manage_raw_control(double armInput){
-        arm.setPowerRaw(armInput);
+        hasCone = true;
+        armReset = false;
+        arm.setPowerClamped(armInput);
     }
 
     public void stop(){
         //stops all motors
+        arm.motors.runWithEncodersMode();
         arm.setPowerRaw(0);
+    }
+
+    void managePlacing(double armInput){
+        arm.goToPosition(getPoleHeight(targetPole));
     }
 
     void manageLoading(double armInput){
         //resets arm to loading position and opens gripper
         gripper.setPosition(gripperOpenPos);
-        double armDistanceFromGround = armLevelSensor.getDistance(DistanceUnit.INCH);
-        if(!armReset) { //reset the arm's position
+        double armDistanceFromGround = armLevelSensor.getDistance(DistanceUnit.CM);
+        double gripperDistance = gripperSensor.getDistance(DistanceUnit.CM);
+
+        //telemetry
+        opMode.telemetry.addLine("");
+        opMode.telemetry.addData("Arm dist from ground", armDistanceFromGround+" CM");
+        opMode.telemetry.addData("Gripper sensor distance", gripperDistance+" CM");
+
+        //reset the arm's position
+        if(!armReset) {
+            opMode.telemetry.addLine("Resetting arm");
             if(armDistanceFromGround <= armLevelDistance){ //if at bottom, reset arm's position
                 arm.resetToZero();
                 armReset = true;
                 arm.goToPosition(loadHeight); //go to load height
-                arm.setPowerRaw(armBaseSpeed);
             }
-            else if (armDistanceFromGround <= armSlowDistance) arm.setPowerRaw(-armSlowSpeed); //slows down if close to bottom
-            else if (armDistanceFromGround > armSlowDistance) arm.setPowerRaw(-armBaseSpeed); //goes down quickly to start
+            else if (armDistanceFromGround <= armSlowDistance) {
+                opMode.telemetry.addLine("Slowing down arm");
+                arm.setPowerRaw(-armSlowSpeed); //slows down if close to bottom
+            }
+            else arm.setPowerRaw(-armBaseSpeed); //goes down quickly to start
             return; //don't do anything else if resetting the arm's position
         }
 
         //allows for user tweaking
         arm.setPowerClamped(armInput);
+        opMode.telemetry.addLine("User tweaking enabled");
 
         //when distance sensor detects freight, closes gripper and switches to storage state
-        if(gripperSensor.getDistance(DistanceUnit.INCH)<=gripperTriggerDistance){//close the gripper
+        if(gripperDistance<=gripperTriggerDistance){//close the gripper
+            opMode.telemetry.addLine("Closing gripper");
             gripper.setPosition(gripperClosedPos);
             if(gripperCooldown > 0) gripperCooldown-=getDeltaTime();//stay still for a bit to let gripper close
             else{ //then when gripper is fully closed move to next state
                 gripperCooldown = defaultCooldown;
                 hasCone = true;
-                payloadState = PayloadState.STORAGE;
+                armReset = false;
+                stop();
+                setPayloadState(PayloadState.STORAGE);
             }
         }
     }
@@ -151,11 +177,24 @@ public class CuriosityPayload
     }
 
     void manageTarget(double poleHeight, double armInput){
+        opMode.telemetry.addLine("");
+        opMode.telemetry.addLine("Managing placing!");
+
         //moves arm to ground target height
-        arm.goToPosition(poleHeight);
+        if(!armArrivedAtHeight) {
+            opMode.telemetry.addData("Going to target", poleHeight);
+            opMode.telemetry.addData("Current height", arm.getPosition());
+            arm.goToPosition(poleHeight);
+            //waits until its gotten high enough
+            if(Math.abs(arm.getPosition()-poleHeight)<1) {
+                armArrivedAtHeight = true;
+                return;
+            }
+        }
 
         //allows for user tweaking if the arm should move
         if(hasCone){
+            opMode.telemetry.addLine("User tweaking enabled");
             arm.motors.runWithEncodersMode();
             arm.setPowerClamped(armInput);
         }
@@ -163,30 +202,35 @@ public class CuriosityPayload
         //waits for user input to drop
         if(hasCone && gripper.getPosition() != gripperOpenPos) return;
 
+        opMode.telemetry.addLine("Dropping cone");
+
         //opens the gripper and waits for it to finish
         gripper.setPosition(gripperOpenPos);
         //it has dropped cone
         hasCone = false;
 
         if(gripperCooldown > 0){
+            opMode.telemetry.addLine("Waiting to drop cone");
             gripperCooldown-=getDeltaTime(); //stay still for a bit to let gripper open
             return;
         }
         else{ //then when gripper is fully open move to next state
             gripperCooldown = defaultCooldown;
-            payloadState = PayloadState.RAW_CONTROL;
             arm.goToPosition(arm.getPosition()+armClearHeight); //move the arm up to avoid hitting
+            armArrivedAtHeight = false;
+            setPayloadState(PayloadState.RAW_CONTROL);
         }
 
-        //wait for the arm to clear top
-        if(armCooldown > 0) {
-            armCooldown-=getDeltaTime(); //stay still for a bit to let arm go up
-            return;
-        }
-        else{ //then when arm is up a little bit we can move on
-            armCooldown = defaultCooldown;
-            payloadState = PayloadState.RAW_CONTROL;
-        }
+//        //wait for the arm to clear top
+//        if(armCooldown > 0) {
+//            opMode.telemetry.addLine("Waiting for arm to clear top");
+//            armCooldown-=getDeltaTime(); //stay still for a bit to let arm go up
+//            return;
+//        }
+//        else{ //then when arm is up a little bit we can move on
+//            armCooldown = defaultCooldown;
+//
+//        }
     }
 
     double getDeltaTime(){

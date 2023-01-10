@@ -22,7 +22,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     ////Variables////
     //Tweaking Vars
-    public static double odometryTestSpeed = -0.5;
+    public static double odometryTestSpeed = .2;
     public static double odometryTestAngle = 180;
     public static double odometryTestX = 12;
     public static double odometryTestY = 0;
@@ -45,6 +45,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
         robot = new CuriosityBot(this,controllerInput1,true,true,true);
+        robot.getChassis().setInputOffset(0);
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
@@ -150,20 +151,32 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 robot.getChassis().resetGyro();
                 break;
 
-            case Y: //load
-                //robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
-                break;
-            case B: //place
-                //robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
-                break;
-            case X: //raw control arm
-                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
-                break;
+//            case Y: //load
+//                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
+//                break;
+//            case B: //place
+//                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
+//                break;
+//            case X: //raw control arm
+//                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
+//                break;
 
             case RB:
                 robot.getPayload().toggleGripper();
+                break;
 
-
+            case DUP:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.HIGH);
+                break;
+            case DLEFT:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.MID);
+                break;
+            case DRIGHT:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.LOW);
+                break;
+            case DDOWN:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.GROUND);
+                break;
         }
     }
 
@@ -181,7 +194,15 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 armInput = -1;
                 break;
             case Y:
+                robot.navigator.goTowardsPose(odometryTestX, odometryTestY, odometryTestAngle, odometryTestSpeed);
+                isBusy = true;
+                break;
+            case B:
                 robot.navigator.moveTowards(odometryTestX, odometryTestY, odometryTestSpeed);
+                isBusy = true;
+                break;
+            case X:
+                robot.navigator.turnTowards(odometryTestAngle, odometryTestSpeed);
                 isBusy = true;
                 break;
         }
@@ -192,6 +213,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         switch (button){
             case LB:
             case Y:
+            case B:
+            case X:
                 isBusy = false;
                 break;
             case RT:
