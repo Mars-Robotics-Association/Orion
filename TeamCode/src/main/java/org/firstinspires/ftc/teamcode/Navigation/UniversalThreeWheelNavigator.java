@@ -98,7 +98,7 @@ public class UniversalThreeWheelNavigator
             //get error
             double turnError = calculateTurnError(targetAngle, chassis.getImu().getRobotAngle());
             //calculate speeds
-            turnSpeed = calculateTurnSpeed(turnError, minSpeed, speed)*chassisProfile.turnSpeed()*controllerInput.calculateRJSMag();
+            turnSpeed = -calculateTurnSpeed(turnError, minSpeed, speed)*chassisProfile.turnSpeed()*controllerInput.calculateRJSMag();
             //prints telemetry
             opMode.telemetry.addData("GOING TO ANGLE:", targetAngle);
             opMode.telemetry.addData("TURN ERROR:", turnError);
@@ -196,10 +196,9 @@ public class UniversalThreeWheelNavigator
         targetPose[1] = targetY;
         targetPose[2] = targetAngle;
 
-
         //get errors
         double[] moveDistanceAngleError = calculateMoveError(targetX,targetY);
-        double turnError = calculateTurnError(targetAngle-180);
+        double turnError = calculateTurnError(targetAngle);
 
         //calculate speeds
         double moveSpeed = calculateScalarMoveSpeed(moveDistanceAngleError[0], minSpeed, speed)*chassis.getProfile().moveSpeed();
@@ -330,7 +329,7 @@ public class UniversalThreeWheelNavigator
         //calculates distance to target
         double distanceError = getDistance(targetX, targetY, actualX, actualY);
         //calculate the move angle
-        double moveAngleError = (Math.toDegrees(getMeasuredPose().getHeading()) + Math.toDegrees(Math.atan2((targetY-actualY), -(targetX-actualX))));
+        double moveAngleError = fixAngle(-Math.toDegrees(getMeasuredPose().getHeading()) + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX))));
 
         //prints telemetry
         opMode.telemetry.addData("Target position: ", targetX + ", " +targetY);
@@ -348,7 +347,6 @@ public class UniversalThreeWheelNavigator
 
         finalSpeed = Math.max(minSpeed, Math.min(maxSpeed, finalSpeed)); //clamp speed between max and min
         if(Math.abs(error)<Math.abs(stopDistance)) finalSpeed = 0; //if within stop area, set speed to zero
-
 
         if(lastMoveSpeed<(finalSpeed-0.05)&&!(Math.abs(error)<slowDistance)) finalSpeed = finalSpeed*moveSmoothCoefficient + lastMoveSpeed; //ramps up speed when target speed is increasing- this smooths out movement
         lastMoveSpeed = finalSpeed;

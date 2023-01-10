@@ -12,14 +12,14 @@ import org.firstinspires.ftc.teamcode.Navigation.UniversalThreeWheelNavigator;
 public class CuriosityNavigator extends UniversalThreeWheelNavigator
 {
     ////Variables////
-    public static double[] nav_encoderMultipliers = {1, 1, 1}; //left right horizontal
+    public static double[] nav_encoderMultipliers = {1, 1, -1}; //left right horizontal
     public static double nav_trackwidth = 9.6;
-    public static double nav_centerWheelOffset = 3;
+    public static double nav_centerWheelOffset = -3;
 
-    public static double nav_minSpeed = 0.2; //the min speed to move if not at the target location or rotation
-    public static double nav_moveCoefficient = 0.1; //how aggressively to move
+    public static double nav_minSpeed = 0.18; //the min speed to move if not at the target location or rotation
+    public static double nav_moveCoefficient = 0.08; //how aggressively to move
     public static double nav_moveSmoothCoefficient = 0.1; //how much to ramp movement into its final speed
-    public static double nav_turnCoefficient = 0.01; //how aggressively to turn
+    public static double nav_turnCoefficient = 0.02; //how aggressively to turn
     public static double nav_turnSmoothCoefficient = 0.1; //how much to ramp turning into its final speed
 
 
