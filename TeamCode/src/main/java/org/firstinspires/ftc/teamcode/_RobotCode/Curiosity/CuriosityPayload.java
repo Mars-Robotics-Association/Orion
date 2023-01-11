@@ -86,7 +86,7 @@ public class CuriosityPayload
             case STOPPED: stop(); break;
             case LOADING: manageLoading(armInput); break;
             case STORAGE: manageStorage(armInput); break;
-            case PLACING: managePlacing(armInput); break;
+            case PLACING: manageTarget(getPoleHeight(targetPole),armInput); break;
         }
         lastLoopTime = opMode.getRuntime();
     }
@@ -111,6 +111,7 @@ public class CuriosityPayload
     void manage_raw_control(double armInput){
         hasCone = true;
         armReset = false;
+        armArrivedAtHeight = false;
         arm.setPowerClamped(armInput);
     }
 
@@ -164,6 +165,7 @@ public class CuriosityPayload
                 gripperCooldown = defaultCooldown;
                 hasCone = true;
                 armReset = false;
+                armArrivedAtHeight = false;
                 stop();
                 setPayloadState(PayloadState.STORAGE);
             }
@@ -188,8 +190,8 @@ public class CuriosityPayload
             //waits until its gotten high enough
             if(Math.abs(arm.getPosition()-poleHeight)<1) {
                 armArrivedAtHeight = true;
-                return;
             }
+            return;
         }
 
         //allows for user tweaking if the arm should move

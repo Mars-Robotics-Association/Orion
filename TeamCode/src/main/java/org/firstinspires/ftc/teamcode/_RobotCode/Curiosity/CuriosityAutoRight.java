@@ -44,12 +44,14 @@ public class CuriosityAutoRight extends LinearOpMode {
         xMultiplier=1;
         if(isLeft){xMultiplier=-1;}
 
+        //START
         waitForStart();
         robot.start();
         robot.getChassis().resetGyro();
         double coneSide = getConeSide(robot.camera);
         telemetry.addData("Position",coneSide);
         telemetry.update();
+
         //place
         goToPose(-1*xMultiplier,2,xMultiplier*135,1);
         arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));

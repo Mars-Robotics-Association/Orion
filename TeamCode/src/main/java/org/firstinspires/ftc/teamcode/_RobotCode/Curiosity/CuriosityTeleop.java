@@ -27,7 +27,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public static double odometryTestX = 12;
     public static double odometryTestY = 0;
 
-    private double speedMultiplier = 1;
+    private double speedMultiplier = 0.6;
 
     public static int payloadControllerNumber = 1;
 
@@ -139,8 +139,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void ButtonPressed(int id, Button button) {
         switch (button) {
             case A:// speed multiplier cycling
-                if (speedMultiplier == 1) speedMultiplier = 0.5;
-                else speedMultiplier = 1;
+                if (speedMultiplier == 1) speedMultiplier = 0.2;
+                else speedMultiplier = 0.6;
                 break;
             case LJS:// toggle headless
                 robot.getChassis().switchHeadlessMode();
@@ -151,15 +151,15 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 robot.getChassis().resetGyro();
                 break;
 
-//            case Y: //load
-//                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
-//                break;
-//            case B: //place
-//                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
-//                break;
-//            case X: //raw control arm
-//                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
-//                break;
+            case Y: //load
+                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
+                break;
+            case B: //place
+                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
+                break;
+            case X: //raw control arm
+                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
+                break;
 
             case RB:
                 robot.getPayload().toggleGripper();
@@ -193,18 +193,18 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             case LT:
                 armInput = -1;
                 break;
-            case Y:
-                robot.navigator.goTowardsPose(odometryTestX, odometryTestY, odometryTestAngle, odometryTestSpeed);
-                isBusy = true;
-                break;
-            case B:
-                robot.navigator.moveTowards(odometryTestX, odometryTestY, odometryTestSpeed);
-                isBusy = true;
-                break;
-            case X:
-                robot.navigator.turnTowards(odometryTestAngle, odometryTestSpeed);
-                isBusy = true;
-                break;
+//            case Y:
+//                robot.navigator.goTowardsPose(odometryTestX, odometryTestY, odometryTestAngle, odometryTestSpeed);
+//                isBusy = true;
+//                break;
+//            case B:
+//                robot.navigator.moveTowards(odometryTestX, odometryTestY, odometryTestSpeed);
+//                isBusy = true;
+//                break;
+//            case X:
+//                robot.navigator.turnTowards(odometryTestAngle, odometryTestSpeed);
+//                isBusy = true;
+//                break;
         }
     }
 
@@ -212,9 +212,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void ButtonReleased(int id, Button button) {
         switch (button){
             case LB:
-            case Y:
-            case B:
-            case X:
+//            case Y:
+//            case B:
+//            case X:
                 isBusy = false;
                 break;
             case RT:
