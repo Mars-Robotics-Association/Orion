@@ -329,8 +329,8 @@ public class UniversalThreeWheelNavigator
         //calculates distance to target
         double distanceError = getDistance(targetX, targetY, actualX, actualY);
         //calculate the move angle
-        double moveAngleError = fixAngle(-Math.toDegrees(getMeasuredPose().getHeading()) + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX))));
-        //double moveAngleError = fixAngle(-Math.toDegrees(getMeasuredPose().getHeading()) + Math.toDegrees(Math.atan2((targetY-actualY), (targetX-actualX))));  // TODO: For Ingenuity
+        //double moveAngleError = fixAngle(-Math.toDegrees(getMeasuredPose().getHeading()) + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX))));  // TODO: For Curiosity
+        double moveAngleError = fixAngle(-Math.toDegrees(getMeasuredPose().getHeading()) + Math.toDegrees(Math.atan2((targetY-actualY), (targetX-actualX))));  // TODO: For Ingenuity
 
         //prints telemetry
         opMode.telemetry.addData("Target position: ", targetX + ", " +targetY);
