@@ -97,7 +97,7 @@ public class CuriosityBot extends BaseRobot
             //hermes logging code
             //configures robot code
             RobotPose robotPose = new RobotPose(navigator.getTargetPose()[0],
-                    navigator.getTargetPose()[1],navigator.getTargetPose()[2],
+                    navigator.getTargetPose()[1],Math.toRadians(navigator.getTargetPose()[2]),
                     navigator.getMeasuredPose().getX(), navigator.getMeasuredPose().getY(),navigator.getMeasuredPose().getHeading());
             //converts camera footage to base 64 for gui
             //Base64Image cameraData = new Base64Image(

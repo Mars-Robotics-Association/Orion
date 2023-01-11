@@ -112,7 +112,10 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         telemetry.addLine();
         telemetry.addLine("Robot pose");
         Pose2d robotPose = robot.getNavigator().getMeasuredPose();
-        telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
+        telemetry.addData("X, Y, Angle",
+                Math.round(robotPose.getX()*100)/100
+                        + ", " + Math.round(robotPose.getY()*100)/100 + ", "
+                        + Math.round(Math.toDegrees(robotPose.getHeading())*100)/100);
         telemetry.addLine();
     }
 

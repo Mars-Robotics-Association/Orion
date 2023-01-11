@@ -126,7 +126,7 @@ public class MecanumChassis
         if (controllerInput.calculateLJSMag() > 0.1) {
             //initial values
             double driveAngle = controllerInput.calculateLJSAngle()+inputOffset;
-            double driveSpeed = controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier;
+            double driveSpeed = -1 * controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier;
             double driveTurnOffset = -controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier;
             //if in headless mode, enable absolute movement
             if(headlessMode) {
