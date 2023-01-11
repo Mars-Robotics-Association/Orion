@@ -28,7 +28,23 @@ class JuanPayload
         abstract void printTelemetry();
     }
 
-    enum PresetHeight{
+    enum LiftMode {
+        VERSION_1(   0,1800,3100,4500),
+        VERSION_2(   0,   0,   0,   0);
+
+        final int[] positions;
+
+        LiftMode(int a,int b,int c, int d) { positions = new int[]{a,b,c,d}; }
+    }
+
+    enum LiftHeight {
+        BOTTOM,
+        LOW,
+        MEDIUM,
+        HIGH
+    }
+
+   /* enum PresetHeight{
         BOTTOM(200),
         LOW(1800),
         MEDIUM(3100),
@@ -40,12 +56,18 @@ class JuanPayload
             this.position = position;
         }
     }
+    */
 
     static class LiftController extends Controller{
         private double power;
         private final DcMotor motor;
 
         double c = 5;
+
+        int computeHeight(LiftHeight height) {
+            // Return encoder position from LiftMode for enumerated value in LiftHeight (height)
+            return Juan.LIFT_MODE.positions[height.ordinal()];
+        }
 
         LiftController(JuanPayload payload, DcMotor motor, double power) {
             super(payload);
@@ -71,8 +93,8 @@ class JuanPayload
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
-        public void goToPreset(PresetHeight height){
-            motor.setTargetPosition(height.position);
+        public void goToPreset(LiftHeight height){
+            motor.setTargetPosition(computeHeight(height));
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motor.setPower(power);
         }
@@ -99,9 +121,10 @@ class JuanPayload
         public Servo getServo(){return servo;}
 
         private GripperState state = GripperState.CLOSED;
-        private final double openPos = 0.55;
-        private final double closePos = 0.7;
+        private final double openPos = 0.53;
+        private final double closePos = 0.675;
 
+        // Specify the increment for minor manual adjustment of gripper by Drive Team
         private final double increment = 0.005;
 
         public void grab(){

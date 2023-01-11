@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 
-@TeleOp(name = "*JUAN TELEOP*", group = "JUAN")
+@TeleOp(name = "*JUAN TELEOP (RECOVERED 1.16.2)*", group = "JUAN")
 @Config
 public class JuanTeleop extends OpMode implements ControllerInputListener
 {
@@ -129,16 +129,16 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
                     lift.reset();
                     break;
                 case A:
-                    lift.goToPreset(JuanPayload.PresetHeight.BOTTOM);
+                    lift.goToPreset(JuanPayload.LiftHeight.BOTTOM);
                     break;
                 case B:
-                    lift.goToPreset(JuanPayload.PresetHeight.LOW);
+                    lift.goToPreset(JuanPayload.LiftHeight.LOW);
                     break;
                 case Y:
-                    lift.goToPreset(JuanPayload.PresetHeight.MEDIUM);
+                    lift.goToPreset(JuanPayload.LiftHeight.MEDIUM);
                     break;
                 case X:
-                    lift.goToPreset(JuanPayload.PresetHeight.HIGH);
+                    lift.goToPreset(JuanPayload.LiftHeight.HIGH);
             }
 
     }

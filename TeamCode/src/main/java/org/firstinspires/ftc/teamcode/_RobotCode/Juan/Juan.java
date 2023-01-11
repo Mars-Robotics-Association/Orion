@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
@@ -12,7 +13,8 @@ import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
 public class Juan extends BaseRobot
 {
-    public static final String VERSION = "1.16";
+    public static final String VERSION = "1.16.2";
+    public static final JuanPayload.LiftMode LIFT_MODE = JuanPayload.LiftMode.VERSION_1;
 
     ////Dependencies////
     OpMode opMode;
@@ -48,6 +50,7 @@ public class Juan extends BaseRobot
             DcMotor lift = opMode.hardwareMap.dcMotor.get("lift");
             Servo gripper = opMode.hardwareMap.servo.get("gripper");
             Camera camera = new Camera(opMode, "Webcam 1", false);
+            lift.setDirection(DcMotorSimple.Direction.REVERSE);
             payload = new JuanPayload(opMode, lift, gripper, liftPower, camera);
         }
 
