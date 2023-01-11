@@ -27,8 +27,7 @@ public class CuriosityAutoRight extends LinearOpMode {
     private Servo gripper;
     private FtcDashboard dash;
 
-
-    //IMPORTANT: ANY CHANGES MADE HERE SHOULD BE COPIED INTO CuriosityAutoLeft
+    //IMPORTANT: ANY CHANGES MADE HERE SHOULD BE COPIED INTO CuriosityAutoRight
     //Only difference between the two autos should be the value of isLeft
     @Override
     public void runOpMode() throws InterruptedException {
@@ -40,7 +39,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         gripper = robot.getPayload().gripper;
         isRed=false;
         if(robot.getFieldSide().equals(BaseRobot.FieldSide.RED)){isRed=true;}
-        isLeft=true;
+        isLeft=false;
         xMultiplier=1;
         if(isLeft){xMultiplier=-1;}
 
@@ -51,7 +50,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         telemetry.addData("Position",coneSide);
         telemetry.update();
         //place
-        goToPose(-1*xMultiplier,2,xMultiplier*135,1);
+        goToPose(24,0,xMultiplier*-45,1);
         arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
         robot.getChassis().rawDrive(0,.1,0);
         sleep(1000);
@@ -59,7 +58,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         robot.getPayload().toggleGripper(true);
 
         //get block
-        goToPose(1*xMultiplier,2,xMultiplier*-90,1);
+        goToPose(24,12*xMultiplier,90*xMultiplier,1);
         arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.GROUND)+8);
         robot.getPayload().toggleGripper(true);
         robot.getChassis().rawDrive(0,.1,0);
@@ -71,7 +70,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         sleep(1000);
         robot.getChassis().stop();
         //go to high pole
-        goToPose(-1*xMultiplier,2,xMultiplier*135,1);
+        goToPose(24,0,xMultiplier*-45,1);
         //place
         //arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
         robot.getChassis().rawDrive(0,.1,0);
@@ -83,7 +82,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         robot.getChassis().stop();
 
         //get block
-        goToPose(1*xMultiplier,2,-90*xMultiplier,1);
+        goToPose(24,12*xMultiplier,90*xMultiplier,1);
         arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.GROUND)+6);
         robot.getPayload().toggleGripper(true);
         robot.getChassis().rawDrive(0,.1,0);
@@ -95,7 +94,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         sleep(1000);
         robot.getChassis().stop();
         //place
-        goToPose(-1*xMultiplier,2,xMultiplier*135,0);
+        goToPose(24,0,xMultiplier*-45,1);
         //arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
         robot.getChassis().rawDrive(0,.1,0);
         sleep(1000);
@@ -110,17 +109,17 @@ public class CuriosityAutoRight extends LinearOpMode {
         //spot 1(green)
         if(coneSide==1) {
             //go to left
-            goToPose(-1,2,0,1);
+            goToPose(24,-12,0,1);
         }
         //spot 2(purple)
         else if(coneSide==2){
             //go to center
-            goToPose(0,2,0,1);
+            goToPose(24,0,0,1);
         }
         //spot 3(orange)
         else{
             //go to right
-            goToPose(1,2,0,1);
+            goToPose(24,12,0,1);
         }
     }
 
@@ -143,7 +142,7 @@ public class CuriosityAutoRight extends LinearOpMode {
 
     //use coordinate system for input for this
     void goToPose(double x, double y, double angle, double speed) throws InterruptedException {
-        while(robot.navigator.goTowardsPose(x*24,y*24,angle,speed)) {
+        while(robot.navigator.goTowardsPose(x,y,angle,speed)) {
             robot.update();
             robot.getPayload().update(0);
             telemetry.update();
