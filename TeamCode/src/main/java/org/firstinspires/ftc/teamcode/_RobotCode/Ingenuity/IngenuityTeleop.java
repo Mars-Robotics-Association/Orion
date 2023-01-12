@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 
@@ -32,6 +33,8 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     private int armSetpointIdx = 0;
     private double[] armStops = {0.0, 0.1355, 0.23177, 0.3476};
 
+    private EncoderActuator arm;
+
     @Override
     public void init() {
         robot = new IngenuityPowerPlayBot(this, true, true, true, armStartPos);
@@ -39,6 +42,8 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
+
+        arm = robot.getPayload().getArm();
 
         //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
         //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
@@ -101,7 +106,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         telemetry.addData("Distance: ", robot.sensorDistance.getDistance(DistanceUnit.MM));
 
         telemetry.addData("Gripper:  ", robot.servoTarget);
-        telemetry.addData("Arm:      ", robot.getPayload().getArm().getPosition());
+        telemetry.addData("Arm:      ", arm.getPosition());
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
@@ -151,13 +156,13 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
             case RB:
                 if (this.armSetpointIdx < 3) {
                     armSetpointIdx += 1;
-                    robot.getPayload().getArm().goToPosition(armStops[armSetpointIdx] - armStartPos);
+                    arm.goToPosition(armStops[armSetpointIdx] - armStartPos);
                 }
                 break;
             case LB:
                 if (this.armSetpointIdx > 0) {
                     armSetpointIdx -= 1;
-                    robot.getPayload().getArm().goToPosition(armStops[armSetpointIdx] - armStartPos);
+                    arm.goToPosition(armStops[armSetpointIdx] - armStartPos);
                 }
                 break;
             case Y:
@@ -170,10 +175,10 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
             case RT:
-                robot.getPayload().getArm().setPowerRaw(armPower);
+                arm.setPowerRaw(armPower);
                 break;
             case LT:
-                robot.getPayload().getArm().setPowerRaw(-armPower);
+                arm.setPowerRaw(-armPower);
                 break;
 
         }
@@ -184,7 +189,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         switch (button) {
             case RT:
             case LT:
-                robot.getPayload().getArm().setPowerRaw(0);
+                arm.setPowerRaw(0);
                 break;
             case X:
                 robot.toggleGripper();
