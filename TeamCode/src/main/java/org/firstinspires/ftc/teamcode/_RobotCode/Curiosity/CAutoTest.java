@@ -65,9 +65,15 @@ public class CAutoTest extends LinearOpMode {
         int purpleCount = c.countPixels(c.convertMatToBitMap(purpleMat));
         int orangeCount = c.countPixels(c.convertMatToBitMap(orangeMat));
         //1 is green, 2 is purple, 3 is orange
-        if(greenCount>purpleCount&&greenCount>orangeCount){return 1;}
-        else if(purpleCount>greenCount&&purpleCount>orangeCount){return 2;}
-        else{return 3;}
+        if(greenCount>purpleCount&&greenCount>orangeCount){
+            dash.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
+            return 1;}
+        else if(purpleCount>greenCount&&purpleCount>orangeCount){
+            dash.sendImage(c.growBitmap(c.convertMatToBitMap(purpleMat),200,200));
+            return 2;}
+        else{
+            dash.sendImage(c.growBitmap(c.convertMatToBitMap(orangeMat),200,200));
+            return 3;}
     }
 
 
