@@ -46,7 +46,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
     //Misc
     FtcDashboard dashboard;
 
-    public IngenuityPowerPlayBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator, double armPos) {
+    public IngenuityPowerPlayBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
         super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
         opMode = setOpMode;
@@ -73,7 +73,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
 
             DcMotor armMotor = opMode.hardwareMap.dcMotor.get("armMotor") ;
             armMotor.setDirection(DcMotorSimple.Direction.REVERSE) ;
-            payload = new IngenuityPayload(opMode, armMotor, armPos);
+            payload = new IngenuityPayload(opMode, armMotor);
         }
 
         if(USE_NAVIGATOR){

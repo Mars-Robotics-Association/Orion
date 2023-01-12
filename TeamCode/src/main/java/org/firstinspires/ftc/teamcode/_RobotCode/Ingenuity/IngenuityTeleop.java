@@ -33,17 +33,14 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     private int armSetpointIdx = 0;
     private double[] armStops = {0.0, 0.1355, 0.23177, 0.3476};
 
-    private EncoderActuator arm;
-
     @Override
     public void init() {
-        robot = new IngenuityPowerPlayBot(this, true, true, true, armStartPos);
+        robot = new IngenuityPowerPlayBot(this, true, true, true);
+        robot.getPayload().ResetArmHomePosition(armStartPos);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
-
-        arm = robot.getPayload().getArm();
 
         //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
         //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
@@ -106,7 +103,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         telemetry.addData("Distance: ", robot.sensorDistance.getDistance(DistanceUnit.MM));
 
         telemetry.addData("Gripper:  ", robot.servoTarget);
-        telemetry.addData("Arm:      ", arm.getPosition());
+        telemetry.addData("Arm:      ", robot.getPayload().getArm().getPosition());
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
@@ -130,7 +127,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     }
 
     private int lastStopUp() {
-        double curPos = arm.getPosition();
+        double curPos = robot.getPayload().getArm().getPosition();
         int i;
         for (i = 0; i < armStops.length; i++) {
             if (curPos < armStops[i]) return i;
@@ -139,7 +136,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     }
 
     private int nextStopDown() {
-        double curPos = arm.getPosition();
+        double curPos = robot.getPayload().getArm().getPosition();
         int i;
         for (i = armStops.length - 1; i >= 0; i--) {
             if (curPos > armStops[i]) return i;
@@ -177,7 +174,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
                 }
                 if (this.armSetpointIdx < 3) {
                     armSetpointIdx += 1;
-                    arm.goToPosition(armStops[armSetpointIdx] - armStartPos);
+                    robot.getPayload().getArm().goToPosition(armStops[armSetpointIdx] - armStartPos);
                 }
                 break;
             case LB:
@@ -186,7 +183,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
                 }
                 if (armSetpointIdx > 0) {
                     armSetpointIdx -= 1;
-                    arm.goToPosition(armStops[armSetpointIdx] - armStartPos);
+                    robot.getPayload().getArm().goToPosition(armStops[armSetpointIdx] - armStartPos);
                 }
                 break;
             case Y:
@@ -199,11 +196,11 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
             case RT:
-                arm.setPowerRaw(armPower);
+                robot.getPayload().getArm().setPowerRaw(armPower);
                 armSetpointIdx = -1; // use of the trigger resets arm position state
                 break;
             case LT:
-                arm.setPowerRaw(-armPower);
+                robot.getPayload().getArm().setPowerRaw(-armPower);
                 armSetpointIdx = -1;
                 break;
 
@@ -215,12 +212,15 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         switch (button) {
             case RT:
             case LT:
-                arm.setPowerRaw(0);
+                robot.getPayload().getArm().setPowerRaw(0);
                 break;
             case X:
                 robot.toggleGripper();
                 //robot.gripperServo.setPosition(robot.servoTarget) ;
                 break;
+            case Y:
+                armStartPos = 0.0;
+                robot.getPayload().ResetArmHomePosition(armStartPos);
         }
     }
 

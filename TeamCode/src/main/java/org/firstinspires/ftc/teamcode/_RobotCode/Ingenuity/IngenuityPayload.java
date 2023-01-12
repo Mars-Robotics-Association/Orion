@@ -16,10 +16,17 @@ class IngenuityPayload
     boolean pathOn = false;
     boolean shooterOn = false;
 
+    private final DcMotor motor;
+
     //initializer
-    public IngenuityPayload(OpMode setOpMode, DcMotor armMotor, double armPos) {
+    public IngenuityPayload(OpMode setOpMode, DcMotor armMotor) {
         opMode = setOpMode;
-        arm = new EncoderActuator(opMode, new _ArmProfile(armMotor, armPos));
+        motor = armMotor;
+        arm = new EncoderActuator(opMode, new _ArmProfile(armMotor, 0));
+    }
+
+    public void ResetArmHomePosition(double pos) {
+        arm = new EncoderActuator(opMode, new _ArmProfile(motor, pos));
     }
 
 
