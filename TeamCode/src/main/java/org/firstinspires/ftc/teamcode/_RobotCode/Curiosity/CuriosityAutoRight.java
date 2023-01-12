@@ -137,9 +137,15 @@ public class CuriosityAutoRight extends LinearOpMode {
         int purpleCount = c.countPixels(c.convertMatToBitMap(purpleMat));
         int orangeCount = c.countPixels(c.convertMatToBitMap(orangeMat));
         //1 is green, 2 is purple, 3 is orange
-        if(greenCount>purpleCount&&greenCount>orangeCount){return 1;}
-        else if(purpleCount>greenCount&&purpleCount>orangeCount){return 2;}
-        else{return 3;}
+        if(greenCount>purpleCount&&greenCount>orangeCount){
+            dash.sendImage(c.convertMatToBitMap(greenMat));
+            return 1;}
+        else if(purpleCount>greenCount&&purpleCount>orangeCount){
+            dash.sendImage(c.convertMatToBitMap(purpleMat));
+            return 2;}
+        else{
+            dash.sendImage(c.convertMatToBitMap(orangeMat));
+            return 3;}
     }
 
     //positive x is forward in inches, positive y is right in inches, use coordinates for x and y
