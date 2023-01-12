@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 
@@ -34,7 +35,8 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
 
     @Override
     public void init() {
-        robot = new IngenuityPowerPlayBot(this, true, true, true, armStartPos);
+        robot = new IngenuityPowerPlayBot(this, true, true, true);
+        robot.getPayload().ResetArmHomePosition(armStartPos);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -124,6 +126,24 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         robot.stop();
     }
 
+    private int lastStopUp() {
+        double curPos = robot.getPayload().getArm().getPosition();
+        int i;
+        for (i = 0; i < armStops.length; i++) {
+            if (curPos < armStops[i]) return i;
+        }
+        return i;
+    }
+
+    private int nextStopDown() {
+        double curPos = robot.getPayload().getArm().getPosition();
+        int i;
+        for (i = armStops.length - 1; i >= 0; i--) {
+            if (curPos > armStops[i]) return i;
+        }
+        return i;
+    }
+
     ////INPUT MAPPING////
     @Override
     public void ButtonPressed(int id, ControllerInput.Button button) {
@@ -149,13 +169,19 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
 
                 break;
             case RB:
+                if (armSetpointIdx == -1) {
+                    armSetpointIdx = lastStopUp();
+                }
                 if (this.armSetpointIdx < 3) {
                     armSetpointIdx += 1;
                     robot.getPayload().getArm().goToPosition(armStops[armSetpointIdx] - armStartPos);
                 }
                 break;
             case LB:
-                if (this.armSetpointIdx > 0) {
+                if (armSetpointIdx == -1) {
+                    armSetpointIdx = nextStopDown() + 1;
+                }
+                if (armSetpointIdx > 0) {
                     armSetpointIdx -= 1;
                     robot.getPayload().getArm().goToPosition(armStops[armSetpointIdx] - armStartPos);
                 }
@@ -171,9 +197,11 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         switch (button) {
             case RT:
                 robot.getPayload().getArm().setPowerRaw(armPower);
+                armSetpointIdx = -1; // use of the trigger resets arm position state
                 break;
             case LT:
                 robot.getPayload().getArm().setPowerRaw(-armPower);
+                armSetpointIdx = -1;
                 break;
 
         }
@@ -190,6 +218,9 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
                 robot.toggleGripper();
                 //robot.gripperServo.setPosition(robot.servoTarget) ;
                 break;
+            case Y:
+                armStartPos = 0.0;
+                robot.getPayload().ResetArmHomePosition(armStartPos);
         }
     }
 

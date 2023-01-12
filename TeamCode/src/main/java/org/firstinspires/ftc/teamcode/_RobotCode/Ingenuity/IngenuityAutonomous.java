@@ -23,7 +23,7 @@ public class IngenuityAutonomous extends LinearOpMode
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new IngenuityPowerPlayBot(this,true,true,true, 0);
+        robot = new IngenuityPowerPlayBot(this,true,true,true);
         robot.init();
         robot.getChassis().setHeadlessMode(true);
         //armMotor = hardwareMap.dcMotor.get("armMotor") ;
