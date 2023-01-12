@@ -14,7 +14,7 @@ public class IngenuityAutoTester extends LinearOpMode
     public static double speed = 0.5;
     IngenuityPowerPlayBot robot;
     //public DcMotor armMotor ;
-    int signalZone = 0;
+    IngenuityPowerPlayBot.SignalColor signalZone = IngenuityPowerPlayBot.SignalColor.GREEN;
 
 
     @Override
@@ -47,10 +47,10 @@ public class IngenuityAutoTester extends LinearOpMode
         //turn(90);
         //strafe to signal zone
         switch(signalZone){
-            case 1 :
+            case BLUE:
                 goToPose(25,-23,0);
                 break;
-            case 3:
+            case GREEN:
                 goToPose(25,23,0);
                 break;
             default:
