@@ -34,11 +34,6 @@ public class Juan extends BaseRobot
         sleep(1000);
     }
 
-    public static final int x1 = 0;
-    public static final int y1 = 0;
-    public static final int x2 = 0;
-    public static final int y2 = 0;
-
     static final double liftPower = 2;
 
     public Juan(OpMode opMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
