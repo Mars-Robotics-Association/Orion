@@ -28,15 +28,20 @@ public class CuriosityPayload
     //config
     public static double loadHeight = 2;
     public static double storageHeight = 15;
-    public static double armClearHeight = 5;
+    public static double armClearHeight = 1;
     public static double armLevelDistance = 3;
     public static double armSlowDistance = 10;
     public static double armBaseSpeed = 1;
     public static double armSlowSpeed = 0.5;
-    public static double gripperOpenPos = 1;
-    public static double gripperClosedPos = 0;
+    public static double gripperOpenPos = 0;
+    public static double gripperClosedPos = 1;
     public static double gripperTriggerDistance = 5;
     public static double defaultCooldown = 0.4;
+
+    public static double groundJunction = 10;
+    public static double lowJunction = 28;
+    public static double midJunction = 34;
+    public static double highJunction = 37;
 
     //variables
     PayloadState payloadState = PayloadState.RAW_CONTROL;
@@ -92,9 +97,10 @@ public class CuriosityPayload
     }
 
     public static double getPoleHeight(Pole pole){
-        if (pole == Pole.LOW) return 15;
-        else if (pole == Pole.MID) return 24;
-        else return 36;
+        if(pole == Pole.GROUND) return groundJunction;
+        if (pole == Pole.LOW) return lowJunction;
+        else if (pole == Pole.MID) return midJunction;
+        else return highJunction;
     }
 
     void moveArmByAmount(double amount){
@@ -123,6 +129,24 @@ public class CuriosityPayload
 
     void managePlacing(double armInput){
         arm.goToPosition(getPoleHeight(targetPole));
+    }
+
+    //returns false when done
+    boolean autoLevel(){
+        double armDistanceFromGround = armLevelSensor.getDistance(DistanceUnit.CM);
+        opMode.telemetry.addLine("Resetting arm");
+        if(armDistanceFromGround <= armLevelDistance){ //if at bottom, reset arm's position
+            arm.resetToZero();
+            armReset = true;
+            arm.goToPosition(loadHeight); //go to load height
+            return false;
+        }
+        else if (armDistanceFromGround <= armSlowDistance) {
+            opMode.telemetry.addLine("Slowing down arm");
+            arm.setPowerRaw(-armSlowSpeed); //slows down if close to bottom
+        }
+        else arm.setPowerRaw(-armBaseSpeed); //goes down quickly to start
+        return true;
     }
 
     void manageLoading(double armInput){
@@ -253,5 +277,9 @@ public class CuriosityPayload
     public void toggleGripper(){
         if(gripperOpen) toggleGripper(false);
         else toggleGripper(true);
+    }
+
+    public void goToHeight(double height){
+        arm.goToPosition(height);
     }
 }
