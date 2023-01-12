@@ -122,10 +122,21 @@ public class IngenuityPowerPlayBot extends BaseRobot
 
     public void toggleGripper() {
         if(servoTarget==servoTarget1){
-            servoTarget=servoTarget2;
+            servoTarget=servoTarget2;   // Open
         }
-        else servoTarget=servoTarget1 ;
+        else servoTarget=servoTarget1 ;  // Close
+        update() ;
     }
+
+    public void openGripper(){
+        servoTarget=servoTarget2; //Open
+        update() ;
+    }
+    public void closeGripper(){
+        servoTarget=servoTarget1; //Close
+        update() ;
+    }
+
 
     public SignalColor readSignal() {
         SignalColor result = SignalColor.GREEN;

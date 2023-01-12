@@ -22,7 +22,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     public static double driveSpeed = 1;//used to change how fast robot drives
     public static double turnSpeed = -1;//used to change how fast robot turns
 
-    private double speedMultiplier = 1;
+    private double speedMultiplier = 0.5;
 
     public static int payloadControllerNumber = 1;
 

@@ -14,48 +14,64 @@ public class IngenuityAutoTester extends LinearOpMode
     public static double speed = 0.5;
     IngenuityPowerPlayBot robot;
     //public DcMotor armMotor ;
-    int signalZone = 0;
-
+    IngenuityPowerPlayBot.SignalColor signalZone = IngenuityPowerPlayBot.SignalColor.GREEN;
+    private double[] armStops = {0.0, 0.1655, 0.23177, 0.3476} ;
 
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new IngenuityPowerPlayBot(this,true,true,true, 0);
         robot.init();
         robot.getChassis().setHeadlessMode(true);
-        //armMotor = hardwareMap.dcMotor.get("armMotor") ;
-        //armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
-        //armMotor.setDirection(DcMotorSimple.Direction.REVERSE) ;
 
+        EncoderActuator arm = robot.getPayload().getArm();
+
+        // ===================================================================
         waitForStart();
         robot.start();
+        // ===================================================================
+        robot.closeGripper() ;
+        sleep(500) ;
+        arm.goToPosition(armStops[3]) ;
+        while (arm.getPosition()<0.2){
+            robot.update();
+            telemetry.update();
+        }
 
+        goToPose(22,0,0);    //go forward to the signal
+        sleep(200);    // pause to ensure reading
+        signalZone=robot.readSignal();    //read the signal
 
-        //go forward to the signal
-        goToPose(22,0,0);
-        //read the signal
-        signalZone=robot.readSignal();
-        //wait
-        sleep(200);
-        //move forward
-        goToPose(40,0,0);
-        goToPose(51,0,45) ;
+        goToPose(40,0,0); //move almost to next tile (away from us)
+        goToPose(57,5,45) ; // Drive to place the cone on high junction
+        sleep(500);
+        robot.openGripper() ; // release cone on high junction
+        sleep(500);
+        goToPose(49,0,0) ; // Back away from high junction
+        arm.goToPosition(armStops[0]+0.05) ; // Start lowering the arm  + offset for stack
         sleep(1000);
-        goToPose(51,-20,-90) ;
-        goToPose(51,0,0) ;
 
-        goToPose(26,0,0);
-        //turn(90);
+        goToPose(50,-20,-90) ; // Drive to depot
+        robot.closeGripper() ;
+        sleep(500) ;
+        arm.goToPosition(armStops[1]) ; // Raise arm for low junction
+        goToPose(50,0,-135) ; // Drive to place the cone on high junction
+        robot.openGripper() ; // release cone on high junction
+        sleep(500);
+
+        turn(-90) ;
+        arm.goToPosition(armStops[0]) ; // Start lowering the arm  + offset for stack
         //strafe to signal zone
-        switch(signalZone){
-            case 1 :
-                goToPose(25,-23,0);
+        switch (signalZone) {
+            case BLUE:
+                goToPose(50, -23, -90);
                 break;
-            case 3:
-                goToPose(25,23,0);
+            case RED:
+                goToPose(50, 0, -90);
                 break;
             default:
-                goToPose(25,0,0);
+                goToPose(50, 23, -90);
         }
+
 
         while (!isStopRequested()){
             telemetry.addData("SIGNAL READ: ", signalZone);
