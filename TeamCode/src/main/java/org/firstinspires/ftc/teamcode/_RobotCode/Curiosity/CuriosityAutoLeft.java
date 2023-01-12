@@ -43,14 +43,16 @@ public class CuriosityAutoLeft extends LinearOpMode {
         xMultiplier=1;
         if(isLeft){xMultiplier=-1;}
 
+        //START
         waitForStart();
         robot.start();
         robot.getChassis().resetGyro();
         double coneSide = getConeSide(robot.camera);
         telemetry.addData("Position",coneSide);
         telemetry.update();
+
         //place
-        goToPose(24,0,xMultiplier*-45,1);
+        goToPose(48,0,xMultiplier*-45,1);
         arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
         robot.getChassis().rawDrive(0,.1,0);
         sleep(1000);
@@ -58,7 +60,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         robot.getPayload().toggleGripper(true);
 
         //get block
-        goToPose(24,12*xMultiplier,90*xMultiplier,1);
+        goToPose(48,24*xMultiplier,90*xMultiplier,1);
         arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.GROUND)+8);
         robot.getPayload().toggleGripper(true);
         robot.getChassis().rawDrive(0,.1,0);
@@ -70,7 +72,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         sleep(1000);
         robot.getChassis().stop();
         //go to high pole
-        goToPose(24,0,xMultiplier*-45,1);
+        goToPose(48,0,xMultiplier*-45,1);
         //place
         //arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
         robot.getChassis().rawDrive(0,.1,0);
@@ -82,7 +84,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         robot.getChassis().stop();
 
         //get block
-        goToPose(24,12*xMultiplier,90*xMultiplier,1);
+        goToPose(48,24*xMultiplier,90*xMultiplier,1);
         arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.GROUND)+6);
         robot.getPayload().toggleGripper(true);
         robot.getChassis().rawDrive(0,.1,0);
@@ -94,7 +96,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         sleep(1000);
         robot.getChassis().stop();
         //place
-        goToPose(24,0,xMultiplier*-45,1);
+        goToPose(48,0,xMultiplier*-45,1);
         //arm.goToPosition(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
         robot.getChassis().rawDrive(0,.1,0);
         sleep(1000);
@@ -109,17 +111,17 @@ public class CuriosityAutoLeft extends LinearOpMode {
         //spot 1(green)
         if(coneSide==1) {
             //go to left
-            goToPose(24,-12,0,1);
+            goToPose(48,-24,0,1);
         }
         //spot 2(purple)
         else if(coneSide==2){
             //go to center
-            goToPose(24,0,0,1);
+            goToPose(48,0,0,1);
         }
         //spot 3(orange)
         else{
             //go to right
-            goToPose(24,12,0,1);
+            goToPose(48,24,0,1);
         }
     }
 
@@ -140,7 +142,8 @@ public class CuriosityAutoLeft extends LinearOpMode {
         else{return 3;}
     }
 
-    //use coordinate system for input for this
+    //positive x is forward in inches, positive y is right in inches, use coordinates for x and y
+    //right turn is positive angle in degrees
     void goToPose(double x, double y, double angle, double speed) throws InterruptedException {
         while(robot.navigator.goTowardsPose(x,y,angle,speed)) {
             robot.update();
