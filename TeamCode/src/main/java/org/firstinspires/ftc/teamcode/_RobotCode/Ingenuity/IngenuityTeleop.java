@@ -129,6 +129,24 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         robot.stop();
     }
 
+    private int lastStopUp() {
+        double curPos = arm.getPosition();
+        int i;
+        for (i = 0; i < armStops.length; i++) {
+            if (curPos < armStops[i]) return i;
+        }
+        return i;
+    }
+
+    private int nextStopDown() {
+        double curPos = arm.getPosition();
+        int i;
+        for (i = armStops.length - 1; i >= 0; i--) {
+            if (curPos > armStops[i]) return i;
+        }
+        return i;
+    }
+
     ////INPUT MAPPING////
     @Override
     public void ButtonPressed(int id, ControllerInput.Button button) {
@@ -154,13 +172,19 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
 
                 break;
             case RB:
+                if (armSetpointIdx == -1) {
+                    armSetpointIdx = lastStopUp();
+                }
                 if (this.armSetpointIdx < 3) {
                     armSetpointIdx += 1;
                     arm.goToPosition(armStops[armSetpointIdx] - armStartPos);
                 }
                 break;
             case LB:
-                if (this.armSetpointIdx > 0) {
+                if (armSetpointIdx == -1) {
+                    armSetpointIdx = nextStopDown() + 1;
+                }
+                if (armSetpointIdx > 0) {
                     armSetpointIdx -= 1;
                     arm.goToPosition(armStops[armSetpointIdx] - armStartPos);
                 }
@@ -176,9 +200,11 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         switch (button) {
             case RT:
                 arm.setPowerRaw(armPower);
+                armSetpointIdx = -1; // use of the trigger resets arm position state
                 break;
             case LT:
                 arm.setPowerRaw(-armPower);
+                armSetpointIdx = -1;
                 break;
 
         }
