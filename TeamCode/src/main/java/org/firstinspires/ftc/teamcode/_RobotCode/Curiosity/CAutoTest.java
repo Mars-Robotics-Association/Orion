@@ -33,24 +33,14 @@ public class CAutoTest extends LinearOpMode {
         waitForStart();
         robot.start();
         double coneSide = getConeSide(robot.camera);
+        int count = 0;
+        while(count<10000){
         telemetry.addData("Position",coneSide);
-
-
-        //spot 1(green)
-        if(coneSide==1) {
-            //stay
-
+        telemetry.update();
+        count++;
         }
-        //spot 2(purple)
-        else if(coneSide==2){
-            //go to center
 
-        }
-        //spot 3(orange)
-        else{
-            //go to far right
 
-        }
     }
 
     //move this somewhere else if it goes in a different class
