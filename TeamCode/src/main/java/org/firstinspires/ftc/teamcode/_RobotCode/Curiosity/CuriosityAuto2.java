@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRo
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
 import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCVColors;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 
 @Autonomous(group="Curiosity")
 @Config
@@ -120,24 +121,36 @@ public class CuriosityAuto2 extends LinearOpMode {
     //move this somewhere else if it goes in a different class
     double getConeSide(Camera c) throws InterruptedException {
         Bitmap img = c.getImage();
-        Mat in = c.convertBitmapToMat(c.shrinkBitmap(img,20,20));
+        Mat cropped = new Mat(c.convertBitmapToMat(img),new Rect(5*img.getWidth()/8,img.getHeight()/3,img.getWidth()/4,img.getHeight()/3));
+        Bitmap img2=c.convertMatToBitMap(cropped);
+        Mat in = c.convertBitmapToMat(c.shrinkBitmap(img2,20,20));
         dash.sendImage(img);
         Mat greenMat = c.isolateColor(in, OpenCVColors.ConeGreenH,OpenCVColors.ConeGreenL);
         Mat purpleMat = c.isolateColor(in,OpenCVColors.ConePurpleH,OpenCVColors.ConePurpleL);
         Mat orangeMat = c.isolateColor(in,OpenCVColors.ConeOrangeH,OpenCVColors.ConeOrangeL);
+
+        Mat greenMatT = c.isolateColor(c.convertBitmapToMat(img2), OpenCVColors.ConeGreenH,OpenCVColors.ConeGreenL);
+        Mat purpleMatT = c.isolateColor(c.convertBitmapToMat(img2),OpenCVColors.ConePurpleH,OpenCVColors.ConePurpleL);
+        Mat orangeMatT = c.isolateColor(c.convertBitmapToMat(img2),OpenCVColors.ConeOrangeH,OpenCVColors.ConeOrangeL);
+
         int greenCount = c.countPixels(c.convertMatToBitMap(greenMat));
         int purpleCount = c.countPixels(c.convertMatToBitMap(purpleMat));
         int orangeCount = c.countPixels(c.convertMatToBitMap(orangeMat));
         //1 is green, 2 is purple, 3 is orange
         if(greenCount>purpleCount&&greenCount>orangeCount){
+            //dash.sendImage(c.convertMatToBitMap(greenMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
             return 1;}
         else if(purpleCount>greenCount&&purpleCount>orangeCount){
+            //dash.sendImage(c.convertMatToBitMap(purpleMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(purpleMat),200,200));
-            return 2;}
+            return 2;
+        }
         else{
+            //dash.sendImage(c.convertMatToBitMap(orangeMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(orangeMat),200,200));
-            return 3;}
+            return 3;
+        }
     }
 
     //positive x is forward in inches, positive y is right in inches, use coordinates for x and y
