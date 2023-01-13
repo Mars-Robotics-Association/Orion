@@ -139,7 +139,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void ButtonPressed(int id, Button button) {
         switch (button) {
             case A:// speed multiplier cycling
-                if (speedMultiplier == 1) speedMultiplier = 0.2;
+                if (speedMultiplier == 0.6) speedMultiplier = 0.3;
                 else speedMultiplier = 0.6;
                 break;
             case LJS:// toggle headless

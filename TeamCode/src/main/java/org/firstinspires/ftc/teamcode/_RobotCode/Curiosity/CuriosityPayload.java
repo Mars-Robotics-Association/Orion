@@ -35,12 +35,12 @@ public class CuriosityPayload
     public static double armSlowSpeed = 0.5;
     public static double gripperOpenPos = 0;
     public static double gripperClosedPos = 1;
-    public static double gripperTriggerDistance = 5;
+    public static double gripperTriggerDistance = 4.5;
     public static double defaultCooldown = 0.4;
 
     public static double groundJunction = 10;
-    public static double lowJunction = 28;
-    public static double midJunction = 34;
+    public static double lowJunction = 20;
+    public static double midJunction = 30;
     public static double highJunction = 37;
 
     //variables

@@ -27,7 +27,7 @@ public class CuriosityAuto2 extends LinearOpMode {
     private FtcDashboard dash;
 
     public static double speed = 0.5;
-    public static double coneStackTop = 9;
+    public static double coneStackTop = 8;
     public static double coneStackInterval = 1.5;
     public static double coneSide = 1;
 
@@ -62,30 +62,36 @@ public class CuriosityAuto2 extends LinearOpMode {
         while(robot.getPayload().autoLevel()&&!isStopRequested()) telemetry.addLine("Resetting arm");
         robot.getPayload().stop();
         //places preload cone
-        robot.getPayload().goToHeight(37);
-        goToPose(50,3,0,speed);
+        robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
+        goToPose(30,2,0,0.8);
         turnTo(-45*sideMultiplier, speed);
         robot.getPayload().toggleGripper(true);
-        sleep(1000);
+        sleep(500);
+        turnTo(0,speed);
+        goToPose(55,0,0,1);
+        goToPose(48,0,0,1);
+        turnTo(90*sideMultiplier,speed);
 
-        //picks up and places a cone from the stack until time is less than 2 seconds
+        //picks up and places a cone from the stack
         int coneCounter = 0;
-        while(!isStopRequested()&&getRuntime()<28){
+        while(coneCounter<2){
             //raises arm to pick up cone
             robot.getPayload().goToHeight(coneStackTop-(coneCounter*coneStackInterval));
             //goes to the stack
-            goToPose(52, 24*sideMultiplier,90*sideMultiplier,speed);
+            goToPose(49, 23*sideMultiplier,90*sideMultiplier,speed);
             //picks up cone
             robot.getPayload().toggleGripper(false);
             sleep(500);
             //moves arm up
-            robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.HIGH));
+            robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
             //increases cone counter, as it has taken a cone off the stack
             coneCounter ++;
             //goes to place
-            goToPose(50, 3,-45*sideMultiplier,speed);
+            goToPose(45, 1.5,-135*sideMultiplier,speed);
             //places cone
             robot.getPayload().toggleGripper(true);
+            sleep(500);
+            goToPose(48, 0,180,speed);
         }
 
         robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.LOW));
@@ -93,18 +99,20 @@ public class CuriosityAuto2 extends LinearOpMode {
         //spot 1(green)
         if(coneSide==1) {
             //go to left
-            goToPose(48,-24,0,1);
+            goToPoseNoTimer(48,-24,0,1);
         }
         //spot 2(purple)
         else if(coneSide==2){
             //go to center
-            goToPose(48,0,0,1);
+            goToPoseNoTimer(48,0,0,1);
         }
         //spot 3(orange)
         else{
             //go to right
-            goToPose(48,24,0,1);
+            goToPoseNoTimer(48,24,0,1);
         }
+        telemetry.addLine("DONE");
+        telemetry.update();
         robot.stop();
         stop();
     }
@@ -135,7 +143,13 @@ public class CuriosityAuto2 extends LinearOpMode {
     //positive x is forward in inches, positive y is right in inches, use coordinates for x and y
     //right turn is positive angle in degrees
     void goToPose(double x, double y, double angle, double speed) throws InterruptedException {
-        while(robot.navigator.goTowardsPose(x,y,angle,speed) && !isStopRequested() && getRuntime()<28) {
+        while(robot.navigator.goTowardsPose(x,y,angle,speed) && !isStopRequested() ) {//&& getRuntime()<28
+            robot.update();
+            telemetry.update();
+        }
+    }
+    void goToPoseNoTimer(double x, double y, double angle, double speed) throws InterruptedException {
+        while(robot.navigator.goTowardsPose(x,y,angle,speed) && !isStopRequested()) {
             robot.update();
             telemetry.update();
         }
