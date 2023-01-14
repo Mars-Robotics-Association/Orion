@@ -23,7 +23,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     public static double driveSpeed = 1;//used to change how fast robot drives
     public static double turnSpeed = -1;//used to change how fast robot turns
 
-    private double speedMultiplier = 1;
+    private double speedMultiplier = 0.5;
 
     public static int payloadControllerNumber = 1;
 
@@ -149,8 +149,8 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     public void ButtonPressed(int id, ControllerInput.Button button) {
         switch (button) {
             case A:// speed multiplier cycling
-                if (speedMultiplier == 1) speedMultiplier = 0.5;
-                else speedMultiplier = 1;
+//                if (speedMultiplier == .7) speedMultiplier = 0.4;
+//                else speedMultiplier = .7;
                 break;
             case B:// reset robot pose
                 break;
@@ -195,6 +195,8 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     @Override
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
+            case A:
+                speedMultiplier=1;
             case RT:
                 robot.getPayload().getArm().setPowerRaw(armPower);
                 armSetpointIdx = -1; // use of the trigger resets arm position state
@@ -210,6 +212,8 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     @Override
     public void ButtonReleased(int id, ControllerInput.Button button) {
         switch (button) {
+            case A:
+                speedMultiplier=.5;
             case RT:
             case LT:
                 robot.getPayload().getArm().setPowerRaw(0);
