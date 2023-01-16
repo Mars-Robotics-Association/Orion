@@ -160,6 +160,12 @@ public class CuriosityPayload
         opMode.telemetry.addData("Arm dist from ground", armDistanceFromGround+" CM");
         opMode.telemetry.addData("Gripper sensor distance", gripperDistance+" CM");
 
+        //returns if arm is not reset and there is a cone in the gripper
+        if(!armReset && gripperDistance<=gripperTriggerDistance){
+            opMode.telemetry.addLine("Please remove cone from gripper");
+            return;
+        }
+
         //reset the arm's position
         if(!armReset) {
             opMode.telemetry.addLine("Resetting arm");

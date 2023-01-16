@@ -46,7 +46,7 @@ public class CuriosityBot extends BaseRobot
 
         gamepad = setGamepad;
         dashboard = FtcDashboard.getInstance();
-        setLog(new HermesLog("Curiosity", 200, opMode));
+        //setLog(new HermesLog("Curiosity", 200, opMode));
         camera = new Camera(opMode,"Webcam 1");
 
 
@@ -86,7 +86,7 @@ public class CuriosityBot extends BaseRobot
     public void start(){
         getChassis().startChassis();
         getNavigator().setMeasuredPose(0,0,0);
-        log.start();
+        //log.start();
     }
 
     public void update() throws InterruptedException {
@@ -96,7 +96,7 @@ public class CuriosityBot extends BaseRobot
             navigator.update();
             //hermes logging code
             //configures robot code
-            RobotPose robotPose = new RobotPose(navigator.getTargetPose()[0],
+            /*RobotPose robotPose = new RobotPose(navigator.getTargetPose()[0],
                     navigator.getTargetPose()[1],Math.toRadians(navigator.getTargetPose()[2]),
                     navigator.getMeasuredPose().getX(), navigator.getMeasuredPose().getY(),navigator.getMeasuredPose().getHeading());
             //converts camera footage to base 64 for gui
@@ -104,7 +104,7 @@ public class CuriosityBot extends BaseRobot
                     //camera.convertBitmapToBase64(camera.shrinkBitmap(camera.getImage(),240,135),0));
             Object[] data = {robotPose};
             log.addData(data);
-            log.Update();
+            log.Update();*/
         }
         if(USE_PAYLOAD){
         }
