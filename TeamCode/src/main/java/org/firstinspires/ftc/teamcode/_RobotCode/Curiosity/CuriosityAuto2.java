@@ -54,7 +54,7 @@ public class CuriosityAuto2 extends LinearOpMode {
         robot.start();
         resetRuntime();
         robot.getChassis().resetGyro();
-        //double coneSide = getConeSide(robot.camera);
+        double coneSide = getConeSide(robot.camera);
         //telemetry.addData("Position",coneSide);
         telemetry.update();
 
@@ -129,25 +129,18 @@ public class CuriosityAuto2 extends LinearOpMode {
         Mat purpleMat = c.isolateColor(in,OpenCVColors.ConePurpleH,OpenCVColors.ConePurpleL);
         Mat orangeMat = c.isolateColor(in,OpenCVColors.ConeOrangeH,OpenCVColors.ConeOrangeL);
 
-        Mat greenMatT = c.isolateColor(c.convertBitmapToMat(img2), OpenCVColors.ConeGreenH,OpenCVColors.ConeGreenL);
-        Mat purpleMatT = c.isolateColor(c.convertBitmapToMat(img2),OpenCVColors.ConePurpleH,OpenCVColors.ConePurpleL);
-        Mat orangeMatT = c.isolateColor(c.convertBitmapToMat(img2),OpenCVColors.ConeOrangeH,OpenCVColors.ConeOrangeL);
-
         int greenCount = c.countPixels(c.convertMatToBitMap(greenMat));
         int purpleCount = c.countPixels(c.convertMatToBitMap(purpleMat));
         int orangeCount = c.countPixels(c.convertMatToBitMap(orangeMat));
         //1 is green, 2 is purple, 3 is orange
         if(greenCount>purpleCount&&greenCount>orangeCount){
-            //dash.sendImage(c.convertMatToBitMap(greenMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
             return 1;}
         else if(purpleCount>greenCount&&purpleCount>orangeCount){
-            //dash.sendImage(c.convertMatToBitMap(purpleMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(purpleMat),200,200));
             return 2;
         }
         else{
-            //dash.sendImage(c.convertMatToBitMap(orangeMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(orangeMat),200,200));
             return 3;
         }
