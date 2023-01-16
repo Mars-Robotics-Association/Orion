@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.path.PathPoint;
 @Config
 public class IngenuityAutonomous extends LinearOpMode
 {
-    public static double speed = 0.2;
+    public static double speed = 0.6;
     IngenuityPowerPlayBot robot;
     //public DcMotor armMotor ;
     IngenuityPowerPlayBot.SignalColor signalZone = IngenuityPowerPlayBot.SignalColor.GREEN;
@@ -35,7 +35,7 @@ public class IngenuityAutonomous extends LinearOpMode
 
         EncoderActuator arm = robot.getPayload().getArm();
         arm.goToPosition(0.3);
-        while (arm.getPosition()<0.2){
+        while (arm.getPosition()<0.12){
             robot.update();
             telemetry.update();
         }
@@ -45,18 +45,29 @@ public class IngenuityAutonomous extends LinearOpMode
         //read the signal
         signalZone=robot.readSignal();
         //wait
-        sleep(1000);
+        sleep(500);
+        // plow the signal cone out of the way
+        goToPose(48,0,0);
+        // move back to get ready to park
+        goToPose(25,0,0);
         //strafe to signal zone
         switch (signalZone) {
             case BLUE:
-                goToPose(22, -25, 0);
+                goToPose(25, -24, 0);
                 break;
             case RED:
-                goToPose(22, 0, 0);
+                goToPose(25, 0, 0);
                 break;
             default:
-                goToPose(25, 25, 0);
+                goToPose(25, 24, 0);
         }
+        arm.goToPosition(0);
+        while (arm.getPosition()>0.05){
+            robot.update();
+            telemetry.update();
+        }
+
+        sleep(200);
 
         while (!isStopRequested()){
             telemetry.addData("SIGNAL READ: ", signalZone);
@@ -67,7 +78,7 @@ public class IngenuityAutonomous extends LinearOpMode
     }
 
     private void goToPose(double x, double y, double angle) {
-        while( robot.getNavigator().goTowardsPose(x, y, angle,0.25) && !isStopRequested()) {
+        while( robot.getNavigator().goTowardsPose(x, y, angle,speed) && !isStopRequested()) {
             robot.update();
             telemetry.addData("SIGNAL READ: ", signalZone);
             telemetry.addData("Going to to ", "("+x+", "+y+", "+angle+")");
@@ -76,7 +87,7 @@ public class IngenuityAutonomous extends LinearOpMode
         robot.getChassis().stop();
     }
     private void turn(double angle) {
-        while( robot.getNavigator().turnTowards(angle,0.25) && !isStopRequested()) {
+        while( robot.getNavigator().turnTowards(angle,speed) && !isStopRequested()) {
             robot.update();
             telemetry.addData("SIGNAL READ: ", signalZone);
             telemetry.update();
