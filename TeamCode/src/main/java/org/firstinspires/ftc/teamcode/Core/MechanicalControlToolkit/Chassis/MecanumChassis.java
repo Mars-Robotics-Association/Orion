@@ -42,6 +42,7 @@ public class MecanumChassis
     //Util
     protected double gyroOffset;
     protected boolean headlessMode = false;
+    protected double lastBotSpeed = 0;
 
     //TODO: ===ROBOT CONFIGURATION===
     protected boolean USE_CHASSIS = true;
@@ -148,6 +149,33 @@ public class MecanumChassis
             setMotorSpeeds(0,0,0,0);
         }
     }
+    public void driveWithGamepadRamped(ControllerInput controllerInput, double speedMultiplier, double rampCoefficient) {
+        //MOVE if left joystick magnitude > 0.1
+        if (controllerInput.calculateLJSMag() > 0.1) {
+            //initial values
+            double driveAngle = controllerInput.calculateLJSAngle()+inputOffset;
+            double driveSpeed = -1 * controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier;
+            double driveTurnOffset = -controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier;
+            //if in headless mode, enable absolute movement
+            if(headlessMode) {
+                driveAngle += imu.getRobotAngle();
+            }
+            rawDriveRamped(
+                    driveAngle,
+                    driveSpeed,
+                    driveTurnOffset, rampCoefficient);//drives at (angle, speed, turnOffset)
+
+            opMode.telemetry.addData("Moving at ", controllerInput.calculateLJSAngle());
+        }
+        //TURN if right joystick magnitude > 0.1 and not moving
+        else if (Math.abs(controllerInput.getRJSX()) > 0.1) {
+            rawTurn(-controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//turns at speed according to rjs1
+            opMode.telemetry.addData("Turning", true);
+        }
+        else {
+            setMotorSpeeds(0,0,0,0);
+        }
+    }
     public void setInputOffset(double offset) {inputOffset = offset;}
 
     //Tells robot to raw move at any angle. Turn speed variable causes it to sweep turn / corkscrew.
@@ -184,6 +212,11 @@ public class MecanumChassis
         //SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
         setMotorSpeeds(speeds[0], -speeds[1], speeds[2], -speeds[3]);
     }
+    public void rawDriveRamped(double inputAngle, double speed, double turnOffset, double rampCoefficient){
+        if(lastBotSpeed<(speed-0.05)) speed = speed*rampCoefficient + lastBotSpeed; //ramps up speed when target speed is increasing- this smooths out movement
+        lastBotSpeed = speed;
+        rawDrive(inputAngle,speed,turnOffset);
+    }
     public void rawDriveTurningTowards(double driveAngle, double speed, double facingAngle, double turnCoefficient){
         double turnOffset = getHeadingError(facingAngle)*speed*turnCoefficient;
         rawDrive(driveAngle,speed,turnOffset);
@@ -192,8 +225,6 @@ public class MecanumChassis
     //Used continuously in teleop to turn the robot
     //Enter speed for turn- positive speed turns left, negative right
     public void rawTurn(double speed){
-
-
         //Use motors and record encoder values
         driveMotors.runWithoutEncodersMode();
 

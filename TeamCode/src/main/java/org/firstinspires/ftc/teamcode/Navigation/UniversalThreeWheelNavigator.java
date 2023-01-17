@@ -98,7 +98,7 @@ public class UniversalThreeWheelNavigator
             //get error
             double turnError = calculateTurnError(targetAngle, chassis.getImu().getRobotAngle());
             //calculate speeds
-            turnSpeed = -calculateTurnSpeed(turnError, minSpeed, speed)*chassisProfile.turnSpeed()*controllerInput.calculateRJSMag();
+            turnSpeed = -calculateTurnSpeed(turnError, minSpeed, speed, false)*chassisProfile.turnSpeed()*controllerInput.calculateRJSMag();
             //prints telemetry
             opMode.telemetry.addData("GOING TO ANGLE:", targetAngle);
             opMode.telemetry.addData("TURN ERROR:", turnError);
@@ -112,7 +112,7 @@ public class UniversalThreeWheelNavigator
             double driveAngle = controllerInput.calculateLJSAngle()+chassis.getInputOffset()+chassis.getImu().getRobotAngle();;
             double driveSpeed = controllerInput.calculateLJSMag() * chassisProfile.moveSpeed() * speed;
 
-            chassis.rawDrive(driveAngle, driveSpeed, turnSpeed);//drives at (angle, speed, turnOffset)
+            chassis.rawDriveRamped(driveAngle, driveSpeed, turnSpeed, moveSmoothCoefficient);//drives at (angle, speed, turnOffset)
             opMode.telemetry.addData("Moving at ", controllerInput.calculateLJSAngle());
         }
 
@@ -356,6 +356,9 @@ public class UniversalThreeWheelNavigator
     }
 
     public double calculateTurnSpeed(double error, double minSpeed, double maxSpeed){
+        return calculateTurnSpeed(error,minSpeed,maxSpeed,true);
+    }
+    public double calculateTurnSpeed(double error, double minSpeed, double maxSpeed, boolean stopWithinRange){
         double finalSpeed = turnCoefficient*error*maxSpeed; //calculate base final speed based off proportional coefficient
         if(Math.abs(error)<slowDegrees) finalSpeed = finalSpeed*Math.abs((error/slowDegrees)); //slows when gets close to target
 
@@ -363,7 +366,7 @@ public class UniversalThreeWheelNavigator
         if(finalSpeed > 0) finalSpeed = Math.max(minSpeed, Math.min(maxSpeed, finalSpeed));
         if(finalSpeed < 0) finalSpeed = Math.max(-maxSpeed, Math.min(-minSpeed, finalSpeed));
 
-        if(Math.abs(error)<Math.abs(stopDegrees)) finalSpeed = 0; //if within stop area, set speed to zero
+        if(Math.abs(error)<Math.abs(stopDegrees)&&stopWithinRange) finalSpeed = 0; //if within stop area, set speed to zero
 
 
         //ramps up speed when target speed is increasing- this smooths out movement
