@@ -17,7 +17,7 @@ import org.opencv.core.Rect;
 
 @Autonomous(group="Curiosity")
 @Config
-public class CuriosityAutoLeft extends LinearOpMode {
+public class CuriosityAuto2 extends LinearOpMode {
 
     private CuriosityBot robot;
     private boolean isRed;
@@ -60,11 +60,11 @@ public class CuriosityAutoLeft extends LinearOpMode {
 
         //resets arm
         robot.getPayload().toggleGripper(false);
-        //while(robot.getPayload().autoLevel()&&!isStopRequested()) telemetry.addLine("Resetting arm");
+        while(robot.getPayload().autoLevel()&&!isStopRequested()) telemetry.addLine("Resetting arm");
         robot.getPayload().stop();
         //places preload cone
-        //robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
-        goToPose(32,2,0,0.8);
+        robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
+        goToPose(30,2,0,0.8);
         turnTo(-45*sideMultiplier, speed);
         robot.getPayload().toggleGripper(true);
         sleep(500);
@@ -77,18 +77,18 @@ public class CuriosityAutoLeft extends LinearOpMode {
         int coneCounter = 0;
         while(coneCounter<2){
             //raises arm to pick up cone
-            //robot.getPayload().goToHeight(coneStackTop-(coneCounter*coneStackInterval));
+            robot.getPayload().goToHeight(coneStackTop-(coneCounter*coneStackInterval));
             //goes to the stack
-            goToPose(49, 14*sideMultiplier,90*sideMultiplier,speed);
+            goToPose(49, 23*sideMultiplier,90*sideMultiplier,speed);
             //picks up cone
             robot.getPayload().toggleGripper(false);
             sleep(500);
             //moves arm up
-            //robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
+            robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
             //increases cone counter, as it has taken a cone off the stack
             coneCounter ++;
             //goes to place
-            goToPose(47, 2.5,-135*sideMultiplier,speed);
+            goToPose(45, 1.5,-135*sideMultiplier,speed);
             //places cone
             robot.getPayload().toggleGripper(true);
             sleep(500);
@@ -100,19 +100,18 @@ public class CuriosityAutoLeft extends LinearOpMode {
         //spot 1(green)
         if(coneSide==1) {
             //go to left
-            goToPoseNoTimer(44,-20,-90*sideMultiplier,1);
+            goToPoseNoTimer(48,-24,0,1);
         }
         //spot 2(purple)
         else if(coneSide==2){
             //go to center
-            goToPoseNoTimer(44,0,-90*sideMultiplier,1);
+            goToPoseNoTimer(48,0,0,1);
         }
         //spot 3(orange)
         else{
             //go to right
-            goToPoseNoTimer(44,24,-90*sideMultiplier,1);
+            goToPoseNoTimer(48,24,0,1);
         }
-        turnTo(0,speed);
         telemetry.addLine("DONE");
         telemetry.update();
         robot.stop();
@@ -130,22 +129,18 @@ public class CuriosityAutoLeft extends LinearOpMode {
         Mat purpleMat = c.isolateColor(in,OpenCVColors.ConePurpleH,OpenCVColors.ConePurpleL);
         Mat orangeMat = c.isolateColor(in,OpenCVColors.ConeOrangeH,OpenCVColors.ConeOrangeL);
 
-
         int greenCount = c.countPixels(c.convertMatToBitMap(greenMat));
         int purpleCount = c.countPixels(c.convertMatToBitMap(purpleMat));
         int orangeCount = c.countPixels(c.convertMatToBitMap(orangeMat));
         //1 is green, 2 is purple, 3 is orange
         if(greenCount>purpleCount&&greenCount>orangeCount){
-            //dash.sendImage(c.convertMatToBitMap(greenMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
             return 1;}
         else if(purpleCount>greenCount&&purpleCount>orangeCount){
-            //dash.sendImage(c.convertMatToBitMap(purpleMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(purpleMat),200,200));
             return 2;
         }
         else{
-            //dash.sendImage(c.convertMatToBitMap(orangeMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(orangeMat),200,200));
             return 3;
         }

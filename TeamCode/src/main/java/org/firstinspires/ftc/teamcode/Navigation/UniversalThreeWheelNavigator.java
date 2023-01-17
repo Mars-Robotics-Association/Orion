@@ -48,7 +48,7 @@ public class UniversalThreeWheelNavigator
     public static double turnSmoothCoefficient = 0.1; //how much to ramp turning into its final speed
 
     public static double slowDistance = 4; //when to start slowing down
-    public static double slowDegrees = 30; //when to start slowing down
+    public static double slowDegrees = 20; //when to start slowing down
     public static double stopDistance = 0.2; //inches away for robot to stop
     public static double stopDegrees = 2; //degrees away for robot to stop
     public static double stopTime = 0.05; //how long it needs to be below speed threshold
