@@ -27,7 +27,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public static double odometryTestX = 12;
     public static double odometryTestY = 0;
 
-    private double speedMultiplier = 0.6;
+    public static double speedMultiplier = 0.6;
 
     public static int payloadControllerNumber = 1;
 
