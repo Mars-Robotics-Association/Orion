@@ -16,6 +16,7 @@ public class CuriosityPayload
 {
     OpMode opMode;
     EncoderActuator arm;
+    public EncoderActuator getArm(){return arm;}
     Servo gripper;
     DistanceSensor gripperSensor;
     DistanceSensor armLevelSensor;
