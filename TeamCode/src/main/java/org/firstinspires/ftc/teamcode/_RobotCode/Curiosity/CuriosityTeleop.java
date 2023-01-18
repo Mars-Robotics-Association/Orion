@@ -101,11 +101,13 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Change speed multiplier: ", "A");
         telemetry.addData("Reset robot pose: ", "Press RJS");
         telemetry.addData("Toggle headless mode: ", "Press LJS");
-        telemetry.addData("Gripper: ", "Bumpers");
+        telemetry.addData("Gripper: ", "Right bumper");
         telemetry.addData("Arm: ", "Triggers");
-        telemetry.addData("Load: ", "Press Y");
-        telemetry.addData("Place: ", "Press B");
-        telemetry.addData("Set Arm mode to raw control: ", "Press X");
+        telemetry.addData("Load: ", "Press B");
+        telemetry.addData("Place: ", "Press Y");
+        telemetry.addData("Arm manual mode: ", "Press X");
+        telemetry.addData("Change heights: ", "Dpad");
+        telemetry.addData("Nudge single arm motor: ", "Left bumper, hold x to nudge down nothing to nudge up");
 
 
         //DATA
@@ -183,10 +185,12 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void ButtonHeld(int id, Button button) {
         switch (button){
+            //allow for tweaking of motor 0 to sync arm motors
             case LB:
-                isBusy = true;
-                robot.driveToCone(0.4);
+                if(gamepad1.x) robot.getPayload().getArm().motors.getMotors()[0].setPower(-0.2);
+                else robot.getPayload().getArm().motors.getMotors()[0].setPower(0.2);
                 break;
+            //move arm
             case RT:
                 armInput = 1;
                 break;
@@ -212,11 +216,13 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void ButtonReleased(int id, Button button) {
         switch (button){
             case LB:
+                robot.getPayload().getArm().motors.getMotors()[0].setPower(0);
+                break;
 //            case Y:
 //            case B:
 //            case X:
-                isBusy = false;
-                break;
+//                isBusy = false;
+//                break;
             case RT:
             case LT:
                 armInput = 0;
