@@ -15,7 +15,7 @@ class _ChassisProfile implements ChassisProfile
 
     @Override
     public double turnSpeed() {
-        return -1;
+        return 1;
     }
 
     @Override

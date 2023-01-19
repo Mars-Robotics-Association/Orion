@@ -143,11 +143,12 @@ public class DemobotTeleop extends OpMode implements ControllerInputListener
                 robot.getPayload().toggleIntake();
                 break;
             case LB:
-                robot.getPayload().togglePath();
+                robot.getPayload().toggleIntakeReversed();
                 break;
             case Y:
                 robot.getPayload().toggleShooter();
                 break;
+
         }
     }
 

@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMoto
 class _ArmProfile implements EncoderActuatorProfile
 {
     DCMotorArray MOTORS;
-    double MAX_ROTS = 40;
+    double MAX_ROTS = 42;
     double MIN_ROTS = 0;
     double GEAR_RATIO = 0.2; //0.2 inches per rotation
     double ENCODER_RESOLUTION = 537.7; //gobilda 19.2:1

@@ -27,10 +27,10 @@ public class CuriosityPayload
     enum Pole {GROUND, LOW, MID, HIGH}
 
     //config
-    public static double loadHeight = 2;
+    public static double loadHeight = 0;
     public static double storageHeight = 15;
     public static double armClearHeight = 1;
-    public static double armLevelDistance = 3;
+    public static double armLevelDistance = 5;
     public static double armSlowDistance = 10;
     public static double armBaseSpeed = 1;
     public static double armSlowSpeed = 0.5;
