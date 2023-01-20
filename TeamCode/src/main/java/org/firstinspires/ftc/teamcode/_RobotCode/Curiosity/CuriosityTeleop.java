@@ -187,7 +187,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         switch (button){
             //allow for tweaking of motor 0 to sync arm motors
             case LB:
-                if(gamepad1.x) robot.getPayload().getArm().motors.getMotors()[0].setPower(-0.2);
+                if(gamepad1.x || gamepad2.x) robot.getPayload().getArm().motors.getMotors()[0].setPower(-0.2);
                 else robot.getPayload().getArm().motors.getMotors()[0].setPower(0.2);
                 break;
             //move arm
