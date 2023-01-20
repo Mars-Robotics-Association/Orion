@@ -22,17 +22,19 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     ////Variables////
     //Tweaking Vars
-    public static double odometryTestSpeed = -0.5;
+    public static double odometryTestSpeed = .2;
     public static double odometryTestAngle = 180;
     public static double odometryTestX = 12;
     public static double odometryTestY = 0;
 
-    private double speedMultiplier = 1;
+    public static double speedMultiplier = 0.6;
 
     public static int payloadControllerNumber = 1;
 
     //Reference
     private double lastRuntime = 0;
+    double armInput = 0;
+    boolean isBusy = false; //use to override usual user drive input
 
 
 
@@ -43,10 +45,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
         robot = new CuriosityBot(this,controllerInput1,true,true,true);
-
-
-        //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
-        //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
+        robot.getChassis().setInputOffset(0);
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
@@ -57,10 +56,10 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void start(){
         robot.start();
+        robot.getNavigator().setMeasuredPose(0, 0, 0);
+        robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
         robot.getChassis().resetGyro();
-        //if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) robot.SetInputOffset(90); //90 is blue, -90 is red
-        //else if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) robot.SetInputOffset(-90); //90 is blue, -90 is red
-        robot.getChassis().setHeadlessMode(false);
+        robot.getChassis().setHeadlessMode(true);
     }
 
     @Override
@@ -69,7 +68,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         controllerInput2.loop();
         //navigator kill switch
         if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
-
+            robot.stop();
         }
         //update robot
         try {
@@ -77,19 +76,20 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        //update payload
+        robot.getPayload().update(armInput);
         //manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
-        //telemetry
+        if(!isBusy) {
+            if (robot.getChassis().getIsHeadless() && robot.USE_NAVIGATOR)
+                robot.getNavigator().driveWithGamepadAbsolute(controllerInput1, speedMultiplier);
+            else robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
+        }
 
+        //telemetry
         printTelemetry();
         telemetry.update();
         lastRuntime = getRuntime();
 
-        try {
-            robot.dashboard.sendImage(robot.camera.getImage());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     //prints a large amount of telemetry for the robot
@@ -101,11 +101,13 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Change speed multiplier: ", "A");
         telemetry.addData("Reset robot pose: ", "Press RJS");
         telemetry.addData("Toggle headless mode: ", "Press LJS");
-        telemetry.addData("Gripper: ", "Bumpers");
+        telemetry.addData("Gripper: ", "Right bumper");
         telemetry.addData("Arm: ", "Triggers");
-        telemetry.addData("Load: ", "Press Y");
-        telemetry.addData("Place: ", "Press B");
-        telemetry.addData("Set Arm mode to raw control: ", "Press X");
+        telemetry.addData("Load: ", "Press B");
+        telemetry.addData("Place: ", "Press Y");
+        telemetry.addData("Arm manual mode: ", "Press X");
+        telemetry.addData("Change heights: ", "Dpad");
+        telemetry.addData("Nudge single arm motor: ", "Left bumper, hold x to nudge down nothing to nudge up");
 
 
         //DATA
@@ -124,7 +126,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.addLine("Robot pose");
         Pose2d robotPose = robot.getNavigator().getMeasuredPose();
         telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
+        //arm
         telemetry.addLine();
+        telemetry.addData("Arm Input", armInput);
     }
 
     @Override
@@ -137,50 +141,92 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void ButtonPressed(int id, Button button) {
         switch (button) {
             case A:// speed multiplier cycling
-                if (speedMultiplier == 1) speedMultiplier = 0.5;
-                else speedMultiplier = 1;
+                if (speedMultiplier == 0.6) speedMultiplier = 0.3;
+                else speedMultiplier = 0.6;
                 break;
-
             case LJS:// toggle headless
                 robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
                 robot.getNavigator().setMeasuredPose(0, 0, 0);
-                robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
+                robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
-            //uncomment when diatance sensor is fixed
-            /*
+
             case Y: //load
-                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
+                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
                 break;
             case B: //place
-                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
+                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
                 break;
             case X: //raw control arm
                 robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
                 break;
-            */
+
+            case RB:
+                robot.getPayload().toggleGripper();
+                break;
+
+            case DUP:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.HIGH);
+                break;
+            case DLEFT:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.MID);
+                break;
+            case DRIGHT:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.LOW);
+                break;
+            case DDOWN:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.GROUND);
+                break;
         }
     }
 
     @Override
     public void ButtonHeld(int id, Button button) {
         switch (button){
-            /*case Y:// go to target area
-                if(!robot.USE_NAVIGATOR)break;
-                robot.navigator.moveTowards(odometryTestX,odometryTestY,odometryTestSpeed);
+            //allow for tweaking of motor 0 to sync arm motors
+            case LB:
+                if(gamepad1.x) robot.getPayload().getArm().motors.getMotors()[0].setPower(-0.2);
+                else robot.getPayload().getArm().motors.getMotors()[0].setPower(0.2);
                 break;
-            case B:// go to target area
-                if(!robot.USE_NAVIGATOR)break;
-                robot.navigator.turnTowards(odometryTestAngle,odometryTestSpeed);
-                break;*/
+            //move arm
+            case RT:
+                armInput = 1;
+                break;
+            case LT:
+                armInput = -1;
+                break;
+//            case Y:
+//                robot.navigator.goTowardsPose(odometryTestX, odometryTestY, odometryTestAngle, odometryTestSpeed);
+//                isBusy = true;
+//                break;
+//            case B:
+//                robot.navigator.moveTowards(odometryTestX, odometryTestY, odometryTestSpeed);
+//                isBusy = true;
+//                break;
+//            case X:
+//                robot.navigator.turnTowards(odometryTestAngle, odometryTestSpeed);
+//                isBusy = true;
+//                break;
         }
     }
 
     @Override
     public void ButtonReleased(int id, Button button) {
         switch (button){
+            case LB:
+                robot.getPayload().getArm().motors.getMotors()[0].setPower(0);
+                break;
+//            case Y:
+//            case B:
+//            case X:
+//                isBusy = false;
+//                break;
+            case RT:
+            case LT:
+                armInput = 0;
+                break;
 
         }
     }
