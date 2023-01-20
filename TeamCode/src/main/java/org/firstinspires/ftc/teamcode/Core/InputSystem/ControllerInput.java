@@ -62,31 +62,36 @@ public class ControllerInput
     private static double TriggerThreshold = 0.1;
 
     //GETTERS
-    public double GetLJSX()
+    public Gamepad getGamepad(){return gamepad;}
+    public double getLJSX()
     {
         return gamepad.left_stick_x;
     }
-    public double GetLJSY()
+    public double getLJSY()
     {
         return gamepad.left_stick_y;
     }
-    public double GetRJSX()
+    public double getRJSX()
     {
         return gamepad.right_stick_x;
     }
-    public double GetRJSY()
+    public double getRJSY()
     {
         return gamepad.right_stick_y;
     }
+    public boolean getLT(){return LTDown;}
+    public boolean getRT(){return RTDown;}
+    public boolean getLB(){return LBDown;}
+    public boolean getRB(){return RBDown;}
 
     //INTERNAL
-    void Pressed(Button button){
+    void pressed(Button button){
         for(ControllerInputListener listener : listeners) listener.ButtonPressed(id,button);
     }
-    void Held(Button button){
+    void held(Button button){
         for(ControllerInputListener listener : listeners) listener.ButtonHeld(id,button);
     }
-    void Released(Button button){
+    void released(Button button){
         for(ControllerInputListener listener : listeners) listener.ButtonReleased(id,button);
     }
 
@@ -113,7 +118,7 @@ public class ControllerInput
         }
     }
 
-    public double CalculateLJSAngle(){
+    public double calculateLJSAngle(){
         //Calculate angle of left joystick
         double Y = gamepad.left_stick_y; //X input
         double X = gamepad.left_stick_x; //Y input
@@ -132,10 +137,10 @@ public class ControllerInput
         return leftStickBaring;
     }
 
-    public double CalculateLJSMag(){
+    public double calculateLJSMag(){
         //Calculate magnitude of the left joystick
         //Distance formula for calculating joystick power
-        return Math.abs(Math.sqrt(Math.pow(GetLJSX() - 0, 2) + Math.pow(GetLJSY() - 0, 2)));
+        return Math.abs(Math.sqrt(Math.pow(getLJSX() - 0, 2) + Math.pow(getLJSY() - 0, 2)));
     }
 
     public enum Stick {

@@ -43,6 +43,7 @@ public class Juan extends BaseRobot
         if(USE_CHASSIS) {
 
             //initialize the chassis & navigator
+            setChassisProfile(new _ChassisProfile());
             navigator = new JuanNavigation(opMode, this);
         }
 

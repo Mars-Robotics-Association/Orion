@@ -7,12 +7,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.InputAxis;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
-import org.firstinspires.ftc.teamcode.Navigation.BasicNavigator;
+import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
 
 public class CuriosityBot extends BaseRobot
@@ -20,34 +25,58 @@ public class CuriosityBot extends BaseRobot
     ////Dependencies////
     OpMode opMode;
     //Mechanical Components
-    BasicNavigator navigator;
+    CuriosityPayload payload;
+    CuriosityNavigator navigator;
+    Camera camera;
+    ControllerInput gamepad;
+    DistanceSensor portDistance;
+    DistanceSensor starboardDistance;
+    DistanceSensor intakeDistance;
+    ColorSensor colorSensor;
+    DistanceSensor gripperDist;
+    DistanceSensor armLevelDist;
 
     //Misc
     FtcDashboard dashboard;
 
-    public CuriosityBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
+    public CuriosityBot(OpMode setOpMode, ControllerInput setGamepad, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
         super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
         opMode = setOpMode;
 
+        gamepad = setGamepad;
         dashboard = FtcDashboard.getInstance();
+        //setLog(new HermesLog("Curiosity", 200, opMode));
+        camera = new Camera(opMode,"Webcam 1");
+
 
         if(USE_CHASSIS) {
             //sensors
-            DistanceSensor portDistance = opMode.hardwareMap.get(DistanceSensor.class, "port distance");
-            DistanceSensor starboardDistance = opMode.hardwareMap.get(DistanceSensor.class, "starboard distance");
-            ColorSensor colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
+            portDistance = opMode.hardwareMap.get(DistanceSensor.class, "port distance");
+            starboardDistance = opMode.hardwareMap.get(DistanceSensor.class, "starboard distance");
+            intakeDistance = opMode.hardwareMap.get(DistanceSensor.class, "intake distance");
+            colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
 
             //initialize the chassis & navigator
-            navigator = new BasicNavigator(opMode, this, portDistance, starboardDistance, colorSensor);
+            setChassisProfile(new _ChassisProfile());
+            navigator = new CuriosityNavigator(opMode, this, portDistance, starboardDistance, colorSensor);
         }
 
         if(USE_PAYLOAD){
+            DcMotor armMotor1 = opMode.hardwareMap.dcMotor.get("Arm 1");
+            DcMotor armMotor2 = opMode.hardwareMap.dcMotor.get("Arm 2");
+            EncoderActuator arm = new EncoderActuator(opMode, new _ArmProfile(armMotor1,armMotor2));
+            Servo gripper = opMode.hardwareMap.servo.get("gripper");
+            gripperDist = opMode.hardwareMap.get(DistanceSensor.class, "gripper distance");
+            armLevelDist = opMode.hardwareMap.get(DistanceSensor.class, "arm level distance");
 
+            payload= new CuriosityPayload(opMode, gamepad,
+                    arm, gripper, gripperDist, armLevelDist);
         }
 
         if(USE_NAVIGATOR){}
     }
+
 
     //SETUP METHODS//
     public void init(){
@@ -56,13 +85,28 @@ public class CuriosityBot extends BaseRobot
 
     public void start(){
         getChassis().startChassis();
-        getNavigator().setRobotPose(0,0,0);
+        getNavigator().setMeasuredPose(0,0,0);
+        //log.start();
     }
 
-    public void update(){
-
+    public void update() throws InterruptedException {
+        if(USE_CHASSIS){
+        }
         if(USE_NAVIGATOR){
             navigator.update();
+            //hermes logging code
+            //configures robot code
+            /*RobotPose robotPose = new RobotPose(navigator.getTargetPose()[0],
+                    navigator.getTargetPose()[1],Math.toRadians(navigator.getTargetPose()[2]),
+                    navigator.getMeasuredPose().getX(), navigator.getMeasuredPose().getY(),navigator.getMeasuredPose().getHeading());
+            //converts camera footage to base 64 for gui
+            //Base64Image cameraData = new Base64Image(
+                    //camera.convertBitmapToBase64(camera.shrinkBitmap(camera.getImage(),240,135),0));
+            Object[] data = {robotPose};
+            log.addData(data);
+            log.Update();*/
+        }
+        if(USE_PAYLOAD){
         }
     }
 
@@ -73,9 +117,53 @@ public class CuriosityBot extends BaseRobot
         }
     }
 
+    //goes to cone or cone stack and picks up cone then backs up
 
-    public BasicNavigator getNavigator(){return navigator;}
+    //line follows until detects something in guide area
+
+    //drives straight forwards with user correction until detects something in guide area
+    public boolean driveToCone(double speed){
+        opMode.telemetry.addLine("DRIVING TO CONE");
+        opMode.telemetry.addData("Distance to cone", intakeDistance.getDistance(DistanceUnit.CM));
+        //drive if robot isn't there and stop when its gets there
+        if(intakeDistance.getDistance(DistanceUnit.CM)>4) {
+            //navigator.rawDriveWithControllerOffsets(gamepad,.2,180,.4,0);
+            double turnOffset = navigator.calculateControllerInputOffsets(gamepad,0.2)[2];
+            getChassis().rawDrive(180,0.4,turnOffset);
+            return true;
+        }
+        else{
+            getChassis().stop();
+            return false;
+        }
+    }
+
+
+    public CuriosityNavigator getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
-
-
+    public CuriosityPayload getPayload(){return payload;}
 }
+
+
+//INPUT AXIS
+//class Triggers_InputAxis implements InputAxis {
+//    ControllerInput gamepad;
+//    public Triggers_InputAxis(ControllerInput setGamepad){gamepad = setGamepad;}
+//    @Override
+//    public double getValue() {
+//        if(gamepad.getRT()) return 1;
+//        else if(gamepad.getLT()) return -1;
+//        else return 0;
+//    }
+//}
+//
+//class Bumpers_InputAxis implements InputAxis {
+//    ControllerInput gamepad;
+//    public Bumpers_InputAxis(ControllerInput setGamepad){gamepad = setGamepad;}
+//    @Override
+//    public double getValue() {
+//        if(gamepad.getRB()) return 1;
+//        else if(gamepad.getLB()) return -1;
+//        else return 0;
+//    }
+//}

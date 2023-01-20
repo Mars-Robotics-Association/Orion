@@ -1,21 +1,10 @@
-package org.firstinspires.ftc.teamcode.Navigation;
+package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.ChassisProfile;
 
-/*
-=====EXAMPLE=====
-DO
-NOT
-CHANGE
-THIS
-FILE
-FOR
-SPECIFIC
-ROBOTS
-*/
-class _BasicChassisProfile implements ChassisProfile
+class _ChassisProfile implements ChassisProfile
 {
-    public _BasicChassisProfile(){
+    public _ChassisProfile(){
 
     }
 
@@ -28,7 +17,7 @@ class _BasicChassisProfile implements ChassisProfile
     @Override
     public String[] motorNames() { return new String[]{"FR", "FL", "RR", "RL"}; }
     @Override
-    public boolean[] flipMotors() {return new boolean[] {true,true,true,true};}
+    public boolean[] flipMotors() {return new boolean[] {true, true, true, true};}
     @Override
     public double[] poseXYPID() { return new double[]{0, 0, 0}; }
     @Override

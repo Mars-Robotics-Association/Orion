@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.Navigation;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.util.Base64;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
@@ -31,6 +30,7 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class Camera
@@ -40,7 +40,6 @@ public class Camera
     private VuforiaLocalizer vuforia;
     private VuforiaTrackables trackables;
     private TFObjectDetector tfod;
-    private FtcDashboard dashboard;
 
     public VuforiaLocalizer GetVuforia() {return vuforia;}
 
@@ -53,7 +52,7 @@ public class Camera
             "3O0YSzX3Jp2ppTE2kDS2I9zBYEmuEqkMjItxd52oES0Ij0rZm";
 
 
-    public Camera(OpMode opMode, String webCam, boolean useDashboard) {
+    public Camera(OpMode opMode, String webCam) {
         opmode = opMode;
 
         webcamname = opmode.hardwareMap.get(WebcamName.class,webCam);
@@ -77,11 +76,6 @@ public class Camera
         //Init
         initTfod();
         if (tfod != null)tfod.activate();
-
-        if(useDashboard) {
-            dashboard = FtcDashboard.getInstance();
-            //dashboard.startCameraStream(tfod,0);
-        }
     }
 
     private void initTfod() {
@@ -99,7 +93,7 @@ public class Camera
     }
 
     //Gets a list of Tensorflow recognitions
-    public List<Recognition> GetRecognitions() {
+    public List<Recognition> getRecognitions() {
         if (tfod != null) {
             List<Recognition> recognitions = tfod.getRecognitions();
             if (recognitions != null) {
@@ -119,8 +113,8 @@ public class Camera
         else return null;
     }
     //Prints data for TensorFlow detections
-    public void PrintTFTelemetry(){
-        List<Recognition> items = GetRecognitions();
+    public void printTFTelemetry(){
+        List<Recognition> items = getRecognitions();
         int amount = 0;
         if(items != null){
             for (Recognition r : items) {
@@ -130,7 +124,7 @@ public class Camera
     }
 
     //returns an array of values for the position of a bounding box
-    public double[] GetPoseToCamera(int vumarkIndex) {
+    public double[] getPoseToCamera(int vumarkIndex) {
 
         double[] data = {0.0,0.0,0.0,0.0,0.0,0.0};
         VuforiaTrackable vumark = trackables.get(vumarkIndex);
@@ -186,8 +180,8 @@ public class Camera
     }
 
     //returns array of values for closed TensorFlow bounding box by y value
-    public double[] GetClosestFrieght(){ //Find object by its y distance from the robot
-        List<Recognition> objs = GetRecognitions(); //find all objects
+    public double[] getClosestFrieght(){ //Find object by its y distance from the robot
+        List<Recognition> objs = getRecognitions(); //find all objects
         double x = 0;
         double y = 0;
         double width = 0;
@@ -285,7 +279,7 @@ public class Camera
 
                     opmode.telemetry.addData("left,top:  ", "%d, %d", left, top);
                     opmode.telemetry.addData("dx,dy:  ", "%d, %d", dx, dy);
-                    opmode.telemetry.update();
+                    //opmode.telemetry.update();
                 }
             }
         }
@@ -301,8 +295,16 @@ public class Camera
         return OpenCV.convertBitmapToMat(input);
     }
 
+    //takes bitmap and converts it to base64 string to send over telemetry
+    public String convertBitmapToBase64(Bitmap input, int percentQuality){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        input.compress(Bitmap.CompressFormat.PNG, percentQuality, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+
     //takes a Mat and isolates the color yellow
-    public Mat IsolateYellow(Mat input){
+    public Mat isolateYellow(Mat input){
         Scalar lowhsv = new Scalar(0,100,100);
         Scalar highhsv = new Scalar(30, 255, 255);
         Mat hsv = new Mat();
@@ -315,17 +317,17 @@ public class Camera
     }
 
     //takes a Mat and isolates the color white
-    public Mat IsolateWhite(Mat input){
+    public Mat isolateWhite(Mat input){
         return OpenCV.IsolateWhite(input);
     }
 
     //takes a Mat and isolates the color blue
-    public Mat IsolateBlue(Mat input){
+    public Mat isolateBlue(Mat input){
         return OpenCV.IsolateBlue(input);
     }
 
     //takes a Mat and isolates the color red
-    public Mat IsolateRed(Mat input){
+    public Mat isolateRed(Mat input){
         return OpenCV.IsolateRed(input);
     }
 
@@ -344,7 +346,8 @@ public class Camera
         return OpenCV.isolateColor(input,highhsv,lowhsv);
     }
 
-    public Bitmap GetImage() throws InterruptedException {
+    //returns the bitmap from the camera
+    public Bitmap getImage() throws InterruptedException {
         VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take(); //takes the frame at the head of the queue
         long numImages = frame.getNumImages();
         Image img=null;
@@ -360,11 +363,11 @@ public class Camera
         return bmp;
     }
 
-    public Bitmap ShrinkBitmap(Bitmap bitmapIn, int width, int height){
+    //shrinks or grows a bitmap to given dimensions
+    public Bitmap shrinkBitmap(Bitmap bitmapIn, int width, int height){
         return OpenCV.ShrinkBitmap(bitmapIn,width,height);
     }
-
-    public Bitmap GrowBitmap(Bitmap input,int width, int height){
+    public Bitmap growBitmap(Bitmap input, int width, int height){
         return OpenCV.GrowBitmap(input,width,height);
     }
 
