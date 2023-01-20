@@ -9,6 +9,10 @@ class _ChassisProfile implements ChassisProfile
     }
 
     @Override
+    public double moveSpeed() {return 1;}
+    @Override
+    public double turnSpeed() {return -1;}
+    @Override
     public boolean flipIMU() { return true; }
     @Override
     public String[] motorNames() { return new String[]{"FR", "FL", "RR", "RL"}; }
