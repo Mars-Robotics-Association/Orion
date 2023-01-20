@@ -34,8 +34,12 @@ public class IngenuityAutonomous extends LinearOpMode
         robot.start();
 
         EncoderActuator arm = robot.getPayload().getArm();
-        arm.goToPosition(0.3);
-        while (arm.getPosition()<0.12){
+
+        robot.ensureGripperClosed();
+        sleep(500);
+        robot.moveArmToStop(2);
+
+        while (arm.getPosition()<0.1){
             robot.update();
             telemetry.update();
         }
@@ -45,29 +49,42 @@ public class IngenuityAutonomous extends LinearOpMode
         //read the signal
         signalZone=robot.readSignal();
         //wait
-        sleep(500);
-        // plow the signal cone out of the way
-        goToPose(48,0,0);
-        // move back to get ready to park
-        goToPose(25,0,0);
-        //strafe to signal zone
-        switch (signalZone) {
-            case BLUE:
-                goToPose(25, -24, 0);
-                break;
-            case RED:
-                goToPose(25, 0, 0);
-                break;
-            default:
-                goToPose(25, 24, 0);
-        }
-        arm.goToPosition(0);
-        while (arm.getPosition()>0.05){
-            robot.update();
-            telemetry.update();
-        }
+        sleep(250);
 
+        goToPose(26,-1,-45);
+        // try to score on the medium junction
+        robot.ensureGripperOpen();
+        sleep(750);
+        goToPose(49,0,90);
+
+//
+//        // plow the signal cone out of the way
+//        goToPose(48,0,0);
+//        // turn towards the cones
+//        goToPose(48,0,90);
+//        // move back to get ready to park
+//        // goToPose(25,0,0);
+//        //strafe to signal zone
+////        switch (signalZone) {
+////            case BLUE:
+////                goToPose(25, -24, 0);
+////                break;
+////            case RED:
+////                goToPose(25, 0, 0);
+////                break;
+////            default:
+////                goToPose(25, 24, 0);
+////        }
+//        arm.goToPosition(0);
+//        while (arm.getPosition()>0.05){
+//            robot.update();
+//            telemetry.update();
+//        }
+//
         sleep(200);
+
+        robot.moveArmToStop(0);
+        robot.ensureGripperOpen();
 
         while (!isStopRequested()){
             telemetry.addData("SIGNAL READ: ", signalZone);

@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
-import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
 @Config
 public class IngenuityPowerPlayBot extends BaseRobot
@@ -36,15 +35,20 @@ public class IngenuityPowerPlayBot extends BaseRobot
     IngenuityNavigation navigator;
 
     // Gripper
-    Servo gripperServo ;
-    public static double servoTarget=0.5;
-    public static double servoTarget1=0.37;//closed
-    public static double servoTarget2=0.7;//open
+    Servo gripperServo;
+    public static double servoTargetClosed = 0.37;//closed
+    public static double servoTargetOpen = 0.7;//open
+    public static double servoTarget = servoTargetOpen;
+
     ColorSensor colorSensor;
     DistanceSensor sensorDistance ;
 
     //Misc
     FtcDashboard dashboard;
+
+    private double armStartPos = 0.0;
+    private int armSetpointIdx = 0;
+    private double[] armStops = {0.0, 0.1355, 0.23177, 0.3476};
 
     public IngenuityPowerPlayBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
@@ -121,10 +125,19 @@ public class IngenuityPowerPlayBot extends BaseRobot
     }
 
     public void toggleGripper() {
-        if(servoTarget==servoTarget1){
-            servoTarget=servoTarget2;
-        }
-        else servoTarget=servoTarget1 ;
+        if (servoTarget == servoTargetClosed) {
+            servoTarget = servoTargetOpen;
+        } else servoTarget = servoTargetClosed;
+    }
+
+    public void ensureGripperOpen() {
+        servoTarget = servoTargetOpen;
+        update();
+    }
+
+    public void ensureGripperClosed() {
+        servoTarget = servoTargetClosed;
+        update();
     }
 
     public SignalColor readSignal() {
@@ -138,6 +151,69 @@ public class IngenuityPowerPlayBot extends BaseRobot
         else if (hsvValues[0] > 190) result = SignalColor.BLUE;
         opMode.telemetry.addData("result", result);
         return result;
+    }
+
+    private int lastStopUp() {
+        double curPos = getPayload().getArm().getPosition();
+        int i;
+        for (i = 0; i < armStops.length; i++) {
+            if (curPos < armStops[i]) return i;
+        }
+        return i;
+    }
+
+    private int nextStopDown() {
+        double curPos = getPayload().getArm().getPosition();
+        int i;
+        for (i = armStops.length - 1; i >= 0; i--) {
+            if (curPos > armStops[i]) return i;
+        }
+        return i;
+    }
+
+    public void raiseArmToNextStop() {
+        if (armSetpointIdx == -1) {
+            armSetpointIdx = lastStopUp();
+        }
+        if (this.armSetpointIdx < 3) {
+            armSetpointIdx += 1;
+            moveArmToStop(armSetpointIdx);
+        }
+    }
+
+    public void lowerArmToNextStop() {
+        if (armSetpointIdx == -1) {
+            armSetpointIdx = nextStopDown() + 1;
+        }
+        if (armSetpointIdx > 0) {
+            armSetpointIdx -= 1;
+            moveArmToStop(armSetpointIdx);
+        }
+    }
+
+    public void resetArmHomePosition(double pos) {
+        armStartPos = pos;
+        getPayload().ResetArmHomePosition(pos);
+    }
+
+    public void resetArmStateMachine() {
+        armSetpointIdx = -1;
+    }
+
+    public void moveArmToStop(int stop) {
+        getPayload().getArm().goToPosition(armStops[stop] - armStartPos);
+    }
+
+    public void waitForGripperOpen() {
+        while (gripperServo.getPosition() < servoTargetOpen - 0.05) {
+            update();
+        }
+    }
+
+    public void waitForGripperClosed() {
+        while (gripperServo.getPosition() > servoTargetOpen + 0.05) {
+            update();
+        }
     }
 
 
