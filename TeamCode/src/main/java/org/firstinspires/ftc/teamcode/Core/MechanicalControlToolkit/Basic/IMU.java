@@ -27,7 +27,7 @@ public class IMU
         opMode = setOpMode;
     }
 
-    public void start() {
+    public void Start() {
 
         // Set up the parameters with which we will use our IMU. Note that integration
         // algorithm here just reports accelerations to the logcat log; it doesn't actually
@@ -54,25 +54,25 @@ public class IMU
 
 
     ////GETTERS////
-    public Orientation getRawAngles()
+    public Orientation GetRawAngles()
     {
         //return the raw angles from the imu
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         return angles;
     }
-    public double getRobotAngle(){
+    public double GetRobotAngle(){
         //return the firstangle from the imu with an offset applied from ResetGyro()
-        return getRawAngles().firstAngle - offset;
+        return GetRawAngles().firstAngle - offset;
     }
-    public double getAngularVelocity(){
+    public double GetAngularVelocity(){
         return imu.getAngularVelocity().xRotationRate;
     }
-    public Velocity getVelocity(){return imu.getVelocity();}
+    public Velocity GetVelocity(){return imu.getVelocity();}
 
-    public Acceleration getAcceleratioin(){
+    public Acceleration GetAcceleratioin(){
         return imu.getAcceleration();
     }
-    public double calculateDriftAngle(){
+    public double CalculateDriftAngle(){
         /*double Y = GetAcceleratioin().yAccel;
         double X = GetAcceleratioin().xAccel;
 
@@ -86,15 +86,15 @@ public class IMU
         return heading;*/
         return 0;
     }
-    public Acceleration getGravity()
+    public Acceleration GetGravity()
     {
         gravity  = imu.getGravity();
         return gravity;
     }
 
     ////CALLABLE METHODS////
-    public void resetGyro(){
-        offset = getRawAngles().firstAngle;
+    public void ResetGyro(){
+        offset = GetRawAngles().firstAngle;
     }
-    public void offsetGyro(double offsetDegrees){offset+=offsetDegrees;}
+    public void OffsetGyro(double offsetDegrees){offset+=offsetDegrees;}
 }
