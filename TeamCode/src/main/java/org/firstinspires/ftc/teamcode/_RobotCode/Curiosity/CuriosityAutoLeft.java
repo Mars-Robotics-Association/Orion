@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCVColors;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 
-@Autonomous(group="Curiosity")
+@Autonomous(name = "*CURIOSITY AUTO LEFT*", group="Curiosity")
 @Config
 public class CuriosityAutoLeft extends LinearOpMode {
 
@@ -28,8 +28,8 @@ public class CuriosityAutoLeft extends LinearOpMode {
     private FtcDashboard dash;
 
     public static double speed = 0.5;
-    public static double coneStackTop = 8;
-    public static double coneStackInterval = 1.5;
+    public static double coneStackTop = 6;
+    public static double coneStackInterval = 1.2;
     public static double coneSide = 1;
 
     //IMPORTANT: ANY CHANGES MADE HERE SHOULD BE COPIED INTO CuriosityAutoRight
@@ -63,8 +63,8 @@ public class CuriosityAutoLeft extends LinearOpMode {
         //while(robot.getPayload().autoLevel()&&!isStopRequested()) telemetry.addLine("Resetting arm");
         robot.getPayload().stop();
         //places preload cone
-        //robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
-        goToPose(32,2,0,0.8);
+        robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID)-4.5);
+        goToPose(31.5,3.5,0,0.8);
         turnTo(-45*sideMultiplier, speed);
         robot.getPayload().toggleGripper(true);
         sleep(500);
@@ -77,25 +77,25 @@ public class CuriosityAutoLeft extends LinearOpMode {
         int coneCounter = 0;
         while(coneCounter<2){
             //raises arm to pick up cone
-            //robot.getPayload().goToHeight(coneStackTop-(coneCounter*coneStackInterval));
+            robot.getPayload().goToHeight(coneStackTop-(coneCounter*coneStackInterval));
             //goes to the stack
-            goToPose(49, 14*sideMultiplier,90*sideMultiplier,speed);
+            goToPose(49, 24*sideMultiplier,90*sideMultiplier,speed);
             //picks up cone
             robot.getPayload().toggleGripper(false);
             sleep(500);
             //moves arm up
-            //robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
+            robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID)-4.5);
             //increases cone counter, as it has taken a cone off the stack
             coneCounter ++;
             //goes to place
-            goToPose(47, 2.5,-135*sideMultiplier,speed);
+            goToPose(45, 4,-135*sideMultiplier,speed);
             //places cone
             robot.getPayload().toggleGripper(true);
             sleep(500);
             goToPose(48, 0,180,speed);
         }
 
-        robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.LOW));
+        robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.GROUND));
 
         //spot 1(green)
         if(coneSide==1) {
@@ -136,16 +136,13 @@ public class CuriosityAutoLeft extends LinearOpMode {
         int orangeCount = c.countPixels(c.convertMatToBitMap(orangeMat));
         //1 is green, 2 is purple, 3 is orange
         if(greenCount>purpleCount&&greenCount>orangeCount){
-            //dash.sendImage(c.convertMatToBitMap(greenMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
             return 1;}
         else if(purpleCount>greenCount&&purpleCount>orangeCount){
-            //dash.sendImage(c.convertMatToBitMap(purpleMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(purpleMat),200,200));
             return 2;
         }
         else{
-            //dash.sendImage(c.convertMatToBitMap(orangeMatT));
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(orangeMat),200,200));
             return 3;
         }
