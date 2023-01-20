@@ -65,7 +65,7 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
 
     @Override
     public void loop() {
-        controllerInput1.loop();
+        controllerInput1.Loop();
 
         telemetry.addData("runtime:", getRuntime());
 
@@ -90,11 +90,11 @@ public class PiratesShooterTeleop extends OpMode implements ControllerInputListe
     private void updateLights() {
         if (motor1RPM > 2500 || motor2RPM > 2500) {
             telemetry.addData("READY TO FIRE", "!!!!!");
-            lights.green();
+            lights.Green();
         } else if (motor1RPM > 0 || motor2RPM > 0) {
-            lights.red();
+            lights.Red();
         } else {
-            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BEATS_PER_MINUTE_RAINBOW_PALETTE);
+            lights.SetPattern(RevBlinkinLedDriver.BlinkinPattern.BEATS_PER_MINUTE_RAINBOW_PALETTE);
         }
     }
 

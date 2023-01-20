@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
+package org.firstinspires.ftc.teamcode._RobotCode.Erasmus;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -15,17 +15,18 @@ import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 import org.firstinspires.ftc.teamcode.Navigation.BasicNavigator;
 
 
-public class CuriosityBot extends BaseRobot
+class Erasmus extends BaseRobot
 {
     ////Dependencies////
     OpMode opMode;
     //Mechanical Components
     BasicNavigator navigator;
+    ArmGripperPayload payload;
 
     //Misc
     FtcDashboard dashboard;
 
-    public CuriosityBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
+    public Erasmus(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
         super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
         opMode = setOpMode;
@@ -43,7 +44,10 @@ public class CuriosityBot extends BaseRobot
         }
 
         if(USE_PAYLOAD){
-
+            DcMotor armMotor = opMode.hardwareMap.dcMotor.get("arm");
+            EncoderActuator arm = new EncoderActuator(opMode,new _ArmGripperProfile(armMotor));
+            Servo gripper = opMode.hardwareMap.servo.get("gripper");
+            payload = new ArmGripperPayload(arm,gripper);
         }
 
         if(USE_NAVIGATOR){}
@@ -76,6 +80,6 @@ public class CuriosityBot extends BaseRobot
 
     public BasicNavigator getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
-
+    public ArmGripperPayload getPayload(){return payload;}
 
 }

@@ -39,9 +39,8 @@ public class EncoderActuator
 
     //Sets the motor to go to a target rotation
     public void goToPosition(double pos){
-        motors.setTargetPosition(
-                (int)(encoderResolution * clamp(pos,minRots,maxRots) * gearRatio * encoderMultiplier),
-                true);
+        motors.RunWithEncodersMode();
+        motors.SetTargetPosition((int)(encoderResolution * clamp(pos,minRots,maxRots) * gearRatio * encoderMultiplier), true);
     }
 
     //Goes to motor's extreme
@@ -55,37 +54,37 @@ public class EncoderActuator
     }
 
     //Resets the motor's encoder
-    public void resetToZero(){motors.stopAndResetEncoders();}
+    public void resetToZero(){motors.StopAndResetEncoders();}
 
     //Sets motor's extreme
-    public void resetMax(){maxRots = getPosition();}
+    public void resetMax(){maxRots = getFinalPosition();}
 
     //Locks the motor in place using the encoder
     public void lock(){
-        motors.setTargetPositions(motors.getMotorPositions(), true);
+        motors.SetTargetPositions(motors.GetMotorPositions(), true);
     }
 
     //Sets the motors power and limits its position
     public void setPowerClamped(double power){
-        opMode.telemetry.addData("MOTOR POSITION", getPosition());
+        opMode.telemetry.addData("MOTOR POSITION", getFinalPosition());
         opMode.telemetry.addData("REQUESTED POWER", power);
-        if(power*encoderMultiplier < 0 && getPosition() < minRots){//+((maxRots-minRots)/10)
+        if(power*encoderMultiplier < 0 && getFinalPosition() < minRots){//+((maxRots-minRots)/10)
             //if(useEncoder) goToPosition(minRots * encoderResolution * gearRatio);
-            motors.setPowers(0);
+            motors.SetPowers(0);
             opMode.telemetry.addData("ADDING POWER", 0);
             return;
         }
-        else if(power*encoderMultiplier > 0 && getPosition() > maxRots){//-((maxRots-minRots)/10)
+        else if(power*encoderMultiplier > 0 && getFinalPosition() > maxRots){//-((maxRots-minRots)/10)
             //if(useEncoder) goToPosition(maxRots * encoderResolution * gearRatio);
-            motors.setPowers(0);
+            motors.SetPowers(0);
             opMode.telemetry.addData("ADDING POWER", 0);
             return;
         }
 
         opMode.telemetry.addData("ADDING POWER", power);
 
-        motors.runWithEncodersMode();
-        motors.setPowers(power);
+        motors.RunWithEncodersMode();
+        motors.SetPowers(power);
     }
 
     public void changeCurrentTargetRotation(double deltaAmount, double speed){
@@ -98,7 +97,7 @@ public class EncoderActuator
             goToPosition(minRots);
             return;
         }
-        motors.setPowers(speed);
+        motors.SetPowers(speed);
         goToPosition(newPos);
     }
     public void changeCurrentTargetRotation(double deltaAmount, double speed, double min, double max){
@@ -111,24 +110,22 @@ public class EncoderActuator
             goToPosition(minRots);
             return;
         }
-        motors.setPowers(speed);
+        motors.SetPowers(speed);
         goToPosition(newPos);
     }
 
     //Set the motors power freely
     public void setPowerRaw(double power){
-        opMode.telemetry.addData("MOTOR POSITION", getPosition());
-        opMode.telemetry.addData("REQUESTED POWER", power);
-        motors.runWithEncodersMode();
-        motors.setPowers(power);
+        motors.RunWithEncodersMode();
+        motors.SetPowers(power);
     }
 
     //Returns the rotation of the final implement
-    public double getPosition(){
-        return motors.getMotorPositions()[0] * (encoderMultiplier / (encoderResolution * gearRatio));
+    public double getFinalPosition(){
+        return motors.GetMotorPositions()[0] * (encoderMultiplier / (encoderResolution * gearRatio));
     }
-    public double getPosition(int motorIndex){
-        return motors.getMotorPositions()[motorIndex] * (encoderMultiplier / (encoderResolution * gearRatio));
+    public double getFinalPosition(int motorIndex){
+        return motors.GetMotorPositions()[motorIndex] * (encoderMultiplier / (encoderResolution * gearRatio));
     }
 
     public static double clamp(double val, double min, double max) {

@@ -59,8 +59,8 @@ public class CuriosityTurretArm extends UniversalTurretIntakeArm
 
     @Override
     protected void IntakeFullAction(){
-        lights.lime();
-        lights.setCooldown(1);
+        lights.Lime();
+        lights.SetCooldown(1);
     }
 
     //Automatically intakes taking to account tiers
