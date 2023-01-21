@@ -60,14 +60,14 @@ public class CuriosityAutoLeft extends LinearOpMode {
 
         //resets arm
         robot.getPayload().toggleGripper(false);
-        //while(robot.getPayload().autoLevel()&&!isStopRequested()) telemetry.addLine("Resetting arm");
+        while(robot.getPayload().autoLevel()&&!isStopRequested()) telemetry.addLine("Resetting arm");
         robot.getPayload().stop();
         //places preload cone
-        robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID)-4.5);
-        goToPose(31.5,3.5,0,0.8);
+        robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
+        goToPose(30.5,2.5,0,0.8);
         turnTo(-45*sideMultiplier, speed);
         robot.getPayload().toggleGripper(true);
-        sleep(500);
+        sleep(300);
         turnTo(0,speed);
         goToPose(55,0,0,1);
         goToPose(48,0,0,1);
@@ -84,14 +84,14 @@ public class CuriosityAutoLeft extends LinearOpMode {
             robot.getPayload().toggleGripper(false);
             sleep(500);
             //moves arm up
-            robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID)-4.5);
+            robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
             //increases cone counter, as it has taken a cone off the stack
             coneCounter ++;
             //goes to place
             goToPose(45, 4,-135*sideMultiplier,speed);
             //places cone
             robot.getPayload().toggleGripper(true);
-            sleep(500);
+            sleep(300);
             goToPose(48, 0,180,speed);
         }
 

@@ -34,8 +34,8 @@ public class CuriosityPayload
     public static double armSlowDistance = 10;
     public static double armBaseSpeed = 1;
     public static double armSlowSpeed = 0.5;
-    public static double gripperOpenPos = 0;
-    public static double gripperClosedPos = .5;
+    public static double gripperOpenPos = 1;
+    public static double gripperClosedPos = 0;
     public static double gripperTriggerDistance = 4.5;
     public static double defaultCooldown = 0.4;
 
