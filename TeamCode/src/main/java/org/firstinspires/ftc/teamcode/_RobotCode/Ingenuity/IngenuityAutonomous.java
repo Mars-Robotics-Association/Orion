@@ -51,30 +51,55 @@ public class IngenuityAutonomous extends LinearOpMode
         //wait
         sleep(250);
 
-        goToPose(26,-1,-45);
-        // try to score on the medium junction
-        robot.ensureGripperOpen();
-        sleep(750);
-        goToPose(49,0,90);
+        // go dump the signal cone
+        //goToPose(25,-10,-75);
 
-//
-//        // plow the signal cone out of the way
-//        goToPose(48,0,0);
-//        // turn towards the cones
-//        goToPose(48,0,90);
-//        // move back to get ready to park
-//        // goToPose(25,0,0);
-//        //strafe to signal zone
-////        switch (signalZone) {
-////            case BLUE:
-////                goToPose(25, -24, 0);
-////                break;
-////            case RED:
-////                goToPose(25, 0, 0);
-////                break;
-////            default:
-////                goToPose(25, 24, 0);
-////        }
+        // try to score on the medium junction
+        goToPose(26.5, -1, -45);
+        dunkCone(arm);
+
+        // get lined up for cone stack
+        goToPose(50, 0, 87);
+
+        //go to cone stack
+        arm.goToPosition(0.0535);
+        while (arm.getPosition() > 0.058) {
+            robot.update();
+            telemetry.update();
+        }
+        goToPose(50, 14.5, 87);
+        sleep(250);
+
+        robot.ensureGripperClosed();
+        sleep(500);
+        robot.moveArmToStop(2);
+        goToPose(50, 8.5, 87);
+
+        // line up for high junction
+        robot.moveArmToStop(3);
+        goToPose(50,-19,70);
+
+        // advance on high junction
+        goToPose(54, -17, 45);
+        dunkCone(arm);
+
+        // retreat from high junction
+        goToPose(50, -21, 45);
+
+
+        switch (signalZone) {
+            case BLUE:
+                goToPose(50, -24, 0);
+                goToPose(25, -24, -120);
+                break;
+            case RED:
+                goToPose(50, 0, 0);
+                goToPose(25, 0, -90);
+                break;
+            default:
+                goToPose(50, 24, 0);
+                goToPose(25, -24, -90);
+        }
 //        arm.goToPosition(0);
 //        while (arm.getPosition()>0.05){
 //            robot.update();
@@ -92,6 +117,16 @@ public class IngenuityAutonomous extends LinearOpMode
         }
 
         robot.stop();
+    }
+
+    private void dunkCone(EncoderActuator arm) {
+        double armStartPos = arm.getPosition();
+        arm.goToPosition(armStartPos - .025);
+        sleep(250);
+        robot.ensureGripperOpen();
+        sleep(375);
+        arm.goToPosition(armStartPos);
+        sleep(500);
     }
 
     private void goToPose(double x, double y, double angle) {
