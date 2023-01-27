@@ -85,7 +85,7 @@ public class AutonomousTester extends LinearOpMode {
 
         robot = new ErasmusRobot(this, true, true, true);
         armMotor = hardwareMap.dcMotor.get("armMotor");
-        robot.armTarget = robot.armBottom;
+        robot.gripAndGo(0);
         robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.start();
         robot.getChassis().resetGyro();
@@ -109,7 +109,7 @@ public class AutonomousTester extends LinearOpMode {
 
         // Keep telemetry going till the end
         robot.stop();
-        robot.armTarget = robot.armBottom;
+        robot.releaseAndReturn();
         while (opModeIsActive()) {
             robot.update();
             printTelemetry();
@@ -149,7 +149,7 @@ public class AutonomousTester extends LinearOpMode {
 
     public void goTo( double destinationX, double destinationY, double destinationHeading, double speed ) {
         robot.update();
-        while (!robot.getNavigator().goTowardsPose(destinationX, destinationY, destinationHeading, speed) && opModeIsActive()) {
+        while (robot.getNavigator().goTowardsPose(destinationX, destinationY, destinationHeading, speed) && opModeIsActive()) {
             //while (!robot.getNavigator().goTowardsPose(destinationX, destinationY, destinationHeading, speed) && opModeIsActive()) {
             robot.update();
             printTelemetry();
@@ -158,7 +158,7 @@ public class AutonomousTester extends LinearOpMode {
     }
 
     public void turnTo( double destinationHeading, double speed) {
-        while (!robot.getNavigator().turnTowards(destinationHeading, speed) && opModeIsActive()) {
+        while (robot.getNavigator().turnTowards(destinationHeading, speed) && opModeIsActive()) {
             robot.update();
             printTelemetry();
         }

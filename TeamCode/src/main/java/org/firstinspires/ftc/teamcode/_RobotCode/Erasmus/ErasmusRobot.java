@@ -29,21 +29,14 @@ public class ErasmusRobot extends BaseRobot
 
     // Gripper
     Servo gripperServo ;
-    public static double servoTarget=0.6 ;
-    public static double servoTargetOpen =0.55 ;
-    public static double servoTargetClosed =0.73 ;
-
-    // Gripper rotation
-    Servo gripperRotate ;
-    public static double gripperRotateTarget = 0.5 ;
-    public static double gripperRotateHigh = 0.61 ;
-    public static double gripperRotateLow= 0.50 ;
-    public static boolean GRIPPER_AUTOROTATE = true ;
+    public static double servoTarget=0.615 ;
+    public static double servoTargetOpen =0.615 ;
+    public static double servoTargetClosed =0.75 ;
 
     // Arm
     DcMotorEx armMotor ;
     public static int armTarget = 0 ;
-    public static int armHigh = 6376 ;
+    public static int armHigh = 4600 ;
     public static int armMid = 80 ;
     public static int armLow = 40 ;
     public static int armBottom = 0 ;
@@ -54,9 +47,15 @@ public class ErasmusRobot extends BaseRobot
     DcMotor leftLiftMotor ;
     DcMotor rightLiftMotor ;
     public static double liftTarget = 0 ;
-    public static double liftHigh = 4.2 ;
+    public static double liftHigh = 4.4 ;
     public static double liftBottom = 0 ;
     public static double liftPower = 0.7 ;
+
+    // Lift / Arm combos for positions
+    // Combos                  B     FL     FM     FH     RH     RM     RL
+    //                    #    0      1      2      3      4      5      6
+    double liftSetpoints[] = { 0,   4.4,     0,   4.4,   4.4,     0,   4.4 } ;
+    int armSetpoints[]  =    { 0,   600,  2800,  3000,  4600,  5000,  7200 } ;
 
     // New Lift
     EncoderActuator lift ;
@@ -90,7 +89,6 @@ public class ErasmusRobot extends BaseRobot
         if(USE_PAYLOAD){
             // ---------- Intake Servo and rotation servo ----------------
             gripperServo = opMode.hardwareMap.servo.get("gripper") ;
-            gripperRotate = opMode.hardwareMap.servo.get("gripperRotate") ;
             // --------------------- Arm Control -----------------------
             armMotor = (DcMotorEx) opMode.hardwareMap.dcMotor.get("armMotor");
             //armMotor.setPositionPIDFCoefficients(0.01) ;
@@ -138,8 +136,6 @@ public class ErasmusRobot extends BaseRobot
         if(USE_PAYLOAD){
             // ------------- Gripper state -----------------
             gripperServo.setPosition(servoTarget) ;
-            if (GRIPPER_AUTOROTATE) gripperRotate.setPosition((armMotor.getCurrentPosition()*0.00000957)+0.5) ;
-            else gripperRotate.setPosition(gripperRotateTarget) ;
                 // ------------- lift state ----------------
             setLiftPosition( liftTarget ) ;
             // ------------- arm state ----------------
@@ -162,18 +158,17 @@ public class ErasmusRobot extends BaseRobot
     // =========================== Main telemetry method ==============================
     private void printTelemetry() {
         // ------------ Payload --------------
-        opMode.telemetry.addLine("============= DATA ==============");
+        opMode.telemetry.addLine("============= PAYLOAD ==============");
         opMode.telemetry.addData("Gripper: ", servoTarget);
         opMode.telemetry.addData("Arm:     ", armMotor.getCurrentPosition() + " / " + armTarget ) ;
-        opMode.telemetry.addData("Arm P:   ", armMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION).p ) ;
         opMode.telemetry.addData("Lift:    ", lift.getPosition(0)+ " / " + liftTarget ) ;
         // ------------ Dead wheel positions ------------
-        if (false) {
+        if (true) {
             opMode.telemetry.addLine("========== Dead wheel positions ===========");
             double[] deadWheelPositions = getNavigator().getDeadWheelPositions();
             opMode.telemetry.addData("LEFT:  ", deadWheelPositions[0]
-                    + "  RIGHT: ", deadWheelPositions[1]
-                    + "  HORIZ: ", deadWheelPositions[2]);
+                    + "  RIGHT: "+ deadWheelPositions[1]
+                    + "  HORIZ: "+ deadWheelPositions[2]);
         }
         // -------------- Odometry estimated pose ------------------
         opMode.telemetry.addLine("============= Robot pose =============");
@@ -208,6 +203,18 @@ public class ErasmusRobot extends BaseRobot
     public void closeGripper(double waitTime) {
         closeGripper() ;
         waitForTime(waitTime) ;
+    }
+
+    public void gripAndGo(int position) {
+        closeGripper(0.5 ) ;
+        armTarget = armSetpoints[ position ] ;
+        liftTarget = liftSetpoints[ position ] ;
+    }
+
+    public void releaseAndReturn() {
+        openGripper(0.5 ) ;
+        armTarget = armSetpoints[ 0 ] ;
+        liftTarget = liftSetpoints[ 0 ] ;
     }
 
     public void setLiftPosition( double newPosition ) {
