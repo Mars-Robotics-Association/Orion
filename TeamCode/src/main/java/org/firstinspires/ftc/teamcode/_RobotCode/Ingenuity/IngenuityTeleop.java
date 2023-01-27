@@ -23,20 +23,22 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     public static double driveSpeed = 1;//used to change how fast robot drives
     public static double turnSpeed = -1;//used to change how fast robot turns
 
-    private double speedMultiplier = 0.5;
+    public static double TURBO_SPEED = 1.0;
+    public static double STANDARD_SPEED = 0.5;
+
+    private double speedMultiplier = STANDARD_SPEED;
 
     public static int payloadControllerNumber = 1;
 
     public static double armPower = 0.5;
 
-    private double armStartPos = 0.0;
-    private int armSetpointIdx = 0;
-    private double[] armStops = {0.0, 0.1355, 0.23177, 0.3476};
+
+
 
     @Override
     public void init() {
         robot = new IngenuityPowerPlayBot(this, true, true, true);
-        robot.getPayload().ResetArmHomePosition(armStartPos);
+        robot.resetArmHomePosition(0);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -126,31 +128,14 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         robot.stop();
     }
 
-    private int lastStopUp() {
-        double curPos = robot.getPayload().getArm().getPosition();
-        int i;
-        for (i = 0; i < armStops.length; i++) {
-            if (curPos < armStops[i]) return i;
-        }
-        return i;
-    }
-
-    private int nextStopDown() {
-        double curPos = robot.getPayload().getArm().getPosition();
-        int i;
-        for (i = armStops.length - 1; i >= 0; i--) {
-            if (curPos > armStops[i]) return i;
-        }
-        return i;
-    }
 
     ////INPUT MAPPING////
     @Override
     public void ButtonPressed(int id, ControllerInput.Button button) {
         switch (button) {
             case A:// speed multiplier cycling
-//                if (speedMultiplier == .7) speedMultiplier = 0.4;
-//                else speedMultiplier = .7;
+//                if (speedMultiplier == .TURBO_SPEED) speedMultiplier = STANDARD_SPEED;
+//                else speedMultiplier = .TURBO_SPEED;
                 break;
             case B:// reset robot pose
                 break;
@@ -169,22 +154,10 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
 
                 break;
             case RB:
-                if (armSetpointIdx == -1) {
-                    armSetpointIdx = lastStopUp();
-                }
-                if (this.armSetpointIdx < 3) {
-                    armSetpointIdx += 1;
-                    robot.getPayload().getArm().goToPosition(armStops[armSetpointIdx] - armStartPos);
-                }
+                robot.raiseArmToNextStop();
                 break;
             case LB:
-                if (armSetpointIdx == -1) {
-                    armSetpointIdx = nextStopDown() + 1;
-                }
-                if (armSetpointIdx > 0) {
-                    armSetpointIdx -= 1;
-                    robot.getPayload().getArm().goToPosition(armStops[armSetpointIdx] - armStartPos);
-                }
+                robot.lowerArmToNextStop();
                 break;
             case Y:
 
@@ -196,14 +169,14 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
             case A:
-                speedMultiplier=1;
+                speedMultiplier=TURBO_SPEED;
             case RT:
                 robot.getPayload().getArm().setPowerRaw(armPower);
-                armSetpointIdx = -1; // use of the trigger resets arm position state
+                robot.resetArmStateMachine(); // use of the trigger resets arm position state
                 break;
             case LT:
                 robot.getPayload().getArm().setPowerRaw(-armPower);
-                armSetpointIdx = -1;
+                robot.resetArmStateMachine();
                 break;
 
         }
@@ -213,7 +186,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     public void ButtonReleased(int id, ControllerInput.Button button) {
         switch (button) {
             case A:
-                speedMultiplier=.5;
+                speedMultiplier=STANDARD_SPEED;
             case RT:
             case LT:
                 robot.getPayload().getArm().setPowerRaw(0);
@@ -223,8 +196,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
                 //robot.gripperServo.setPosition(robot.servoTarget) ;
                 break;
             case Y:
-                armStartPos = 0.0;
-                robot.getPayload().ResetArmHomePosition(armStartPos);
+                robot.resetArmHomePosition(0);
         }
     }
 
