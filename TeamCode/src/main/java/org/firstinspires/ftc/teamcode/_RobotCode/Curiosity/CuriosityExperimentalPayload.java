@@ -7,29 +7,30 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
-import org.firstinspires.ftc.teamcode.Core.InputSystem.InputAxis;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 
 @Config
-public class CuriosityPayload
+public class CuriosityExperimentalPayload
 {
     OpMode opMode;
     EncoderActuator arm;
     public EncoderActuator getArm(){return arm;}
+    EncoderActuator lift;
+    public EncoderActuator getLift(){return lift;}
     Servo gripper;
     DistanceSensor gripperSensor;
     DistanceSensor armLevelSensor;
     ControllerInput gamepad;
     BlinkinController lights;
 
-    enum PayloadState {RAW_CONTROL, STOPPED, LOADING, STORAGE, PLACING}
+    enum PayloadState {MANUAL, STOPPED, LOADING, PLACING}
     enum Pole {GROUND, LOW, MID, HIGH}
+    enum Side {FRONT, BACK}
 
     //config
     public static double loadHeight = 0;
-    public static double storageHeight = 15;
-    public static double armClearHeight = 1;
+    public static double armClearHeight = 3;
     public static double armLevelDistance = 5;
     public static double armSlowDistance = 10;
     public static double armBaseSpeed = 1;
@@ -45,7 +46,7 @@ public class CuriosityPayload
     public static double highJunction = 39;
 
     //variables
-    PayloadState payloadState = PayloadState.RAW_CONTROL;
+    PayloadState payloadState = PayloadState.MANUAL;
     Pole targetPole = Pole.MID;
     public void setPayloadState(PayloadState state){
         payloadState = state;
@@ -71,7 +72,7 @@ public class CuriosityPayload
     boolean armArrivedAtHeight = false;
 
 
-    public CuriosityPayload(OpMode setOpMode, ControllerInput setGamepad,
+    public CuriosityExperimentalPayload(OpMode setOpMode, ControllerInput setGamepad,
                             EncoderActuator setArm, Servo setGripper, DistanceSensor setGripperSensor, DistanceSensor setArmLevelSensor){
         opMode = setOpMode;
         arm = setArm;
@@ -88,10 +89,9 @@ public class CuriosityPayload
         armInput = Math.max(-armBaseSpeed, Math.min(armBaseSpeed, armInput));
         //manage payload states
         switch (payloadState) {
-            case RAW_CONTROL: manage_raw_control(armInput); break;
+            case MANUAL: manage_raw_control(armInput); break;
             case STOPPED: stop(); break;
             case LOADING: manageLoading(armInput); break;
-            case STORAGE: manageStorage(armInput); break;
             case PLACING: manageTarget(getPoleHeight(targetPole),armInput); break;
         }
         lastLoopTime = opMode.getRuntime();
@@ -102,17 +102,6 @@ public class CuriosityPayload
         if (pole == Pole.LOW) return lowJunction;
         else if (pole == Pole.MID) return midJunction;
         else return highJunction;
-    }
-
-    void moveArmByAmount(double amount){
-        //adds amount to current arm target position
-        double armTargetPosition = arm.getPosition()+amount;
-        //clamp value
-        if(armTargetPosition>arm.maxRots) armTargetPosition = arm.maxRots;
-        if(armTargetPosition< arm.minRots) armTargetPosition = arm.minRots;
-        //set power and go to position
-        arm.setPowerRaw(armBaseSpeed);
-        arm.goToPosition(armTargetPosition);
     }
 
     void manage_raw_control(double armInput){
@@ -126,10 +115,6 @@ public class CuriosityPayload
         //stops all motors
         arm.motors.runWithEncodersMode();
         arm.setPowerRaw(0);
-    }
-
-    void managePlacing(double armInput){
-        arm.goToPosition(getPoleHeight(targetPole));
     }
 
     //returns false when done
@@ -198,15 +183,9 @@ public class CuriosityPayload
                 armReset = false;
                 armArrivedAtHeight = false;
                 stop();
-                setPayloadState(PayloadState.STORAGE);
+                setPayloadState(PayloadState.MANUAL);
             }
         }
-    }
-
-    void manageStorage(double armInput){
-        //moves arm to neutral state for driving around
-        arm.goToPosition(storageHeight);
-        gripper.setPosition(gripperClosedPos);
     }
 
     void manageTarget(double poleHeight, double armInput){
@@ -251,7 +230,7 @@ public class CuriosityPayload
             gripperCooldown = defaultCooldown;
             arm.goToPosition(arm.getPosition()+armClearHeight); //move the arm up to avoid hitting
             armArrivedAtHeight = false;
-            setPayloadState(PayloadState.RAW_CONTROL);
+            setPayloadState(PayloadState.MANUAL);
         }
 
 //        //wait for the arm to clear top

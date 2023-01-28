@@ -29,7 +29,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
 
     public static double speed = 0.5;
     public static double coneStackTop = 6;
-    public static double coneStackInterval = 1.2;
+    public static double coneStackInterval = 1.4;
     public static double coneSide = 1;
 
     //IMPORTANT: ANY CHANGES MADE HERE SHOULD BE COPIED INTO CuriosityAutoRight
@@ -64,7 +64,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         robot.getPayload().stop();
         //places preload cone
         robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
-        goToPose(30.5,2.5,0,0.8);
+        goToPose(33,3.5*sideMultiplier,0,0.8);
         turnTo(-45*sideMultiplier, speed);
         robot.getPayload().toggleGripper(true);
         sleep(300);
@@ -79,7 +79,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
             //raises arm to pick up cone
             robot.getPayload().goToHeight(coneStackTop-(coneCounter*coneStackInterval));
             //goes to the stack
-            goToPose(49, 24*sideMultiplier,90*sideMultiplier,speed);
+            goToPose(50.5, 24*sideMultiplier,90*sideMultiplier,speed);
             //picks up cone
             robot.getPayload().toggleGripper(false);
             sleep(500);
@@ -88,7 +88,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
             //increases cone counter, as it has taken a cone off the stack
             coneCounter ++;
             //goes to place
-            goToPose(45, 4,-135*sideMultiplier,speed);
+            goToPose(45, 3*sideMultiplier,-135*sideMultiplier,speed);
             //places cone
             robot.getPayload().toggleGripper(true);
             sleep(300);
@@ -100,19 +100,18 @@ public class CuriosityAutoLeft extends LinearOpMode {
         //spot 1(green)
         if(coneSide==1) {
             //go to left
-            goToPoseNoTimer(44,-20,-90*sideMultiplier,1);
+            goToPoseNoTimer(44,-20,0,1);
         }
         //spot 2(purple)
         else if(coneSide==2){
             //go to center
-            goToPoseNoTimer(44,0,-90*sideMultiplier,1);
+            goToPoseNoTimer(44,0,0,1);
         }
         //spot 3(orange)
         else{
             //go to right
             goToPoseNoTimer(44,24,-90*sideMultiplier,1);
         }
-        turnTo(0,speed);
         telemetry.addLine("DONE");
         telemetry.update();
         robot.stop();
