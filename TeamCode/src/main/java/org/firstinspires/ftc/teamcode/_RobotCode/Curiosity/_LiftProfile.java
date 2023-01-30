@@ -5,18 +5,18 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMotorArray;
 
-class _ArmProfile implements EncoderActuatorProfile
+class _LiftProfile implements EncoderActuatorProfile
 {
     DCMotorArray MOTORS;
-    double MAX_ROTS = 290;
+    double MAX_ROTS = 10;
     double MIN_ROTS = 0;
-    double GEAR_RATIO = 23; // 384.5 / 23
-    double ENCODER_RESOLUTION = 384.5; //gobilda 13.7:1
+    double GEAR_RATIO = 20; //TODO: find this number
+    double ENCODER_RESOLUTION = 537.7; //gobilda 20:1
     boolean REVERSE_ENCODER = false;
     boolean USE_ENCODER = true;
 
-    public _ArmProfile(DcMotor motor1){
-        MOTORS = new DCMotorArray(new DcMotor[]{motor1}, new double[]{1},USE_ENCODER);
+    public _LiftProfile(DcMotor motor1, DcMotor motor2){
+        MOTORS = new DCMotorArray(new DcMotor[]{motor1,motor2}, new double[]{1,1},USE_ENCODER);
     }
 
     @Override

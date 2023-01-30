@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
+import android.text.method.Touch;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
@@ -25,7 +28,7 @@ public class CuriosityBot extends BaseRobot
     ////Dependencies////
     OpMode opMode;
     //Mechanical Components
-    CuriosityPayload payload;
+    CuriosityExperimentalPayload payload;
     CuriosityNavigator navigator;
     Camera camera;
     ControllerInput gamepad;
@@ -34,7 +37,7 @@ public class CuriosityBot extends BaseRobot
     DistanceSensor intakeDistance;
     ColorSensor colorSensor;
     DistanceSensor gripperDist;
-    DistanceSensor armLevelDist;
+    TouchSensor levelSensor;
 
     //Misc
     FtcDashboard dashboard;
@@ -46,8 +49,8 @@ public class CuriosityBot extends BaseRobot
 
         gamepad = setGamepad;
         dashboard = FtcDashboard.getInstance();
-        //setLog(new HermesLog("Curiosity", 200, opMode));
-        if(USE_PAYLOAD) camera = new Camera(opMode,"Webcam 1");
+        setLog(new HermesLog("Curiosity", 200, opMode));
+        //if(USE_PAYLOAD) camera = new Camera(opMode,"Webcam 1");
 
 
         if(USE_CHASSIS) {
@@ -63,15 +66,17 @@ public class CuriosityBot extends BaseRobot
         }
 
         if(USE_PAYLOAD){
-            DcMotor armMotor1 = opMode.hardwareMap.dcMotor.get("Arm 1");
-            DcMotor armMotor2 = opMode.hardwareMap.dcMotor.get("Arm 2");
-            EncoderActuator arm = new EncoderActuator(opMode, new _ArmProfile(armMotor1,armMotor2));
+            DcMotor liftMotor1 = opMode.hardwareMap.dcMotor.get("Lift 1");
+            DcMotor liftMotor2 = opMode.hardwareMap.dcMotor.get("Lift 2");
+            DcMotor armMotor = opMode.hardwareMap.dcMotor.get("Arm");
+            EncoderActuator arm = new EncoderActuator(opMode, new _ArmProfile(armMotor));
+            EncoderActuator lift = new EncoderActuator(opMode, new _LiftProfile(liftMotor1,liftMotor2));
             Servo gripper = opMode.hardwareMap.servo.get("gripper");
             gripperDist = opMode.hardwareMap.get(DistanceSensor.class, "gripper distance");
-            armLevelDist = opMode.hardwareMap.get(DistanceSensor.class, "arm level distance");
+            levelSensor = opMode.hardwareMap.get(TouchSensor.class, "level sensor");
 
-            payload= new CuriosityPayload(opMode, gamepad,
-                    arm, gripper, gripperDist, armLevelDist);
+            payload= new CuriosityExperimentalPayload(opMode, gamepad, lift,
+                    arm, gripper, gripperDist, levelSensor);
         }
 
         if(USE_NAVIGATOR){}
@@ -86,7 +91,7 @@ public class CuriosityBot extends BaseRobot
     public void start(){
         getChassis().startChassis();
         getNavigator().setMeasuredPose(0,0,0);
-        //log.start();
+        log.start();
     }
 
     public void update() throws InterruptedException {
@@ -96,7 +101,7 @@ public class CuriosityBot extends BaseRobot
             navigator.update();
             //hermes logging code
             //configures robot code
-            /*RobotPose robotPose = new RobotPose(navigator.getTargetPose()[0],
+            RobotPose robotPose = new RobotPose(navigator.getTargetPose()[0],
                     navigator.getTargetPose()[1],Math.toRadians(navigator.getTargetPose()[2]),
                     navigator.getMeasuredPose().getX(), navigator.getMeasuredPose().getY(),navigator.getMeasuredPose().getHeading());
             //converts camera footage to base 64 for gui
@@ -104,7 +109,7 @@ public class CuriosityBot extends BaseRobot
                     //camera.convertBitmapToBase64(camera.shrinkBitmap(camera.getImage(),240,135),0));
             Object[] data = {robotPose};
             log.addData(data);
-            log.Update();*/
+            log.Update();
         }
         if(USE_PAYLOAD){
         }
@@ -141,7 +146,7 @@ public class CuriosityBot extends BaseRobot
 
     public CuriosityNavigator getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
-    public CuriosityPayload getPayload(){return payload;}
+    public CuriosityExperimentalPayload getPayload(){return payload;}
 }
 
 

@@ -22,12 +22,12 @@ public class CuriosityTestingTeleOp extends OpMode implements ControllerInputLis
 
     ////Variables////
     //Tweaking Vars
-    public static double odometryTestSpeed = .2;
+    public static double odometryTestSpeed = 0.8;
     public static double odometryTestAngle = 180;
     public static double odometryTestX = 12;
     public static double odometryTestY = 0;
 
-    public static double speedMultiplier = 0.6;
+    public static double speedMultiplier = 1;
 
     public static int payloadControllerNumber = 1;
 
@@ -148,6 +148,11 @@ public class CuriosityTestingTeleOp extends OpMode implements ControllerInputLis
                 robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
+
+            //PAYLOAD TESTING
+            case Y:
+                robot.getPayload().toggleGripper();
+                break;
         }
     }
 
@@ -166,6 +171,20 @@ public class CuriosityTestingTeleOp extends OpMode implements ControllerInputLis
                 isBusy = true;
                 robot.getNavigator().turnTowards(odometryTestAngle,odometryTestSpeed);
                 break;
+
+            //PAYLOAD TESTING
+            case RT:
+                robot.getPayload().getArm().setPowerRaw(1);
+                break;
+            case LT:
+                robot.getPayload().getArm().setPowerRaw(-1);
+                break;
+            case RB:
+                robot.getPayload().getLift().setPowerRaw(1);
+                break;
+            case LB:
+                robot.getPayload().getLift().setPowerRaw(-1);
+                break;
         }
     }
 
@@ -176,6 +195,16 @@ public class CuriosityTestingTeleOp extends OpMode implements ControllerInputLis
             case B:
             case X:
                 isBusy = false;
+                break;
+
+            //PAYLOAD TESTING
+            case RT:
+            case LT:
+                robot.getPayload().getArm().setPowerRaw(0);
+                break;
+            case RB:
+            case LB:
+                robot.getPayload().getLift().setPowerRaw(0);
                 break;
 
         }
