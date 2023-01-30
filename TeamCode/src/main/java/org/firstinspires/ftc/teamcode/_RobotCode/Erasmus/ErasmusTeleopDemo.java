@@ -22,13 +22,14 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
     ////Variables////
     //Tweaking Vars
     public static double driveSpeed = 1;//used to change how fast robot drives
-    public static double turnSpeed = -1;//used to change how fast robot turns
+    public static double turnSpeed = 1;//used to change how fast robot turns
 
-    private double speedMultiplier = 0.5;
+    private double speedMultiplier = 0.7;
 
     public static int payloadControllerNumber = 1;
 
     public static double armPower = 0.8 ;
+    public static int myPosition = 0 ;
 
     @Override
     public void init() {
@@ -73,23 +74,7 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
 
     //prints a large amount of telemetry for the robot
     private void printTelemetry() {
-        //DATA
-        telemetry.addLine();
-        telemetry.addLine("----DATA----");
-        telemetry.addData("Gripper: ", robot.servoTarget);
-        telemetry.addData("Arm:     ", robot.armMotor.getCurrentPosition());
-        //Dead wheel positions
-        telemetry.addLine("Dead wheel positions");
-        double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
-        telemetry.addData("LEFT dead wheel: ", deadWheelPositions[0]+" inches");
-        telemetry.addData("RIGHT dead wheel: ", deadWheelPositions[1]+" inches");
-        telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
-        //Odometry estimated pose
-        telemetry.addLine();
-        telemetry.addLine("Robot pose");
-        Pose2d robotPose = robot.getNavigator().getMeasuredPose();
-        telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
-        telemetry.addLine();
+        // Using Robot class to show these now...
     }
 
     @Override
@@ -121,7 +106,7 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
                 robot.armMotor.setPower(armPower);
                 telemetry.addLine("Right Trigger Held");
                  */
-                robot.armTarget += 2 ;
+                robot.armTarget += 20 ;
                 break ;
             case LT:
                 /*
@@ -129,7 +114,7 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
                 robot.armMotor.setPower(-armPower);
                 telemetry.addLine("Left Trigger Held");
                 */
-                robot.armTarget -= 2 ;
+                robot.armTarget -= 20 ;
                 break ;
             case RB:
                 /*
@@ -148,10 +133,10 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
                 robot.liftTarget -= 0.1 ;
                 break ;
             case B:
-                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(-24, -10, 0, 0.4) ) ;
+                //telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(-24, -10, 0, 0.4) ) ;
                 break ;
             case Y:
-                telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(0, 0, 0, 0.4) ) ;
+                //telemetry.addData("Are we there?: ", robot.getNavigator().goTowardsPose(0, 0, 0, 0.4) ) ;
                 break ;
         }
     }
@@ -160,11 +145,17 @@ public class ErasmusTeleopDemo extends OpMode implements ControllerInputListener
     public void ButtonReleased(int id, ControllerInput.Button button) {
         switch (button) {
             case A:// speed multiplier cycling
-                if (speedMultiplier == 1) speedMultiplier = 0.5;
-                else speedMultiplier = 1;
+                if (speedMultiplier == 0.4) speedMultiplier = 0.7;
+                else speedMultiplier = 0.4;
                 break;
             case X:  // Toggle the gripper manually (open/close)
                 robot.toggleGripper();
+                break ;
+            case Y:  // Send payload to prescribed position
+                robot.gripAndGo( myPosition ) ;
+                break ;
+            case B:  // Return payload to home
+                robot.releaseAndReturn() ;
                 break ;
             case RT:  // Raise arm manually
                 //robot.armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER) ;
