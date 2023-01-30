@@ -4,22 +4,14 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.Chas
 
 class _ChassisProfile implements ChassisProfile
 {
-    public _ChassisProfile(){
-
-    }
+    public _ChassisProfile(){}
 
     @Override
-    public double moveSpeed() {
-        return 1;
-    }
-
+    public double moveSpeed() {return 1;}
     @Override
-    public double turnSpeed() {
-        return -1;
-    }
-
+    public double turnSpeed() {return -1;}
     @Override
-    public boolean flipIMU() { return true; }
+    public boolean flipIMU() { return false; }
     @Override
     public String[] motorNames() { return new String[]{"FR", "FL", "RR", "RL"}; }
     @Override

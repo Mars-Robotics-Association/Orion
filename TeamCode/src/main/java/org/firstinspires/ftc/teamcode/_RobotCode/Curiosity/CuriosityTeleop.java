@@ -22,12 +22,12 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
     ////Variables////
     //Tweaking Vars
-    public static double odometryTestSpeed = .2;
+    public static double odometryTestSpeed = 0.8;
     public static double odometryTestAngle = 180;
     public static double odometryTestX = 12;
     public static double odometryTestY = 0;
 
-    public static double speedMultiplier = 0.6;
+    public static double speedMultiplier = 1;
 
     public static int payloadControllerNumber = 1;
 
@@ -44,7 +44,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
-        robot = new CuriosityBot(this,controllerInput1,true,true,true);
+        robot = new CuriosityBot(this,controllerInput1,true,false,true);
         robot.getChassis().setInputOffset(0);
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
@@ -76,13 +76,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //update payload
-        robot.getPayload().update(armInput);
         //manage driving
         if(!isBusy) {
-            if (robot.getChassis().getIsHeadless() && robot.USE_NAVIGATOR)
-                robot.getNavigator().driveWithGamepadAbsolute(controllerInput1, speedMultiplier);
-            else robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
+            robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         }
 
         //telemetry
@@ -141,8 +137,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void ButtonPressed(int id, Button button) {
         switch (button) {
             case A:// speed multiplier cycling
-                if (speedMultiplier == 0.6) speedMultiplier = 0.3;
-                else speedMultiplier = 0.6;
+                if (speedMultiplier == 1) speedMultiplier = 0.5;
+                else speedMultiplier = 1;
                 break;
             case LJS:// toggle headless
                 robot.getChassis().switchHeadlessMode();
@@ -153,31 +149,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 robot.getChassis().resetGyro();
                 break;
 
-            case Y: //load
-                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
-                break;
-            case B: //place
-                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
-                break;
-            case X: //raw control arm
-                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.RAW_CONTROL);
-                break;
-
-            case RB:
+            //PAYLOAD TESTING
+            case Y:
                 robot.getPayload().toggleGripper();
-                break;
-
-            case DUP:
-                robot.getPayload().setTargetPole(CuriosityPayload.Pole.HIGH);
-                break;
-            case DLEFT:
-                robot.getPayload().setTargetPole(CuriosityPayload.Pole.MID);
-                break;
-            case DRIGHT:
-                robot.getPayload().setTargetPole(CuriosityPayload.Pole.LOW);
-                break;
-            case DDOWN:
-                robot.getPayload().setTargetPole(CuriosityPayload.Pole.GROUND);
                 break;
         }
     }
@@ -185,47 +159,52 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void ButtonHeld(int id, Button button) {
         switch (button){
-            //allow for tweaking of motor 0 to sync arm motors
-            case LB:
-                if(gamepad1.x || gamepad2.x) robot.getPayload().getArm().motors.getMotors()[0].setPower(-0.2);
-                else robot.getPayload().getArm().motors.getMotors()[0].setPower(0.2);
+            case Y:
+                isBusy = true;
+                robot.getNavigator().goTowardsPose(odometryTestX,odometryTestY,odometryTestAngle,odometryTestSpeed);
                 break;
-            //move arm
+            case X:
+                isBusy = true;
+                robot.getNavigator().moveTowards(odometryTestX,odometryTestY,odometryTestSpeed);
+                break;
+            case B:
+                isBusy = true;
+                robot.getNavigator().turnTowards(odometryTestAngle,odometryTestSpeed);
+                break;
+
+            //PAYLOAD TESTING
             case RT:
-                armInput = 1;
+                robot.getPayload().getArm().setPowerRaw(1);
                 break;
             case LT:
-                armInput = -1;
+                robot.getPayload().getArm().setPowerRaw(-1);
                 break;
-//            case Y:
-//                robot.navigator.goTowardsPose(odometryTestX, odometryTestY, odometryTestAngle, odometryTestSpeed);
-//                isBusy = true;
-//                break;
-//            case B:
-//                robot.navigator.moveTowards(odometryTestX, odometryTestY, odometryTestSpeed);
-//                isBusy = true;
-//                break;
-//            case X:
-//                robot.navigator.turnTowards(odometryTestAngle, odometryTestSpeed);
-//                isBusy = true;
-//                break;
+            case RB:
+                robot.getPayload().getLift().setPowerRaw(1);
+                break;
+            case LB:
+                robot.getPayload().getLift().setPowerRaw(-1);
+                break;
         }
     }
 
     @Override
     public void ButtonReleased(int id, Button button) {
         switch (button){
-            case LB:
-                robot.getPayload().getArm().motors.getMotors()[0].setPower(0);
+            case Y:
+            case B:
+            case X:
+                isBusy = false;
                 break;
-//            case Y:
-//            case B:
-//            case X:
-//                isBusy = false;
-//                break;
+
+            //PAYLOAD TESTING
             case RT:
             case LT:
-                armInput = 0;
+                robot.getPayload().getArm().setPowerRaw(0);
+                break;
+            case RB:
+            case LB:
+                robot.getPayload().getLift().setPowerRaw(0);
                 break;
 
         }

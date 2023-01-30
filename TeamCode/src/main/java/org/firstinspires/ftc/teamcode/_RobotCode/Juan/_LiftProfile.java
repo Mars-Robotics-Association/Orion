@@ -8,11 +8,11 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMoto
 class _LiftProfile implements EncoderActuatorProfile
 {
     DcMotor MOTOR;
-    double MAX = -180;
-    double MIN = 180;
-    double GEAR_RATIO = 360;
+    double MAX = 3132;
+    double MIN = 0;
+    double GEAR_RATIO = 1;
     double ENCODER_RESOLUTION = 537.7; //gobilda 19.2:1
-    boolean REVERSE_ENCODER = false;
+    boolean REVERSE_ENCODER = true;
     boolean USE_ENCODER = true;
 
     public _LiftProfile(DcMotor motor){
