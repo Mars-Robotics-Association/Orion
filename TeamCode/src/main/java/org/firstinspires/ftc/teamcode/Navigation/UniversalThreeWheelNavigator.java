@@ -53,6 +53,9 @@ public class UniversalThreeWheelNavigator
     public static double stopDegrees = 2; //degrees away for robot to stop
     public static double stopTime = 0.05; //how long it needs to be below speed threshold
 
+    public static double moveSpeedMultiplier = 1;
+    public static double turnSpeedMultiplier = 1;
+
     ////INTERNAL////
     double lastTimeAboveStopThreshold = 0;
     double controllerOffsetDegrees = 0;
@@ -352,7 +355,7 @@ public class UniversalThreeWheelNavigator
         if(lastMoveSpeed<(finalSpeed-0.05)&&!(Math.abs(error)<slowDistance)) finalSpeed = finalSpeed*moveSmoothCoefficient + lastMoveSpeed; //ramps up speed when target speed is increasing- this smooths out movement
         lastMoveSpeed = finalSpeed;
 
-        return finalSpeed;
+        return finalSpeed*moveSpeedMultiplier;
     }
 
     public double calculateTurnSpeed(double error, double minSpeed, double maxSpeed){
@@ -373,7 +376,7 @@ public class UniversalThreeWheelNavigator
         if(Math.abs(lastTurnSpeed)<Math.abs(finalSpeed-0.05)&&!(Math.abs(error)<slowDegrees)) finalSpeed = finalSpeed*turnSmoothCoefficient + lastTurnSpeed;
         lastTurnSpeed = finalSpeed;
 
-        return finalSpeed;
+        return finalSpeed*turnSpeedMultiplier;
     }
 
     //------------------------------------UTILITY FUNCTIONS---------------------------------------//

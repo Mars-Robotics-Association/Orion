@@ -13,7 +13,7 @@ public class CuriosityNavigator extends UniversalThreeWheelNavigator
 {
     ////Variables////
     public static double[] nav_encoderMultipliers = {1, 1, -1}; //left right horizontal
-    public static double nav_trackwidth = 9.6;
+    public static double nav_trackwidth = 9.2;
     public static double nav_centerWheelOffset = -3;
 
     public static double nav_minSpeed = 0.18; //the min speed to move if not at the target location or rotation
@@ -26,6 +26,9 @@ public class CuriosityNavigator extends UniversalThreeWheelNavigator
     public static double nav_stopDistance = .5; //inches away for robot to stop
     public static double nav_stopDegrees = 2; //degrees away for robot to stop
     public static double nav_stopTime = 0.1; //how long it needs to be below speed threshold
+
+    public static double nav_moveSpeed = -1;
+    public static double nav_turnSpeed = -1;
 
     public CuriosityNavigator(OpMode setOpMode, BaseRobot baseRobot, DistanceSensor setDistancePort, DistanceSensor setDistanceStarboard, ColorSensor setColorSensor) {
 
@@ -40,6 +43,8 @@ public class CuriosityNavigator extends UniversalThreeWheelNavigator
         stopDistance = nav_stopDistance;
         stopDegrees = nav_stopDegrees;
         stopTime = nav_stopTime;
+        moveSpeedMultiplier = nav_moveSpeed;
+        turnSpeedMultiplier = nav_turnSpeed;
 
         InitializeNavigator(setOpMode, baseRobot);
     }
