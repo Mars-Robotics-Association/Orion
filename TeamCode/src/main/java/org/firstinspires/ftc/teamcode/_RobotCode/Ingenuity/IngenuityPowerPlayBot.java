@@ -48,7 +48,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
 
     private double armStartPos = 0.0;
     private int armSetpointIdx = 0;
-    private double[] armStops = {0.0, 0.1355, 0.23177, 0.3476};
+    private double[] armStops = {0.0, 0.1455, 0.23177, 0.3476};
 
     public IngenuityPowerPlayBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent

@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.path.Path;
 import org.firstinspires.ftc.teamcode.Navigation.PurePursuit.path.PathPoint;
 
+import java.util.Date;
+
 @Autonomous(name = "Ingenuity Autonomous", group = "Ingenuity")
 @Config
 public class IngenuityAutonomous extends LinearOpMode
@@ -45,60 +47,66 @@ public class IngenuityAutonomous extends LinearOpMode
         }
 
         //go forward to the signal
-        goToPose(22,0,0);
+        goToPose(22,-1.5,0, 10000, true);
         //read the signal
         signalZone=robot.readSignal();
         //wait
-        sleep(250);
-
-        // go dump the signal cone
-        //goToPose(25,-10,-75);
+        sleep(50);
 
         // try to score on the medium junction
-        goToPose(26.5, -1, -45);
+        goToPose(26.5, -1.5, -45, 10000, true);
         dunkCone(arm);
 
         // get lined up for cone stack
-        goToPose(50, 0, 87);
+        goToPose(50, 0, 87,10000,true);
 
         //go to cone stack
-        arm.goToPosition(0.0535);
-        while (arm.getPosition() > 0.058) {
-            robot.update();
-            telemetry.update();
-        }
-        goToPose(50, 14.5, 87);
+        arm.goToPosition(0.057);
+        goToPose(50, 14, 87,10000,true);
         sleep(250);
 
         robot.ensureGripperClosed();
-        sleep(500);
+        sleep(400);
         robot.moveArmToStop(2);
-        goToPose(50, 8.5, 87);
+        sleep(50);
+        goToPose(50, 6, 87,750,false);
 
         // line up for high junction
         robot.moveArmToStop(3);
-        goToPose(50,-19,70);
+        goToPose(50,-20,70,10000,true);
 
         // advance on high junction
-        goToPose(54, -17, 45);
+        goToPose(54, -18, 45,10000,true);
         dunkCone(arm);
 
         // retreat from high junction
-        goToPose(50, -21, 45);
+        goToPose(48, -22, 45,10000,true);
 
+        if (true) {
+            arm.goToPosition(0.054);
+            goToPose(50, 14, 87,10000,true);
+            sleep(250);
+
+            robot.ensureGripperClosed();
+            sleep(400);
+            robot.moveArmToStop(2);
+            sleep(50);
+            goToPose(50, 6, 87,750,false);
+            robot.moveArmToStop(1);
+            goToPose(49, -4.5, 127,10000,true);
+            dunkCone(arm);
+            robot.moveArmToStop(3);
+        }
 
         switch (signalZone) {
             case BLUE:
-                goToPose(50, -24, 0);
-                goToPose(25, -24, -120);
+                goToPose(48, -23, -179,10000,true);
                 break;
             case RED:
-                goToPose(50, 0, 0);
-                goToPose(25, 0, -90);
+                goToPose(50, 0, -175,10000,true);
                 break;
             default:
-                goToPose(50, 24, 0);
-                goToPose(25, -24, -90);
+                goToPose(50, 18, -178,3000,true);
         }
 //        arm.goToPosition(0);
 //        while (arm.getPosition()>0.05){
@@ -121,22 +129,28 @@ public class IngenuityAutonomous extends LinearOpMode
 
     private void dunkCone(EncoderActuator arm) {
         double armStartPos = arm.getPosition();
-        arm.goToPosition(armStartPos - .025);
-        sleep(250);
+        arm.goToPosition(armStartPos - .03);
+        sleep(200);
         robot.ensureGripperOpen();
-        sleep(375);
+        sleep(325);
         arm.goToPosition(armStartPos);
-        sleep(500);
+        sleep(400);
     }
 
-    private void goToPose(double x, double y, double angle) {
-        while( robot.getNavigator().goTowardsPose(x, y, angle,speed) && !isStopRequested()) {
+    private void goToPose(double x, double y, double angle, int bailTime, boolean stopAtEnd) {
+        double started = this.time;
+        int msElapsed = 0;
+        while (robot.getNavigator().goTowardsPose(x, y, angle, speed) && !isStopRequested()) {
+            if ((this.time - started) * 1000 > bailTime) break;
             robot.update();
             telemetry.addData("SIGNAL READ: ", signalZone);
-            telemetry.addData("Going to to ", "("+x+", "+y+", "+angle+")");
+            telemetry.addData("Going to to ", "(" + x + ", " + y + ", " + angle + ")");
             telemetry.update();
+
         }
-        robot.getChassis().stop();
+        if (stopAtEnd) {
+            robot.getChassis().stop();
+        }
     }
     private void turn(double angle) {
         while( robot.getNavigator().turnTowards(angle,speed) && !isStopRequested()) {
@@ -149,16 +163,16 @@ public class IngenuityAutonomous extends LinearOpMode
     public void autoDrive() {
         // Move in rectangle, clockwise around the post
         // Move forward to 16x, 0y
-        goToPose(20,0,0);
+        goToPose(20,0,0,10000,true);
 
         // Strafe right to 16v, 16y
-        goToPose(20,20,0);
+        goToPose(20,20,0,10000,true);
 
         // Move backward to 0x, 16y
-        goToPose(0,20,0);
+        goToPose(0,20,0, 10000,true);
 
         // strafe left to 0x, 0y
-        goToPose(0,0,0);
+        goToPose(0,0,0, 10000,true);
     }
     private void printTelemetry() {
         /*
