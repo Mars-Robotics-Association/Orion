@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
-import android.text.method.Touch;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -11,11 +9,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
-import org.firstinspires.ftc.teamcode.Core.InputSystem.InputAxis;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
@@ -28,7 +24,7 @@ public class CuriosityBot extends BaseRobot
     ////Dependencies////
     OpMode opMode;
     //Mechanical Components
-    CuriosityExperimentalPayload payload;
+    CuriosityPayload payload;
     CuriosityNavigator navigator;
     Camera camera;
     ControllerInput gamepad;
@@ -75,7 +71,7 @@ public class CuriosityBot extends BaseRobot
             gripperDist = opMode.hardwareMap.get(DistanceSensor.class, "gripper distance");
             levelSensor = opMode.hardwareMap.get(TouchSensor.class, "level sensor");
 
-            payload= new CuriosityExperimentalPayload(opMode, gamepad, lift,
+            payload= new CuriosityPayload(opMode, gamepad, lift,
                     arm, gripper, gripperDist, levelSensor);
         }
 
@@ -146,7 +142,7 @@ public class CuriosityBot extends BaseRobot
 
     public CuriosityNavigator getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
-    public CuriosityExperimentalPayload getPayload(){return payload;}
+    public CuriosityPayload getPayload(){return payload;}
 }
 
 

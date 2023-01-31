@@ -4,51 +4,49 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
+import org.firstinspires.ftc.teamcode.Core.InputSystem.InputAxis;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 
 @Config
-public class CuriosityExperimentalPayload
+public class Old_CuriosityPayload
 {
     OpMode opMode;
     EncoderActuator arm;
     public EncoderActuator getArm(){return arm;}
-    EncoderActuator lift;
-    public EncoderActuator getLift(){return lift;}
     Servo gripper;
     DistanceSensor gripperSensor;
-    TouchSensor levelSensor;
+    DistanceSensor armLevelSensor;
     ControllerInput gamepad;
     BlinkinController lights;
 
-    enum PayloadState {MANUAL, STOPPED, LOADING, PLACING}
+    enum PayloadState {RAW_CONTROL, STOPPED, LOADING, STORAGE, PLACING}
     enum Pole {GROUND, LOW, MID, HIGH}
-    enum Side {FRONT, BACK}
 
     //config
+    public static double loadHeight = 0;
+    public static double storageHeight = 15;
+    public static double armClearHeight = 1;
+    public static double armLevelDistance = 5;
+    public static double armSlowDistance = 10;
     public static double armBaseSpeed = 1;
-    public static double liftBaseSpeed = 1;
+    public static double armSlowSpeed = 0.5;
     public static double gripperOpenPos = 1;
     public static double gripperClosedPos = 0;
-    public static double liftClearDistance = 3;
     public static double gripperTriggerDistance = 4.5;
     public static double defaultCooldown = 0.4;
 
-    //Lift height, arm rotation
-    public double[] pickupPose = {0,0};
-    //ground, low, mid, high
-    public double[][] placeFront = {{1,30},{4,120},{7,140},{10,160}};
-    public double[][] placeBack = {{1,300},{5,270},{8,240},{10,200}};
+    public static double groundJunction = 5;
+    public static double lowJunction = 20;
+    public static double midJunction = 26;
+    public static double highJunction = 39;
 
-
-    //STATES
-    PayloadState payloadState = PayloadState.MANUAL;
+    //variables
+    PayloadState payloadState = PayloadState.RAW_CONTROL;
     Pole targetPole = Pole.MID;
-    Side targetSide = Side.FRONT;
     public void setPayloadState(PayloadState state){
         payloadState = state;
 //        switch (payloadState){
@@ -62,113 +60,130 @@ public class CuriosityExperimentalPayload
 //        lights.setCooldown(1);
     }
     public void setTargetPole(Pole pole){targetPole = pole;}
-    public void setSide(Side side){targetSide=side;}
 
-    //Keep track of stuff variables
+    //STATES
     double lastLoopTime = 0;
-    boolean liftReset = false;
+    boolean armReset = false;
     boolean hasCone = false;
     double gripperCooldown = defaultCooldown;
-    double liftCooldown = defaultCooldown;
+    double armCooldown = defaultCooldown;
     boolean gripperOpen = false;
-    boolean coneArrivedForPlacing = false;
+    boolean armArrivedAtHeight = false;
 
 
-    public CuriosityExperimentalPayload(OpMode setOpMode, ControllerInput setGamepad, EncoderActuator setLift,
-                            EncoderActuator setArm, Servo setGripper, DistanceSensor setGripperSensor, TouchSensor setLevelSensor){
+    public Old_CuriosityPayload(OpMode setOpMode, ControllerInput setGamepad,
+                                EncoderActuator setArm, Servo setGripper, DistanceSensor setGripperSensor, DistanceSensor setArmLevelSensor){
         opMode = setOpMode;
-        lift = setLift;
         arm = setArm;
         gripper = setGripper;
         gripperSensor = setGripperSensor;
+        armLevelSensor = setArmLevelSensor;
         gamepad = setGamepad;
-        levelSensor = setLevelSensor;
     }
 
-    public void update(double liftInput, double armInput){
+    public void update(double armInput){
         opMode.telemetry.addData("CURRENT TARGET POLE", targetPole);
         //clamps inputs to correct range
         armInput*=armBaseSpeed;
         armInput = Math.max(-armBaseSpeed, Math.min(armBaseSpeed, armInput));
         //manage payload states
         switch (payloadState) {
-            case MANUAL: manage_raw_control(liftInput,armInput); break;
+            case RAW_CONTROL: manage_raw_control(armInput); break;
             case STOPPED: stop(); break;
-            case LOADING: manageLoading(liftInput,armInput); break;
-            case PLACING: manageTarget(getPolePose(targetPole,targetSide),liftInput,armInput); break;
+            case LOADING: manageLoading(armInput); break;
+            case STORAGE: manageStorage(armInput); break;
+            case PLACING: manageTarget(getPoleHeight(targetPole),armInput); break;
         }
         lastLoopTime = opMode.getRuntime();
     }
 
-    public double[] getPolePose(Pole pole, Side side){
-        if(side == Side.FRONT) {
-            if (pole == Pole.GROUND) return placeFront[0];
-            if (pole == Pole.LOW) return placeFront[1];
-            else if (pole == Pole.MID) return placeFront[2];
-            else return placeFront[3];
-        }
-        else{
-            if (pole == Pole.GROUND) return placeBack[0];
-            if (pole == Pole.LOW) return placeBack[1];
-            else if (pole == Pole.MID) return placeBack[2];
-            else return placeBack[3];
-        }
+    public static double getPoleHeight(Pole pole){
+        if(pole == Pole.GROUND) return groundJunction;
+        if (pole == Pole.LOW) return lowJunction;
+        else if (pole == Pole.MID) return midJunction;
+        else return highJunction;
     }
 
-    void manage_raw_control(double liftInput, double armInput){
+    void moveArmByAmount(double amount){
+        //adds amount to current arm target position
+        double armTargetPosition = arm.getPosition()+amount;
+        //clamp value
+        if(armTargetPosition>arm.maxRots) armTargetPosition = arm.maxRots;
+        if(armTargetPosition< arm.minRots) armTargetPosition = arm.minRots;
+        //set power and go to position
+        arm.setPowerRaw(armBaseSpeed);
+        arm.goToPosition(armTargetPosition);
+    }
+
+    void manage_raw_control(double armInput){
         hasCone = true;
-        liftReset = false;
-        coneArrivedForPlacing = false;
-        arm.motors.runWithEncodersMode();
+        armReset = false;
+        armArrivedAtHeight = false;
         arm.setPowerClamped(armInput);
-        lift.motors.runWithEncodersMode();
-        lift.setPowerClamped(liftInput);
     }
 
     public void stop(){
         //stops all motors
         arm.motors.runWithEncodersMode();
         arm.setPowerRaw(0);
-        lift.motors.runWithEncodersMode();
-        lift.setPowerRaw(0);
+    }
+
+    void managePlacing(double armInput){
+        arm.goToPosition(getPoleHeight(targetPole));
     }
 
     //returns false when done
     boolean autoLevel(){
+        double armDistanceFromGround = armLevelSensor.getDistance(DistanceUnit.CM);
         opMode.telemetry.addLine("Resetting arm");
-        if(!levelSensor.isPressed()){ //if at bottom, reset arm's position
-            lift.resetToZero();
-            liftReset = true;
-            lift.goToPosition(pickupPose[0]); //go to load height
+        if(armDistanceFromGround <= armLevelDistance){ //if at bottom, reset arm's position
+            arm.resetToZero();
+            armReset = true;
+            arm.goToPosition(loadHeight); //go to load height
             return false;
         }
-        else {
-            liftReset = false;
-            lift.setPowerRaw(-armBaseSpeed); //goes down quickly to start
+        else if (armDistanceFromGround <= armSlowDistance) {
+            opMode.telemetry.addLine("Slowing down arm");
+            arm.setPowerRaw(-armSlowSpeed); //slows down if close to bottom
         }
+        else arm.setPowerRaw(-armBaseSpeed); //goes down quickly to start
         return true;
     }
 
-    void manageLoading(double liftInput, double armInput){
+    void manageLoading(double armInput){
         //resets arm to loading position and opens gripper
         gripper.setPosition(gripperOpenPos);
+        double armDistanceFromGround = armLevelSensor.getDistance(DistanceUnit.CM);
         double gripperDistance = gripperSensor.getDistance(DistanceUnit.CM);
 
         //telemetry
         opMode.telemetry.addLine("");
+        opMode.telemetry.addData("Arm dist from ground", armDistanceFromGround+" CM");
         opMode.telemetry.addData("Gripper sensor distance", gripperDistance+" CM");
 
         //returns if arm is not reset and there is a cone in the gripper
-        if(!liftReset && gripperDistance<=gripperTriggerDistance){
+        if(!armReset && gripperDistance<=gripperTriggerDistance){
             opMode.telemetry.addLine("Please remove cone from gripper");
             return;
         }
 
-        //reset the lift's position
-        if(autoLevel()) return;
+        //reset the arm's position
+        if(!armReset) {
+            opMode.telemetry.addLine("Resetting arm");
+            if(armDistanceFromGround <= armLevelDistance){ //if at bottom, reset arm's position
+                arm.resetToZero();
+                armReset = true;
+                arm.goToPosition(loadHeight); //go to load height
+            }
+            else if (armDistanceFromGround <= armSlowDistance) {
+                opMode.telemetry.addLine("Slowing down arm");
+                arm.setPowerRaw(-armSlowSpeed); //slows down if close to bottom
+            }
+            else arm.setPowerRaw(-armBaseSpeed); //goes down quickly to start
+            return; //don't do anything else if resetting the arm's position
+        }
 
         //allows for user tweaking
-        lift.setPowerClamped(liftInput);
         arm.setPowerClamped(armInput);
         opMode.telemetry.addLine("User tweaking enabled");
 
@@ -180,27 +195,32 @@ public class CuriosityExperimentalPayload
             else{ //then when gripper is fully closed move to next state
                 gripperCooldown = defaultCooldown;
                 hasCone = true;
-                liftReset = false;
-                coneArrivedForPlacing = false;
+                armReset = false;
+                armArrivedAtHeight = false;
                 stop();
-                setPayloadState(PayloadState.MANUAL);
+                setPayloadState(PayloadState.STORAGE);
             }
         }
     }
 
-    void manageTarget(double[] polePose, double liftInput, double armInput){
+    void manageStorage(double armInput){
+        //moves arm to neutral state for driving around
+        arm.goToPosition(storageHeight);
+        gripper.setPosition(gripperClosedPos);
+    }
+
+    void manageTarget(double poleHeight, double armInput){
         opMode.telemetry.addLine("");
         opMode.telemetry.addLine("Managing placing!");
 
         //moves arm to ground target height
-        if(!coneArrivedForPlacing) {
-            opMode.telemetry.addData("Going to target", polePose[0]+", "+polePose[1]);
+        if(!armArrivedAtHeight) {
+            opMode.telemetry.addData("Going to target", poleHeight);
             opMode.telemetry.addData("Current height", arm.getPosition());
-            arm.goToPosition(polePose[0]);
-            arm.goToPosition(polePose[1]);
+            arm.goToPosition(poleHeight);
             //waits until its gotten high enough
-            if((Math.abs(arm.getPosition()-polePose[1])<0.2)&&(Math.abs(lift.getPosition()-polePose[0])<0.2)) {
-                coneArrivedForPlacing = true;
+            if(Math.abs(arm.getPosition()-poleHeight)<1) {
+                armArrivedAtHeight = true;
             }
             return;
         }
@@ -210,28 +230,12 @@ public class CuriosityExperimentalPayload
             opMode.telemetry.addLine("User tweaking enabled");
             arm.motors.runWithEncodersMode();
             arm.setPowerClamped(armInput);
-            lift.motors.runWithEncodersMode();
-            lift.setPowerClamped(liftInput);
         }
 
         //waits for user input to drop
         if(hasCone && gripper.getPosition() != gripperOpenPos) return;
 
         opMode.telemetry.addLine("Dropping cone");
-
-        //drops the arm down a bit
-        if(coneArrivedForPlacing) {
-            lift.goToPosition(lift.getPosition()-liftClearDistance); //move the arm up to avoid hitting
-            coneArrivedForPlacing = false;
-        }
-        if(liftCooldown > 0) {
-            opMode.telemetry.addLine("Waiting for lift to drop");
-            liftCooldown -=getDeltaTime(); //stay still for a bit to let arm go down
-            return;
-        }
-        else{ //then when arm is up a little bit we can move on
-            liftCooldown = defaultCooldown;
-        }
 
         //opens the gripper and waits for it to finish
         gripper.setPosition(gripperOpenPos);
@@ -245,19 +249,21 @@ public class CuriosityExperimentalPayload
         }
         else{ //then when gripper is fully open move to next state
             gripperCooldown = defaultCooldown;
-            lift.goToPosition(lift.getPosition()+liftClearDistance); //move the arm up to avoid hitting
-            setPayloadState(PayloadState.MANUAL);
+            arm.goToPosition(arm.getPosition()+armClearHeight); //move the arm up to avoid hitting
+            armArrivedAtHeight = false;
+            setPayloadState(PayloadState.RAW_CONTROL);
         }
 
-        //moves the lift back up
-        if(liftCooldown > 0) {
-            opMode.telemetry.addLine("Waiting for lift to clear top");
-            liftCooldown -=getDeltaTime(); //stay still for a bit to let arm go up
-            return;
-        }
-        else{ //then when arm is up a little bit we can move on
-            liftCooldown = defaultCooldown;
-        }
+//        //wait for the arm to clear top
+//        if(armCooldown > 0) {
+//            opMode.telemetry.addLine("Waiting for arm to clear top");
+//            armCooldown-=getDeltaTime(); //stay still for a bit to let arm go up
+//            return;
+//        }
+//        else{ //then when arm is up a little bit we can move on
+//            armCooldown = defaultCooldown;
+//
+//        }
     }
 
     double getDeltaTime(){

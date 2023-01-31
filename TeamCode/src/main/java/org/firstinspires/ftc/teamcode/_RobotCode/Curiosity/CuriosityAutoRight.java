@@ -63,7 +63,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         while(robot.getPayload().autoLevel()&&!isStopRequested()) telemetry.addLine("Resetting arm");
         robot.getPayload().stop();
         //places preload cone
-        robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
+        robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.MID));
         goToPose(33,3.5*sideMultiplier,0,0.8);
         turnTo(-45*sideMultiplier, speed);
         robot.getPayload().toggleGripper(true);
@@ -84,7 +84,7 @@ public class CuriosityAutoRight extends LinearOpMode {
             robot.getPayload().toggleGripper(false);
             sleep(500);
             //moves arm up
-            robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.MID));
+            robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.MID));
             //increases cone counter, as it has taken a cone off the stack
             coneCounter ++;
             //goes to place
@@ -95,7 +95,7 @@ public class CuriosityAutoRight extends LinearOpMode {
             goToPose(48, 0,180,speed);
         }
 
-        robot.getPayload().goToHeight(CuriosityPayload.getPoleHeight(CuriosityPayload.Pole.GROUND));
+        robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.GROUND));
 
         //spot 1(green)
         if(coneSide==1) {
