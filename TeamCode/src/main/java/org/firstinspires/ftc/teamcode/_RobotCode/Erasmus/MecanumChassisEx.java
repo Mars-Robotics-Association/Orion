@@ -1,19 +1,19 @@
-package org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis;
+package org.firstinspires.ftc.teamcode._RobotCode.Erasmus;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
+import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMotorArray;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.PIDController;
-import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.IMU;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.PIDController;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.ChassisProfile;
 
 @Config
-public class MecanumChassis
+public class MecanumChassisEx
 {
     ////Dependencies////
     protected IMU imu;
@@ -42,7 +42,6 @@ public class MecanumChassis
     //Util
     protected double gyroOffset;
     protected boolean headlessMode = false;
-    protected double lastBotSpeed = 0;
 
     //TODO: ===ROBOT CONFIGURATION===
     protected boolean USE_CHASSIS = true;
@@ -56,7 +55,7 @@ public class MecanumChassis
 
 
     //Initializer
-    public MecanumChassis(OpMode setOpMode, ChassisProfile setProfile, HermesLog setLog, BaseRobot setBaseRobot)
+    public MecanumChassisEx(OpMode setOpMode, ChassisProfile setProfile, HermesLog setLog, BaseRobot setBaseRobot)
     {
         opMode = setOpMode;
         baseRobot = setBaseRobot;
@@ -125,51 +124,16 @@ public class MecanumChassis
     public void driveWithGamepad(ControllerInput controllerInput, double speedMultiplier) {
         //MOVE if left joystick magnitude > 0.1
         if (controllerInput.calculateLJSMag() > 0.1) {
-            //initial values
-            double driveAngle = controllerInput.calculateLJSAngle()+inputOffset;
-            double driveSpeed = -1 * controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier;
-            double driveTurnOffset = -controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier;
-            //if in headless mode, enable absolute movement
-            if(headlessMode) {
-                driveAngle += imu.getRobotAngle();
-            }
             rawDrive(
-                    driveAngle,
-                    driveSpeed,
-                    driveTurnOffset);//drives at (angle, speed, turnOffset)
+                    controllerInput.calculateLJSAngle()+inputOffset,
+                    controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier,
+                    controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//drives at (angle, speed, turnOffset)
 
             opMode.telemetry.addData("Moving at ", controllerInput.calculateLJSAngle());
         }
         //TURN if right joystick magnitude > 0.1 and not moving
         else if (Math.abs(controllerInput.getRJSX()) > 0.1) {
-            rawTurn(-controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//turns at speed according to rjs1
-            opMode.telemetry.addData("Turning", true);
-        }
-        else {
-            setMotorSpeeds(0,0,0,0);
-        }
-    }
-    public void driveWithGamepadRamped(ControllerInput controllerInput, double speedMultiplier, double rampCoefficient) {
-        //MOVE if left joystick magnitude > 0.1
-        if (controllerInput.calculateLJSMag() > 0.1) {
-            //initial values
-            double driveAngle = controllerInput.calculateLJSAngle()+inputOffset;
-            double driveSpeed = -1 * controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier;
-            double driveTurnOffset = -controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier;
-            //if in headless mode, enable absolute movement
-            if(headlessMode) {
-                driveAngle += imu.getRobotAngle();
-            }
-            rawDriveRamped(
-                    driveAngle,
-                    driveSpeed,
-                    driveTurnOffset, rampCoefficient);//drives at (angle, speed, turnOffset)
-
-            opMode.telemetry.addData("Moving at ", controllerInput.calculateLJSAngle());
-        }
-        //TURN if right joystick magnitude > 0.1 and not moving
-        else if (Math.abs(controllerInput.getRJSX()) > 0.1) {
-            rawTurn(-controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//turns at speed according to rjs1
+            rawTurn(controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//turns at speed according to rjs1
             opMode.telemetry.addData("Turning", true);
         }
         else {
@@ -182,9 +146,9 @@ public class MecanumChassis
     //This is called continuously while the robot is driving.
     public void rawDrive(double inputAngle, double speed, double turnOffset){
         double finalAngle = inputAngle;
+        if(headlessMode) finalAngle += imu.getRobotAngle();
+        opMode.telemetry.addData("ROBOT ANGLE ", imu.getRobotAngle());
         opMode.telemetry.addData("FINAL ANGLE ", finalAngle);
-        opMode.telemetry.addData("FINAL SPEED ", speed);
-        opMode.telemetry.addData("FINAL TURN ", turnOffset);
 
         //Sets the mode so that robot can drive and record encoder values
         driveMotors.runWithoutEncodersMode();
@@ -212,11 +176,6 @@ public class MecanumChassis
         //SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
         setMotorSpeeds(speeds[0], -speeds[1], speeds[2], -speeds[3]);
     }
-    public void rawDriveRamped(double inputAngle, double speed, double turnOffset, double rampCoefficient){
-        if(lastBotSpeed<(speed-0.05)) speed = speed*rampCoefficient + lastBotSpeed; //ramps up speed when target speed is increasing- this smooths out movement
-        lastBotSpeed = speed;
-        rawDrive(inputAngle,speed,turnOffset);
-    }
     public void rawDriveTurningTowards(double driveAngle, double speed, double facingAngle, double turnCoefficient){
         double turnOffset = getHeadingError(facingAngle)*speed*turnCoefficient;
         rawDrive(driveAngle,speed,turnOffset);
@@ -225,6 +184,8 @@ public class MecanumChassis
     //Used continuously in teleop to turn the robot
     //Enter speed for turn- positive speed turns left, negative right
     public void rawTurn(double speed){
+
+
         //Use motors and record encoder values
         driveMotors.runWithoutEncodersMode();
 
@@ -292,12 +253,11 @@ public class MecanumChassis
          * the wheels need to go) with a positive 45 or negative 45 shift, depending on the wheel. This works
          * so that no matter the degrees, it will always come out with the right value. A turn offset is added
          * to the end for corkscrewing, or turning while driving*/
-        double strafeFactor = (Math.abs(Math.sin(Math.toRadians(degrees)))*0.4)+1;
-
-        double FRP = (-Math.cos(Math.toRadians(degrees + 45))*strafeFactor) * speed + turnSpeed;
-        double FLP = (Math.cos(Math.toRadians(degrees - 45))*strafeFactor) * speed + turnSpeed;
-        double RRP = (-Math.cos(Math.toRadians(degrees - 45))*strafeFactor) * speed + turnSpeed;
-        double RLP = (Math.cos(Math.toRadians(degrees + 45))*strafeFactor) * speed + turnSpeed;
+        double strafeBoost = (Math.abs(0.5*Math.sin(Math.toRadians(degrees)))+1) ;
+        double FRP = (-Math.cos(Math.toRadians(degrees + 45))*strafeBoost) * speed + turnSpeed;
+        double FLP = (Math.cos(Math.toRadians(degrees - 45))*strafeBoost) * speed + turnSpeed;
+        double RRP = (-Math.cos(Math.toRadians(degrees - 45))*strafeBoost) * speed + turnSpeed;
+        double RLP = (Math.cos(Math.toRadians(degrees + 45))*strafeBoost) * speed + turnSpeed;
 
         double[] vals = {FRP, FLP, RRP, RLP};
         return vals;
@@ -311,8 +271,6 @@ public class MecanumChassis
         returnVal[3] = driveMotors.getMotorPositions()[3];
         return returnVal;
     }
-    public double getInputOffset(){return inputOffset;}
-    public ChassisProfile getProfile(){return profile;}
-    public boolean getIsHeadless(){return headlessMode;}
+
 
 }

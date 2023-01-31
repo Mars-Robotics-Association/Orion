@@ -39,6 +39,7 @@ public class Demobot extends BaseRobot
 //            ColorSensor colorSensor = opMode.hardwareMap.get(ColorSensor.class, "color sensor");
 
             //initialize the chassis & navigator
+            setChassisProfile(new _ChassisProfile());
             navigator = new DemobotNavigation(opMode, this, null, null, null);
         }
 

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
+import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 
 @TeleOp(name = "*CURIOSITY TELEOP*", group = "Curiosity")
@@ -23,24 +25,27 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public static double odometryTestSpeed = 0.8;
     public static double odometryTestAngle = 180;
     public static double odometryTestX = 12;
-    public static double odometryTestY = 12;
+    public static double odometryTestY = 0;
 
     public static double speedMultiplier = 1;
 
     public static int payloadControllerNumber = 1;
 
+    //Reference
+    private double lastRuntime = 0;
+    double armInput = 0;
+    boolean isBusy = false; //use to override usual user drive input
+
 
 
     @Override
     public void init() {
-        robot = new CuriosityBot(this,true,false,false);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
-
-        //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
-        //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
+        robot = new CuriosityBot(this,controllerInput1,true,true,true);
+        robot.getChassis().setInputOffset(0);
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
         telemetry.update();
@@ -51,19 +56,19 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void start(){
         robot.start();
+        robot.getNavigator().setMeasuredPose(0, 0, 0);
+        robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
         robot.getChassis().resetGyro();
-        //if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.BLUE) robot.SetInputOffset(90); //90 is blue, -90 is red
-        //else if(robot.navigation.side == FreightFrenzyNavigation.AllianceSide.RED) robot.SetInputOffset(-90); //90 is blue, -90 is red
-        robot.getChassis().setHeadlessMode(false);
+        robot.getChassis().setHeadlessMode(true);
     }
 
     @Override
     public void loop() {
-        controllerInput1.Loop();
-        controllerInput2.Loop();
+        controllerInput1.loop();
+        controllerInput2.loop();
         //navigator kill switch
         if(gamepad1.right_trigger > 0.1 && gamepad1.left_trigger > 0.1) {
-
+            robot.stop();
         }
         //update robot
         try {
@@ -79,6 +84,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //telemetry
         printTelemetry();
         telemetry.update();
+        lastRuntime = getRuntime();
+
     }
 
     //prints a large amount of telemetry for the robot
@@ -90,16 +97,20 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         telemetry.addData("Change speed multiplier: ", "A");
         telemetry.addData("Reset robot pose: ", "Press RJS");
         telemetry.addData("Toggle headless mode: ", "Press LJS");
-        telemetry.addData("Intake: ", "Hold LT");
-        telemetry.addData("Load: ", "Hold RT");
-        telemetry.addData("Toggle shooter: ", "Press Y");
-        telemetry.addData("Toggle intake: ", "Press RB");
-        telemetry.addData("Toggle path: ", "Press LB");
+        telemetry.addData("Gripper: ", "Right bumper");
+        telemetry.addData("Arm: ", "Triggers");
+        telemetry.addData("Load: ", "Press B");
+        telemetry.addData("Place: ", "Press Y");
+        telemetry.addData("Arm manual mode: ", "Press X");
+        telemetry.addData("Change heights: ", "Dpad");
+        telemetry.addData("Nudge single arm motor: ", "Left bumper, hold x to nudge down nothing to nudge up");
 
 
-        /*//DATA
+        //DATA
         telemetry.addLine();
         telemetry.addLine("----DATA----");
+        //runtime
+        telemetry.addData("Loop time ms: ", (getRuntime()-lastRuntime)*1000);
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
@@ -109,9 +120,11 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //Odometry estimated pose
         telemetry.addLine();
         telemetry.addLine("Robot pose");
-        Pose2d robotPose = robot.getNavigator().getPose();
+        Pose2d robotPose = robot.getNavigator().getMeasuredPose();
         telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
-        telemetry.addLine();*/
+        //arm
+        telemetry.addLine();
+        telemetry.addData("Arm Input", armInput);
     }
 
     @Override
@@ -127,14 +140,12 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 if (speedMultiplier == 1) speedMultiplier = 0.5;
                 else speedMultiplier = 1;
                 break;
-            case B:// reset robot pose
-                break;
             case LJS:// toggle headless
-                //robot.getChassis().switchHeadlessMode();
+                robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
-                robot.getNavigator().setRobotPose(0, 0, 0);
-                robot.getNavigator().getChassis().driveMotors.StopAndResetEncoders();
+                robot.getNavigator().setMeasuredPose(0, 0, 0);
+                robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
                 robot.getChassis().resetGyro();
                 break;
 
