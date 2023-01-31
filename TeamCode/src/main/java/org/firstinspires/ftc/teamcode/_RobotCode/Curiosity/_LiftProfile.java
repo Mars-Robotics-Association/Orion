@@ -10,13 +10,13 @@ class _LiftProfile implements EncoderActuatorProfile
     DCMotorArray MOTORS;
     double MAX_ROTS = 10;
     double MIN_ROTS = 0;
-    double GEAR_RATIO = 20; //TODO: find this number
+    double GEAR_RATIO = 0.212; //TODO: find this number
     double ENCODER_RESOLUTION = 537.7; //gobilda 20:1
-    boolean REVERSE_ENCODER = false;
+    boolean REVERSE_ENCODER = true;
     boolean USE_ENCODER = true;
 
     public _LiftProfile(DcMotor motor1, DcMotor motor2){
-        MOTORS = new DCMotorArray(new DcMotor[]{motor1,motor2}, new double[]{1,1},USE_ENCODER);
+        MOTORS = new DCMotorArray(new DcMotor[]{motor1,motor2}, new double[]{-1,-1},USE_ENCODER);
     }
 
     @Override

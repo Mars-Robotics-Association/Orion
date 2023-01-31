@@ -10,13 +10,13 @@ class _ArmProfile implements EncoderActuatorProfile
     DCMotorArray MOTORS;
     double MAX_ROTS = 290;
     double MIN_ROTS = 0;
-    double GEAR_RATIO = 23; // 384.5 / 23
-    double ENCODER_RESOLUTION = 384.5; //gobilda 13.7:1
-    boolean REVERSE_ENCODER = false;
+    double GEAR_RATIO = 0.041666; // 384.5 / 23
+    double ENCODER_RESOLUTION = 537.7; //384.5; //gobilda 13.7:1
+    boolean REVERSE_ENCODER = true;
     boolean USE_ENCODER = true;
 
     public _ArmProfile(DcMotor motor1){
-        MOTORS = new DCMotorArray(new DcMotor[]{motor1}, new double[]{1},USE_ENCODER);
+        MOTORS = new DCMotorArray(new DcMotor[]{motor1}, new double[]{-1},USE_ENCODER);
     }
 
     @Override
