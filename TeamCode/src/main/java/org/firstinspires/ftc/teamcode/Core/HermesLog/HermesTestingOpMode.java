@@ -4,45 +4,32 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Base64Image;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
 
 @TeleOp(name="Hermes Testing", group="Testing")
-//@Disabled
+@Disabled
 public class HermesTestingOpMode extends OpMode
 {
     HermesLog log;
-
+    RobotPose poseToSend;
+    Base64Image imgToSend;
     @Override
     public void init() {
-        log = new HermesLog("HERMES TESTING", 50, this);
+        log = new HermesLog("HERMES TESTING", 500, this);
     }
 
     @Override
     public void start() {
-        log.start();
+        log.Start();
     }
 
     @Override
     public void loop() {
-        RobotPose robotPose = new RobotPose(Math.sin(getRuntime()*0.5)*70,
-                Math.cos(getRuntime())*70,
-                fixAngle(Math.cos(getRuntime())*70),
-                (Math.sin(getRuntime()*0.5)*70)+2,
-                (Math.cos(getRuntime())*70)+2,
-                fixAngle(Math.cos(getRuntime())*70));
-        //Base64Image imgToSend = new Base64Image("eggs");
-        Object[] data = {robotPose};
-        log.addData(data);
+        poseToSend = new RobotPose(Math.random(), Math.random(), Math.random());
+        imgToSend = new Base64Image("eggs");
+        Object[] data = {poseToSend};
+        log.AddData(data);
         log.Update();
-    }
-
-    double fixAngle(double angle){
-        while(angle>180) {
-            angle -= 360;
-        }
-        while(angle<=-180) {
-            angle += 360;
-        }
-        return angle;
     }
 }

@@ -42,7 +42,6 @@ public class MecanumChassis
     //Util
     protected double gyroOffset;
     protected boolean headlessMode = false;
-    protected double lastBotSpeed = 0;
 
     //TODO: ===ROBOT CONFIGURATION===
     protected boolean USE_CHASSIS = true;
@@ -91,10 +90,10 @@ public class MecanumChassis
             }
 
             //resets motors
-            driveMotors.stopAndResetEncoders();
-            if(profile.useEncoders()) driveMotors.runWithEncodersMode();
-            else driveMotors.runWithoutEncodersMode();
-            driveMotors.setPowers(new double[]{0,0,0,0});
+            driveMotors.StopAndResetEncoders();
+            if(profile.useEncoders()) driveMotors.RunWithEncodersMode();
+            else driveMotors.RunWithoutEncodersMode();
+            driveMotors.SetPowers(new double[]{0,0,0,0});
 
             //setup PIDs
             poseXYPID = new PIDController(0,0,0);//Create the pid controller.
@@ -112,8 +111,8 @@ public class MecanumChassis
 
     //Call this on Start()
     public void startChassis(){
-        imu.start();
-        imu.resetGyro();
+        imu.Start();
+        imu.ResetGyro();
     }
 
     //Call this on Loop()
@@ -122,54 +121,15 @@ public class MecanumChassis
     }
 
     //TODO: UNIVERSAL PUBLIC METHODS
-    public void driveWithGamepad(ControllerInput controllerInput, double speedMultiplier) {
+    public void driveWithGamepad(ControllerInput controllerInput, double driveSpeed, double turnSpeed, double speedMultiplier) {
         //MOVE if left joystick magnitude > 0.1
-        if (controllerInput.calculateLJSMag() > 0.1) {
-            //initial values
-            double driveAngle = controllerInput.calculateLJSAngle()+inputOffset;
-            double driveSpeed = -1 * controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier;
-            double driveTurnOffset = -controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier;
-            //if in headless mode, enable absolute movement
-            if(headlessMode) {
-                driveAngle += imu.getRobotAngle();
-            }
-            rawDrive(
-                    driveAngle,
-                    driveSpeed,
-                    driveTurnOffset);//drives at (angle, speed, turnOffset)
-
-            opMode.telemetry.addData("Moving at ", controllerInput.calculateLJSAngle());
+        if (controllerInput.CalculateLJSMag() > 0.1) {
+            rawDrive(controllerInput.CalculateLJSAngle()+inputOffset, controllerInput.CalculateLJSMag() * driveSpeed * speedMultiplier, controllerInput.GetRJSX() * turnSpeed * speedMultiplier);//drives at (angle, speed, turnOffset)
+            opMode.telemetry.addData("Moving at ", controllerInput.CalculateLJSAngle());
         }
         //TURN if right joystick magnitude > 0.1 and not moving
-        else if (Math.abs(controllerInput.getRJSX()) > 0.1) {
-            rawTurn(-controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//turns at speed according to rjs1
-            opMode.telemetry.addData("Turning", true);
-        }
-        else {
-            setMotorSpeeds(0,0,0,0);
-        }
-    }
-    public void driveWithGamepadRamped(ControllerInput controllerInput, double speedMultiplier, double rampCoefficient) {
-        //MOVE if left joystick magnitude > 0.1
-        if (controllerInput.calculateLJSMag() > 0.1) {
-            //initial values
-            double driveAngle = controllerInput.calculateLJSAngle()+inputOffset;
-            double driveSpeed = -1 * controllerInput.calculateLJSMag() * profile.moveSpeed() * speedMultiplier;
-            double driveTurnOffset = -controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier;
-            //if in headless mode, enable absolute movement
-            if(headlessMode) {
-                driveAngle += imu.getRobotAngle();
-            }
-            rawDriveRamped(
-                    driveAngle,
-                    driveSpeed,
-                    driveTurnOffset, rampCoefficient);//drives at (angle, speed, turnOffset)
-
-            opMode.telemetry.addData("Moving at ", controllerInput.calculateLJSAngle());
-        }
-        //TURN if right joystick magnitude > 0.1 and not moving
-        else if (Math.abs(controllerInput.getRJSX()) > 0.1) {
-            rawTurn(-controllerInput.getRJSX() * profile.turnSpeed() * speedMultiplier);//turns at speed according to rjs1
+        else if (Math.abs(controllerInput.GetRJSX()) > 0.1) {
+            rawTurn(controllerInput.GetRJSX() * turnSpeed * speedMultiplier);//turns at speed according to rjs1
             opMode.telemetry.addData("Turning", true);
         }
         else {
@@ -182,16 +142,16 @@ public class MecanumChassis
     //This is called continuously while the robot is driving.
     public void rawDrive(double inputAngle, double speed, double turnOffset){
         double finalAngle = inputAngle;
+        if(headlessMode) finalAngle += imu.GetRobotAngle();
+        opMode.telemetry.addData("ROBOT ANGLE ", imu.GetRobotAngle());
         opMode.telemetry.addData("FINAL ANGLE ", finalAngle);
-        opMode.telemetry.addData("FINAL SPEED ", speed);
-        opMode.telemetry.addData("FINAL TURN ", turnOffset);
 
         //Sets the mode so that robot can drive and record encoder values
-        driveMotors.runWithoutEncodersMode();
+        driveMotors.RunWithoutEncodersMode();
 
         //HEADING PID//
         //Uses pid controller to correct for heading error using (currentAngle, targetAngle)
-        double headingPIDOffset = poseXYPID.getOutput(turnOffset, imu.getAngularVelocity());
+        double headingPIDOffset = poseXYPID.getOutput(turnOffset, imu.GetAngularVelocity());
         //if the number is not real, reset pid controller
         if(!(headingPIDOffset > 0 || headingPIDOffset <= 0)){
             poseXYPID.reset();
@@ -212,11 +172,6 @@ public class MecanumChassis
         //SetMotorSpeeds(speeds[0]+headingPIDOffset, speeds[1]+headingPIDOffset, speeds[2]+headingPIDOffset, speeds[3]+headingPIDOffset);
         setMotorSpeeds(speeds[0], -speeds[1], speeds[2], -speeds[3]);
     }
-    public void rawDriveRamped(double inputAngle, double speed, double turnOffset, double rampCoefficient){
-        if(lastBotSpeed<(speed-0.05)) speed = speed*rampCoefficient + lastBotSpeed; //ramps up speed when target speed is increasing- this smooths out movement
-        lastBotSpeed = speed;
-        rawDrive(inputAngle,speed,turnOffset);
-    }
     public void rawDriveTurningTowards(double driveAngle, double speed, double facingAngle, double turnCoefficient){
         double turnOffset = getHeadingError(facingAngle)*speed*turnCoefficient;
         rawDrive(driveAngle,speed,turnOffset);
@@ -225,8 +180,10 @@ public class MecanumChassis
     //Used continuously in teleop to turn the robot
     //Enter speed for turn- positive speed turns left, negative right
     public void rawTurn(double speed){
+
+
         //Use motors and record encoder values
-        driveMotors.runWithoutEncodersMode();
+        driveMotors.RunWithoutEncodersMode();
 
         //Set motor speeds all equal, as this causes it to do a spot turn
         setMotorSpeeds(speed, -speed, speed, -speed);
@@ -236,7 +193,7 @@ public class MecanumChassis
         if(targetHeading > 180) targetHeading = -360+targetHeading;
         else if(targetHeading < -180) targetHeading = 360+targetHeading;
         //calculate error and turn speed
-        double error = targetHeading - imu.getRobotAngle();
+        double error = targetHeading - imu.GetRobotAngle();
 
         return error;
     }
@@ -250,12 +207,12 @@ public class MecanumChassis
         if(targetHeading > 180) targetHeading = -360+targetHeading;
         else if(targetHeading < -180) targetHeading = 360+targetHeading;
         //calculate if within range
-        double error = targetHeading - imu.getRobotAngle();
+        double error = targetHeading - imu.GetRobotAngle();
         if(Math.abs(error)<threshold) return true;
         else return false;
     }
     //Offsets the gryo so the current heading can be zero with GetRobotAngle()
-    public void resetGyro(){imu.resetGyro();}
+    public void resetGyro(){imu.ResetGyro();}
     public void switchHeadlessMode(){headlessMode = !headlessMode;}
     public void setHeadlessMode(boolean set){headlessMode = set;}
 
@@ -272,7 +229,7 @@ public class MecanumChassis
     //PRIVATE METHODS
     //Utility
     public void setMotorSpeeds(double fr, double fl, double rr, double rl){
-        driveMotors.setPowers(new double[]{fr, -fl, rr, -rl});
+        driveMotors.SetPowers(new double[]{fr, -fl, rr, -rl});
     }
 
     public void setPoseXYPID(double p, double i, double d){poseXYPID.setPID(p,i,d);}
@@ -292,12 +249,10 @@ public class MecanumChassis
          * the wheels need to go) with a positive 45 or negative 45 shift, depending on the wheel. This works
          * so that no matter the degrees, it will always come out with the right value. A turn offset is added
          * to the end for corkscrewing, or turning while driving*/
-        double strafeFactor = (Math.abs(Math.sin(Math.toRadians(degrees)))*0.4)+1;
-
-        double FRP = (-Math.cos(Math.toRadians(degrees + 45))*strafeFactor) * speed + turnSpeed;
-        double FLP = (Math.cos(Math.toRadians(degrees - 45))*strafeFactor) * speed + turnSpeed;
-        double RRP = (-Math.cos(Math.toRadians(degrees - 45))*strafeFactor) * speed + turnSpeed;
-        double RLP = (Math.cos(Math.toRadians(degrees + 45))*strafeFactor) * speed + turnSpeed;
+        double FRP = -Math.cos(Math.toRadians(degrees + 45)) * speed + turnSpeed;
+        double FLP = Math.cos(Math.toRadians(degrees - 45)) * speed + turnSpeed;
+        double RRP = -Math.cos(Math.toRadians(degrees - 45)) * speed + turnSpeed;
+        double RLP = Math.cos(Math.toRadians(degrees + 45)) * speed + turnSpeed;
 
         double[] vals = {FRP, FLP, RRP, RLP};
         return vals;
@@ -305,14 +260,12 @@ public class MecanumChassis
 
     public double[] getEncoderTicks(){
         double[] returnVal = new double[4];
-        returnVal[0] = driveMotors.getMotorPositions()[0];
-        returnVal[1] = driveMotors.getMotorPositions()[1];
-        returnVal[2] = driveMotors.getMotorPositions()[2];
-        returnVal[3] = driveMotors.getMotorPositions()[3];
+        returnVal[0] = driveMotors.GetMotorPositions()[0];
+        returnVal[1] = driveMotors.GetMotorPositions()[1];
+        returnVal[2] = driveMotors.GetMotorPositions()[2];
+        returnVal[3] = driveMotors.GetMotorPositions()[3];
         return returnVal;
     }
-    public double getInputOffset(){return inputOffset;}
-    public ChassisProfile getProfile(){return profile;}
-    public boolean getIsHeadless(){return headlessMode;}
+
 
 }

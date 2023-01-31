@@ -19,8 +19,6 @@ class DemobotPayload
     boolean pathOn = false;
     boolean shooterOn = false;
 
-    double multiplier = 1;
-
     //initializer
     public DemobotPayload(OpMode setOpMode, MotorArray setIntake, MotorArray setPath, MotorArray setLoader, EncoderActuator setTurret, MotorArray setShooter){
         opMode = setOpMode;
@@ -42,27 +40,13 @@ class DemobotPayload
     public void setIntakeState(boolean on) {
         if(on) {
             //turn intake on
-            intake.setPowers(1*multiplier);
-        }
-        else intake.setPowers(0);
-        intakeOn = on;
-    }
-    public void setIntakeState(boolean on,double multiplier) {
-        if(on) {
-            //turn intake on
-            intake.setPowers(1*multiplier);
+            intake.setPowers(1);
         }
         else intake.setPowers(0);
         intakeOn = on;
     }
     //toggles intake on and off
     public void toggleIntake(){
-        multiplier = 1;
-        if(intakeOn) setIntakeState(false);
-        else setIntakeState(true);
-    }
-    public void toggleIntakeReversed(){
-        multiplier = -1;
         if(intakeOn) setIntakeState(false);
         else setIntakeState(true);
     }

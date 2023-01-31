@@ -4,8 +4,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
-public class ControllerInput 
+public class ControllerInput
 {
     Gamepad gamepad;
     int id;
@@ -23,12 +24,27 @@ public class ControllerInput
         id = setID;
     }
 
+    interface CheckButton{
+        boolean call(Gamepad gamepad);
+    }
+
     //ENUMS
     public enum Button {X,Y,A,B,RT,LT,RB,LB,DUP,DDOWN,DLEFT,DRIGHT,LJS,RJS,GUIDE}
 
+        private final boolean isDown = false;
+
+        private final CheckButton checkButton;
+
+        Button(CheckButton checkButton){
+            this.checkButton = checkButton;
+        }
+    }
+
+    private final Button[] allButtons = Button.values();
+
     //VARIABLES
     //misc.
-    private double TriggerThreshold = 0.1;
+    private static double TriggerThreshold = 0.1;
 
     //buttons
     private boolean ADown = false;
@@ -48,20 +64,19 @@ public class ControllerInput
     private boolean guideDown = false;
 
     //GETTERS
-    public Gamepad getGamepad(){return gamepad;}
-    public double getLJSX()
+    public double GetLJSX()
     {
         return gamepad.left_stick_x;
     }
-    public double getLJSY()
+    public double GetLJSY()
     {
         return gamepad.left_stick_y;
     }
-    public double getRJSX()
+    public double GetRJSX()
     {
         return gamepad.right_stick_x;
     }
-    public double getRJSY()
+    public double GetRJSY()
     {
         return gamepad.right_stick_y;
     }
@@ -72,18 +87,20 @@ public class ControllerInput
     public boolean getGuide(){return guideDown;}
 
     //INTERNAL
-    void pressed(Button button){
+    void Pressed(Button button){
         for(ControllerInputListener listener : listeners) listener.ButtonPressed(id,button);
     }
-    void held(Button button){
+    void Held(Button button){
         for(ControllerInputListener listener : listeners) listener.ButtonHeld(id,button);
     }
-    void released(Button button){
+    void Released(Button button){
         for(ControllerInputListener listener : listeners) listener.ButtonReleased(id,button);
     }
 
-    public void loop(){
+    public void Loop(){
+
         //DETECT EVENTS
+
         //Pressed
         if(gamepad.a == true && ADown == false) pressed(Button.A);
         if(gamepad.b == true && BDown == false) pressed(Button.B);
@@ -154,7 +171,7 @@ public class ControllerInput
         guideDown = gamepad.guide;
     }
 
-    public double calculateLJSAngle(){
+    public double CalculateLJSAngle(){
         //Calculate angle of left joystick
         double Y = gamepad.left_stick_y; //X input
         double X = gamepad.left_stick_x; //Y input
@@ -173,34 +190,56 @@ public class ControllerInput
         return leftStickBaring;
     }
 
-    public double calculateLJSMag(){
+    public double CalculateLJSMag(){
         //Calculate magnitude of the left joystick
         //Distance formula for calculating joystick power
-        return Math.abs(Math.sqrt(Math.pow(getLJSX() - 0, 2) + Math.pow(getLJSY() - 0, 2)));
+        return Math.abs(Math.sqrt(Math.pow(GetLJSX() - 0, 2) + Math.pow(GetLJSY() - 0, 2)));
     }
 
-    public double calculateRJSAngle(){
-        //Calculate angle of left joystick
-        double Y = -gamepad.right_stick_y; //X input
-        double X = gamepad.right_stick_x; //Y input
+    public enum Stick {
+        LEFT_STICK,
+        RIGHT_STICK
+    }
 
-        //return telemetry for debug
-        /*opMode.telemetry.addData("Joystick X ", X);
-        opMode.telemetry.addData("Joystick Y ", Y);*/
+    public double getStickAngle(Stick stick){
+        double X = gamepad.left_stick_x;
+        double Y = gamepad.left_stick_y;
 
-        double rightStickBaring = Math.atan2(Y,X); //get measurement of joystick angle
-        rightStickBaring = Math.toDegrees(rightStickBaring);
-        rightStickBaring -= 90;
-        if(rightStickBaring < 0)//convert degrees to positive if needed
-        {
-            rightStickBaring = 360 + rightStickBaring;
+        switch(stick){
+            case LEFT_STICK:
+                X = gamepad.left_stick_x;
+                Y = gamepad.left_stick_y;
+                break;
+            case RIGHT_STICK:
+                X = gamepad.right_stick_x;
+                Y = gamepad.right_stick_y;
         }
-        return rightStickBaring;
+
+        double baring = Math.atan2(Y,X); //get measurement of joystick angle
+        baring = Math.toDegrees(baring);
+        baring -= 90;
+        if(baring < 0)baring += 360;//convert degrees to positive if needed
+        return baring;
     }
 
-    public double calculateRJSMag(){
-        //Calculate magnitude of the left joystick
-        //Distance formula for calculating joystick power
-        return Math.abs(Math.sqrt(Math.pow(getRJSX() - 0, 2) + Math.pow(getRJSY() - 0, 2)));
+    public double getStickMag(Stick stick){
+        double X = gamepad.left_stick_x;
+        double Y = gamepad.left_stick_y;
+
+        switch(stick){
+            case LEFT_STICK:
+                X = gamepad.left_stick_x;
+                Y = gamepad.left_stick_y;
+                break;
+            case RIGHT_STICK:
+                X = gamepad.right_stick_x;
+                Y = gamepad.right_stick_y;
+        }
+
+        double baring = Math.atan2(Y,X); //get measurement of joystick angle
+        baring = Math.toDegrees(baring);
+        baring -= 90;
+        if(baring < 0)baring += 360;//convert degrees to positive if needed
+        return baring;
     }
 }

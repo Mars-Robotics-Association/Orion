@@ -1,34 +1,32 @@
-package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
+package org.firstinspires.ftc.teamcode._RobotCode.Juan_RELEASED;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuatorProfile;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.DCMotorArray;
 
-class _ArmProfile implements EncoderActuatorProfile
+class _LiftProfile implements EncoderActuatorProfile
 {
-    DCMotorArray MOTORS;
-    double MAX_ROTS = 0.6;
-    double MIN_ROTS = 0;
-    double GEAR_RATIO = 24;
+    DcMotor MOTOR;
+    double MAX = 3132;
+    double MIN = 0;
+    double GEAR_RATIO = 1;
     double ENCODER_RESOLUTION = 537.7; //gobilda 19.2:1
-    boolean REVERSE_ENCODER = false;
+    boolean REVERSE_ENCODER = true;
     boolean USE_ENCODER = true;
 
-    public _ArmProfile(DcMotor motor, double startPos){
-        MOTORS = new DCMotorArray(new DcMotor[]{motor}, new double[]{1},USE_ENCODER);
-        MAX_ROTS -= startPos;
-        MIN_ROTS -= startPos;
+    public _LiftProfile(DcMotor motor){
+        MOTOR = motor;
     }
 
     @Override
-    public DCMotorArray motors() {return MOTORS;}
+    public DCMotorArray motors() {return new DCMotorArray(new DcMotor[]{MOTOR}, new double[]{1}, USE_ENCODER);}
 
     @Override
-    public double maxRots() {return MAX_ROTS;}
+    public double maxRots() {return MAX;}
 
     @Override
-    public double minRots() {return MIN_ROTS;}
+    public double minRots() {return MIN;}
 
     @Override
     public double gearRatio() {return GEAR_RATIO;}
