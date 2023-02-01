@@ -16,7 +16,7 @@ class _LiftProfile implements EncoderActuatorProfile
     boolean USE_ENCODER = true;
 
     public _LiftProfile(DcMotor motor1, DcMotor motor2){
-        MOTORS = new DCMotorArray(new DcMotor[]{motor1,motor2}, new double[]{-1,-1},USE_ENCODER);
+        MOTORS = new DCMotorArray(new DcMotor[]{motor1,motor2}, new double[]{1,1},USE_ENCODER);
     }
 
     @Override

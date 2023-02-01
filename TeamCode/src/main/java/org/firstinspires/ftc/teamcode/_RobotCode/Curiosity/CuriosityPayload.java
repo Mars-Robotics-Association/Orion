@@ -98,6 +98,10 @@ public class CuriosityPayload
             case PLACING: manageTarget(getPolePose(targetPole,targetSide),liftInput,armInput); break;
         }
         lastLoopTime = opMode.getRuntime();
+        if(levelSensor.isPressed()) {
+            opMode.telemetry.addLine("Touch Sensor Pressed");
+        }
+        opMode.telemetry.addData("Arm Input",armInput);
     }
 
     public double[] getPolePose(Pole pole, Side side){
@@ -120,14 +124,15 @@ public class CuriosityPayload
         coneArrivedForPlacing = false;
         arm.motors.runWithEncodersMode();
         arm.setPowerClamped(armInput);
-        if(!(levelSensor.isPressed()&&armInput<0)) {
-            liftReset = false;
-            lift.motors.runWithEncodersMode();
-            lift.setPowerClamped(liftInput);
-        }else{
+        if(levelSensor.isPressed()&&armInput<0) {
             liftReset=true;
             lift.resetToZero();
             lift.setPowerClamped(0);
+            opMode.telemetry.addLine("Cannot Move Down Now");
+        }else{
+            liftReset = false;
+            lift.motors.runWithEncodersMode();
+            lift.setPowerClamped(liftInput);
         }
     }
 

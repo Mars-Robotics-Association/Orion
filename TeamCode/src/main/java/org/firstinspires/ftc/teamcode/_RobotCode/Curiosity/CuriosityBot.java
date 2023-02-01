@@ -73,6 +73,7 @@ public class CuriosityBot extends BaseRobot
 
             payload= new CuriosityPayload(opMode, gamepad, lift,
                     arm, gripper, gripperDist, levelSensor);
+
         }
 
         if(USE_NAVIGATOR){}

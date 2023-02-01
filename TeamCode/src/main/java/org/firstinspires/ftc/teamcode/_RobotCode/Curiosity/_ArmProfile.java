@@ -16,7 +16,7 @@ class _ArmProfile implements EncoderActuatorProfile
     boolean USE_ENCODER = true;
 
     public _ArmProfile(DcMotor motor1){
-        MOTORS = new DCMotorArray(new DcMotor[]{motor1}, new double[]{-1},USE_ENCODER);
+        MOTORS = new DCMotorArray(new DcMotor[]{motor1}, new double[]{1},USE_ENCODER);
     }
 
     @Override

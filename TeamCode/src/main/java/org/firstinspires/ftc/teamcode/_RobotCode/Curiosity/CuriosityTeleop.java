@@ -74,6 +74,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //update robot
         try {
             robot.update();
+            robot.getPayload().update(liftInput,armInput);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -81,7 +82,6 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         if(!isBusy) {
             robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
         }
-
         //telemetry
         printTelemetry();
         telemetry.update();
@@ -181,16 +181,16 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
             //PAYLOAD TESTING
             case RT:
-                armInput = 1;
-                break;
-            case LT:
                 armInput = -1;
                 break;
+            case LT:
+                armInput = 1;
+                break;
             case RB:
-                liftInput = 1;
+                liftInput = -1;
                 break;
             case LB:
-                liftInput = -1;
+                liftInput = 1;
                 break;
         }
     }
