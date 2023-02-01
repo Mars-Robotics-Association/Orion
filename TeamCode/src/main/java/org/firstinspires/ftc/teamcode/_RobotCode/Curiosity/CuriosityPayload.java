@@ -117,12 +117,18 @@ public class CuriosityPayload
 
     void manage_raw_control(double liftInput, double armInput){
         hasCone = true;
-        liftReset = false;
         coneArrivedForPlacing = false;
         arm.motors.runWithEncodersMode();
         arm.setPowerClamped(armInput);
-        lift.motors.runWithEncodersMode();
-        lift.setPowerClamped(liftInput);
+        if(!(levelSensor.isPressed()&&armInput<0)) {
+            liftReset = false;
+            lift.motors.runWithEncodersMode();
+            lift.setPowerClamped(liftInput);
+        }else{
+            liftReset=true;
+            lift.resetToZero();
+            lift.setPowerClamped(0);
+        }
     }
 
     public void stop(){
