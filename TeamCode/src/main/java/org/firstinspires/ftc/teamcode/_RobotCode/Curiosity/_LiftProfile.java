@@ -10,7 +10,7 @@ class _LiftProfile implements EncoderActuatorProfile
     DCMotorArray MOTORS;
     double MAX_ROTS = 10;
     double MIN_ROTS = 0;
-    double GEAR_RATIO = 0.212; //TODO: find this number
+    double GEAR_RATIO = 0.424; //TODO: find this number
     double ENCODER_RESOLUTION = 537.7; //gobilda 20:1
     boolean REVERSE_ENCODER = true;
     boolean USE_ENCODER = true;

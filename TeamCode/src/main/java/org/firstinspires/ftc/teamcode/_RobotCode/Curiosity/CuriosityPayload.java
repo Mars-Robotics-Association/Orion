@@ -30,8 +30,8 @@ public class CuriosityPayload
     enum Side {FRONT, BACK}
 
     //config
-    public static double armBaseSpeed = 1;
-    public static double liftBaseSpeed = 1;
+    public static double armBaseSpeed = -1;
+    public static double liftBaseSpeed = -1;
     public static double gripperOpenPos = 1;
     public static double gripperClosedPos = 0;
     public static double liftClearDistance = 3;
@@ -101,7 +101,7 @@ public class CuriosityPayload
         if(levelSensor.isPressed()) {
             opMode.telemetry.addLine("Touch Sensor Pressed");
         }
-        opMode.telemetry.addData("Arm Input",armInput);
+        opMode.telemetry.addData("Lift Input",liftInput);
     }
 
     public double[] getPolePose(Pole pole, Side side){
@@ -124,7 +124,7 @@ public class CuriosityPayload
         coneArrivedForPlacing = false;
         arm.motors.runWithEncodersMode();
         arm.setPowerClamped(armInput);
-        if(levelSensor.isPressed()&&armInput<0) {
+        if(levelSensor.isPressed()&&liftInput>0) {
             liftReset=true;
             lift.resetToZero();
             lift.setPowerClamped(0);
@@ -147,7 +147,7 @@ public class CuriosityPayload
     //returns false when done
     boolean autoLevel(){
         opMode.telemetry.addLine("Resetting arm");
-        if(!levelSensor.isPressed()){ //if at bottom, reset arm's position
+        if(levelSensor.isPressed()){ //if at bottom, reset arm's position
             lift.resetToZero();
             liftReset = true;
             lift.goToPosition(pickupPose[0]); //go to load height
@@ -155,7 +155,7 @@ public class CuriosityPayload
         }
         else {
             liftReset = false;
-            lift.setPowerRaw(-armBaseSpeed); //goes down quickly to start
+            lift.setPowerRaw(-liftBaseSpeed*.5); //goes down quickly to start
         }
         return true;
     }
@@ -176,7 +176,8 @@ public class CuriosityPayload
         }
 
         //reset the lift's position
-        if(autoLevel()) return;
+        if(!liftReset) if(autoLevel()) return;
+        liftReset = true;
 
         //allows for user tweaking
         lift.setPowerClamped(liftInput);

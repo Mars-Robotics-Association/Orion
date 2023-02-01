@@ -40,8 +40,8 @@ public class CuriosityAutoRight extends LinearOpMode {
 
         robot = new CuriosityBot(this,null,true,true,true);
         robot.init();
-        arm = robot.getPayload().arm;
-        gripper = robot.getPayload().gripper;
+//        arm = robot.getPayload().arm;
+//        gripper = robot.getPayload().gripper;
         isRed=false;
         if(robot.getFieldSide().equals(BaseRobot.FieldSide.RED)){isRed=true;}
         isLeft=false;
@@ -54,19 +54,19 @@ public class CuriosityAutoRight extends LinearOpMode {
         robot.start();
         resetRuntime();
         robot.getChassis().resetGyro();
-        double coneSide = getConeSide(robot.camera);
+        //double coneSide = getConeSide(robot.camera);
         //telemetry.addData("Position",coneSide);
         telemetry.update();
 
         //resets arm
-        robot.getPayload().toggleGripper(false);
-        while(robot.getPayload().autoLevel()&&!isStopRequested()) telemetry.addLine("Resetting arm");
-        robot.getPayload().stop();
+//        robot.getPayload().toggleGripper(false);
+//        while(robot.getPayload().autoLevel()&&!isStopRequested()) telemetry.addLine("Resetting arm");
+//        robot.getPayload().stop();
         //places preload cone
-        robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.MID));
+//        robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.MID));
         goToPose(33,3.5*sideMultiplier,0,0.8);
         turnTo(-45*sideMultiplier, speed);
-        robot.getPayload().toggleGripper(true);
+//        robot.getPayload().toggleGripper(true);
         sleep(300);
         turnTo(0,speed);
         goToPose(55,0,0,1);
@@ -77,25 +77,25 @@ public class CuriosityAutoRight extends LinearOpMode {
         int coneCounter = 0;
         while(coneCounter<2){
             //raises arm to pick up cone
-            robot.getPayload().goToHeight(coneStackTop-(coneCounter*coneStackInterval));
+//            robot.getPayload().goToHeight(coneStackTop-(coneCounter*coneStackInterval));
             //goes to the stack
             goToPose(50.5, 24*sideMultiplier,90*sideMultiplier,speed);
             //picks up cone
-            robot.getPayload().toggleGripper(false);
+//            robot.getPayload().toggleGripper(false);
             sleep(500);
             //moves arm up
-            robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.MID));
+//            robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.MID));
             //increases cone counter, as it has taken a cone off the stack
             coneCounter ++;
             //goes to place
             goToPose(45, 3*sideMultiplier,-135*sideMultiplier,speed);
             //places cone
-            robot.getPayload().toggleGripper(true);
+//            robot.getPayload().toggleGripper(true);
             sleep(300);
             goToPose(48, 0,180,speed);
         }
 
-        robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.GROUND));
+//        robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.GROUND));
 
         //spot 1(green)
         if(coneSide==1) {
