@@ -34,6 +34,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     //Reference
     private double lastRuntime = 0;
     double armInput = 0;
+    double liftInput = 0;
     boolean isBusy = false; //use to override usual user drive input
 
 
@@ -153,6 +154,12 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             case Y:
                 robot.getPayload().toggleGripper();
                 break;
+            case B:
+                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.LOADING);
+                break;
+            case X:
+                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.MANUAL);
+                break;
         }
     }
 
@@ -160,30 +167,30 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     public void ButtonHeld(int id, Button button) {
         switch (button){
             case Y:
-                isBusy = true;
-                robot.getNavigator().goTowardsPose(odometryTestX,odometryTestY,odometryTestAngle,odometryTestSpeed);
+//                isBusy = true;
+//                robot.getNavigator().goTowardsPose(odometryTestX,odometryTestY,odometryTestAngle,odometryTestSpeed);
                 break;
             case X:
-                isBusy = true;
-                robot.getNavigator().moveTowards(odometryTestX,odometryTestY,odometryTestSpeed);
+//                isBusy = true;
+//                robot.getNavigator().moveTowards(odometryTestX,odometryTestY,odometryTestSpeed);
                 break;
             case B:
-                isBusy = true;
-                robot.getNavigator().turnTowards(odometryTestAngle,odometryTestSpeed);
+//                isBusy = true;
+//                robot.getNavigator().turnTowards(odometryTestAngle,odometryTestSpeed);
                 break;
 
             //PAYLOAD TESTING
             case RT:
-                robot.getPayload().getArm().setPowerRaw(1);
+                armInput = 1;
                 break;
             case LT:
-                robot.getPayload().getArm().setPowerRaw(-1);
+                armInput = -1;
                 break;
             case RB:
-                robot.getPayload().getLift().setPowerRaw(1);
+                liftInput = 1;
                 break;
             case LB:
-                robot.getPayload().getLift().setPowerRaw(-1);
+                liftInput = -1;
                 break;
         }
     }
@@ -194,17 +201,17 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             case Y:
             case B:
             case X:
-                isBusy = false;
+                //isBusy = false;
                 break;
 
             //PAYLOAD TESTING
             case RT:
             case LT:
-                robot.getPayload().getArm().setPowerRaw(0);
+                armInput = 0;
                 break;
             case RB:
             case LB:
-                robot.getPayload().getLift().setPowerRaw(0);
+                liftInput = 0;
                 break;
 
         }
