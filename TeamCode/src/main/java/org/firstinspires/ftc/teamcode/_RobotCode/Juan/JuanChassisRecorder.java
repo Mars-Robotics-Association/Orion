@@ -1,18 +1,19 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
-import static java.lang.Thread.sleep;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 
+import java.util.Arrays;
+
 @TeleOp(name = "*JUAN TELEOP*", group = "JUAN")
 @Config
-public class JuanTeleop extends OpMode implements ControllerInputListener
+public class JuanChassisRecorder extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
     private Juan robot;
@@ -102,9 +103,13 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
     private void printTelemetry() {
         //CONTROLS
         telemetry.addLine("----CONTROLS----");
-        telemetry.addData("Drive with: ", "LJS");
-        telemetry.addData("Turn with: ", "RJS");
-        telemetry.addData("Toggle headless mode: ", "Press LOGITECH");
+        telemetry.addData("Drive with", "LJS");
+        telemetry.addData("Turn with", "RJS");
+        telemetry.addData("Toggle headless mode", "Press LOGITECH");
+
+        int[] positions = robot.getChassis().driveMotors.GetMotorPositions();
+
+        telemetry.addData("Motor Positions", Arrays.toString(positions));
 
         if(robot.USE_PAYLOAD)robot.getPayload().printTelemetry();
     }

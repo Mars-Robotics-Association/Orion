@@ -354,6 +354,7 @@ public class Camera
                 break;
             }
         }
+        assert img != null;
         Bitmap bmp = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.RGB_565);
         bmp.copyPixelsFromBuffer(img.getPixels());
         frame.close();
