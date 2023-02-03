@@ -46,8 +46,10 @@ public class IngenuityAutonomous extends LinearOpMode
             telemetry.update();
         }
 
+        //scoot left a little
+        goToPose(2, -4, 0, 1000, false);
         //go forward to the signal
-        goToPose(22,-1.5,0, 10000, true);
+        goToPose(22,-2,0, 10000, true);
         //read the signal
         signalZone=robot.readSignal();
         //wait
@@ -58,55 +60,69 @@ public class IngenuityAutonomous extends LinearOpMode
         dunkCone(arm);
 
         // get lined up for cone stack
-        goToPose(50, 0, 87,10000,true);
+        goToPose(50, 0, 87,2500,false);
 
         //go to cone stack
-        arm.goToPosition(0.057);
-        goToPose(50, 14, 87,10000,true);
+        arm.goToPosition(0.058);
+        sleep(100);
+        goToPose(50, 13, 87,10000,true);
         sleep(250);
 
+        // grab cone from stack, raise arm, and back up a little
         robot.ensureGripperClosed();
         sleep(400);
         robot.moveArmToStop(2);
         sleep(50);
-        goToPose(50, 6, 87,750,false);
+        goToPose(50, 0, 87,1200,false);
 
-        // line up for high junction
+        // turn around to go to high junction
         robot.moveArmToStop(3);
-        goToPose(50,-20,70,10000,true);
+        goToPose(54,-10.5,-36,10000,true);
 
-        // advance on high junction
-        goToPose(54, -18, 45,10000,true);
+
+//        // line up for high junction
+//        robot.moveArmToStop(3);
+//        goToPose(50,-20,70,2500,false);
+//
+//        // advance on high junction
+//        goToPose(54, -18, 45,10000,true);
+
+        // drop cone on high junction
         dunkCone(arm);
 
+        // straight back from high junction
+        goToPose(49,-5,-36,1000,false);
+
+
         // retreat from high junction
-        goToPose(48, -22, 45,10000,true);
+        //goToPose(48, -22, 45,10000,true);
 
         if (true) {
-            arm.goToPosition(0.054);
-            goToPose(50, 14, 87,10000,true);
+            arm.goToPosition(0.053);
+            sleep(250);
+            goToPose(50, 13, 87,10000,true);
             sleep(250);
 
             robot.ensureGripperClosed();
             sleep(400);
             robot.moveArmToStop(2);
             sleep(50);
-            goToPose(50, 6, 87,750,false);
+            goToPose(50, 6, 87,1000,false);
             robot.moveArmToStop(1);
-            goToPose(49, -4.5, 127,10000,true);
+            goToPose(48, -4.5, 127,10000,true);
             dunkCone(arm);
             robot.moveArmToStop(3);
         }
 
         switch (signalZone) {
-            case BLUE:
-                goToPose(48, -23, -179,10000,true);
-                break;
             case RED:
                 goToPose(50, 0, -175,10000,true);
                 break;
-            default:
+            case GREEN:
                 goToPose(50, 18, -178,3000,true);
+                break;
+            default:
+                goToPose(48, -23, -179,10000,true);
         }
 //        arm.goToPosition(0);
 //        while (arm.getPosition()>0.05){
