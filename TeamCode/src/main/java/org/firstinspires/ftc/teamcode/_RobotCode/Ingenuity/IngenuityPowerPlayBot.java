@@ -48,7 +48,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
 
     private double armStartPos = 0.0;
     private int armSetpointIdx = 0;
-    private double[] armStops = {0.0, 0.1455, 0.23177, 0.3476};
+    private double[] armStops = {0.0, 0.1555, 0.24177, 0.3576};
 
     public IngenuityPowerPlayBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
@@ -141,14 +141,16 @@ public class IngenuityPowerPlayBot extends BaseRobot
     }
 
     public SignalColor readSignal() {
-        SignalColor result = SignalColor.GREEN;
+        SignalColor result = SignalColor.BLUE;
         float[] hsvValues = new float[3];
         Color.RGBToHSV(colorSensor.red(), colorSensor.green(), colorSensor.blue(), hsvValues);
-        opMode.telemetry.addData("hsv ", hsvValues[0]);
-        if (hsvValues[0] < 90) result = SignalColor.RED;
-        else if (hsvValues[0] > 300)
-            result = SignalColor.RED;//red wraps back around: it's centered on 0/360 degrees
-        else if (hsvValues[0] > 190) result = SignalColor.BLUE;
+        float hue = hsvValues[0];
+        opMode.telemetry.addData("hue ", hue);
+        if (hue > 300 || hue < 90) {//red wraps back around: it's centered on 0/360 degrees
+            result = SignalColor.RED;
+        } else if (hue >= 90 && hue < 190) {
+            result = SignalColor.GREEN;
+        }
         opMode.telemetry.addData("result", result);
         return result;
     }
