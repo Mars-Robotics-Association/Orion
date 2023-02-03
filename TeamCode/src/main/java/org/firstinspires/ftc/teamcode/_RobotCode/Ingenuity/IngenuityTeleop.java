@@ -170,6 +170,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         switch (button) {
             case A:
                 speedMultiplier=TURBO_SPEED;
+                break;
             case RT:
                 robot.getPayload().getArm().setPowerRaw(armPower);
                 robot.resetArmStateMachine(); // use of the trigger resets arm position state
@@ -187,6 +188,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         switch (button) {
             case A:
                 speedMultiplier=STANDARD_SPEED;
+                break;
             case RT:
             case LT:
                 robot.getPayload().getArm().setPowerRaw(0);
