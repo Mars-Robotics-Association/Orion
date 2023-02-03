@@ -29,7 +29,7 @@ public class IngenuityAutoTester extends LinearOpMode
         waitForStart();
         robot.start();
         // ===================================================================
-        robot.closeGripper() ;
+        //robot.closeGripper() ;
         sleep(500) ;
         arm.goToPosition(armStops[3]) ;
         while (arm.getPosition()<0.2){
@@ -44,18 +44,18 @@ public class IngenuityAutoTester extends LinearOpMode
         goToPose(40,0,0); //move almost to next tile (away from us)
         goToPose(57,5,45) ; // Drive to place the cone on high junction
         sleep(500);
-        robot.openGripper() ; // release cone on high junction
+        //robot.openGripper() ; // release cone on high junction
         sleep(500);
         goToPose(49,0,0) ; // Back away from high junction
         arm.goToPosition(armStops[0]+0.05) ; // Start lowering the arm  + offset for stack
         sleep(1000);
 
         goToPose(50,-20,-90) ; // Drive to depot
-        robot.closeGripper() ;
+        //robot.closeGripper() ;
         sleep(500) ;
         arm.goToPosition(armStops[1]) ; // Raise arm for low junction
         goToPose(50,0,-135) ; // Drive to place the cone on high junction
-        robot.openGripper() ; // release cone on high junction
+        //robot.openGripper() ; // release cone on high junction
         sleep(500);
 
         turn(-90) ;
