@@ -33,8 +33,6 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     public static double armPower = 0.5;
 
 
-
-
     @Override
     public void init() {
         robot = new IngenuityPowerPlayBot(this, true, true, true);
@@ -117,9 +115,9 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         telemetry.addLine("Robot pose");
         Pose2d robotPose = robot.getNavigator().getMeasuredPose();
         telemetry.addData("X, Y, Angle",
-                Math.round(robotPose.getX()*100)/100
-                        + ", " + Math.round(robotPose.getY()*100)/100 + ", "
-                        + Math.round(Math.toDegrees(robotPose.getHeading())*100)/100);
+                Math.round(robotPose.getX() * 100) / 100
+                        + ", " + Math.round(robotPose.getY() * 100) / 100 + ", "
+                        + Math.round(Math.toDegrees(robotPose.getHeading()) * 100) / 100);
         telemetry.addLine();
     }
 
@@ -169,7 +167,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     public void ButtonHeld(int id, ControllerInput.Button button) {
         switch (button) {
             case A:
-                speedMultiplier=TURBO_SPEED;
+                speedMultiplier = TURBO_SPEED;
                 break;
             case RT:
                 robot.getPayload().getArm().setPowerRaw(armPower);
@@ -187,7 +185,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
     public void ButtonReleased(int id, ControllerInput.Button button) {
         switch (button) {
             case A:
-                speedMultiplier=STANDARD_SPEED;
+                speedMultiplier = STANDARD_SPEED;
                 break;
             case RT:
             case LT:

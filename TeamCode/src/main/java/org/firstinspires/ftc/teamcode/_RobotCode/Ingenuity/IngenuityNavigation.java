@@ -9,12 +9,11 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRo
 import org.firstinspires.ftc.teamcode.Navigation.UniversalThreeWheelNavigator;
 
 @Config
-class IngenuityNavigation extends UniversalThreeWheelNavigator
-{
+class IngenuityNavigation extends UniversalThreeWheelNavigator {
     ////Variables////
-    public static double[] nav_encoderMultipliers = {1, 1, -1} ; //left right horizontal
-    public static double nav_trackwidth = 7.0 ;
-    public static double nav_centerWheelOffset = -2.5 ;  // Check for Ingy
+    public static double[] nav_encoderMultipliers = {1, 1, -1}; //left right horizontal
+    public static double nav_trackwidth = 7.0;
+    public static double nav_centerWheelOffset = -2.5;  // Check for Ingy
 
     public static double nav_minSpeed = 0.2; //the min speed to move if not at the target location or rotation
     public static double nav_moveCoefficient = 0.1; //how aggressively to move

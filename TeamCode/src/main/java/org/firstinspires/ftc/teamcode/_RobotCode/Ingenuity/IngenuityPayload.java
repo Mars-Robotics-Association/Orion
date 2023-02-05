@@ -6,8 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.MotorArray;
 
-class IngenuityPayload
-{
+class IngenuityPayload {
     OpMode opMode;
     EncoderActuator arm;
 
@@ -32,6 +31,8 @@ class IngenuityPayload
 
     ////BASIC FUNCTIONS////
 
-    public EncoderActuator getArm(){return arm;}
+    public EncoderActuator getArm() {
+        return arm;
+    }
 
 }

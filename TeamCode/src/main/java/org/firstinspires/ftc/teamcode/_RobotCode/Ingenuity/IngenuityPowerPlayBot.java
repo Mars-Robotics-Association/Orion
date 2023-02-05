@@ -18,8 +18,7 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.Meca
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 
 @Config
-public class IngenuityPowerPlayBot extends BaseRobot
-{
+public class IngenuityPowerPlayBot extends BaseRobot {
     public enum SignalColor {
         BLUE,
         RED,
@@ -41,7 +40,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
     public static double servoTarget = servoTargetOpen;
 
     ColorSensor colorSensor;
-    DistanceSensor sensorDistance ;
+    DistanceSensor sensorDistance;
 
     //Misc
     FtcDashboard dashboard;
@@ -52,13 +51,13 @@ public class IngenuityPowerPlayBot extends BaseRobot
 
     public IngenuityPowerPlayBot(OpMode setOpMode, boolean useChassis, boolean usePayload, boolean useNavigator) {
         //set up robot state parent
-        super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
+        super(FieldSide.BLUE, new Pose(0, 0, 0), usePayload, useChassis, useNavigator);
         opMode = setOpMode;
 
         log = new HermesLog("Ingenuity", 50, opMode);
         dashboard = FtcDashboard.getInstance();
 
-        if(USE_CHASSIS) {
+        if (USE_CHASSIS) {
             //sensors
             //DistanceSensor portDistance = opMode.hardwareMap.get(DistanceSensor.class, "port distance");
             //DistanceSensor starboardDistance = opMode.hardwareMap.get(DistanceSensor.class, "starboard distance");
@@ -69,40 +68,40 @@ public class IngenuityPowerPlayBot extends BaseRobot
             navigator = new IngenuityNavigation(opMode, this, null, null, null);
         }
 
-        if(USE_PAYLOAD){
+        if (USE_PAYLOAD) {
             //intake
-            gripperServo= opMode.hardwareMap.servo.get("gripper");
+            gripperServo = opMode.hardwareMap.servo.get("gripper");
             colorSensor = opMode.hardwareMap.colorSensor.get("colorSensor");
             sensorDistance = opMode.hardwareMap.get(DistanceSensor.class, "colorSensor");
 
-            DcMotor armMotor = opMode.hardwareMap.dcMotor.get("armMotor") ;
-            armMotor.setDirection(DcMotorSimple.Direction.REVERSE) ;
+            DcMotor armMotor = opMode.hardwareMap.dcMotor.get("armMotor");
+            armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
             payload = new IngenuityPayload(opMode, armMotor);
         }
 
-        if(USE_NAVIGATOR){
+        if (USE_NAVIGATOR) {
 
         }
     }
 
     //SETUP METHODS//
-    public void init(){
+    public void init() {
 
     }
 
-    public void start(){
+    public void start() {
         getChassis().startChassis();
-        getNavigator().setMeasuredPose(0,0,0);
+        getNavigator().setMeasuredPose(0, 0, 0);
         log.start();
     }
 
-    public void update(){
+    public void update() {
 
-        if(USE_NAVIGATOR){
+        if (USE_NAVIGATOR) {
             navigator.update();
             RobotPose robotPose = new RobotPose(navigator.getTargetPose()[0],
-                    navigator.getTargetPose()[1],navigator.getTargetPose()[2],
-                    navigator.getMeasuredPose().getX(), navigator.getMeasuredPose().getY(),navigator.getMeasuredPose().getHeading());
+                    navigator.getTargetPose()[1], navigator.getTargetPose()[2],
+                    navigator.getMeasuredPose().getX(), navigator.getMeasuredPose().getY(), navigator.getMeasuredPose().getHeading());
             //converts camera footage to base 64 for gui
             //Base64Image cameraData = new Base64Image(
             //camera.convertBitmapToBase64(camera.shrinkBitmap(camera.getImage(),240,135),0));
@@ -111,15 +110,15 @@ public class IngenuityPowerPlayBot extends BaseRobot
             log.Update();
         }
 
-        if(USE_PAYLOAD){
+        if (USE_PAYLOAD) {
             gripperServo.setPosition(servoTarget);
 
         }
     }
 
     //make sure to stop everything!
-    public void stop(){
-        if(USE_CHASSIS){
+    public void stop() {
+        if (USE_CHASSIS) {
             navigator.getChassis().stop();
         }
     }
@@ -219,7 +218,15 @@ public class IngenuityPowerPlayBot extends BaseRobot
     }
 
 
-    public IngenuityNavigation getNavigator(){return navigator;}
-    public MecanumChassis getChassis(){return navigator.getChassis();}
-    public IngenuityPayload getPayload(){return payload;}
+    public IngenuityNavigation getNavigator() {
+        return navigator;
+    }
+
+    public MecanumChassis getChassis() {
+        return navigator.getChassis();
+    }
+
+    public IngenuityPayload getPayload() {
+        return payload;
+    }
 }

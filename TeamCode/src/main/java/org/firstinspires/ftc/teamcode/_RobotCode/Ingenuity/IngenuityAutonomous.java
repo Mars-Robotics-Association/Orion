@@ -15,8 +15,7 @@ import java.util.Date;
 
 @Autonomous(name = "Ingenuity Autonomous", group = "Ingenuity")
 @Config
-public class IngenuityAutonomous extends LinearOpMode
-{
+public class IngenuityAutonomous extends LinearOpMode {
     public static double speed = 0.6;
     IngenuityPowerPlayBot robot;
     //public DcMotor armMotor ;
@@ -25,7 +24,7 @@ public class IngenuityAutonomous extends LinearOpMode
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new IngenuityPowerPlayBot(this,true,true,true);
+        robot = new IngenuityPowerPlayBot(this, true, true, true);
         robot.init();
         robot.getChassis().setHeadlessMode(true);
         //armMotor = hardwareMap.dcMotor.get("armMotor") ;
@@ -41,7 +40,7 @@ public class IngenuityAutonomous extends LinearOpMode
         sleep(500);
         robot.moveArmToStop(2);
 
-        while (arm.getPosition()<0.1){
+        while (arm.getPosition() < 0.1) {
             robot.update();
             telemetry.update();
         }
@@ -49,9 +48,9 @@ public class IngenuityAutonomous extends LinearOpMode
         //scoot left a little
         goToPose(2, -4, 0, 1000, false);
         //go forward to the signal
-        goToPose(22,-2,0, 10000, true);
+        goToPose(22, -2, 0, 10000, true);
         //read the signal
-        signalZone=robot.readSignal();
+        signalZone = robot.readSignal();
         //wait
         sleep(50);
 
@@ -60,12 +59,12 @@ public class IngenuityAutonomous extends LinearOpMode
         dunkCone(arm);
 
         // get lined up for cone stack
-        goToPose(50, 0, 87,2500,false);
+        goToPose(50, 0, 87, 2500, false);
 
         //go to cone stack
         arm.goToPosition(0.058);
         sleep(100);
-        goToPose(50, 13, 87,10000,true);
+        goToPose(50, 13, 87, 10000, true);
         sleep(250);
 
         // grab cone from stack, raise arm, and back up a little
@@ -73,11 +72,11 @@ public class IngenuityAutonomous extends LinearOpMode
         sleep(400);
         robot.moveArmToStop(2);
         sleep(50);
-        goToPose(50, 0, 87,1200,false);
+        goToPose(50, 0, 87, 1200, false);
 
         // turn around to go to high junction
         robot.moveArmToStop(3);
-        goToPose(54,-10.5,-36,10000,true);
+        goToPose(54, -10.5, -36, 10000, true);
 
 
 //        // line up for high junction
@@ -91,7 +90,7 @@ public class IngenuityAutonomous extends LinearOpMode
         dunkCone(arm);
 
         // straight back from high junction
-        goToPose(49,-5,-36,1000,false);
+        goToPose(49, -5, -36, 1000, false);
 
 
         // retreat from high junction
@@ -100,29 +99,29 @@ public class IngenuityAutonomous extends LinearOpMode
         if (true) {
             arm.goToPosition(0.053);
             sleep(250);
-            goToPose(50, 13, 87,10000,true);
+            goToPose(50, 13, 87, 10000, true);
             sleep(250);
 
             robot.ensureGripperClosed();
             sleep(400);
             robot.moveArmToStop(2);
             sleep(50);
-            goToPose(50, 6, 87,1000,false);
+            goToPose(50, 6, 87, 1000, false);
             robot.moveArmToStop(1);
-            goToPose(48, -4.5, 127,10000,true);
+            goToPose(48, -4.5, 127, 10000, true);
             dunkCone(arm);
             robot.moveArmToStop(3);
         }
 
         switch (signalZone) {
             case RED:
-                goToPose(50, 0, -175,10000,true);
+                goToPose(50, 0, -175, 10000, true);
                 break;
             case GREEN:
-                goToPose(50, 18, -178,3000,true);
+                goToPose(50, 18, -178, 3000, true);
                 break;
             default:
-                goToPose(48, -23, -179,10000,true);
+                goToPose(48, -23, -179, 10000, true);
         }
 //        arm.goToPosition(0);
 //        while (arm.getPosition()>0.05){
@@ -135,7 +134,7 @@ public class IngenuityAutonomous extends LinearOpMode
         robot.moveArmToStop(0);
         robot.ensureGripperOpen();
 
-        while (!isStopRequested()){
+        while (!isStopRequested()) {
             telemetry.addData("SIGNAL READ: ", signalZone);
             telemetry.update();
         }
@@ -168,8 +167,9 @@ public class IngenuityAutonomous extends LinearOpMode
             robot.getChassis().stop();
         }
     }
+
     private void turn(double angle) {
-        while( robot.getNavigator().turnTowards(angle,speed) && !isStopRequested()) {
+        while (robot.getNavigator().turnTowards(angle, speed) && !isStopRequested()) {
             robot.update();
             telemetry.addData("SIGNAL READ: ", signalZone);
             telemetry.update();
@@ -179,17 +179,18 @@ public class IngenuityAutonomous extends LinearOpMode
     public void autoDrive() {
         // Move in rectangle, clockwise around the post
         // Move forward to 16x, 0y
-        goToPose(20,0,0,10000,true);
+        goToPose(20, 0, 0, 10000, true);
 
         // Strafe right to 16v, 16y
-        goToPose(20,20,0,10000,true);
+        goToPose(20, 20, 0, 10000, true);
 
         // Move backward to 0x, 16y
-        goToPose(0,20,0, 10000,true);
+        goToPose(0, 20, 0, 10000, true);
 
         // strafe left to 0x, 0y
-        goToPose(0,0,0, 10000,true);
+        goToPose(0, 0, 0, 10000, true);
     }
+
     private void printTelemetry() {
         /*
         //CONTROLS
@@ -217,17 +218,17 @@ public class IngenuityAutonomous extends LinearOpMode
         //Dead wheel positions
         telemetry.addLine("Dead wheel positions");
         double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
-        telemetry.addData("LEFT dead wheel:       ", deadWheelPositions[0]+" inches");
-        telemetry.addData("RIGHT dead wheel:      ", deadWheelPositions[1]+" inches");
-        telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
+        telemetry.addData("LEFT dead wheel:       ", deadWheelPositions[0] + " inches");
+        telemetry.addData("RIGHT dead wheel:      ", deadWheelPositions[1] + " inches");
+        telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2] + " inches");
         //Odometry estimated pose
         telemetry.addLine();
         telemetry.addLine("Robot pose");
         Pose2d robotPose = robot.getNavigator().getMeasuredPose();
         telemetry.addData("X, Y, Angle",
-                Math.round(robotPose.getX()*100)/100
-                        + ", " + Math.round(robotPose.getY()*100)/100 + ", "
-                        + Math.round(Math.toDegrees(robotPose.getHeading())*100)/100);
+                Math.round(robotPose.getX() * 100) / 100
+                        + ", " + Math.round(robotPose.getY() * 100) / 100 + ", "
+                        + Math.round(Math.toDegrees(robotPose.getHeading()) * 100) / 100);
         telemetry.addLine();
         telemetry.update();
     }
