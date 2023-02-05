@@ -18,18 +18,13 @@ import java.util.Date;
 public class IngenuityAutonomous extends LinearOpMode {
     public static double speed = 0.6;
     IngenuityPowerPlayBot robot;
-    //public DcMotor armMotor ;
     IngenuityPowerPlayBot.SignalColor signalZone = IngenuityPowerPlayBot.SignalColor.GREEN;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new IngenuityPowerPlayBot(this, true, true, true);
         robot.init();
         robot.getChassis().setHeadlessMode(true);
-        //armMotor = hardwareMap.dcMotor.get("armMotor") ;
-        //armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION) ;
-        //armMotor.setDirection(DcMotorSimple.Direction.REVERSE) ;
 
         waitForStart();
         robot.start();
@@ -74,29 +69,26 @@ public class IngenuityAutonomous extends LinearOpMode {
         sleep(50);
         goToPose(50, 0, 87, 1200, false);
 
-        // turn around to go to high junction
+
         robot.moveArmToStop(3);
-        goToPose(54, -10.5, -36, 10000, true);
+        boolean turnAroundForHighJunction = true;
+        if (turnAroundForHighJunction) {
+            goToPose(54, -10.5, -36, 10000, true);
+            dunkCone(arm);
+            // straight back from high junction
+            goToPose(49, -5, -36, 1000, false);
+        } else { // back up to high junction
+            // line up for high junction
+            goToPose(50, -20, 70, 2500, false);
+            // advance on high junction
+            goToPose(54, -18, 45, 10000, true);
+            dunkCone(arm);
+            // retreat from high junction
+            goToPose(48, -22, 45, 10000, true);
+        }
 
-
-//        // line up for high junction
-//        robot.moveArmToStop(3);
-//        goToPose(50,-20,70,2500,false);
-//
-//        // advance on high junction
-//        goToPose(54, -18, 45,10000,true);
-
-        // drop cone on high junction
-        dunkCone(arm);
-
-        // straight back from high junction
-        goToPose(49, -5, -36, 1000, false);
-
-
-        // retreat from high junction
-        //goToPose(48, -22, 45,10000,true);
-
-        if (true) {
+        boolean attemptLowJunction = true;
+        if (attemptLowJunction) {
             arm.goToPosition(0.053);
             sleep(250);
             goToPose(50, 13, 87, 10000, true);
@@ -123,12 +115,7 @@ public class IngenuityAutonomous extends LinearOpMode {
             default:
                 goToPose(48, -23, -179, 10000, true);
         }
-//        arm.goToPosition(0);
-//        while (arm.getPosition()>0.05){
-//            robot.update();
-//            telemetry.update();
-//        }
-//
+
         sleep(200);
 
         robot.moveArmToStop(0);
