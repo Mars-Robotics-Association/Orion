@@ -213,9 +213,9 @@ public class IngenuityAutonomous extends LinearOpMode {
         telemetry.addLine("Robot pose");
         Pose2d robotPose = robot.getNavigator().getMeasuredPose();
         telemetry.addData("X, Y, Angle",
-                Math.round(robotPose.getX() * 100) / 100
-                        + ", " + Math.round(robotPose.getY() * 100) / 100 + ", "
-                        + Math.round(Math.toDegrees(robotPose.getHeading()) * 100) / 100);
+                Math.round(robotPose.getX() * 200) / 200
+                        + ", " + Math.round(robotPose.getY() * 200) / 200 + ", "
+                        + Math.round(Math.toDegrees(robotPose.getHeading()) * 200) / 200);
         telemetry.addLine();
         telemetry.update();
     }
