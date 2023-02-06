@@ -7,6 +7,16 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Config
 public class IngenuityAutonomousRight extends IngenuityAutonomous {
     @Override
+    protected void posMedJunction() {
+        goToPose( 26.5, -1.5, -45, 10000, true);
+    }
+
+    @Override
+    protected void posPreStack() {
+        goToPose(50, 0, 87, 2500, false);
+    }
+
+    @Override
     protected void posStack() {
         goToPose(48, -3.5, 127, 10000, true);
     }
@@ -17,18 +27,8 @@ public class IngenuityAutonomousRight extends IngenuityAutonomous {
     }
 
     @Override
-    protected void posMedJunction() {
-       goToPose( 26.5, -1.5, -45, 10000, true);
-    }
-
-    @Override
-    protected void posPreStack() {
-        goToPose(50, 0, 87, 2500, false);
-    }
-
-    @Override
     protected void posHighJunction() {
-       goToPose(54, -10.5, -36, 10000, true);
+        goToPose(54, -10.5, -36, 10000, true);
     }
 
     @Override
