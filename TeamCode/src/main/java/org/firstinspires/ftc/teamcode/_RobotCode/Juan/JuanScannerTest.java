@@ -1,13 +1,8 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 
 @TeleOp(name = "*JUAN SCANNER TEST*", group = "JUAN")
 @Config
@@ -15,7 +10,6 @@ public class JuanScannerTest extends OpMode
 {
     ////Dependencies////
     private Juan robot;
-
     ////Variables////
     //Tweaking Vars
     public static double driveSpeed = 1;//used to change how fast robot drives
@@ -45,17 +39,17 @@ public class JuanScannerTest extends OpMode
         robot.getChassis().setHeadlessMode(false);
     }
 
-    boolean lastRun = false;
-
     @Override
     public void loop() {
         telemetry.addData("Version", Juan.VERSION);
 
+        SleeveColor color = SleeveColor.GREEN;
+
         try {
-            scanner.runScan();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            color = scanner.scan();
+        } catch (InterruptedException ignored){}
+
+        telemetry.addData("Scanner Result", color.name());
 
         //update robot
         robot.update();

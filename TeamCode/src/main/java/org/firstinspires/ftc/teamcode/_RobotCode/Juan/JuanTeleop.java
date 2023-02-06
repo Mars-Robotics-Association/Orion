@@ -21,6 +21,8 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
     ////Variables////
     //Tweaking Vars
+    public static double driveSpeed = 1;//used to change how fast robot drives
+    public static double turnSpeed = -1;//used to change how fast robot turns
     private final double speedMultiplier = 1;
 
     private final double liftOverrideSpeed = 5;
@@ -29,36 +31,26 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
     private JuanPayload payload;
 
-    private void t(int num) throws InterruptedException {
-        telemetry.addData("line", num);
-        telemetry.update();
-        sleep(1000);
-    }
-
     @Override
     public void init() {
-        try {
-            telemetry.setAutoClear(false);
-            t(0);
-            telemetry.addData("Speed Multiplier", speedMultiplier);
-            t(1);
-            robot = new Juan(this, false, false, false);
-            t(2);
-            controllerInput1 = new ControllerInput(gamepad1, 1);
-            t(3);
-            controllerInput1.addListener(this);
-            t(4);
-            controllerInput2 = new ControllerInput(gamepad2, 2);
-            t(5);
-            controllerInput2.addListener(this);
+        telemetry.setAutoClear(false);
 
-            payload = robot.getPayload();
+        telemetry.addData("Speed Multiplier", speedMultiplier);
 
-            telemetry.addData("Speed Multiplier", speedMultiplier);
-            telemetry.update();
-        }catch(InterruptedException e){
-            e.printStackTrace();
-        }
+        robot = new Juan(this, false, false, false);
+
+        controllerInput1 = new ControllerInput(gamepad1, 1);
+
+        controllerInput1.addListener(this);
+
+        controllerInput2 = new ControllerInput(gamepad2, 2);
+
+        controllerInput2.addListener(this);
+
+        payload = robot.getPayload();
+
+        telemetry.addData("Speed Multiplier", speedMultiplier);
+        telemetry.update();
     }
 
     @Override
@@ -83,12 +75,12 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
         robot.update();
         //manage driving
 
-        boolean isP2 = controllerInput2.calculateLJSMag() > 0.1 || Math.abs(controllerInput2.getRJSX()) > 0.1;
+        boolean isP1 = controllerInput1.calculateLJSMag() > 0.1 || Math.abs(controllerInput1.getRJSX()) > 0.1;
 
-        if(isP2){
-            chassis.driveWithGamepad(controllerInput2, speedMultiplier);
+        if(isP1){
+            chassis.driveWithGamepad(controllerInput1, -1);
         }else{
-            chassis.driveWithGamepad(controllerInput1, speedMultiplier);
+            chassis.driveWithGamepad(controllerInput2, -1);
         }
 
         telemetry.addData("Gripper Position", robot.getPayload().getGripper().getPosition());

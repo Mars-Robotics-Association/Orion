@@ -11,12 +11,15 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRo
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
+import org.opencv.core.Rect;
 
 public class Juan extends BaseRobot
 {
     public static final String VERSION = "1.17";
-    public static final SleeveReader.POST_PROCESS POST_PROCESS = SleeveReader.POST_PROCESS.BEAUTIFUL;
     public static final JuanPayload.LiftMode LIFT_MODE = JuanPayload.LiftMode.VERSION_1;
+    public static final Rect SCAN_BOUNDS = new Rect(
+            640, 360, 640, 360
+    );
 
     ////Dependencies////
     OpMode opMode;
@@ -26,13 +29,6 @@ public class Juan extends BaseRobot
 
     //Misc
     FtcDashboard dashboard;
-    Camera camera;
-
-    private void t(int num) throws InterruptedException {
-        opMode.telemetry.addData("line", num);
-        opMode.telemetry.update();
-        sleep(1000);
-    }
 
     static final double liftPower = 2;
 
@@ -43,25 +39,18 @@ public class Juan extends BaseRobot
         opMode.telemetry.addLine("JUAN");
         opMode.telemetry.update();
 
-        try {
-        t(0);this.opMode = opMode;
+        this.opMode = opMode;
 
-        t(1);dashboard = FtcDashboard.getInstance();
+        dashboard = FtcDashboard.getInstance();
 
-        t(2);if(USE_CHASSIS) {
+        if (USE_CHASSIS) {
 
-        t(3);    //initialize the chassis & navigator
-        t(4);    navigator = new JuanNavigation(opMode, this);
-        t(5);}
+            //initialize the chassis & navigator
+            navigator = new JuanNavigation(opMode, this);
+        }
 
-        t(6);if(USE_PAYLOAD){
-        t(7);    DcMotor lift = opMode.hardwareMap.dcMotor.get("lift");
-        t(8);    Servo gripper = opMode.hardwareMap.servo.get("gripper");
-        t(9);    Camera camera = new Camera(opMode, "Webcam 1");
-        t(10);    payload = new JuanPayload(opMode, false, lift, gripper, liftPower, camera);
-        t(11);}
-        }catch(InterruptedException e){
-            e.printStackTrace();
+        if (USE_PAYLOAD) {
+            payload = new JuanPayload(opMode, opMode.hardwareMap);
         }
 
         //if(USE_NAVIGATOR){}
