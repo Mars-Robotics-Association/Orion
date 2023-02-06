@@ -7,8 +7,9 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
+import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
-@TeleOp(name = "*JUAN TELEOP (RECOVERED 1.16.6)*", group = "JUAN")
+@TeleOp(name = "*JUAN TELEOP (RECOVERED 1.16.7)*", group = "JUAN")
 @Config
 public class JuanTeleop_RELEASED extends OpMode implements ControllerInputListener
 {
@@ -31,7 +32,7 @@ public class JuanTeleop_RELEASED extends OpMode implements ControllerInputListen
 
     @Override
     public void init() {
-        robot = new Juan_RELEASED(this,true,true,false);
+        robot = new Juan_RELEASED(this,true,true,true);
         controllerInput1 = new ControllerInput(gamepad1, 1);
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
@@ -96,6 +97,23 @@ public class JuanTeleop_RELEASED extends OpMode implements ControllerInputListen
         telemetry.addData("Turn with: ", "RJS");
         telemetry.addData("Toggle headless mode: ", "Press LOGITECH");
 
+        //DATA
+        telemetry.addLine();
+        telemetry.addLine("----DATA----");
+        //runtime
+        //telemetry.addData("Loop time ms: ", (getRuntime()-lastRuntime)*1000);
+        //Dead wheel positions
+        telemetry.addLine("Dead wheel positions");
+        double[] deadWheelPositions = robot.getNavigator().getDeadWheelPositions();
+        telemetry.addData("LEFT dead wheel: ", deadWheelPositions[0]+" inches");
+        telemetry.addData("RIGHT dead wheel: ", deadWheelPositions[1]+" inches");
+        telemetry.addData("HORIZONTAL dead wheel: ", deadWheelPositions[2]+" inches");
+        //Odometry estimated pose
+        telemetry.addLine();
+        telemetry.addLine("Robot pose");
+        Pose2d robotPose = robot.getNavigator().getMeasuredPose();
+        telemetry.addData("X, Y, Angle", robotPose.getX() + ", " + robotPose.getY() + ", " + Math.toDegrees(robotPose.getHeading()));
+
         if(robot.USE_PAYLOAD)robot.getPayload().printTelemetry();
     }
 
@@ -139,6 +157,7 @@ public class JuanTeleop_RELEASED extends OpMode implements ControllerInputListen
                     break;
                 case X:
                     lift.goToPreset(JuanPayload_RELEASED.LiftHeight.HIGH);
+                    break;
             }
 
     }

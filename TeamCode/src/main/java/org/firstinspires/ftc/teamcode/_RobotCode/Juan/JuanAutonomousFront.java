@@ -22,8 +22,8 @@ public class JuanAutonomousFront extends LinearOpMode
         robot.start();
         robot.getChassis().setHeadlessMode(true);
 
-        robot.getChassis().rawDrive(0, -5, 0);
-        sleep(500);
+        robot.getChassis().rawDrive(0, -0.5, 0);
+        sleep(1000);
         robot.getChassis().rawDrive(0, 0, 0);
     }
 }

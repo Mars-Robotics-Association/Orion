@@ -4,14 +4,18 @@ import android.graphics.Bitmap;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
+import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCV;
 import org.opencv.core.Mat;
-
-import java.util.Arrays;
+import org.opencv.core.Rect;
+import org.opencv.imgproc.Imgproc;
 
 class JuanPayload
 {
@@ -47,19 +51,15 @@ class JuanPayload
     }
 
     static class LiftController extends Controller{
-        private double power;
         private final DcMotor motor;
-
-        double c = 5;
 
         int computeHeight(LiftHeight height){
             return Juan.LIFT_MODE.positions[height.ordinal()];
         }
 
-        LiftController(JuanPayload payload, DcMotor motor, double power) {
+        LiftController(JuanPayload payload, DcMotor motor) {
             super(payload);
             this.motor = motor;
-            this.power = power;
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
@@ -83,7 +83,7 @@ class JuanPayload
         public void goToPreset(LiftHeight height){
             motor.setTargetPosition(computeHeight(height));
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motor.setPower(power);
+            motor.setPower(1);
         }
 
         public void manualMove(int direction){
@@ -143,47 +143,74 @@ class JuanPayload
         }
     }
 
-    static class SleeveScanner {
-        private final SleeveReader sleeveReader;
+    static class SleeveScanner extends Controller {
         private final Camera camera;
-        private final FtcDashboard dashboard;
-        private final FunctionStandIn<Bitmap, Bitmap> scanLambda;
 
-        SleeveScanner(Camera camera) {
+        SleeveScanner(JuanPayload payload, Camera camera) {
+            super(payload);
             this.camera = camera;
-            this.sleeveReader = new SleeveReader();
-            this.dashboard = FtcDashboard.getInstance();
-
-            FunctionStandIn<Bitmap, Mat> funcA = camera::convertBitmapToMat;
-            FunctionStandIn<Mat, Mat>    funcB = sleeveReader::processFrame;
-            FunctionStandIn<Mat, Bitmap> funcC = camera::convertMatToBitMap;
-
-            scanLambda = funcA.andThen(funcB).andThen(funcC);
         }
 
-        public Camera getCamera() {
-            return camera;
+        public SleeveColor scan() throws InterruptedException {
+            Camera c = camera;
+
+            Bitmap input = camera.getImage();
+            Mat mat = OpenCV.convertBitmapToMat(input);
+
+            Mat in = new Mat(mat, new Rect(
+                    (int) (mat.width() * 0.5 ),
+                    (int) (mat.height()* 0.66),
+                    (int) (mat.width() * 0.25),
+                    (int) (mat.height()* 0.33)
+            ));
+            Bitmap bitmap = c.shrinkBitmap(OpenCV.convertMatToBitMap(in), 50, 50);
+            in = c.convertBitmapToMat(bitmap);
+
+            FtcDashboard.getInstance().sendImage(bitmap);
+
+            int[] results = {0, 0, 0};
+
+            for(SleeveColor color : SleeveColor.values()){
+                Mat isolate = c.isolateColor(in, color.highColor, color.lowColor);
+                results[color.ordinal()] = c.countPixels(c.convertMatToBitMap(isolate));
+            }
+
+            int greenCount  = results[0];
+            int orangeCount = results[1];
+            int purpleCount = results[2];
+
+            Telemetry telemetry = getTelemetry();
+
+            telemetry.addData("Green%", greenCount);
+            telemetry.addData("Orange%", orangeCount);
+            telemetry.addData("Purple%", purpleCount);
+
+            if(greenCount>purpleCount&&greenCount>orangeCount){
+                return SleeveColor.GREEN;
+            } else if(orangeCount>greenCount&&orangeCount>purpleCount){
+                return SleeveColor.ORANGE;
+            } else{
+                return SleeveColor.PURPLE;
+            }
         }
 
-        SleeveColor[] colorArray = SleeveColor.values();
+        @Override
+        void printTelemetry() {
 
-        public SleeveColor runScan() throws InterruptedException {
-            dashboard.sendImage(scanLambda.apply(camera.getImage()));
-
-            Arrays.sort(colorArray, SleeveColor.comparator);
-            return colorArray[0];
         }
     }
 
     OpMode opMode;
 
     //initializer
-    public JuanPayload(OpMode opMode, boolean useScanner, DcMotor lift, Servo gripper, double liftPower, Camera camera) {
+    public JuanPayload(OpMode opMode, HardwareMap h) {
         this.opMode = opMode;
 
-        liftController = new LiftController(this, lift, liftPower);
-        gripperController = new GripperController(this, gripper);
-        sleeveScanner = new SleeveScanner(camera);
+        liftController = new LiftController(this, h.dcMotor.get("lift"));
+        gripperController = new GripperController(this, h.servo.get("gripper"));
+        sleeveScanner = new SleeveScanner(this,
+                new Camera(opMode, "Webcam 1")
+        );
     }
 
     private final LiftController liftController;
@@ -195,10 +222,11 @@ class JuanPayload
 
     //print telemetry
     public void printTelemetry(){
-        opMode.telemetry.addLine("----PAYLOAD----");
         opMode.telemetry.addLine("<LIFT>");
         liftController.printTelemetry();
         opMode.telemetry.addLine("<GRIPPER>");
         gripperController.printTelemetry();
+        opMode.telemetry.addLine("<SLEEVE>");
+        sleeveScanner.printTelemetry();
     }
 }
