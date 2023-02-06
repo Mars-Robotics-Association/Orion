@@ -41,7 +41,7 @@ abstract class IngenuityAutonomous extends LinearOpMode {
         //scoot left a little
         //goToPoseMapped(2, -4, 0, 1000, false);
         //go forward to the signal
-        goToPose(22, 0, 0, 10000, true);
+        goToPose(22, 0, 0, 2000, true);
         //read the signal
         signalZone = robot.readSignal();
         //wait
@@ -105,13 +105,13 @@ abstract class IngenuityAutonomous extends LinearOpMode {
 
         switch (signalZone) {
             case RED:
-                goToPose(50, 0, -175, 10000, true);
+                goToPose(50, 0, -175, 3000, true);
                 break;
             case GREEN:
                 goToPose(50, 20, -178, 3000, true);
                 break;
             default:
-                goToPose(48, -20, -179, 10000, true);
+                goToPose(48, -20, -179, 3000, true);
         }
 
         sleep(200);
