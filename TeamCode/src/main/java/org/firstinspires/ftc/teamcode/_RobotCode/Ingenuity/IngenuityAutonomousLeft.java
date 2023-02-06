@@ -9,7 +9,7 @@ public class IngenuityAutonomousLeft extends IngenuityAutonomous {
 
     @Override
     protected void posMedJunction() {
-        goToPose( 26.5, 1.5, 45, 2500, true);
+        goToPose(26.5, 1.5, 45, 2500, true);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class IngenuityAutonomousLeft extends IngenuityAutonomous {
 
     @Override
     protected void posPostStack() {
-        goToPose(47, -2, -87, 900, false);
+        goToPose(47, -2, -87, 750, false);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class IngenuityAutonomousLeft extends IngenuityAutonomous {
 
     @Override
     protected void posPostHighJunction() {
-        goToPose(49, 3, 36, 1000, false);
+        goToPose(49, 3, 36, 750, false);
     }
 
     @Override
