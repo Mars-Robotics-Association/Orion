@@ -32,7 +32,7 @@ public class CuriosityPayload
     //config
     public static double armBaseSpeed = -1;
     public static double liftBaseSpeed = -1;
-    public static double gripperOpenPos = 1;
+    public static double gripperOpenPos = 0.4;
     public static double gripperClosedPos = 0;
     public static double liftClearDistance = 3;
     public static double gripperTriggerDistance = 4.5;
@@ -88,8 +88,8 @@ public class CuriosityPayload
     public void update(double liftInput, double armInput){
         opMode.telemetry.addData("CURRENT TARGET POLE", targetPole);
         //clamps inputs to correct range
-        armInput*=armBaseSpeed;
-        armInput = Math.max(-armBaseSpeed, Math.min(armBaseSpeed, armInput));
+        /*armInput*=armBaseSpeed;
+        armInput = Math.max(-armBaseSpeed, Math.min(armBaseSpeed, armInput));*/
         //manage payload states
         switch (payloadState) {
             case MANUAL: manage_raw_control(liftInput,armInput); break;
@@ -122,8 +122,8 @@ public class CuriosityPayload
     void manage_raw_control(double liftInput, double armInput){
         hasCone = true;
         coneArrivedForPlacing = false;
-        arm.motors.runWithEncodersMode();
-        arm.setPowerClamped(armInput);
+        arm.setPowerRaw(armInput);
+
         if(levelSensor.isPressed()&&liftInput>0) {
             liftReset=true;
             lift.resetToZero();

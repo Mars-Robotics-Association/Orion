@@ -126,6 +126,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         //arm
         telemetry.addLine();
         telemetry.addData("Arm Input", armInput);
+        telemetry.addData("Lift Input", liftInput);
     }
 
     @Override
