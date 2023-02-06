@@ -35,8 +35,8 @@ public class IngenuityPowerPlayBot extends BaseRobot {
 
     // Gripper
     Servo gripperServo;
-    public static double servoTargetClosed = 0.37;//closed
-    public static double servoTargetOpen = 0.7;//open
+    public static double servoTargetClosed = 0.39;
+    public static double servoTargetOpen = 0.7;
     public static double servoTarget = servoTargetOpen;
 
     ColorSensor colorSensor;
@@ -131,6 +131,11 @@ public class IngenuityPowerPlayBot extends BaseRobot {
 
     public void ensureGripperOpen() {
         servoTarget = servoTargetOpen;
+        update();
+    }
+
+    public void gripperOpenWide() {
+        servoTarget = .88;
         update();
     }
 

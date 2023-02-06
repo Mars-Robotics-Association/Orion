@@ -6,18 +6,39 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous(name = "Ingenuity Autonomous Left", group = "Ingenuity")
 @Config
 public class IngenuityAutonomousLeft extends IngenuityAutonomous {
+
     @Override
-    protected double mapX(double x) {
-        return x;
+    protected void posMedJunction() {
+
     }
 
     @Override
-    protected double mapY(double y) {
-        return -y;
+    protected void posPreStack() {
+
     }
 
     @Override
-    protected double mapAngle(double angle) {
-        return -angle;
+    protected void posStack() {
+
+    }
+
+    @Override
+    protected void posPostStack() {
+
+    }
+
+    @Override
+    protected void posHighJunction() {
+
+    }
+
+    @Override
+    protected void posPostHighJunction() {
+
+    }
+
+    @Override
+    protected void posLowJunction() {
+
     }
 }

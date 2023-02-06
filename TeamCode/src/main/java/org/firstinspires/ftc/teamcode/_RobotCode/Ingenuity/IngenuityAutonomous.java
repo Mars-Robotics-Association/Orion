@@ -10,11 +10,13 @@ abstract class IngenuityAutonomous extends LinearOpMode {
     IngenuityPowerPlayBot robot;
     IngenuityPowerPlayBot.SignalColor signalZone = IngenuityPowerPlayBot.SignalColor.GREEN;
 
-    protected abstract double mapX(double x);
-
-    protected abstract double mapY(double y);
-
-    protected abstract double mapAngle(double angle);
+    protected abstract void posMedJunction();
+    protected abstract void posPreStack();
+    protected abstract void posStack();
+    protected abstract void posPostStack();
+    protected abstract void posHighJunction();
+    protected abstract void posPostHighJunction();
+    protected abstract void posLowJunction();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -37,66 +39,66 @@ abstract class IngenuityAutonomous extends LinearOpMode {
         }
 
         //scoot left a little
-        goToPoseMapped(2, -4, 0, 1000, false);
+        //goToPoseMapped(2, -4, 0, 1000, false);
         //go forward to the signal
-        goToPoseMapped(22, -2, 0, 10000, true);
+        goToPose(22, 0, 0, 10000, true);
         //read the signal
         signalZone = robot.readSignal();
         //wait
         sleep(50);
 
         // try to score on the medium junction
-        goToPoseMapped(26.5, -1.5, -45, 10000, true);
+        posMedJunction();
         dunkCone(arm);
 
         // get lined up for cone stack
-        goToPoseMapped(50, 0, 87, 2500, false);
+        posPreStack();
 
         //go to cone stack
         arm.goToPosition(0.058);
         sleep(100);
-        goToPoseMapped(50, 13, 87, 10000, true);
+        posStack();
         sleep(250);
 
         // grab cone from stack, raise arm, and back up a little
         robot.ensureGripperClosed();
         sleep(400);
         robot.moveArmToStop(2);
-        sleep(50);
-        goToPoseMapped(50, 0, 87, 1200, false);
+        sleep(100);
+        posPostStack();
 
 
         robot.moveArmToStop(3);
         boolean turnAroundForHighJunction = true;
         if (turnAroundForHighJunction) {
-            goToPoseMapped(54, -10.5, -36, 10000, true);
+            posHighJunction();
             dunkCone(arm);
             // straight back from high junction
-            goToPoseMapped(49, -5, -36, 1000, false);
+            posPostHighJunction();
         } else { // back up to high junction
-            // line up for high junction
-            goToPoseMapped(50, -20, 70, 2500, false);
-            // advance on high junction
-            goToPoseMapped(54, -18, 45, 10000, true);
-            dunkCone(arm);
-            // retreat from high junction
-            goToPoseMapped(48, -22, 45, 10000, true);
+//            // line up for high junction
+//            goToPoseMapped(50, -18, 70, 2500, false);
+//            // advance on high junction
+//            goToPoseMapped(54, -16, 45, 10000, true);
+//            dunkCone(arm);
+//            // retreat from high junction
+//            goToPoseMapped(48, -20, 45, 10000, true);
         }
 
         boolean attemptLowJunction = true;
         if (attemptLowJunction) {
             arm.goToPosition(0.053);
             sleep(250);
-            goToPoseMapped(50, 13, 87, 10000, true);
+            posStack();
             sleep(250);
 
             robot.ensureGripperClosed();
             sleep(400);
             robot.moveArmToStop(2);
             sleep(50);
-            goToPoseMapped(50, 6, 87, 1000, false);
+            posPostStack();
             robot.moveArmToStop(1);
-            goToPoseMapped(48, -4.5, 127, 10000, true);
+            posLowJunction();
             dunkCone(arm);
             robot.moveArmToStop(3);
         }
@@ -106,10 +108,10 @@ abstract class IngenuityAutonomous extends LinearOpMode {
                 goToPose(50, 0, -175, 10000, true);
                 break;
             case GREEN:
-                goToPose(50, 18, -178, 3000, true);
+                goToPose(50, 20, -178, 3000, true);
                 break;
             default:
-                goToPose(48, -23, -179, 10000, true);
+                goToPose(48, -20, -179, 10000, true);
         }
 
         sleep(200);
@@ -135,11 +137,7 @@ abstract class IngenuityAutonomous extends LinearOpMode {
         sleep(400);
     }
 
-    private void goToPoseMapped(double x, double y, double angle, int bailTime, boolean stopAtEnd) {
-        goToPose(mapX(x), mapY(y), mapAngle(angle), bailTime, stopAtEnd);
-    }
-
-    private void goToPose(double x, double y, double angle, int bailTime, boolean stopAtEnd) {
+    protected void goToPose(double x, double y, double angle, int bailTime, boolean stopAtEnd) {
         double started = this.time;
         IngenuityNavigation nav = robot.getNavigator();
         while (nav.goTowardsPose(x, y, angle, speed) && !isStopRequested()) {
