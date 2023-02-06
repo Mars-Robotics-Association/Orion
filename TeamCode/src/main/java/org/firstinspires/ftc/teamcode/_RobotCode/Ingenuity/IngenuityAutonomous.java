@@ -11,11 +11,17 @@ abstract class IngenuityAutonomous extends LinearOpMode {
     IngenuityPowerPlayBot.SignalColor signalZone = IngenuityPowerPlayBot.SignalColor.GREEN;
 
     protected abstract void posMedJunction();
+
     protected abstract void posPreStack();
+
     protected abstract void posStack();
+
     protected abstract void posPostStack();
+
     protected abstract void posHighJunction();
+
     protected abstract void posPostHighJunction();
+
     protected abstract void posLowJunction();
 
     @Override
@@ -38,13 +44,9 @@ abstract class IngenuityAutonomous extends LinearOpMode {
             telemetry.update();
         }
 
-        //scoot left a little
-        //goToPoseMapped(2, -4, 0, 1000, false);
         //go forward to the signal
         goToPose(22, 0, 0, 2000, true);
-        //read the signal
         signalZone = robot.readSignal();
-        //wait
         sleep(50);
 
         // try to score on the medium junction
@@ -54,53 +56,21 @@ abstract class IngenuityAutonomous extends LinearOpMode {
         // get lined up for cone stack
         posPreStack();
 
-        //go to cone stack
-        arm.goToPosition(0.058);
-        sleep(100);
-        posStack();
-        sleep(250);
+        pickUpConeFromStack(arm, 0.058);
 
-        // grab cone from stack, raise arm, and back up a little
-        robot.ensureGripperClosed();
-        sleep(400);
-        robot.moveArmToStop(2);
-        sleep(100);
-        posPostStack();
+        scoreOnHighJunction(arm);
 
+        if (this.time < 20) {
+            pickUpConeFromStack(arm, 0.053);
 
-        robot.moveArmToStop(3);
-        boolean turnAroundForHighJunction = true;
-        if (turnAroundForHighJunction) {
-            posHighJunction();
-            dunkCone(arm);
-            // straight back from high junction
-            posPostHighJunction();
-        } else { // back up to high junction
-//            // line up for high junction
-//            goToPoseMapped(50, -18, 70, 2500, false);
-//            // advance on high junction
-//            goToPoseMapped(54, -16, 45, 10000, true);
-//            dunkCone(arm);
-//            // retreat from high junction
-//            goToPoseMapped(48, -20, 45, 10000, true);
-        }
-
-        boolean attemptLowJunction = true;
-        if (attemptLowJunction) {
-            arm.goToPosition(0.053);
-            sleep(250);
-            posStack();
-            sleep(250);
-
-            robot.ensureGripperClosed();
-            sleep(400);
-            robot.moveArmToStop(2);
-            sleep(50);
-            posPostStack();
-            robot.moveArmToStop(1);
-            posLowJunction();
-            dunkCone(arm);
-            robot.moveArmToStop(3);
+            if (this.time < 18 || signalZone == IngenuityPowerPlayBot.SignalColor.RED) { // try high junction again if there's time
+                scoreOnHighJunction(arm);
+            } else { // score on the low junction
+                robot.moveArmToStop(1);
+                posLowJunction();
+                dunkCone(arm);
+                robot.moveArmToStop(3);
+            }
         }
 
         switch (signalZone) {
@@ -125,6 +95,29 @@ abstract class IngenuityAutonomous extends LinearOpMode {
         }
 
         robot.stop();
+    }
+
+    private void scoreOnHighJunction(EncoderActuator arm) {
+        robot.moveArmToStop(3);
+        posHighJunction();
+        dunkCone(arm);
+        // straight back from high junction
+        posPostHighJunction();
+    }
+
+    private void pickUpConeFromStack(EncoderActuator arm, double pos) {
+        //go to cone stack
+        arm.goToPosition(pos);
+        sleep(100);
+        posStack();
+        sleep(250);
+
+        // grab cone from stack, raise arm, and back up a little
+        robot.ensureGripperClosed();
+        sleep(400);
+        robot.moveArmToStop(2);
+        sleep(100);
+        posPostStack();
     }
 
     private void dunkCone(EncoderActuator arm) {
