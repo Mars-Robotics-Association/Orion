@@ -63,14 +63,11 @@ abstract class IngenuityAutonomous extends LinearOpMode {
         if (this.time < 20) {
             pickUpConeFromStack(arm, 0.053);
 
-            if (this.time < 18 || signalZone == IngenuityPowerPlayBot.SignalColor.RED) { // try high junction again if there's time
-                scoreOnHighJunction(arm);
-            } else { // score on the low junction
-                robot.moveArmToStop(1);
-                posLowJunction();
-                dunkCone(arm);
-                robot.moveArmToStop(3);
-            }
+            // score on the low junction
+            robot.moveArmToStop(1);
+            posLowJunction();
+            dunkCone(arm);
+            robot.moveArmToStop(3);
         }
 
         switch (signalZone) {
