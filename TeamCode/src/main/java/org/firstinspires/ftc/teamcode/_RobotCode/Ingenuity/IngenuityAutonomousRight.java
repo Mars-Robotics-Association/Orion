@@ -33,7 +33,7 @@ public class IngenuityAutonomousRight extends IngenuityAutonomous {
 
     @Override
     protected void posPostHighJunction() {
-        goToPose(49, -5, -36, 750, false);
+        goToPose(47, -5, -36, 750, false);
     }
 
     @Override
