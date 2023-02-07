@@ -169,20 +169,24 @@ public class CuriosityPayload
     void manageLoading(double liftInput, double armInput){
         //resets arm to loading position and opens gripper
         gripper.setPosition(gripperOpenPos);
-        double gripperDistance = intakeSensor.getDistance(DistanceUnit.CM);
+        double intakeDistance = intakeSensor.getDistance(DistanceUnit.CM);
 
         //telemetry
         opMode.telemetry.addLine("");
-        opMode.telemetry.addData("Gripper sensor distance", gripperDistance+" CM");
+        opMode.telemetry.addData("Intake sensor distance", intakeDistance+" CM");
 
-        //returns if arm is not reset and there is a cone in the gripper
-        if(!liftReset && gripperDistance<=gripperTriggerDistance){
-            opMode.telemetry.addLine("Please remove cone from gripper");
-            return;
-        }
+//        //returns if arm is not reset and there is a cone in the gripper
+//        if(!liftReset && intakeDistance<=gripperTriggerDistance){
+//            opMode.telemetry.addLine("Please remove cone from gripper");
+//            return;
+//        }
 
         //reset the lift's position
-        if(!liftReset) if(autoLevel()) return;
+        if(!liftReset || Math.abs(arm.getPosition()-pickupPose[1])>0){
+            if(!liftReset && autoLevel()) //reset lift
+            if(!liftReset) arm.goToPosition(pickupPose[1]); //reset arm
+            return;
+        }
         liftReset = true;
 
         //allows for user tweaking
@@ -191,7 +195,7 @@ public class CuriosityPayload
         opMode.telemetry.addLine("User tweaking enabled");
 
         //when distance sensor detects freight, closes gripper and switches to storage state
-        if(gripperDistance<=gripperTriggerDistance){//close the gripper
+        if(intakeDistance<=gripperTriggerDistance){//close the gripper
             opMode.telemetry.addLine("Closing gripper");
             gripper.setPosition(gripperClosedPos);
             if(gripperCooldown > 0) gripperCooldown-=getDeltaTime();//stay still for a bit to let gripper close

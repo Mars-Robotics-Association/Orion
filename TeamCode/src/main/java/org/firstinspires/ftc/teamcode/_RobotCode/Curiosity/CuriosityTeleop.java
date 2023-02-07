@@ -138,12 +138,11 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
     @Override
     public void ButtonPressed(int id, Button button) {
         switch (button) {
+
+            //DRIVING
             case A:// speed multiplier cycling
                 if (speedMultiplier == 1) speedMultiplier = 0.5;
                 else speedMultiplier = 1;
-                break;
-            case LJS:// toggle headless
-                robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
                 robot.getNavigator().setMeasuredPose(0, 0, 0);
@@ -151,8 +150,26 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 robot.getChassis().resetGyro();
                 break;
 
-            //PAYLOAD TESTING
-            case Y:
+            //PLACEMENT
+            case DUP:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.HIGH);
+                robot.getPayload().setSide(CuriosityPayload.Side.FRONT);
+                break;
+            case DLEFT:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.MID);
+                robot.getPayload().setSide(CuriosityPayload.Side.FRONT);
+                break;
+            case DRIGHT:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.LOW);
+                robot.getPayload().setSide(CuriosityPayload.Side.FRONT);
+                break;
+            case DDOWN:
+                robot.getPayload().setTargetPole(CuriosityPayload.Pole.GROUND);
+                robot.getPayload().setSide(CuriosityPayload.Side.FRONT);
+                break;
+
+            //PAYLOAD
+            case LJS:// toggle headless
                 robot.getPayload().toggleGripper();
                 break;
             case B:
@@ -160,6 +177,9 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 break;
             case X:
                 robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.MANUAL);
+                break;
+            case Y:
+                robot.getPayload().setPayloadState(CuriosityPayload.PayloadState.PLACING);
                 break;
         }
     }
