@@ -38,7 +38,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         dash = FtcDashboard.getInstance();
 
-        robot = new CuriosityBot(this,null,true,true,true);
+        robot = new CuriosityBot(this,null,true,true,true,true);
         robot.init();
 //        arm = robot.getPayload().arm;
 //        gripper = robot.getPayload().gripper;
@@ -121,7 +121,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
     //move this somewhere else if it goes in a different class
     double getConeSide(Camera c) throws InterruptedException {
         Bitmap img = c.getImage();
-        Mat cropped = new Mat(c.convertBitmapToMat(img),new Rect(5*img.getWidth()/8,img.getHeight()/3,img.getWidth()/4,img.getHeight()/3));
+        Mat cropped = new Mat(c.convertBitmapToMat(img),new Rect(0*img.getWidth(),0*img.getHeight(),img.getWidth(),img.getHeight()));
         Bitmap img2=c.convertMatToBitMap(cropped);
         Mat in = c.convertBitmapToMat(c.shrinkBitmap(img2,20,20));
         dash.sendImage(img);
