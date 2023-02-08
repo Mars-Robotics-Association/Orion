@@ -3,20 +3,23 @@ package org.firstinspires.ftc.teamcode._RobotCode.Juan_RELEASED;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput.Button;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
-@TeleOp(name = "**JUAN TELEOP (RECOVERED 1.16.7)**", group = "OPPY")
+@TeleOp(name = "**JUAN TELEOP (TESTING 1.16.8)**", group = "OPPY")
 @Config
-public class JuanTeleop_RELEASED extends OpMode implements ControllerInputListener
+public class JuanTeleop_RELEASED_CALIBRATION extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
     private Juan_RELEASED robot;
     private ControllerInput controllerInput1;
     private ControllerInput controllerInput2;
+
+    private boolean IsBusy = false;
 
     ////Variables////
     //Tweaking Vars
@@ -37,6 +40,8 @@ public class JuanTeleop_RELEASED extends OpMode implements ControllerInputListen
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
+
+        msStuckDetectLoop = 30000;
 
         payload = robot.getPayload();
 
@@ -68,10 +73,12 @@ public class JuanTeleop_RELEASED extends OpMode implements ControllerInputListen
 
         boolean isP2 = controllerInput2.calculateLJSMag() > 0.1 || Math.abs(controllerInput2.getRJSX()) > 0.1;
 
-        if(isP2){
-            chassis.driveWithGamepad(controllerInput2, 1);
-        }else{
-            chassis.driveWithGamepad(controllerInput1, 1);
+        if( !IsBusy) {
+            if (isP2) {
+                chassis.driveWithGamepad(controllerInput2, 1);
+            } else {
+                chassis.driveWithGamepad(controllerInput1, 1);
+            }
         }
 
         telemetry.addData("Gripper Position", robot.getPayload().getGripper().getPosition());
@@ -157,6 +164,11 @@ public class JuanTeleop_RELEASED extends OpMode implements ControllerInputListen
                     break;
                 case X:
                     lift.goToPreset(JuanPayload_RELEASED.LiftHeight.HIGH);
+                case RJS:
+                    simAutonmous();
+//                    robot.getNavigator().setMeasuredPose(0, 0, 0);
+//                    robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
+//                    robot.getChassis().resetGyro();
                     break;
             }
 
@@ -164,8 +176,11 @@ public class JuanTeleop_RELEASED extends OpMode implements ControllerInputListen
 
     @Override
     public void ButtonHeld(int id, Button button) {
-        switch (button){
+        switch (button) {
 
+            case GUIDE:
+                robot.getNavigator().turnTowards(180, 0.5);
+                break;
         }
     }
 
@@ -175,4 +190,100 @@ public class JuanTeleop_RELEASED extends OpMode implements ControllerInputListen
 
         }
     }
+
+    void simAutonmous() {
+        // SIMULATE AUTONOMOUS RUN
+        JuanPayload_RELEASED payload = robot.getPayload();
+        JuanPayload_RELEASED.LiftController lift = payload.getLift();
+        JuanPayload_RELEASED.GripperController gripper = payload.getGripper();
+
+        // CLOSE Gripper
+        gripper.release();
+
+        // Go to edge of SQUARE 4
+        //goToPoseNoTimer(59, 0, 0, 1);
+        while(robot.navigator.goTowardsPose( 59, 0, 0, 1) ) {
+            robot.update();
+            telemetry.update();
+        }
+
+        // Set Lift height to Cruise
+        lift.goToPreset(JuanPayload_RELEASED.LiftHeight.CRUISE);
+
+        // Turn to Terminal
+        //goToPoseNoTimer(59, 0, -85, .5);
+        while(robot.navigator.goTowardsPose( 59, 0, -85, .5) ) {
+            robot.update();
+            telemetry.update();
+        }
+
+        // Raise Lift to HIGH
+        lift.goToPreset(JuanPayload_RELEASED.LiftHeight.HIGH);
+
+        // Wait for lift
+        while ( java.lang.Math.abs( lift.getLiftPosition() - lift.getLiftCurrentTargetPosition() ) > 50 ) {
+            robot.update();
+            telemetry.update();
+        }
+
+        // Move over terminal
+        //goToPoseNoTimer( 59, -3.5,-85,.5);
+        while(robot.navigator.goTowardsPose( 59, -3.5, -85, .5) ) {
+            robot.update();
+            telemetry.update();
+        }
+
+        // Lower Lift to MEDIUM
+        lift.goToPreset(JuanPayload_RELEASED.LiftHeight.MEDIUM);
+
+        // Release Grip
+        gripper.grab();
+
+        // Back away
+        //goToPoseNoTimer (59, -1, -85, .5);
+        while(robot.navigator.goTowardsPose( 59, -1.5, -85, .5) ) {
+            robot.update();
+            telemetry.update();
+        }
+
+        // Turn back to Stack
+        //goToPoseNoTimer (59, 0, -180, .5);
+        while(robot.navigator.goTowardsPose(59, -1.5, -180, .5) ) {
+            robot.update();
+            telemetry.update();
+        }
+
+//        sleep (1000);
+
+        //goToPoseNoTimer (47, 0, -180, 1);
+        while(robot.navigator.goTowardsPose(47, 0, -180, 1) ) {
+            robot.update();
+            telemetry.update();
+        }
+
+        // Drive to Stack 1
+//        goToPoseNoTimer( 45,0,90,1 );
+
+        // Go to center of SQUARE 2
+        //goToPoseNoTimer( 26,0,0,1);
+
+    }
+
+    void goToPose(double x, double y, double angle, double speed) {
+        while(robot.navigator.goTowardsPose(x,y,angle,speed) ) { //&& !isStopRequested()) {
+            robot.update();
+            telemetry.update();
+        }
+
+    }
+
+    public final void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+
 }
