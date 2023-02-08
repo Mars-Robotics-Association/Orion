@@ -38,7 +38,7 @@ public class CuriosityBot extends BaseRobot
     //Misc
     FtcDashboard dashboard;
 
-    public CuriosityBot(OpMode setOpMode, ControllerInput setGamepad, boolean useChassis, boolean usePayload, boolean useNavigator) {
+    public CuriosityBot(OpMode setOpMode, ControllerInput setGamepad, boolean useChassis, boolean usePayload, boolean useNavigator, boolean useCamera) {
         //set up robot state parent
         super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
         opMode = setOpMode;
@@ -46,7 +46,9 @@ public class CuriosityBot extends BaseRobot
         gamepad = setGamepad;
         dashboard = FtcDashboard.getInstance();
         setLog(new HermesLog("Curiosity", 200, opMode));
-        //if(USE_PAYLOAD) camera = new Camera(opMode,"Webcam 1");
+
+
+        if(useCamera) camera = new Camera(opMode,"Webcam 1");
 
 
         if(USE_CHASSIS) {
