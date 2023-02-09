@@ -53,7 +53,7 @@ public class DCMotorArray
         if(!useEncoders) return;
         int i = 0;
         for (DcMotor m: motors) {
-            m.setTargetPosition(positions[i]);
+            m.setTargetPosition((int)(positions[i]*speedMultipliers[i]));
             i++;
         }
         if(runToPositionsImmediate) {
@@ -65,7 +65,7 @@ public class DCMotorArray
         if(!useEncoders) return;
         int i = 0;
         for (DcMotor m: motors) {
-            m.setTargetPosition(position);
+            m.setTargetPosition((int)(position*speedMultipliers[i]));
             i++;
         }
         if(runToPositionImmediate) {

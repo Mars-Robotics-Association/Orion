@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
@@ -74,7 +75,7 @@ public class CuriosityBot extends BaseRobot
             levelSensor = opMode.hardwareMap.get(TouchSensor.class, "level sensor");
 
             payload= new CuriosityPayload(opMode, gamepad, lift,
-                    arm, gripper, gripperDist, levelSensor);
+                    arm, gripper, gripperDist, levelSensor, new BlinkinController(opMode));
 
         }
 
