@@ -24,7 +24,7 @@ public class JuanAutonomous_RELEASED extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new CuriosityBot(this,null,true,true,true);
+        robot = new CuriosityBot(this,null,true,true,true,true);
         robot.init();
 
         //START
