@@ -75,7 +75,7 @@ public class CuriosityPayload
 
 
     public CuriosityPayload(OpMode setOpMode, ControllerInput setGamepad, EncoderActuator setLift,
-                            EncoderActuator setArm, Servo setGripper, DistanceSensor setIntakeSensor, TouchSensor setLevelSensor){
+                            EncoderActuator setArm, Servo setGripper, DistanceSensor setIntakeSensor, TouchSensor setLevelSensor, BlinkinController setLights){
         opMode = setOpMode;
         lift = setLift;
         arm = setArm;
@@ -83,19 +83,20 @@ public class CuriosityPayload
         intakeSensor = setIntakeSensor;
         gamepad = setGamepad;
         levelSensor = setLevelSensor;
+        lights = setLights;
     }
 
     public void update(double liftInput, double armInput){
         opMode.telemetry.addData("TARGET POLE", targetPole);
         opMode.telemetry.addData("TARGET SIDE", targetSide);
-        opMode.telemetry.addData("TARGET POSE", getPolePose(targetPole,targetSide));
+        opMode.telemetry.addData("TARGET POSE", getPolePose(targetPole,targetSide)[0] + ", " + getPolePose(targetPole,targetSide)[1]);
 
         //manage payload states
         switch (payloadState) {
             case MANUAL: manage_raw_control(liftInput,armInput); break;
             case STOPPED: stop(); break;
             case LOADING: manageLoading(liftInput,armInput); break;
-            case PLACING: manageTarget(getPolePose(targetPole,targetSide),liftInput,armInput); break;
+            case PLACING: managePlacing(getPolePose(targetPole,targetSide),liftInput,armInput); break;
         }
         lastLoopTime = opMode.getRuntime();
 
@@ -122,11 +123,11 @@ public class CuriosityPayload
         arm.setPowerRaw(armInput);
 
         //lock the lift's position if its stopped
-        if(liftInput == 0){
+        /*if(liftInput == 0){
             lift.goToPosition(currentLiftHeight);
-        }
+        }*/
         //if the lift is at the bottom and needs to be reset
-        else if(levelSensor.isPressed()&&liftInput>0) {
+        if(levelSensor.isPressed()&&liftInput>0) {
             liftReset=true;
             lift.resetToZero();
             lift.setPowerClamped(0);
@@ -210,15 +211,15 @@ public class CuriosityPayload
         }
     }
 
-    void manageTarget(double[] polePose, double liftInput, double armInput){
+    void managePlacing(double[] polePose, double liftInput, double armInput){
         opMode.telemetry.addLine("");
         opMode.telemetry.addLine("Managing placing!");
 
         //moves arm to ground target height
         if(!coneArrivedForPlacing) {
-            opMode.telemetry.addData("Going to target", polePose[0]+", "+polePose[1]);
+            opMode.telemetry.addData("Going to target", polePose[0] +", "+polePose[1]);
             opMode.telemetry.addData("Current height", arm.getPosition());
-            arm.goToPosition(polePose[0]);
+            lift.goToPosition(polePose[0]);
             arm.goToPosition(polePose[1]);
             //waits until its gotten high enough
             if((Math.abs(arm.getPosition()-polePose[1])<0.2)&&(Math.abs(lift.getPosition()-polePose[0])<0.2)) {
