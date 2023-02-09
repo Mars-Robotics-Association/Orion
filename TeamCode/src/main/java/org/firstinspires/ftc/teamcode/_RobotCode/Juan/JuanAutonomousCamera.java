@@ -4,7 +4,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+<<<<<<< Updated upstream
 @Autonomous(name = "JUAN CAMERA", group = "JUAN")
+=======
+@Autonomous(name = "JUAN FRONT CAMERA", group = "JUAN")
+>>>>>>> Stashed changes
 @Config
 public class JuanAutonomousCamera extends LinearOpMode
 {

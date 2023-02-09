@@ -47,9 +47,13 @@ public class CuriosityBot extends BaseRobot
         gamepad = setGamepad;
         dashboard = FtcDashboard.getInstance();
         setLog(new HermesLog("Curiosity", 200, opMode));
+<<<<<<< Updated upstream
 
 
         if(useCamera) camera = new Camera(opMode,"Webcam 1");
+=======
+        if(USE_PAYLOAD) camera = new Camera(opMode,"Webcam 1");
+>>>>>>> Stashed changes
 
 
         if(USE_CHASSIS) {
