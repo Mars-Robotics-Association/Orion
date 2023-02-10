@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
+import android.graphics.Bitmap;
+
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
+import org.opencv.core.Mat;
 
 @TeleOp(name = "*JUAN CAMERA VIEW*", group = "JUAN")
 @Config
@@ -37,6 +41,12 @@ public class JuanCameraView extends OpMode
 
         printTelemetry();
         telemetry.update();
+
+        try {
+            Bitmap bitmap = camera.getImage();
+            Mat mat = camera.convertBitmapToMat(bitmap);
+
+        } catch (InterruptedException ignored) {}
     }
 
     //prints a large amount of telemetry for the robot

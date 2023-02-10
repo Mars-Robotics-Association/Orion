@@ -11,9 +11,12 @@ public class Juan extends BaseRobot
 {
     public static final String VERSION = "1.17";
     public static final JuanPayload.LiftMode LIFT_MODE = JuanPayload.LiftMode.VERSION_1;
-    public static final Rect SCAN_BOUNDS = new Rect(
-            640, 360, 640, 360
-    );
+    public static final float[] SCAN_BOUNDS = {
+             .33f
+            ,.5f
+            ,.33f
+            ,.5f
+    };
 
     ////Dependencies////
     OpMode opMode;
@@ -34,6 +37,8 @@ public class Juan extends BaseRobot
         opMode.telemetry.update();
 
         this.opMode = opMode;
+
+        setChassisProfile(new _ChassisProfile());
 
         dashboard = FtcDashboard.getInstance();
 

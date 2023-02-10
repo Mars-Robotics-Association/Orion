@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "JUAN BACK", group = "JUAN")
+@Autonomous(name = "JUAN AUTO BACK", group = "JUAN")
 @Config
 public class JuanAutonomousBack extends LinearOpMode
 {
