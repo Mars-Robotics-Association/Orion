@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
 @TeleOp(name = "*JUAN CAMERA VIEW*", group = "JUAN")

@@ -4,10 +4,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
-import org.firstinspires.ftc.teamcode.Navigation.Camera;
-import org.opencv.core.Mat;
-
 @Autonomous(name = "JUAN FRONT", group = "JUAN")
 @Config
 public class JuanAutonomousFront extends LinearOpMode

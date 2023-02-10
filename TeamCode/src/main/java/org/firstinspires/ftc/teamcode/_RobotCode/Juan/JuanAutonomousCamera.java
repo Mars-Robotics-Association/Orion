@@ -10,12 +10,6 @@ public class JuanAutonomousCamera extends LinearOpMode
 {
     Juan robot;
 
-    enum ParkPaths{
-        A(),
-        B(),
-        C();
-    }
-
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Juan(this,true,true, false);
@@ -23,8 +17,23 @@ public class JuanAutonomousCamera extends LinearOpMode
         waitForStart();
         robot.start();
         robot.getChassis().setHeadlessMode(true);
+        JuanNavigation nav = robot.navigator;
+        nav.InitializeNavigator(this, robot);
+        nav.setMeasuredPose(0, 0, 0);
+
         SleeveColor result = robot.payload.getScanner().scan();
 
-
+        switch(result){
+            case GREEN:
+                nav.goTowardsPose(0, 18, 0, 1);
+                nav.goTowardsPose(-18, 18, 0, 1);
+                break;
+            case ORANGE:
+                nav.goTowardsPose(0, 18, 0, 1);
+                break;
+            case PURPLE:
+                nav.goTowardsPose(0, 18, 0, 1);
+                nav.goTowardsPose(18, 18, 0, 1);
+        }
     }
 }

@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
-import android.graphics.Color;
-
 import org.opencv.core.Scalar;
-
-import java.util.Comparator;
 
 public enum SleeveColor {
     GREEN (105,217,181,62, 69, 0  ),
