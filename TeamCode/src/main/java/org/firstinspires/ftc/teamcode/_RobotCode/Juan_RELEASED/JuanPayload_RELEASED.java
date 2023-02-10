@@ -25,19 +25,25 @@ class JuanPayload_RELEASED
     }
 
     enum LiftMode {
-        VERSION_1(   0,1800,3100,4500),
-        VERSION_2(   0,   0,   0,   0);
+        VERSION_1(   0,1800,3100,4500, 800, 1500, 2100, 3500, 650, 650),
+        VERSION_2(   0,   0,   0,   0, 0, 0, 0, 0, 0, 0);
 
         final int[] positions;
 
-        LiftMode(int a,int b,int c, int d) { positions = new int[]{a,b,c,d}; }
+        LiftMode(int a,int b,int c, int d, int e, int f, int g, int h, int i, int j ) { positions = new int[]{a,b,c,d,e,f,g,h,i,j}; }
     }
 
     enum LiftHeight {
         BOTTOM,
         LOW,
         MEDIUM,
-        HIGH
+        HIGH,
+        CRUISE,
+        LOW_RELEASE,
+        MEDIUM_RELEASE,
+        HIGH_RELEASE,
+        STACK_1,
+        STACK_2,
     }
 
    /* enum PresetHeight{
@@ -93,6 +99,14 @@ class JuanPayload_RELEASED
             motor.setTargetPosition(computeHeight(height));
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motor.setPower(power);
+        }
+
+        public int getLiftPosition () {
+            return motor.getCurrentPosition();
+        }
+
+        public int getLiftCurrentTargetPosition() {
+            return motor.getTargetPosition();
         }
 
         public void manualMove(int direction){

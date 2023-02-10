@@ -24,7 +24,7 @@ class JuanNavigation_RELEASED extends UniversalThreeWheelNavigator
     public static double nav_moveSmoothCoefficient = 0.1; //how much to ramp movement into its final speed
     public static double nav_turnCoefficient = 0.02; //how aggressively to turn
     public static double nav_turnSmoothCoefficient = 0.1; //how much to ramp turning into its final speed
-
+    public static double slowDistance = 0; //when to start slowing down
 
     public static double nav_stopDistance = .5; //inches away for robot to stop
     public static double nav_stopDegrees = 2; //degrees away for robot to stop

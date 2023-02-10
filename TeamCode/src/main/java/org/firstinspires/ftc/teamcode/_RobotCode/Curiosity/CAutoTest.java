@@ -28,7 +28,7 @@ public class CAutoTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         dash = FtcDashboard.getInstance();
 
-        robot = new CuriosityBot(this,null,true,true,true);
+        robot = new CuriosityBot(this,null,true,true,true,true);
         robot.init();
 
         waitForStart();

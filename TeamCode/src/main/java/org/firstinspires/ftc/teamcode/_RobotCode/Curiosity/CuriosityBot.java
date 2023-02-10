@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
+import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Extras.BlinkinController;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
@@ -38,7 +39,7 @@ public class CuriosityBot extends BaseRobot
     //Misc
     FtcDashboard dashboard;
 
-    public CuriosityBot(OpMode setOpMode, ControllerInput setGamepad, boolean useChassis, boolean usePayload, boolean useNavigator) {
+    public CuriosityBot(OpMode setOpMode, ControllerInput setGamepad, boolean useChassis, boolean usePayload, boolean useNavigator, boolean useCamera) {
         //set up robot state parent
         super(FieldSide.BLUE,new Pose(0,0,0),usePayload,useChassis,useNavigator);
         opMode = setOpMode;
@@ -46,7 +47,9 @@ public class CuriosityBot extends BaseRobot
         gamepad = setGamepad;
         dashboard = FtcDashboard.getInstance();
         setLog(new HermesLog("Curiosity", 200, opMode));
-        //if(USE_PAYLOAD) camera = new Camera(opMode,"Webcam 1");
+
+        if(USE_PAYLOAD) camera = new Camera(opMode,"Webcam 1");
+
 
 
         if(USE_CHASSIS) {
@@ -72,7 +75,7 @@ public class CuriosityBot extends BaseRobot
             levelSensor = opMode.hardwareMap.get(TouchSensor.class, "level sensor");
 
             payload= new CuriosityPayload(opMode, gamepad, lift,
-                    arm, gripper, gripperDist, levelSensor);
+                    arm, gripper, gripperDist, levelSensor, new BlinkinController(opMode));
 
         }
 

@@ -20,7 +20,7 @@ public class CuriosityPayload
     EncoderActuator lift;
     public EncoderActuator getLift(){return lift;}
     Servo gripper;
-    DistanceSensor gripperSensor;
+    DistanceSensor intakeSensor;
     TouchSensor levelSensor;
     ControllerInput gamepad;
     BlinkinController lights;
@@ -32,7 +32,7 @@ public class CuriosityPayload
     //config
     public static double armBaseSpeed = -1;
     public static double liftBaseSpeed = -1;
-    public static double gripperOpenPos = 1;
+    public static double gripperOpenPos = 0.4;
     public static double gripperClosedPos = 0;
     public static double liftClearDistance = 3;
     public static double gripperTriggerDistance = 4.5;
@@ -51,15 +51,14 @@ public class CuriosityPayload
     Side targetSide = Side.FRONT;
     public void setPayloadState(PayloadState state){
         payloadState = state;
-//        switch (payloadState){
-//            case RAW_CONTROL: lights.green(); break;
-//            case STOPPED: lights.red(); break;
-//            case LOADING: lights.yellow(); break;
-//            case STORAGE: lights.blue(); break;
-//            case PLACING: lights.purple(); break;
-//
-//        }
-//        lights.setCooldown(1);
+        switch (payloadState){
+            case MANUAL: lights.green(); break;
+            case STOPPED: lights.red(); break;
+            case LOADING: lights.yellow(); break;
+            case PLACING: lights.blue(); break;
+
+        }
+        lights.setCooldown(1);
     }
     public void setTargetPole(Pole pole){targetPole = pole;}
     public void setSide(Side side){targetSide=side;}
@@ -72,36 +71,35 @@ public class CuriosityPayload
     double liftCooldown = defaultCooldown;
     boolean gripperOpen = false;
     boolean coneArrivedForPlacing = false;
+    double currentLiftHeight = 0;
 
 
     public CuriosityPayload(OpMode setOpMode, ControllerInput setGamepad, EncoderActuator setLift,
-                            EncoderActuator setArm, Servo setGripper, DistanceSensor setGripperSensor, TouchSensor setLevelSensor){
+                            EncoderActuator setArm, Servo setGripper, DistanceSensor setIntakeSensor, TouchSensor setLevelSensor, BlinkinController setLights){
         opMode = setOpMode;
         lift = setLift;
         arm = setArm;
         gripper = setGripper;
-        gripperSensor = setGripperSensor;
+        intakeSensor = setIntakeSensor;
         gamepad = setGamepad;
         levelSensor = setLevelSensor;
+        lights = setLights;
     }
 
     public void update(double liftInput, double armInput){
-        opMode.telemetry.addData("CURRENT TARGET POLE", targetPole);
-        //clamps inputs to correct range
-        armInput*=armBaseSpeed;
-        armInput = Math.max(-armBaseSpeed, Math.min(armBaseSpeed, armInput));
+        opMode.telemetry.addData("TARGET POLE", targetPole);
+        opMode.telemetry.addData("TARGET SIDE", targetSide);
+        opMode.telemetry.addData("TARGET POSE", getPolePose(targetPole,targetSide)[0] + ", " + getPolePose(targetPole,targetSide)[1]);
+
         //manage payload states
         switch (payloadState) {
             case MANUAL: manage_raw_control(liftInput,armInput); break;
             case STOPPED: stop(); break;
             case LOADING: manageLoading(liftInput,armInput); break;
-            case PLACING: manageTarget(getPolePose(targetPole,targetSide),liftInput,armInput); break;
+            case PLACING: managePlacing(getPolePose(targetPole,targetSide),liftInput,armInput); break;
         }
         lastLoopTime = opMode.getRuntime();
-        if(levelSensor.isPressed()) {
-            opMode.telemetry.addLine("Touch Sensor Pressed");
-        }
-        opMode.telemetry.addData("Lift Input",liftInput);
+
     }
 
     public double[] getPolePose(Pole pole, Side side){
@@ -122,17 +120,26 @@ public class CuriosityPayload
     void manage_raw_control(double liftInput, double armInput){
         hasCone = true;
         coneArrivedForPlacing = false;
-        arm.motors.runWithEncodersMode();
-        arm.setPowerClamped(armInput);
+        arm.setPowerRaw(armInput);
+
+        //lock the lift's position if its stopped
+        /*if(liftInput == 0){
+            lift.goToPosition(currentLiftHeight);
+        }*/
+        //if the lift is at the bottom and needs to be reset
         if(levelSensor.isPressed()&&liftInput>0) {
             liftReset=true;
             lift.resetToZero();
             lift.setPowerClamped(0);
             opMode.telemetry.addLine("Cannot Move Down Now");
-        }else{
+            currentLiftHeight = 0;
+        }
+        //run the arm normally
+        else{
             liftReset = false;
             lift.motors.runWithEncodersMode();
             lift.setPowerClamped(liftInput);
+            currentLiftHeight = lift.getPosition();
         }
     }
 
@@ -163,20 +170,24 @@ public class CuriosityPayload
     void manageLoading(double liftInput, double armInput){
         //resets arm to loading position and opens gripper
         gripper.setPosition(gripperOpenPos);
-        double gripperDistance = gripperSensor.getDistance(DistanceUnit.CM);
+        double intakeDistance = intakeSensor.getDistance(DistanceUnit.CM);
 
         //telemetry
         opMode.telemetry.addLine("");
-        opMode.telemetry.addData("Gripper sensor distance", gripperDistance+" CM");
+        opMode.telemetry.addData("Intake sensor distance", intakeDistance+" CM");
 
-        //returns if arm is not reset and there is a cone in the gripper
-        if(!liftReset && gripperDistance<=gripperTriggerDistance){
-            opMode.telemetry.addLine("Please remove cone from gripper");
-            return;
-        }
+//        //returns if arm is not reset and there is a cone in the gripper
+//        if(!liftReset && intakeDistance<=gripperTriggerDistance){
+//            opMode.telemetry.addLine("Please remove cone from gripper");
+//            return;
+//        }
 
         //reset the lift's position
-        if(!liftReset) if(autoLevel()) return;
+        if(!liftReset || Math.abs(arm.getPosition()-pickupPose[1])>0){
+            if(!liftReset && autoLevel()) //reset lift
+            if(!liftReset) arm.goToPosition(pickupPose[1]); //reset arm
+            return;
+        }
         liftReset = true;
 
         //allows for user tweaking
@@ -185,7 +196,7 @@ public class CuriosityPayload
         opMode.telemetry.addLine("User tweaking enabled");
 
         //when distance sensor detects freight, closes gripper and switches to storage state
-        if(gripperDistance<=gripperTriggerDistance){//close the gripper
+        if(intakeDistance<=gripperTriggerDistance){//close the gripper
             opMode.telemetry.addLine("Closing gripper");
             gripper.setPosition(gripperClosedPos);
             if(gripperCooldown > 0) gripperCooldown-=getDeltaTime();//stay still for a bit to let gripper close
@@ -200,15 +211,15 @@ public class CuriosityPayload
         }
     }
 
-    void manageTarget(double[] polePose, double liftInput, double armInput){
+    void managePlacing(double[] polePose, double liftInput, double armInput){
         opMode.telemetry.addLine("");
         opMode.telemetry.addLine("Managing placing!");
 
         //moves arm to ground target height
         if(!coneArrivedForPlacing) {
-            opMode.telemetry.addData("Going to target", polePose[0]+", "+polePose[1]);
+            opMode.telemetry.addData("Going to target", polePose[0] +", "+polePose[1]);
             opMode.telemetry.addData("Current height", arm.getPosition());
-            arm.goToPosition(polePose[0]);
+            lift.goToPosition(polePose[0]);
             arm.goToPosition(polePose[1]);
             //waits until its gotten high enough
             if((Math.abs(arm.getPosition()-polePose[1])<0.2)&&(Math.abs(lift.getPosition()-polePose[0])<0.2)) {
@@ -228,7 +239,8 @@ public class CuriosityPayload
 
         //waits for user input to drop
         if(hasCone && gripper.getPosition() != gripperOpenPos) return;
-
+        //it is dropping cone
+        hasCone = false;
         opMode.telemetry.addLine("Dropping cone");
 
         //drops the arm down a bit
@@ -247,18 +259,17 @@ public class CuriosityPayload
 
         //opens the gripper and waits for it to finish
         gripper.setPosition(gripperOpenPos);
-        //it has dropped cone
-        hasCone = false;
 
+        //stay still for a bit to let gripper open
         if(gripperCooldown > 0){
             opMode.telemetry.addLine("Waiting to drop cone");
-            gripperCooldown-=getDeltaTime(); //stay still for a bit to let gripper open
+            gripperCooldown-=getDeltaTime();
             return;
         }
-        else{ //then when gripper is fully open move to next state
+        else if(liftCooldown == defaultCooldown){ //then when gripper is fully open move to next state
             gripperCooldown = defaultCooldown;
             lift.goToPosition(lift.getPosition()+liftClearDistance); //move the arm up to avoid hitting
-            setPayloadState(PayloadState.MANUAL);
+
         }
 
         //moves the lift back up
@@ -269,6 +280,7 @@ public class CuriosityPayload
         }
         else{ //then when arm is up a little bit we can move on
             liftCooldown = defaultCooldown;
+            setPayloadState(PayloadState.MANUAL);
         }
     }
 
