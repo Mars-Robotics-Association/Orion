@@ -9,36 +9,36 @@ public class IngenuityAutonomousLeft extends IngenuityAutonomous {
 
     @Override
     protected void posMedJunction() {
-        goToPose(26.5, 1.5, 45, 2500, true);
+        goToPose(27, 0, 45, 2500, true);
     }
 
     @Override
     protected void posPreStack() {
-        goToPose(47, 0, -87, 1900, false);
+        goToPose(46.5, 0, -87, 1900, false);
     }
 
     @Override
     protected void posStack() {
-        goToPose(47, -14, -87, 2500, true);
+        goToPose(46.5, -16.5, -87, 2500, true);
     }
 
     @Override
     protected void posPostStack() {
-        goToPose(47, -2, -87, 750, false);
+        goToPose(46.5, -2, -87, 1800, false);
     }
 
     @Override
     protected void posHighJunction() {
-        goToPose(54, 8, 36, 2750, true);
+        goToPose(53, 7, 36, 2750, true);
     }
 
     @Override
     protected void posPostHighJunction() {
-        goToPose(45, 3, 36, 750, false);
+        goToPose(46, 0, 0, 1200, false);
     }
 
     @Override
     protected void posLowJunction() {
-        goToPose(48, 3.5, -127, 3000, true);
+        goToPose(47, 2.5, -127, 3000, true);
     }
 }

@@ -60,7 +60,7 @@ abstract class IngenuityAutonomous extends LinearOpMode {
 
         scoreOnHighJunction(arm);
 
-        if (this.time < 20) {
+        if (this.time < 25) {
             pickUpConeFromStack(arm, 0.053);
 
             // score on the low junction
@@ -72,10 +72,10 @@ abstract class IngenuityAutonomous extends LinearOpMode {
 
         switch (signalZone) {
             case RED:
-                goToPose(50, 0, -175, 3000, true);
+                goToPose(48, 0, -175, 3000, true);
                 break;
             case GREEN:
-                goToPose(50, 20, -178, 3000, true);
+                goToPose(48, 20, -178, 3000, true);
                 break;
             default:
                 goToPose(48, -20, -179, 3000, true);
@@ -96,6 +96,7 @@ abstract class IngenuityAutonomous extends LinearOpMode {
 
     private void scoreOnHighJunction(EncoderActuator arm) {
         robot.moveArmToStop(3);
+        sleep(300);
         posHighJunction();
         dunkCone(arm);
         // straight back from high junction
@@ -105,13 +106,13 @@ abstract class IngenuityAutonomous extends LinearOpMode {
     private void pickUpConeFromStack(EncoderActuator arm, double pos) {
         //go to cone stack
         arm.goToPosition(pos);
-        sleep(100);
+        sleep(600);
         posStack();
         sleep(250);
 
         // grab cone from stack, raise arm, and back up a little
         robot.ensureGripperClosed();
-        sleep(400);
+        sleep(450);
         robot.moveArmToStop(2);
         sleep(100);
         posPostStack();

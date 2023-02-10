@@ -18,17 +18,17 @@ public class IngenuityAutonomousRight extends IngenuityAutonomous {
 
     @Override
     protected void posStack() {
-        goToPose(50, 14, 87, 2500, true);
+        goToPose(50, 15, 87, 2500, true);
     }
 
     @Override
     protected void posPostStack() {
-        goToPose(50, 2, 87, 750, false);
+        goToPose(50, 2, 87, 1200, false);
     }
 
     @Override
     protected void posHighJunction() {
-        goToPose(54, -10.5, -36, 2750, true);
+        goToPose(54.5, -10, -36, 2750, true);
     }
 
     @Override
