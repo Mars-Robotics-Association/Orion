@@ -45,7 +45,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
-        robot = new CuriosityBot(this,controllerInput1,true,true,true,true);
+        robot = new CuriosityBot(this,controllerInput1,true,true,true,false);
         robot.getChassis().setInputOffset(0);
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
