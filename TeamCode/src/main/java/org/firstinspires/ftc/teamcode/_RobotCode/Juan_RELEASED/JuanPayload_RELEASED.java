@@ -26,7 +26,7 @@ class JuanPayload_RELEASED
 
     enum LiftMode {
         VERSION_1(   0,1800,3100,4500, 800, 1500, 2100, 3500, 650, 650),
-        VERSION_2(   0,   0,   0,   0, 0, 0, 0, 0, 0, 0);
+        VERSION_2(   0,0,   0,   0, 0, 0, 0, 0, 0, 0);
 
         final int[] positions;
 

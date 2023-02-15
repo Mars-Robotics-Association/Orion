@@ -46,8 +46,8 @@ public class JuanAutonomous_RELEASED_BF extends LinearOpMode {
             //go to right
 //            goToPoseNoTimer(44,24,-90*sideMultiplier,1);
         }
-        telemetry.addLine("DONE");
-        telemetry.update();
+        //telemetry.addLine("DONE");
+        //telemetry.update();
         robot.stop();
         stop();
 
@@ -56,7 +56,8 @@ public class JuanAutonomous_RELEASED_BF extends LinearOpMode {
     //move this somewhere else if it goes in a different class
     double getConeSide(Camera c) throws InterruptedException {
         Bitmap img = c.getImage();
-        Mat cropped = new Mat(c.convertBitmapToMat(img), new Rect(5 * img.getWidth() / 8, img.getHeight() / 3, img.getWidth() / 4, img.getHeight() / 3));
+        // original Curiosity crop was 5/8  1/3  1/4  1/3
+        Mat cropped = new Mat(c.convertBitmapToMat(img), new Rect( (3 * img.getWidth() / 5) + (img.getWidth() / 10), 4 * img.getWidth() / 5, img.getHeight() / 5, img.getHeight() / 5 - 10));
         Bitmap img2 = c.convertMatToBitMap(cropped);
         Mat in = c.convertBitmapToMat(c.shrinkBitmap(img2, 20, 20));
         //dash.sendImage(img);
@@ -68,8 +69,13 @@ public class JuanAutonomous_RELEASED_BF extends LinearOpMode {
         int purpleCount = c.countPixels(c.convertMatToBitMap(purpleMat));
         int orangeCount = c.countPixels(c.convertMatToBitMap(orangeMat));
 
+        telemetry.addLine("GREEN: "+ greenCount + " PURPLE: " + purpleCount + " ORANGE: " + orangeCount);
+        telemetry.update();
+
+        robot.dashboard.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
+
         if(greenCount>purpleCount&&greenCount>orangeCount){
-            //dash.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
+            //robot.dashboard.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
             return 1;}
         else if(purpleCount>greenCount&&purpleCount>orangeCount){
             //dash.sendImage(c.growBitmap(c.convertMatToBitMap(purpleMat),200,200));

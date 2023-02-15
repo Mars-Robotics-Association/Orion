@@ -1,21 +1,17 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Juan;
 
 import android.graphics.Bitmap;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
 import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCV;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
-import org.opencv.imgproc.Imgproc;
 
 class JuanPayload
 {
@@ -33,13 +29,13 @@ class JuanPayload
     }
 
     enum LiftMode {
-        VERSION_1(200,1800,3100,4500),
-        VERSION_2(0  ,0   ,0,   0   );
+        VERSION_1(new int[]{   0,1800,3100,4500, 800, 1500, 2100, 3500, 650, 650}),
+        VERSION_2(new int[]{   0,0,   0,   0, 0, 0, 0, 0, 0, 0});
 
         final int[] positions;
 
-        LiftMode(int a,int b,int c,int d){
-            positions = new int[]{a, b, c, d};
+        LiftMode(int[] values){
+            positions = values;
         }
     }
 
@@ -47,17 +43,27 @@ class JuanPayload
         BOTTOM,
         LOW,
         MEDIUM,
-        HIGH
+        HIGH,
+        CRUISE,
+        LOW_RELEASE,
+        MEDIUM_RELEASE,
+        HIGH_RELEASE,
+        STACK_1,
+        STACK_2,
     }
 
     static class LiftController extends Controller{
         private final DcMotor motor;
 
+        public boolean isDoneMoving(){
+            return Math.abs( motor.getCurrentPosition() - motor.getCurrentPosition() ) > 50;
+        }
+
         int computeHeight(LiftHeight height){
             return Juan.LIFT_MODE.positions[height.ordinal()];
         }
 
-        LiftController(JuanPayload payload, DcMotor motor) {
+        public LiftController(JuanPayload payload, DcMotor motor) {
             super(payload);
             this.motor = motor;
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -98,10 +104,21 @@ class JuanPayload
     }
 
     static class GripperController extends Controller{
-        GripperController(JuanPayload payload, Servo servo){
+        private final ColorSensor gripperColor;
+
+        GripperController(JuanPayload payload, Servo servo, ColorSensor legoColor, ColorSensor gripperColor){
             super(payload);
             this.servo = servo;
+            this.gripperColor = gripperColor;
+
+            isBlue = legoColor.blue() > legoColor.red();
         }
+
+        private boolean isBlue(ColorSensor sensor){
+            return sensor.blue() > sensor.red();
+        }
+
+        final boolean isBlue;
 
         private final Servo servo;
 
@@ -114,6 +131,7 @@ class JuanPayload
         private final double increment = 0.005;
 
         public void grab(){
+            if(isBlue != isBlue(gripperColor))return;
             servo.setPosition(closePos);
             state = GripperState.OPEN;
         }
@@ -157,12 +175,15 @@ class JuanPayload
             Bitmap input = camera.getImage();
             Mat mat = OpenCV.convertBitmapToMat(input);
 
+            float[] bounds = Juan.SCAN_BOUNDS;
+
             Mat in = new Mat(mat, new Rect(
-                    (int) (mat.width() * 0.5 ),
-                    (int) (mat.height()* 0.66),
-                    (int) (mat.width() * 0.25),
-                    (int) (mat.height()* 0.33)
+                    (int) (mat.width() * bounds[0]),
+                    (int) (mat.height()* bounds[1]),
+                    (int) (mat.width() * bounds[2]),
+                    (int) (mat.height()* bounds[3])
             ));
+
             Bitmap bitmap = c.shrinkBitmap(OpenCV.convertMatToBitMap(in), 50, 50);
             in = c.convertBitmapToMat(bitmap);
 
@@ -181,9 +202,9 @@ class JuanPayload
 
             Telemetry telemetry = getTelemetry();
 
-            telemetry.addData("Green%", greenCount);
-            telemetry.addData("Orange%", orangeCount);
-            telemetry.addData("Purple%", purpleCount);
+            telemetry.addData("Green Pixels", greenCount);
+            telemetry.addData("Orange Pixel", orangeCount);
+            telemetry.addData("Purple Pixel", purpleCount);
 
             if(greenCount>purpleCount&&greenCount>orangeCount){
                 return SleeveColor.GREEN;
@@ -207,7 +228,11 @@ class JuanPayload
         this.opMode = opMode;
 
         liftController = new LiftController(this, h.dcMotor.get("lift"));
-        gripperController = new GripperController(this, h.servo.get("gripper"));
+        gripperController = new GripperController(this,
+                h.servo.get("gripper"),
+                h.colorSensor.get("lego"),
+                null//h.colorSensor.get("gripperColor")
+        );
         sleeveScanner = new SleeveScanner(this,
                 new Camera(opMode, "Webcam 1")
         );

@@ -1,23 +1,9 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Juan_RELEASED;
 
-import android.graphics.Bitmap;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.checkerframework.common.subtyping.qual.Bottom;
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
-import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCVColors;
-import org.firstinspires.ftc.teamcode._RobotCode.Demobot2022.Demobot;
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
-
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
-import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
-
 
 @Autonomous(name = "**JUAN AUTO RELEASED (AW)***", group="Oppy")
 @Config
@@ -42,7 +28,6 @@ public class JuanAutonomous_RELEASED_AW extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Juan_RELEASED(this,true,true,true);
-        //robot = new Demobot( this, true, true, true);
 
         robot.init();
         double coneSide = getConeSide(robot.camera);
