@@ -140,7 +140,7 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
         switch (button) {
 
             //DRIVING
-            case A:// speed multiplier cycling
+            case LJS:// speed multiplier cycling
                 if (speedMultiplier == 1) speedMultiplier = 0.5;
                 else speedMultiplier = 1;
                 break;
@@ -153,23 +153,19 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             //PLACEMENT
             case DUP:
                 robot.getPayload().setTargetPole(CuriosityPayload.Pole.HIGH);
-                robot.getPayload().setSide(CuriosityPayload.Side.FRONT);
                 break;
             case DLEFT:
                 robot.getPayload().setTargetPole(CuriosityPayload.Pole.MID);
-                robot.getPayload().setSide(CuriosityPayload.Side.FRONT);
                 break;
             case DRIGHT:
                 robot.getPayload().setTargetPole(CuriosityPayload.Pole.LOW);
-                robot.getPayload().setSide(CuriosityPayload.Side.FRONT);
                 break;
             case DDOWN:
                 robot.getPayload().setTargetPole(CuriosityPayload.Pole.GROUND);
-                robot.getPayload().setSide(CuriosityPayload.Side.FRONT);
                 break;
 
             //PAYLOAD
-            case LJS:// toggle headless
+            case A:// toggle gripper
                 robot.getPayload().toggleGripper();
                 break;
             case B:
@@ -213,6 +209,13 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
             case LB:
                 liftInput = 1;
                 break;
+            case START:
+                robot.getPayload().changeGripperLevelOffset(1);
+                break;
+            case BACK:
+                robot.getPayload().changeGripperLevelOffset(-1);
+                break;
+
         }
     }
 

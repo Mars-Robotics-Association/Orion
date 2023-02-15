@@ -27,7 +27,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
     private Servo gripper;
     private FtcDashboard dash;
 
-    public static double speed = 0.5;
+    public static double speed = 1;
     public static double coneStackTop = 6;
     public static double coneStackInterval = 1.4;
     public static double coneSide = 1;
@@ -38,10 +38,8 @@ public class CuriosityAutoLeft extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         dash = FtcDashboard.getInstance();
 
-        robot = new CuriosityBot(this,null,true,true,true,true);
+        robot = new CuriosityBot(this,null,true,true,true,false);
         robot.init();
-//        arm = robot.getPayload().arm;
-//        gripper = robot.getPayload().gripper;
         isRed=false;
         if(robot.getFieldSide().equals(BaseRobot.FieldSide.RED)){isRed=true;}
         isLeft=true;
@@ -54,63 +52,74 @@ public class CuriosityAutoLeft extends LinearOpMode {
         robot.start();
         resetRuntime();
         robot.getChassis().resetGyro();
-       // double coneSide = getConeSide(robot.camera);
-        //telemetry.addData("Position",coneSide);
+        //double coneSide = getConeSide(robot.camera);
+        telemetry.addData("Position",coneSide);
         telemetry.update();
 
         //resets arm
-//        robot.getPayload().toggleGripper(false);
-//        while(robot.getPayload().autoLevel()&&!isStopRequested()) telemetry.addLine("Resetting arm");
-//        robot.getPayload().stop();
+
         //places preload cone
-//        robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.MID));
-        goToPose(33,3.5*sideMultiplier,0,0.8);
-        turnTo(-45*sideMultiplier, speed);
-        robot.getPayload().toggleGripper(true);
+        goToPose(8,-5,0,0.8);
+        turnTo(-45, speed);
         sleep(300);
         turnTo(0,speed);
         goToPose(55,0,0,1);
         goToPose(48,0,0,1);
-        turnTo(90*sideMultiplier,speed);
+        turnTo(90,speed);
 
-        //picks up and places a cone from the stack
-        int coneCounter = 0;
-        while(coneCounter<2){
-            //raises arm to pick up cone
-//            robot.getPayload().goToHeight(coneStackTop-(coneCounter*coneStackInterval));
-            //goes to the stack
-            goToPose(50.5, 24*sideMultiplier,90*sideMultiplier,speed);
-            //picks up cone
-//            robot.getPayload().toggleGripper(false);
-            sleep(500);
-            //moves arm up
-//            robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.MID));
-            //increases cone counter, as it has taken a cone off the stack
-            coneCounter ++;
-            //goes to place
-            goToPose(45, 3*sideMultiplier,-135*sideMultiplier,speed);
-            //places cone
-//            robot.getPayload().toggleGripper(true);
-            sleep(300);
-            goToPose(48, 0,180,speed);
-        }
+        double conePickupX = 47;
+        double conePickupY = 25;
+
+        //raises arm to pick up cone
+        goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
+        //picks up cone
+        sleep(500);
+        //moves arm up
+        goToPose(conePickupX,(conePickupY-10),90,speed);//backs up a bit to clear stack
+        goToPose(52, -6,-45,speed);//goes to place
+        //places cone
+        sleep(300);
+
+        //raises arm to pick up cone
+        goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
+        //picks up cone
+        sleep(500);
+        //moves arm up
+        goToPose(conePickupX,(conePickupY-8),90,speed);//backs up a bit to clear stack
+        goToPose(44, 10,-180,speed);//goes to place
+        //places cone
+        sleep(300);
+        goToPose(48,10,-180,speed);//back up a bit
+        turnTo(90,speed);
+
+        //raises arm to pick up cone
+        goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
+        //picks up cone
+        sleep(500);
+        //moves arm up
+        goToPose(conePickupX,(conePickupY-10),90,speed);//backs up a bit to clear stack
+        goToPose(45, -5,-135,speed);//goes to place
+        //places cone
+        sleep(300);
+
+
 
 //        robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.GROUND));
 
         //spot 1(green)
         if(coneSide==1) {
             //go to left
-            goToPoseNoTimer(44,-20,0,1);
+            goToPoseNoTimer(48,-20,-180,1);
         }
         //spot 2(purple)
         else if(coneSide==2){
             //go to center
-            goToPoseNoTimer(44,0,0,1);
+            goToPoseNoTimer(48,0,-180,1);
         }
         //spot 3(orange)
         else{
             //go to right
-            goToPoseNoTimer(44,24,-90*sideMultiplier,1);
+            goToPoseNoTimer(48,24,-180,1);
         }
         telemetry.addLine("DONE");
         telemetry.update();
@@ -150,19 +159,19 @@ public class CuriosityAutoLeft extends LinearOpMode {
     //positive x is forward in inches, positive y is right in inches, use coordinates for x and y
     //right turn is positive angle in degrees
     void goToPose(double x, double y, double angle, double speed) throws InterruptedException {
-        while(robot.navigator.goTowardsPose(x,y,angle,speed) && !isStopRequested() ) {//&& getRuntime()<28
+        while(robot.navigator.goTowardsPose(x,y*sideMultiplier,angle*sideMultiplier,speed) && !isStopRequested() ) {//&& getRuntime()<28
             robot.update();
             telemetry.update();
         }
     }
     void goToPoseNoTimer(double x, double y, double angle, double speed) throws InterruptedException {
-        while(robot.navigator.goTowardsPose(x,y,angle,speed) && !isStopRequested()) {
+        while(robot.navigator.goTowardsPose(x,y,angle*sideMultiplier,speed) && !isStopRequested()) {
             robot.update();
             telemetry.update();
         }
     }
     void turnTo(double angle, double speed) throws InterruptedException {
-        while (robot.navigator.turnTowards(angle,speed)&&getRuntime()<28){
+        while (robot.navigator.turnTowards(sideMultiplier*angle,speed)&&!isStopRequested()){
             robot.update();
             telemetry.update();
         }

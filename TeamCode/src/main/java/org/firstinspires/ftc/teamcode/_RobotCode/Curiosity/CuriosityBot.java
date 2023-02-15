@@ -71,11 +71,12 @@ public class CuriosityBot extends BaseRobot
             EncoderActuator arm = new EncoderActuator(opMode, new _ArmProfile(armMotor));
             EncoderActuator lift = new EncoderActuator(opMode, new _LiftProfile(liftMotor1,liftMotor2));
             Servo gripper = opMode.hardwareMap.servo.get("gripper");
+            Servo gripperLeveller = opMode.hardwareMap.servo.get("gripper leveller");
             gripperDist = opMode.hardwareMap.get(DistanceSensor.class, "gripper distance");
             levelSensor = opMode.hardwareMap.get(TouchSensor.class, "level sensor");
 
             payload= new CuriosityPayload(opMode, gamepad, lift,
-                    arm, gripper, gripperDist, levelSensor, new BlinkinController(opMode));
+                    arm, gripper, gripperLeveller, gripperDist, levelSensor, new BlinkinController(opMode));
 
         }
 

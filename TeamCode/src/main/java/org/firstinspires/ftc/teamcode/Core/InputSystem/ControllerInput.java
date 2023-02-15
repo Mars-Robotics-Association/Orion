@@ -24,7 +24,7 @@ public class ControllerInput
     }
 
     //ENUMS
-    public enum Button {X,Y,A,B,RT,LT,RB,LB,DUP,DDOWN,DLEFT,DRIGHT,LJS,RJS,GUIDE}
+    public enum Button {X,Y,A,B,RT,LT,RB,LB,DUP,DDOWN,DLEFT,DRIGHT,LJS,RJS,GUIDE,BACK,START}
 
     //VARIABLES
     //misc.
@@ -46,6 +46,8 @@ public class ControllerInput
     private boolean RJSDown = false;
     private boolean LJSDown = false;
     private boolean guideDown = false;
+    private boolean backDown = false;
+    private boolean startDown = false;
 
     //GETTERS
     public Gamepad getGamepad(){return gamepad;}
@@ -70,6 +72,8 @@ public class ControllerInput
     public boolean getLB(){return LBDown;}
     public boolean getRB(){return RBDown;}
     public boolean getGuide(){return guideDown;}
+    public boolean getBack(){return backDown;}
+    public boolean getStart(){return startDown;}
 
     //INTERNAL
     void pressed(Button button){
@@ -100,6 +104,8 @@ public class ControllerInput
         if(gamepad.left_stick_button == true && LJSDown == false) pressed(Button.LJS);
         if(gamepad.right_stick_button == true && RJSDown == false) pressed(Button.RJS);
         if(gamepad.guide == true && guideDown == false) pressed(Button.GUIDE);
+        if(gamepad.back == true && backDown == false) pressed(Button.BACK);
+        if(gamepad.start == true && startDown == false) pressed(Button.START);
 
         //Held
         if(gamepad.a == true) held(Button.A);
@@ -117,6 +123,8 @@ public class ControllerInput
         if(gamepad.left_stick_button == true) held(Button.LJS);
         if(gamepad.right_stick_button == true) held(Button.RJS);
         if(gamepad.guide == true) held(Button.GUIDE);
+        if(gamepad.back == true) held(Button.BACK);
+        if(gamepad.start == true) held(Button.START);
 
         //Released
         if(gamepad.a == false && ADown == true) released(Button.A);
@@ -134,6 +142,8 @@ public class ControllerInput
         if(gamepad.left_stick_button == false && LJSDown == true) released(Button.LJS);
         if(gamepad.right_stick_button == false && RJSDown == true) released(Button.RJS);
         if(gamepad.guide == false && guideDown == true) released(Button.GUIDE);
+        if(gamepad.back == false && backDown == true) released(Button.BACK);
+        if(gamepad.start == false && startDown == true) released(Button.START);
 
 
         //SET VARS TO CURRENT VALUES
@@ -152,6 +162,8 @@ public class ControllerInput
         LJSDown = gamepad.left_stick_button;
         RJSDown = gamepad.right_stick_button;
         guideDown = gamepad.guide;
+        backDown = gamepad.back;
+        startDown = gamepad.start;
     }
 
     public double calculateLJSAngle(){

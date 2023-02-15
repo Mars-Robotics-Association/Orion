@@ -14,7 +14,7 @@ public class CuriosityNavigator extends UniversalThreeWheelNavigator
     ////Variables////
     public static double[] nav_encoderMultipliers = {1, 1, -1}; //left right horizontal
     public static double nav_trackwidth = 9.2;
-    public static double nav_centerWheelOffset = -3;
+    public static double nav_centerWheelOffset = -4;
 
     public static double nav_minSpeed = 0.18; //the min speed to move if not at the target location or rotation
     public static double nav_moveCoefficient = 0.08; //how aggressively to move
