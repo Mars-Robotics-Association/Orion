@@ -34,8 +34,8 @@ public class CuriosityPayload
     public static double gripperClosedPos = 1;
     public static double placeDropDistance = 3;
     public static double gripperTriggerDistance = 3.5;
-    public static double LIFT_COOLDOWN = 0.4;
-    public static double GRIPPER_COOLDOWN = 0.8;
+    public static double LIFT_COOLDOWN = 0.6;
+    public static double GRIPPER_COOLDOWN = 0.4;
     public static double gripperLevelPlaceStart = 20;//degrees of arm to rotate for placing
     public static double gripperLevelPlaceOffset = -30;//degrees to rotate gripper further for placing
     public static double gripperLevelCoefficient = -150;//1 is 150 degree rotation on end
@@ -173,7 +173,7 @@ public class CuriosityPayload
             return false;
         }
         else {
-            lift.setPowerRaw(-1); //goes down
+            lift.setPowerRaw(1); //goes down
         }
         return true;
     }
@@ -263,13 +263,18 @@ public class CuriosityPayload
                 arm.setPowerClamped(armInput);
                 //wait for the gripper to open, then move on
                 if(gripperOpen) placeSubstate = PlaceSubstate.LOWERING;
+                liftCooldown = LIFT_COOLDOWN;
                 break;
 
             case LOWERING:
                 opMode.telemetry.addData("Substate", "LOWERING");
                 //drops the lift down a bit
-                if ((Math.abs(lift.getPosition() - (polePose[0]- placeDropDistance)) > 0.4)) lift.goToPosition(polePose[0]-placeDropDistance);
-                else placeSubstate = PlaceSubstate.RELEASING;
+                if (liftCooldown > 0) {
+                    lift.goToPosition(polePose[0]-placeDropDistance);
+                    liftCooldown -= getDeltaTime();}
+                else {
+                    placeSubstate = PlaceSubstate.RELEASING;
+                    liftCooldown = LIFT_COOLDOWN;}
                 break;
 
             case RELEASING:
@@ -281,16 +286,18 @@ public class CuriosityPayload
                 // when gripper is fully open move to next state
                 else {
                     gripperCooldown = GRIPPER_COOLDOWN;
-                    setPayloadState(PayloadState.MANUAL);}
+                    placeSubstate = PlaceSubstate.RAISING;}
                 break;
 
-//            case RAISING:
-//                opMode.telemetry.addData("Substate", "RAISING");
-//                //moves the lift back up
-//                if ((Math.abs(lift.getPosition() - (polePose[0]- placeDropDistance)) > 0.4)) lift.goToPosition(polePose[0]);
-//                    //once arrived, switch to manual mode
-//                else setPayloadState(PayloadState.MANUAL);
-//                break;
+            case RAISING:
+                opMode.telemetry.addData("Substate", "RAISING");
+                if (liftCooldown > 0) {
+                    lift.goToPosition(polePose[0]);
+                    liftCooldown -= getDeltaTime();}
+                else {
+                    liftCooldown = LIFT_COOLDOWN;
+                    setPayloadState(PayloadState.MANUAL);}
+                break;
         }
     }
 
