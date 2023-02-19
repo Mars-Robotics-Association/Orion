@@ -198,16 +198,16 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
             //PAYLOAD TESTING
             case RT:
-                armInput = -1;
-                break;
-            case LT:
                 armInput = 1;
                 break;
+            case LT:
+                armInput = -1;
+                break;
             case RB:
-                liftInput = -1;
+                liftInput = 1;
                 break;
             case LB:
-                liftInput = 1;
+                liftInput = -1;
                 break;
             case START:
                 robot.getPayload().changeGripperLevelOffset(1);

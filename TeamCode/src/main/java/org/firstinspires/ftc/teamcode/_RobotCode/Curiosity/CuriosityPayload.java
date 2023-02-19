@@ -36,15 +36,15 @@ public class CuriosityPayload
     public static double gripperTriggerDistance = 3.5;
     public static double LIFT_COOLDOWN = 0.6;
     public static double GRIPPER_COOLDOWN = 0.4;
-    public static double gripperLevelPlaceStart = 20;//degrees of arm to rotate for placing
-    public static double gripperLevelPlaceOffset = -30;//degrees to rotate gripper further for placing
+    public static double gripperLevelPlaceStart = 5;//degrees of arm to rotate for placing
+    public static double gripperLevelPlaceOffset = -40;//degrees to rotate gripper further for placing
     public static double gripperLevelCoefficient = -150;//1 is 150 degree rotation on end
     public static double gripperLevelOverallOffset = 0;
 
     //Lift height, arm rotation
     public double[] pickupPose = {6,0};
     //ground, low, mid, high
-    public double[][] placeFront = {{1,30},{4,120},{7,140},{10.5,175}};
+    public double[][] placeFront = {{1,20},{11,45},{3,170},{11,180}};
 
 
     //STATES
@@ -115,7 +115,7 @@ public class CuriosityPayload
     }
 
     public void levelGripper(){
-        if(arm.getPosition()>=gripperLevelPlaceStart) {
+        if(arm.getPosition()>=gripperLevelPlaceStart || lift.getPosition() > 2) {
             opMode.telemetry.addData("Rotating gripper to ", (arm.getPosition()+gripperLevelPlaceOffset+gripperLevelOverallOffset));
             gripperLeveller.setPosition(1+((arm.getPosition()+gripperLevelPlaceOffset+gripperLevelOverallOffset)/gripperLevelCoefficient));
         }
