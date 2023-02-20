@@ -67,7 +67,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
 
         msStuckDetectLoop = 5000;
 
-        matSegmentLength = 21;
+        matSegmentLength = 19.5;
         matSegmentWidth = 24;
     }
 
@@ -96,7 +96,7 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         } else if (!autoNavQueue.isEmpty()) {
             Pose2d curr = robot.navigator.getMeasuredPose();
             Pose2d next = autoNavQueue.peek();
-            if (Math.sqrt(Math.pow(next.getX() - curr.getX(), 2) + Math.pow(next.getY() - curr.getY(), 2)) < 2.5) {
+            if (Math.sqrt(Math.pow(next.getX() - curr.getX(), 2) + Math.pow(next.getY() - curr.getY(), 2)) < 9.5) {
                 autoNavQueue.remove();
                 next = autoNavQueue.peek();
             }
@@ -205,7 +205,11 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
                 speedMultiplier = TURBO_SPEED;
                 break;
             case RT:
-                robot.getPayload().getArm().setPowerRaw(armPower);
+                if (robot.getPayload().getArm().getPosition() < 0.405) { // stop raising before the apex
+                    robot.getPayload().getArm().setPowerRaw(armPower);
+                } else {
+                    robot.getPayload().getArm().setPowerRaw(0);
+                }
                 robot.resetArmStateMachine(); // use of the trigger resets arm position state
                 break;
             case LT:
