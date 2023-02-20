@@ -44,7 +44,7 @@ public class CuriosityPayload
     //Lift height, arm rotation
     public double[] pickupPose = {6,0};
     //ground, low, mid, high
-    public double[][] placeFront = {{1,20},{11,45},{3,170},{11,180}};
+    public double[][] placeFront = {{2,20},{11,50},{4,170},{11,185}};
 
 
     //STATES

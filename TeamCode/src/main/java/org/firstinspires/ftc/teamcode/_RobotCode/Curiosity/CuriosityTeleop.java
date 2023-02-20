@@ -198,10 +198,10 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
 
             //PAYLOAD TESTING
             case RT:
-                armInput = 1;
+                armInput = -1;
                 break;
             case LT:
-                armInput = -1;
+                armInput = 1;
                 break;
             case RB:
                 liftInput = 1;
