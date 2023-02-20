@@ -52,64 +52,42 @@ public class CuriosityAutoLeft extends LinearOpMode {
         robot.start();
         resetRuntime();
         robot.getChassis().resetGyro();
-        double coneSide = getConeSide(robot.camera);
+        int coneSide = getConeSide(robot.camera);
         telemetry.addData("Position",coneSide);
         telemetry.update();
 
         //resets arm
 
-        //places preload cone
-        goToPose(8,-5,0,0.8);
-        turnTo(-45, speed);
-        deployCone(CuriosityPayload.Pole.LOW);
-        //sleep(300);
-        turnTo(0,speed);
-        goToPose(55,0,0,1);
-        goToPose(48,0,0,1);
-        turnTo(90,speed);
+        double[] placeXYA = getCords(Junction.LOWER);
+        if(coneSide!=3) {
+            //places preload cone
+            goToPose(placeXYA[0], placeXYA[1], placeXYA[2], 0.8);
+            turnTo(-45, speed);
+            deployCone(CuriosityPayload.Pole.LOW);
+            //sleep(300);
+            turnTo(0, speed);
+            goToPose(55, 0, 0, 1);
+            goToPose(48, 0, 0, 1);
+            turnTo(90, speed);
+        }
 
         double conePickupX = 47;
         double conePickupY = 25;
+        Junction[] order = getOrder(coneSide);
 
-        //raises arm to pick up cone
-        goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
-        //picks up cone
-        pickUpCone(5);
-        //sleep(500);
-        //moves arm up
-        goToPose(conePickupX,(conePickupY-10),90,speed);//backs up a bit to clear stack
-        goToPose(52, -6,-45,speed);//goes to place
-        //places cone
-        deployCone(CuriosityPayload.Pole.HIGH);
-        //sleep(300);
-
-        //raises arm to pick up cone
-        goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
-        //picks up cone
-        pickUpCone(4);
-        //sleep(500);
-        //moves arm up
-        goToPose(conePickupX,(conePickupY-8),90,speed);//backs up a bit to clear stack
-        goToPose(44, 10,-180,speed);//goes to place
-        //places cone
-        deployCone(CuriosityPayload.Pole.LOW);
-        //sleep(300);
-        goToPose(48,10,-180,speed);//back up a bit
-        turnTo(90,speed);
-
-        //raises arm to pick up cone
-        goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
-        //picks up cone
-        pickUpCone(3);
-        //sleep(500);
-        //moves arm up
-        goToPose(conePickupX,(conePickupY-10),90,speed);//backs up a bit to clear stack
-        goToPose(45, -5,-135,speed);//goes to place
-        //places cone
-        deployCone(CuriosityPayload.Pole.MID);
-        //sleep(300);
-
-
+        for(int i=0;i<order.length;i++){
+            placeXYA = getCords(order[i]);
+            goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
+            //picks up cone
+            pickUpCone(5-i);
+            //sleep(500);
+            //moves arm up
+            goToPose(conePickupX,(conePickupY-10),90,speed);//backs up a bit to clear stack
+            goToPose(placeXYA[0], placeXYA[1],placeXYA[2],speed);//goes to place
+            //places cone
+            deployCone(getHeight(order[i]));
+            //sleep(300);
+        }
 
 //        robot.getPayload().goToHeight(Old_CuriosityPayload.getPoleHeight(Old_CuriosityPayload.Pole.GROUND));
 
@@ -134,10 +112,12 @@ public class CuriosityAutoLeft extends LinearOpMode {
         stop();
     }
 
+    enum Junction {UPPER,STACK,CENTER,FAR,LOWER};
+
     //move this somewhere else if it goes in a different class
-    double getConeSide(Camera c) throws InterruptedException {
+    int getConeSide(Camera c) throws InterruptedException {
         Bitmap img = c.getImage();
-        Mat cropped = new Mat(c.convertBitmapToMat(img),new Rect(0*img.getWidth(),0*img.getHeight(),img.getWidth(),img.getHeight()));
+        Mat cropped = new Mat(c.convertBitmapToMat(img),new Rect(7*img.getWidth()/24,img.getHeight()/4,img.getWidth()/6,img.getHeight()/4));
         Bitmap img2=c.convertMatToBitMap(cropped);
         Mat in = c.convertBitmapToMat(c.shrinkBitmap(img2,20,20));
         dash.sendImage(img);
@@ -149,6 +129,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         int greenCount = c.countPixels(c.convertMatToBitMap(greenMat));
         int purpleCount = c.countPixels(c.convertMatToBitMap(purpleMat));
         int orangeCount = c.countPixels(c.convertMatToBitMap(orangeMat));
+        dash.sendImage(img2);
         //1 is green, 2 is purple, 3 is orange
         if(greenCount>purpleCount&&greenCount>orangeCount){
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
@@ -195,4 +176,93 @@ public class CuriosityAutoLeft extends LinearOpMode {
         robot.getPayload().toggleGripper(false);
         robot.getPayload().update(robot.getPayload().pickupPose[0]+6,robot.getPayload().pickupPose[1]);
     }
+
+    Junction[] getOrder(int coneSide){
+        switch(coneSide){
+            case(1):
+                return new Junction[] {Junction.UPPER,Junction.CENTER,Junction.STACK};
+            case(2):
+                return new Junction[] {Junction.STACK,Junction.UPPER,Junction.CENTER};
+            case(3):
+                return new Junction[] {Junction.STACK,Junction.UPPER,Junction.CENTER,Junction.FAR};
+        }
+        return new Junction[] {Junction.LOWER,Junction.UPPER,Junction.CENTER,Junction.STACK};
+    }
+
+    double[] getCords(Junction j){
+        if(j==Junction.LOWER){
+            return new double[] {8,-5,0};
+        }
+        else if(j==Junction.UPPER)
+        {
+            return new double[] {52, -6,-45};
+        }
+        else if(j==Junction.STACK){
+            return new double[] {44, 10,-180};
+        }
+        else if(j==Junction.CENTER){
+            return new double[] {45, -5,-135};
+        }
+        //FAR
+        else{
+            return new double[] {45,-29,-135};
+        }
+    }
+
+    CuriosityPayload.Pole getHeight(Junction j){
+        if(j==Junction.LOWER){
+            return CuriosityPayload.Pole.LOW;
+        }
+        else if(j==Junction.UPPER)
+        {
+            return CuriosityPayload.Pole.HIGH;
+        }
+        else if(j==Junction.STACK){
+            return CuriosityPayload.Pole.LOW;
+        }
+        else if(j==Junction.CENTER){
+            return CuriosityPayload.Pole.MID;
+        }
+        //FAR
+        else{
+            return CuriosityPayload.Pole.HIGH;
+        }
+    }
 }
+//raises arm to pick up cone
+//        goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
+//        //picks up cone
+//        pickUpCone(5);
+//        //sleep(500);
+//        //moves arm up
+//        goToPose(conePickupX,(conePickupY-10),90,speed);//backs up a bit to clear stack
+//        goToPose(52, -6,-45,speed);//goes to place
+//        //places cone
+//        deployCone(CuriosityPayload.Pole.HIGH);
+//        //sleep(300);
+//
+//        //raises arm to pick up cone
+//        goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
+//        //picks up cone
+//        pickUpCone(4);
+//        //sleep(500);
+//        //moves arm up
+//        goToPose(conePickupX,(conePickupY-8),90,speed);//backs up a bit to clear stack
+//        goToPose(44, 10,-180,speed);//goes to place
+//        //places cone
+//        deployCone(CuriosityPayload.Pole.LOW);
+//        //sleep(300);
+//        goToPose(48,10,-180,speed);//back up a bit
+//        turnTo(90,speed);
+//
+//        //raises arm to pick up cone
+//        goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
+//        //picks up cone
+//        pickUpCone(3);
+//        //sleep(500);
+//        //moves arm up
+//        goToPose(conePickupX,(conePickupY-10),90,speed);//backs up a bit to clear stack
+//        goToPose(45, -5,-135,speed);//goes to place
+//        //places cone
+//        deployCone(CuriosityPayload.Pole.MID);
+//        //sleep(300);

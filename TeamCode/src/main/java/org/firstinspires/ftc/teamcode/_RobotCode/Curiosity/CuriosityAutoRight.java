@@ -42,7 +42,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         robot.init();
         isRed=false;
         if(robot.getFieldSide().equals(BaseRobot.FieldSide.RED)){isRed=true;}
-        isLeft=true;
+        isLeft=false;
         sideMultiplier =1;
         if(isLeft){
             sideMultiplier =-1;}
@@ -52,7 +52,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         robot.start();
         resetRuntime();
         robot.getChassis().resetGyro();
-        double coneSide = getConeSide(robot.camera);
+        int coneSide = getConeSide(robot.camera);
         telemetry.addData("Position",coneSide);
         telemetry.update();
 
@@ -137,9 +137,9 @@ public class CuriosityAutoRight extends LinearOpMode {
     }
 
     //move this somewhere else if it goes in a different class
-    double getConeSide(Camera c) throws InterruptedException {
+    int getConeSide(Camera c) throws InterruptedException {
         Bitmap img = c.getImage();
-        Mat cropped = new Mat(c.convertBitmapToMat(img),new Rect(0*img.getWidth(),0*img.getHeight(),img.getWidth(),img.getHeight()));
+        Mat cropped = new Mat(c.convertBitmapToMat(img),new Rect(7*img.getWidth()/24,img.getHeight()/4,img.getWidth()/6,img.getHeight()/4));
         Bitmap img2=c.convertMatToBitMap(cropped);
         Mat in = c.convertBitmapToMat(c.shrinkBitmap(img2,20,20));
         dash.sendImage(img);
@@ -151,6 +151,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         int greenCount = c.countPixels(c.convertMatToBitMap(greenMat));
         int purpleCount = c.countPixels(c.convertMatToBitMap(purpleMat));
         int orangeCount = c.countPixels(c.convertMatToBitMap(orangeMat));
+        dash.sendImage(img2);
         //1 is green, 2 is purple, 3 is orange
         if(greenCount>purpleCount&&greenCount>orangeCount){
             dash.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
