@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Ingenuity;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -9,7 +12,14 @@ import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInputListener;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Attachments.EncoderActuator;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
+import org.opencv.core.Mat;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Queue;
+
+import kotlin.jvm.internal.PropertyReference0Impl;
 
 @TeleOp(name = "*INGENUITY TELEOP*", group = "ingenuity")
 @Config
@@ -32,6 +42,11 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
 
     public static double armPower = 0.5;
 
+    private ArrayDeque<Pose2d> autoNavQueue;
+
+    private double matSegmentLength;
+    private double matSegmentWidth;
+
 
     @Override
     public void init() {
@@ -41,6 +56,8 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         controllerInput1.addListener(this);
         controllerInput2 = new ControllerInput(gamepad2, 2);
         controllerInput2.addListener(this);
+
+        autoNavQueue = new ArrayDeque<Pose2d>();
 
         //hardwareMap.dcMotor.get("FR").setDirection(DcMotorSimple.Direction.REVERSE);
         //hardwareMap.dcMotor.get("FL").setDirection(DcMotorSimple.Direction.REVERSE);
@@ -71,7 +88,17 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         //update robot
         robot.update();
         //manage driving
-        robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
+        if (autoNavQueue.isEmpty() || !robot.getChassis().getIsHeadless()) {
+            robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
+        } else {
+            Pose2d curr = robot.navigator.getMeasuredPose();
+            Pose2d next = autoNavQueue.peek();
+            if (Math.sqrt(Math.pow(next.getX() - curr.getX(), 2) + Math.pow(next.getY() - curr.getY(), 2)) < 2.5) {
+                autoNavQueue.remove();
+                next = autoNavQueue.peek();
+            }
+            robot.navigator.goTowardsPose(next.getX(), next.getY(), next.getHeading(), 0.8);
+        }
         //telemetry
         robot.readSignal();
         printTelemetry();
@@ -197,6 +224,51 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
                 break;
             case Y:
                 robot.resetArmHomePosition(0);
+                break;
+            case DUP:
+                if (robot.getChassis().getIsHeadless()) {
+                    Pose2d startPose;
+                    if (autoNavQueue.isEmpty()) {
+                        startPose = robot.navigator.getMeasuredPose();
+                    } else {
+                        startPose = autoNavQueue.peekLast();
+                    }
+                    autoNavQueue.add(new Pose2d(startPose.getX() + matSegmentLength, startPose.getY(), startPose.getHeading()));
+                }
+                break;
+            case DLEFT:
+                if (robot.getChassis().getIsHeadless()) {
+                    Pose2d startPose;
+                    if (autoNavQueue.isEmpty()) {
+                        startPose = robot.navigator.getMeasuredPose();
+                    } else {
+                        startPose = autoNavQueue.peekLast();
+                    }
+                    autoNavQueue.add(new Pose2d(startPose.getX(), startPose.getY() - matSegmentWidth, startPose.getHeading()));
+                }
+                break;
+            case DRIGHT:
+                if (robot.getChassis().getIsHeadless()) {
+                    Pose2d startPose;
+                    if (autoNavQueue.isEmpty()) {
+                        startPose = robot.navigator.getMeasuredPose();
+                    } else {
+                        startPose = autoNavQueue.peekLast();
+                    }
+                    autoNavQueue.add(new Pose2d(startPose.getX(), startPose.getY() + matSegmentWidth, startPose.getHeading()));
+                }
+                break;
+            case DDOWN:
+                if (robot.getChassis().getIsHeadless()) {
+                    Pose2d startPose;
+                    if (autoNavQueue.isEmpty()) {
+                        startPose = robot.navigator.getMeasuredPose();
+                    } else {
+                        startPose = autoNavQueue.peekLast();
+                    }
+                    autoNavQueue.add(new Pose2d(startPose.getX() - matSegmentLength, startPose.getY(), startPose.getHeading()));
+                }
+                break;
         }
     }
 
