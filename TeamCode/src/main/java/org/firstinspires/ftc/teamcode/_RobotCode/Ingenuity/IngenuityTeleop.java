@@ -66,6 +66,9 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         telemetry.update();
 
         msStuckDetectLoop = 5000;
+
+        matSegmentLength = 21;
+        matSegmentWidth = 24;
     }
 
     @Override
@@ -90,14 +93,16 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
         //manage driving
         if (autoNavQueue.isEmpty() || !robot.getChassis().getIsHeadless()) {
             robot.getChassis().driveWithGamepad(controllerInput1, speedMultiplier);
-        } else {
+        } else if (!autoNavQueue.isEmpty()) {
             Pose2d curr = robot.navigator.getMeasuredPose();
             Pose2d next = autoNavQueue.peek();
             if (Math.sqrt(Math.pow(next.getX() - curr.getX(), 2) + Math.pow(next.getY() - curr.getY(), 2)) < 2.5) {
                 autoNavQueue.remove();
                 next = autoNavQueue.peek();
             }
-            robot.navigator.goTowardsPose(next.getX(), next.getY(), next.getHeading(), 0.8);
+            if (next != null) {
+                robot.navigator.goTowardsPose(next.getX(), next.getY(), next.getHeading(), 0.8);
+            }
         }
         //telemetry
         robot.readSignal();
