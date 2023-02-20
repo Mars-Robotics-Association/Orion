@@ -75,14 +75,16 @@ public class CuriosityAutoLeft extends LinearOpMode {
         double conePickupY = 25;
         Junction[] order = getOrder(coneSide);
 
-        for(int i=0;i<order.length;i++){
+        for(int i=0;i<order.length;i++) {
             placeXYA = getCords(order[i]);
-            goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
-            //picks up cone
-            pickUpCone(5-i);
-            //sleep(500);
-            //moves arm up
-            goToPose(conePickupX,(conePickupY-10),90,speed);//backs up a bit to clear stack
+            if (i==0&&coneSide!=3){
+                goToPose(conePickupX, conePickupY, 90, speed);//goes to the stack
+                //picks up cone
+                pickUpCone(5 - i);
+                //sleep(500);
+                //moves arm up
+                goToPose(conePickupX, (conePickupY - 10), 90, speed);//backs up a bit to clear stack
+            }
             goToPose(placeXYA[0], placeXYA[1],placeXYA[2],speed);//goes to place
             //places cone
             deployCone(getHeight(order[i]));
