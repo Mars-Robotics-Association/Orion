@@ -165,6 +165,9 @@ public class IngenuityTeleop extends OpMode implements ControllerInputListener {
             case B:// reset robot pose
                 break;
             case LJS:// toggle headless
+                if (robot.getChassis().getIsHeadless()) {
+                    autoNavQueue.clear();
+                }
                 robot.getChassis().switchHeadlessMode();
                 break;
             case RJS:// reset robot pose
