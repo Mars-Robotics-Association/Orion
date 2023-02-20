@@ -77,7 +77,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
 
         for(int i=0;i<order.length;i++) {
             placeXYA = getCords(order[i]);
-            if (i==0&&coneSide!=3){
+            if (!(i==0&&coneSide==3)){
                 goToPose(conePickupX, conePickupY, 90, speed);//goes to the stack
                 //picks up cone
                 pickUpCone(5 - i);
