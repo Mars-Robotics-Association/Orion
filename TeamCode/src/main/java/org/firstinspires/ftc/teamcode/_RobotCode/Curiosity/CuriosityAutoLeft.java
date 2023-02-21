@@ -29,11 +29,13 @@ public class CuriosityAutoLeft extends LinearOpMode {
 
     public static double speed = 1;
     public static double coneStackTop = 6;
-    public static double coneStackInterval = 1.4;
+    public static double coneStackInterval = 1;
     public static double coneSide = 1;
 
     double conePickupX = 47;
     double conePickupY = 25;
+
+    //boolean linedUpToDrop = false;
 
     //IMPORTANT: ANY CHANGES MADE HERE SHOULD BE COPIED INTO CuriosityAutoRight
     //Only difference between the two autos should be the value of isLeft
@@ -97,7 +99,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
 
     }
     void Three_High(){
-        
+
     }
 
     enum Junction {UPPER,STACK,CENTER,FAR,LOWER};
@@ -152,23 +154,31 @@ public class CuriosityAutoLeft extends LinearOpMode {
             telemetry.update();
         }
     }
+
     void deployCone(CuriosityPayload.Pole p){
+        //moves the arm and lift up
         double[] polePose = robot.getPayload().getPolePose(p);
         robot.getPayload().lift.goToPosition(polePose[0]);
         robot.getPayload().arm.goToPosition(polePose[1]);
+        while (Math.abs(robot.getPayload().lift.getPosition()-polePose[0])>0.4
+                && Math.abs(robot.getPayload().arm.getPosition()-polePose[1])>5) {
+            robot.getPayload().levelGripper();}
 
-        //while ((robot.getPayload().lift.getPosition())
-
-        robot.getPayload().levelGripper();
         robot.getPayload().toggleGripper(true);
-
-        robot.getPayload().update(robot.getPayload().pickupPose[0]+5,robot.getPayload().pickupPose[1]);
     }
 
     void pickUpCone(int numCones){
-        robot.getPayload().update(robot.getPayload().pickupPose[0]+(numCones),robot.getPayload().pickupPose[1]);
+        robot.getPayload().lift.goToPosition(robot.getPayload().pickupPose[0]+(numCones*coneStackInterval));
+        robot.getPayload().arm.goToPosition(robot.getPayload().pickupPose[1]);
+        while (Math.abs(robot.getPayload().lift.getPosition()-robot.getPayload().pickupPose[0]+(numCones*coneStackInterval))>0.4
+                && Math.abs(robot.getPayload().arm.getPosition()-robot.getPayload().pickupPose[1])>5) {
+            robot.getPayload().levelGripper();}
+
         robot.getPayload().toggleGripper(false);
-        robot.getPayload().update(robot.getPayload().pickupPose[0]+5,robot.getPayload().pickupPose[1]);
+
+        robot.getPayload().lift.goToPosition(robot.getPayload().pickupPose[0]+(numCones*coneStackInterval));
+        while (Math.abs(robot.getPayload().lift.getPosition()-robot.getPayload().pickupPose[0]+(numCones*coneStackInterval)+5)>0.4) {
+            robot.getPayload().levelGripper();}
     }
 
 //    CuriosityAutoLeft.Junction[] getOrder(int coneSide){
