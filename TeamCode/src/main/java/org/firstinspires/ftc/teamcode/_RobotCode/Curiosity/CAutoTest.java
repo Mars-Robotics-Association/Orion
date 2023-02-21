@@ -33,8 +33,8 @@ public class CAutoTest extends LinearOpMode {
 
         waitForStart();
         robot.start();
-        double coneSide = getConeSide(robot.camera);
-        telemetry.addData("Position",coneSide);
+        pickUpCone(5);
+        deployCone(CuriosityPayload.Pole.HIGH);
 
 
     }
@@ -70,5 +70,17 @@ public class CAutoTest extends LinearOpMode {
     }
 
 
+    void deployCone(CuriosityPayload.Pole p){
+        robot.getPayload().update(robot.getPayload().getPolePose(p)[0],robot.getPayload().getPolePose(p)[1]);
+        robot.getPayload().levelGripper();
+        robot.getPayload().toggleGripper(true);
+        robot.getPayload().update(robot.getPayload().pickupPose[0]+6,robot.getPayload().pickupPose[1]);
+    }
+
+    void pickUpCone(int numCones){
+        robot.getPayload().update(robot.getPayload().pickupPose[0]+(numCones),robot.getPayload().pickupPose[1]);
+        robot.getPayload().toggleGripper(false);
+        robot.getPayload().update(robot.getPayload().pickupPose[0]+6,robot.getPayload().pickupPose[1]);
+    }
 
 }
