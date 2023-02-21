@@ -59,7 +59,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         //1=stack for left, 1=far for right
         //spot 1(green)
         if(coneSide==1) {
-            StackStop();
+            FarStop();
         }
         //spot 2(purple)
         else if(coneSide==2){
@@ -67,7 +67,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         }
         //spot 3(orange)
         else{
-            FarStop();
+            StackStop();
         }
         telemetry.addLine("DONE");
         telemetry.update();
