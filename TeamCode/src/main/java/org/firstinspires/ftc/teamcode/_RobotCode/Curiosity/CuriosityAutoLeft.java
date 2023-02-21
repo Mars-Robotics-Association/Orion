@@ -32,6 +32,9 @@ public class CuriosityAutoLeft extends LinearOpMode {
     public static double coneStackInterval = 1.4;
     public static double coneSide = 1;
 
+    double conePickupX = 47;
+    double conePickupY = 25;
+
     //IMPORTANT: ANY CHANGES MADE HERE SHOULD BE COPIED INTO CuriosityAutoRight
     //Only difference between the two autos should be the value of isLeft
     @Override
@@ -56,6 +59,15 @@ public class CuriosityAutoLeft extends LinearOpMode {
         telemetry.addData("Position",coneSide);
         telemetry.update();
 
+        //places preload cone
+        goToPose(8,-5,0, 0.8);
+        turnTo(-45, speed);
+        deployCone(CuriosityPayload.Pole.LOW);
+        //sleep(300);
+        turnTo(0, speed);
+        goToPose(55, 0, 0, 1);
+        goToPose(48, 0, 0, 1);
+
         //1=stack for left, 1=far for right
         //spot 1(green)
         if(coneSide==1) {
@@ -73,6 +85,19 @@ public class CuriosityAutoLeft extends LinearOpMode {
         telemetry.update();
         robot.stop();
         stop();
+    }
+
+    void One_Low(){
+
+    }
+    void Two_Mid(){
+
+    }
+    void Two_High(){
+
+    }
+    void Three_High(){
+        
     }
 
     enum Junction {UPPER,STACK,CENTER,FAR,LOWER};
@@ -128,81 +153,79 @@ public class CuriosityAutoLeft extends LinearOpMode {
         }
     }
     void deployCone(CuriosityPayload.Pole p){
-        robot.getPayload().update(robot.getPayload().getPolePose(p)[0],robot.getPayload().getPolePose(p)[1]);
+        double[] polePose = robot.getPayload().getPolePose(p);
+        robot.getPayload().lift.goToPosition(polePose[0]);
+        robot.getPayload().arm.goToPosition(polePose[1]);
+
+        //while ((robot.getPayload().lift.getPosition())
+
         robot.getPayload().levelGripper();
         robot.getPayload().toggleGripper(true);
-        robot.getPayload().update(robot.getPayload().pickupPose[0]+6,robot.getPayload().pickupPose[1]);
+
+        robot.getPayload().update(robot.getPayload().pickupPose[0]+5,robot.getPayload().pickupPose[1]);
     }
 
     void pickUpCone(int numCones){
         robot.getPayload().update(robot.getPayload().pickupPose[0]+(numCones),robot.getPayload().pickupPose[1]);
         robot.getPayload().toggleGripper(false);
-        robot.getPayload().update(robot.getPayload().pickupPose[0]+6,robot.getPayload().pickupPose[1]);
+        robot.getPayload().update(robot.getPayload().pickupPose[0]+5,robot.getPayload().pickupPose[1]);
     }
 
-    CuriosityAutoLeft.Junction[] getOrder(int coneSide){
-        switch(coneSide){
-            case(1):
-                return new CuriosityAutoLeft.Junction[] {CuriosityAutoLeft.Junction.LOWER,CuriosityAutoLeft.Junction.UPPER, CuriosityAutoLeft.Junction.CENTER, CuriosityAutoLeft.Junction.STACK};
-            case(2):
-                return new CuriosityAutoLeft.Junction[] {CuriosityAutoLeft.Junction.LOWER,CuriosityAutoLeft.Junction.STACK, CuriosityAutoLeft.Junction.UPPER, CuriosityAutoLeft.Junction.CENTER};
-            case(3):
-                return new CuriosityAutoLeft.Junction[] {CuriosityAutoLeft.Junction.STACK, CuriosityAutoLeft.Junction.UPPER, CuriosityAutoLeft.Junction.CENTER, CuriosityAutoLeft.Junction.FAR};
-        }
-        return new CuriosityAutoLeft.Junction[] {CuriosityAutoLeft.Junction.LOWER, CuriosityAutoLeft.Junction.UPPER, CuriosityAutoLeft.Junction.CENTER, CuriosityAutoLeft.Junction.STACK};
-    }
-
-    double[] getCords(CuriosityAutoLeft.Junction j){
-        if(j== CuriosityAutoLeft.Junction.LOWER){
-            return new double[] {8,-5,0};
-        }
-        else if(j== CuriosityAutoLeft.Junction.UPPER)
-        {
-            return new double[] {52, -6,-45};
-        }
-        else if(j== CuriosityAutoLeft.Junction.STACK){
-            return new double[] {44, 10,-180};
-        }
-        else if(j== CuriosityAutoLeft.Junction.CENTER){
-            return new double[] {45, -5,-135};
-        }
-        //FAR
-        else{
-            return new double[] {45,-29,-135};
-        }
-    }
-
-    CuriosityPayload.Pole getHeight(CuriosityAutoLeft.Junction j){
-        if(j== CuriosityAutoLeft.Junction.LOWER){
-            return CuriosityPayload.Pole.LOW;
-        }
-        else if(j== CuriosityAutoLeft.Junction.UPPER)
-        {
-            return CuriosityPayload.Pole.HIGH;
-        }
-        else if(j== CuriosityAutoLeft.Junction.STACK){
-            return CuriosityPayload.Pole.LOW;
-        }
-        else if(j== CuriosityAutoLeft.Junction.CENTER){
-            return CuriosityPayload.Pole.MID;
-        }
-        //FAR
-        else{
-            return CuriosityPayload.Pole.HIGH;
-        }
-    }
+//    CuriosityAutoLeft.Junction[] getOrder(int coneSide){
+//        switch(coneSide){
+//            case(1):
+//                return new CuriosityAutoLeft.Junction[] {CuriosityAutoLeft.Junction.LOWER,CuriosityAutoLeft.Junction.UPPER, CuriosityAutoLeft.Junction.CENTER, CuriosityAutoLeft.Junction.STACK};
+//            case(2):
+//                return new CuriosityAutoLeft.Junction[] {CuriosityAutoLeft.Junction.LOWER,CuriosityAutoLeft.Junction.STACK, CuriosityAutoLeft.Junction.UPPER, CuriosityAutoLeft.Junction.CENTER};
+//            case(3):
+//                return new CuriosityAutoLeft.Junction[] {CuriosityAutoLeft.Junction.STACK, CuriosityAutoLeft.Junction.UPPER, CuriosityAutoLeft.Junction.CENTER, CuriosityAutoLeft.Junction.FAR};
+//        }
+//        return new CuriosityAutoLeft.Junction[] {CuriosityAutoLeft.Junction.LOWER, CuriosityAutoLeft.Junction.UPPER, CuriosityAutoLeft.Junction.CENTER, CuriosityAutoLeft.Junction.STACK};
+//    }
+//
+//    double[] getCords(CuriosityAutoLeft.Junction j){
+//        if(j== CuriosityAutoLeft.Junction.LOWER){
+//            return new double[] {8,-5,0};
+//        }
+//        else if(j== CuriosityAutoLeft.Junction.UPPER)
+//        {
+//            return new double[] {52, -6,-45};
+//        }
+//        else if(j== CuriosityAutoLeft.Junction.STACK){
+//            return new double[] {44, 10,-180};
+//        }
+//        else if(j== CuriosityAutoLeft.Junction.CENTER){
+//            return new double[] {45, -5,-135};
+//        }
+//        //FAR
+//        else{
+//            return new double[] {45,-29,-135};
+//        }
+//    }
+//
+//    CuriosityPayload.Pole getHeight(CuriosityAutoLeft.Junction j){
+//        if(j== CuriosityAutoLeft.Junction.LOWER){
+//            return CuriosityPayload.Pole.LOW;
+//        }
+//        else if(j== CuriosityAutoLeft.Junction.UPPER)
+//        {
+//            return CuriosityPayload.Pole.HIGH;
+//        }
+//        else if(j== CuriosityAutoLeft.Junction.STACK){
+//            return CuriosityPayload.Pole.LOW;
+//        }
+//        else if(j== CuriosityAutoLeft.Junction.CENTER){
+//            return CuriosityPayload.Pole.MID;
+//        }
+//        //FAR
+//        else{
+//            return CuriosityPayload.Pole.HIGH;
+//        }
+//    }
 
     void StackStop() throws InterruptedException {
-        double conePickupX = 47;
-        double conePickupY = 25;
-        //places preload cone
-        goToPose(8,-5,0, 0.8);
-        turnTo(-45, speed);
-        deployCone(CuriosityPayload.Pole.LOW);
-        //sleep(300);
-        turnTo(0, speed);
-        goToPose(55, 0, 0, 1);
-        goToPose(48, 0, 0, 1);
+
+
         //raises arm to pick up cone
         turnTo(90, speed);
         goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
@@ -248,16 +271,6 @@ public class CuriosityAutoLeft extends LinearOpMode {
     }
 
     void CenterStop() throws InterruptedException {
-        double conePickupX = 47;
-        double conePickupY = 25;
-        //places preload cone
-        goToPose(8,-5,0, 0.8);
-        turnTo(-45, speed);
-        deployCone(CuriosityPayload.Pole.LOW);
-        //sleep(300);
-        turnTo(0, speed);
-        goToPose(55, 0, 0, 1);
-        goToPose(48, 0, 0, 1);
 
         //raises arm to pick up cone
         turnTo(90, speed);
@@ -301,12 +314,8 @@ public class CuriosityAutoLeft extends LinearOpMode {
     }
 
     void FarStop() throws InterruptedException {
-        double conePickupX = 47;
-        double conePickupY = 25;
-        //places preload cone
-        goToPose(45, -5,-135,speed);//goes to place
-        //places cone
-        deployCone(CuriosityPayload.Pole.MID);
+
+
         //sleep(300);
         goToPose(conePickupX, conePickupY,90,speed);//goes to the stack
         //picks up cone
