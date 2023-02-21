@@ -33,7 +33,7 @@ public class CuriosityPayload
     public static double gripperOpenPos = 0.88;
     public static double gripperClosedPos = 1;
     public static double placeDropDistance = 3;
-    public static double gripperTriggerDistance = 3.5;
+    public static double gripperTriggerDistance = 4;
     public static double LIFT_COOLDOWN = 0.6;
     public static double GRIPPER_COOLDOWN = 0.4;
     public static double gripperLevelPlaceStart = 5;//degrees of arm to rotate for placing

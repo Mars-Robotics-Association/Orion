@@ -56,17 +56,18 @@ public class CuriosityAutoRight extends LinearOpMode {
         telemetry.addData("Position",coneSide);
         telemetry.update();
 
+        //1=stack for left, 1=far for right
         //spot 1(green)
         if(coneSide==1) {
-            FirstStop();
+            StackStop();
         }
         //spot 2(purple)
         else if(coneSide==2){
-            SecondStop();
+            CenterStop();
         }
         //spot 3(orange)
         else{
-            ThirdStop();
+            FarStop();
         }
         telemetry.addLine("DONE");
         telemetry.update();
@@ -191,7 +192,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         }
     }
 
-    void FirstStop() throws InterruptedException {
+    void StackStop() throws InterruptedException {
         double conePickupX = 47;
         double conePickupY = 25;
         //places preload cone
@@ -241,12 +242,12 @@ public class CuriosityAutoRight extends LinearOpMode {
         deployCone(CuriosityPayload.Pole.MID);
         //sleep(300);
         goToPose(48, -5,-135,speed);//back up a bit
-        
+
         //go to left
         goToPoseNoLR(48,-20,-180,1);
     }
 
-    void SecondStop() throws InterruptedException {
+    void CenterStop() throws InterruptedException {
         double conePickupX = 47;
         double conePickupY = 25;
         //places preload cone
@@ -299,7 +300,7 @@ public class CuriosityAutoRight extends LinearOpMode {
         goToPoseNoLR(48,0,-180,1);
     }
 
-    void ThirdStop() throws InterruptedException {
+    void FarStop() throws InterruptedException {
         double conePickupX = 47;
         double conePickupY = 25;
         //places preload cone
