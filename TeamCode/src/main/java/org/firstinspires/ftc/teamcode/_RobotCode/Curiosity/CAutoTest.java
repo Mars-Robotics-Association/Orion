@@ -24,6 +24,11 @@ public class CAutoTest extends LinearOpMode {
     private CuriosityBot robot;
     private FtcDashboard dash;
 
+
+    public static double coneStackTop = 6;
+    public static double coneStackInterval = 1.4;
+    public static double coneSide = 1;
+
     @Override
     public void runOpMode() throws InterruptedException {
         dash = FtcDashboard.getInstance();
@@ -34,6 +39,7 @@ public class CAutoTest extends LinearOpMode {
         waitForStart();
         robot.start();
         pickUpCone(5);
+        sleep(3000);
         deployCone(CuriosityPayload.Pole.HIGH);
 
 
@@ -71,16 +77,31 @@ public class CAutoTest extends LinearOpMode {
 
 
     void deployCone(CuriosityPayload.Pole p){
-        robot.getPayload().update(robot.getPayload().getPolePose(p)[0],robot.getPayload().getPolePose(p)[1]);
-        robot.getPayload().levelGripper();
+        //moves the arm and lift up
+        double[] polePose = robot.getPayload().getPolePose(p);
+        robot.getPayload().lift.goToPosition(polePose[0]);
+        robot.getPayload().arm.goToPosition(polePose[1]);
+        while (Math.abs(robot.getPayload().lift.getPosition()-polePose[0])>0.4
+                && Math.abs(robot.getPayload().arm.getPosition()-polePose[1])>5) {
+            robot.getPayload().levelGripper();}
+
         robot.getPayload().toggleGripper(true);
-        robot.getPayload().update(robot.getPayload().pickupPose[0]+6,robot.getPayload().pickupPose[1]);
+
+        robot.getPayload().update(robot.getPayload().pickupPose[0]+5,robot.getPayload().pickupPose[1]);
     }
 
     void pickUpCone(int numCones){
-        robot.getPayload().update(robot.getPayload().pickupPose[0]+(numCones),robot.getPayload().pickupPose[1]);
+        robot.getPayload().lift.goToPosition(robot.getPayload().pickupPose[0]+(numCones*coneStackInterval));
+        robot.getPayload().arm.goToPosition(robot.getPayload().pickupPose[1]);
+        while (Math.abs(robot.getPayload().lift.getPosition()-robot.getPayload().pickupPose[0]+(numCones*coneStackInterval))>0.4
+                && Math.abs(robot.getPayload().arm.getPosition()-robot.getPayload().pickupPose[1])>5) {
+            robot.getPayload().levelGripper();}
+
         robot.getPayload().toggleGripper(false);
-        robot.getPayload().update(robot.getPayload().pickupPose[0]+6,robot.getPayload().pickupPose[1]);
+
+        robot.getPayload().lift.goToPosition(robot.getPayload().pickupPose[0]+(numCones*coneStackInterval));
+        while (Math.abs(robot.getPayload().lift.getPosition()-robot.getPayload().pickupPose[0]+(numCones*coneStackInterval)+5)>0.4) {
+            robot.getPayload().levelGripper();}
     }
 
 }
