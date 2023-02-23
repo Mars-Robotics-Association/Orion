@@ -44,7 +44,7 @@ public class CuriosityPayload
     //Lift height, arm rotation
     public double[] pickupPose = {6,0};
     //ground, low, mid, high
-    public double[][] placeFront = {{2,20},{11,50},{4,170},{11,185}};
+    public double[][] placeFront = {{2,20},{11,50},{4,170},{12,190}};
 
 
     //STATES
@@ -60,7 +60,6 @@ public class CuriosityPayload
             //case STORAGE: lights.blue(); break;
 
         }
-        lights.setCooldown(1);
     }
     public void setTargetPole(Pole pole){targetPole = pole;}
 
@@ -226,6 +225,7 @@ public class CuriosityPayload
                 // when gripper is fully closed move to next state
                 else {
                     gripperCooldown = GRIPPER_COOLDOWN;
+                    lights.green();
                     loadSubstate = LoadSubstate.RAISING;}
                 break;
 
@@ -262,7 +262,10 @@ public class CuriosityPayload
                 lift.setPowerClamped(liftInput);
                 arm.setPowerClamped(armInput);
                 //wait for the gripper to open, then move on
-                if(gripperOpen) placeSubstate = PlaceSubstate.LOWERING;
+                if(gripperOpen) {
+                    lights.yellow();
+                    placeSubstate = PlaceSubstate.LOWERING;
+                }
                 liftCooldown = LIFT_COOLDOWN;
                 break;
 
@@ -286,6 +289,7 @@ public class CuriosityPayload
                 // when gripper is fully open move to next state
                 else {
                     gripperCooldown = GRIPPER_COOLDOWN;
+                    lights.green();
                     placeSubstate = PlaceSubstate.RAISING;}
                 break;
 

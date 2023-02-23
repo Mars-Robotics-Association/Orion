@@ -90,7 +90,7 @@ public class BlinkinController
     }
     public void yellow(){
         if(!isCooldownUp()) return;
-        blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
+        blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
     }
     public void purple(){
         if(!isCooldownUp()) return;
