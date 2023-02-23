@@ -82,25 +82,32 @@ public class CAutoTest extends LinearOpMode {
         robot.getPayload().lift.goToPosition(polePose[0]);
         robot.getPayload().arm.goToPosition(polePose[1]);
         while (Math.abs(robot.getPayload().lift.getPosition()-polePose[0])>0.4
-                && Math.abs(robot.getPayload().arm.getPosition()-polePose[1])>5) {
+                || Math.abs(robot.getPayload().arm.getPosition()-polePose[1])>5) {
+            telemetry.addLine("Lifting 2");
+            telemetry.update();
             robot.getPayload().levelGripper();}
 
         robot.getPayload().toggleGripper(true);
-
-        robot.getPayload().update(robot.getPayload().pickupPose[0]+5,robot.getPayload().pickupPose[1]);
+        sleep(500);
     }
 
     void pickUpCone(int numCones){
-        robot.getPayload().lift.goToPosition(robot.getPayload().pickupPose[0]+(numCones*coneStackInterval));
+        robot.getPayload().toggleGripper(true);
+        robot.getPayload().lift.goToPosition(numCones*coneStackInterval);
         robot.getPayload().arm.goToPosition(robot.getPayload().pickupPose[1]);
-        while (Math.abs(robot.getPayload().lift.getPosition()-robot.getPayload().pickupPose[0]+(numCones*coneStackInterval))>0.4
-                && Math.abs(robot.getPayload().arm.getPosition()-robot.getPayload().pickupPose[1])>5) {
+        while (Math.abs(robot.getPayload().lift.getPosition()-(numCones*coneStackInterval))>0.4
+                || Math.abs(robot.getPayload().arm.getPosition()-robot.getPayload().pickupPose[1])>5) {
+            telemetry.addLine("Aligning");
+            telemetry.update();
             robot.getPayload().levelGripper();}
 
         robot.getPayload().toggleGripper(false);
+        sleep(1000);
 
         robot.getPayload().lift.goToPosition(robot.getPayload().pickupPose[0]+(numCones*coneStackInterval));
-        while (Math.abs(robot.getPayload().lift.getPosition()-robot.getPayload().pickupPose[0]+(numCones*coneStackInterval)+5)>0.4) {
+        while (Math.abs(robot.getPayload().lift.getPosition()-(robot.getPayload().pickupPose[0]+(numCones*coneStackInterval)-2))>0.4) {
+            telemetry.addLine("Lifting 1");
+            telemetry.update();
             robot.getPayload().levelGripper();}
     }
 
