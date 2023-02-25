@@ -110,9 +110,10 @@ public class CuriosityBot extends BaseRobot
             //Base64Image cameraData = new Base64Image(
                     //camera.convertBitmapToBase64(camera.shrinkBitmap(camera.getImage(),240,135),0));
             Power power = new Power(getVoltage());
-            Object[] data = {robotPose};
+            opMode.telemetry.addData("voltage", getVoltage());
+            Object[] data = {robotPose, power};
             log.addData(data);
-            log.Update();
+            log.update();
         }
         if(USE_PAYLOAD){
         }

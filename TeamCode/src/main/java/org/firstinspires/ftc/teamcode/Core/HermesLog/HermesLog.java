@@ -68,7 +68,7 @@ public class HermesLog
     }
 
     //Sends all data every specified number of milliseconds
-    public void Update(){
+    public void update(){
         if(runtime.milliseconds() >= lastSendTime + updateTime) {
             lastSendTime = runtime.milliseconds();
             sendDataImmediate(accumulatedData.toArray());
