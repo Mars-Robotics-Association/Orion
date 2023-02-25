@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Power;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
@@ -108,6 +109,7 @@ public class CuriosityBot extends BaseRobot
             //converts camera footage to base 64 for gui
             //Base64Image cameraData = new Base64Image(
                     //camera.convertBitmapToBase64(camera.shrinkBitmap(camera.getImage(),240,135),0));
+            Power power = new Power(getVoltage());
             Object[] data = {robotPose};
             log.addData(data);
             log.Update();
@@ -148,6 +150,10 @@ public class CuriosityBot extends BaseRobot
     public CuriosityNavigator getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
     public CuriosityPayload getPayload(){return payload;}
+
+    public double getVoltage() {
+        return (opMode.hardwareMap.voltageSensor.iterator().next().getVoltage());
+    }
 }
 
 
