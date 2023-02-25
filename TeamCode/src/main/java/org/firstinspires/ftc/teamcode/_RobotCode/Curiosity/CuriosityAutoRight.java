@@ -178,7 +178,7 @@ public class CuriosityAutoRight extends LinearOpMode {
     //move this somewhere else if it goes in a different class
     int getConeSide(Camera c) throws InterruptedException {
         Bitmap img = c.getImage();
-        Mat cropped = new Mat(c.convertBitmapToMat(img), new Rect(7 * img.getWidth() / 24, img.getHeight() / 4, img.getWidth() / 6, img.getHeight() / 4));
+        Mat cropped = new Mat(c.convertBitmapToMat(img), new Rect(7*img.getWidth()/24,img.getHeight()/8,img.getWidth()/6,img.getHeight()/4));
         Bitmap img2 = c.convertMatToBitMap(cropped);
         Mat in = c.convertBitmapToMat(c.shrinkBitmap(img2, 20, 20));
         dash.sendImage(img);

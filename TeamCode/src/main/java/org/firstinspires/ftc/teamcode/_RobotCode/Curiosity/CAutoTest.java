@@ -36,11 +36,7 @@ public class CAutoTest extends LinearOpMode {
         robot = new CuriosityBot(this,null,true,true,true,true);
         robot.init();
 
-        waitForStart();
-        robot.start();
-        pickUpCone(5);
-        sleep(3000);
-        deployCone(CuriosityPayload.Pole.HIGH);
+        getConeSide(robot.camera);
 
 
     }
@@ -48,7 +44,7 @@ public class CAutoTest extends LinearOpMode {
     //move this somewhere else if it goes in a different class
     double getConeSide(Camera c) throws InterruptedException {
         Bitmap img = c.getImage();
-        Mat cropped = new Mat(c.convertBitmapToMat(img),new Rect(7*img.getWidth()/24,img.getHeight()/4,img.getWidth()/6,img.getHeight()/4));
+        Mat cropped = new Mat(c.convertBitmapToMat(img),new Rect(7*img.getWidth()/24,img.getHeight()/8,img.getWidth()/6,img.getHeight()/4));
         Bitmap img2=c.convertMatToBitMap(cropped);
         Mat in = c.convertBitmapToMat(c.shrinkBitmap(img2,20,20));
         dash.sendImage(img);
@@ -63,14 +59,14 @@ public class CAutoTest extends LinearOpMode {
         dash.sendImage(img2);
         //1 is green, 2 is purple, 3 is orange
         if(greenCount>purpleCount&&greenCount>orangeCount){
-            dash.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
+            //dash.sendImage(c.growBitmap(c.convertMatToBitMap(greenMat),200,200));
             return 1;}
         else if(purpleCount>greenCount&&purpleCount>orangeCount){
-            dash.sendImage(c.growBitmap(c.convertMatToBitMap(purpleMat),200,200));
+            //dash.sendImage(c.growBitmap(c.convertMatToBitMap(purpleMat),200,200));
             return 2;
         }
         else{
-            dash.sendImage(c.growBitmap(c.convertMatToBitMap(orangeMat),200,200));
+            //dash.sendImage(c.growBitmap(c.convertMatToBitMap(orangeMat),200,200));
             return 3;
         }
     }
