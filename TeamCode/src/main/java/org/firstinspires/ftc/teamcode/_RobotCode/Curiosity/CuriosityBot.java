@@ -116,6 +116,7 @@ public class CuriosityBot extends BaseRobot
             log.update();
         }
         if(USE_PAYLOAD){
+            payload.lights.update();
         }
     }
 

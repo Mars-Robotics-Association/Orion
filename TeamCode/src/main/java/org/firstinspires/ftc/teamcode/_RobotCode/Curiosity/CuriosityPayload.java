@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -53,10 +54,10 @@ public class CuriosityPayload
     public void setPayloadState(PayloadState state){
         payloadState = state;
         switch (payloadState){
-            case MANUAL: lights.green(); break;
-            case STOPPED: lights.red(); break;
-            case LOADING: lights.yellow(); break;
-            case PLACING: lights.purple(); break;
+            case MANUAL: lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN); break;
+            case STOPPED: lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED); break;
+            case LOADING: lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE); break;
+            case PLACING: lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET); break;
             //case STORAGE: lights.blue(); break;
 
         }
@@ -177,6 +178,12 @@ public class CuriosityPayload
         return true;
     }
 
+    public boolean isConeInIntake(){
+        if(intakeSensor.getDistance(DistanceUnit.CM)<=gripperTriggerDistance) return true;
+        else return false;
+    }
+
+
     void manageLoading(double liftInput, double armInput){
         //resets arm to loading position and opens gripper
         double intakeDistance = intakeSensor.getDistance(DistanceUnit.CM);
@@ -225,7 +232,7 @@ public class CuriosityPayload
                 // when gripper is fully closed move to next state
                 else {
                     gripperCooldown = GRIPPER_COOLDOWN;
-                    lights.green();
+                    lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                     loadSubstate = LoadSubstate.RAISING;}
                 break;
 
@@ -263,7 +270,7 @@ public class CuriosityPayload
                 arm.setPowerClamped(armInput);
                 //wait for the gripper to open, then move on
                 if(gripperOpen) {
-                    lights.yellow();
+                    lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
                     placeSubstate = PlaceSubstate.LOWERING;
                 }
                 liftCooldown = LIFT_COOLDOWN;
@@ -289,7 +296,7 @@ public class CuriosityPayload
                 // when gripper is fully open move to next state
                 else {
                     gripperCooldown = GRIPPER_COOLDOWN;
-                    lights.green();
+                    lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                     placeSubstate = PlaceSubstate.RAISING;}
                 break;
 

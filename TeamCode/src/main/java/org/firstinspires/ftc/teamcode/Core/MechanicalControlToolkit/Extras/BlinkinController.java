@@ -45,6 +45,9 @@ public class BlinkinController
 
     double cooldownTime = 0;
 
+    RevBlinkinLedDriver.BlinkinPattern currentPattern;
+
+
     protected enum DisplayKind {
         MANUAL,
         AUTO
@@ -58,6 +61,14 @@ public class BlinkinController
         blinkinLedDriver = opMode.hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
     }
 
+    public void update(){
+        if(!isCooldownUp()) return;
+        if(currentPattern == null)currentPattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+
+        blinkinLedDriver.setPattern(currentPattern);
+    }
+
+
 
     protected void setDisplayKind(DisplayKind displayKind)
     {
@@ -66,7 +77,9 @@ public class BlinkinController
     }
 
     public void setPattern(RevBlinkinLedDriver.BlinkinPattern pattern){
-        blinkinLedDriver.setPattern(pattern);
+        currentPattern = pattern;
+        update();
+        setCooldown(0.5);
     }
 
     public void setCooldown(double seconds){cooldownTime = opMode.getRuntime()+seconds;}
