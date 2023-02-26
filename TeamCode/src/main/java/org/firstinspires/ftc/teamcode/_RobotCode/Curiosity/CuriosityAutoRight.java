@@ -33,7 +33,7 @@ public class CuriosityAutoRight extends LinearOpMode {
     public static double coneSide = 1;
 
     double conePickupX = 49;
-    double conePickupY = 25;
+    double conePickupY = 24;
 
     int conesInStack = 5;
 
