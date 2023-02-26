@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -301,23 +302,23 @@ public class CuriosityAutoRight extends LinearOpMode {
 
     void nextLights(){
         if(lightNum==0){
-            robot.getPayload().lights.red();
+            robot.getPayload().lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
         }
         else if(lightNum==1){
-            robot.getPayload().lights.green();
+            robot.getPayload().lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         }
         else if(lightNum==2){
-            robot.getPayload().lights.yellow();
+            robot.getPayload().lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
         }
         else if(lightNum==3){
-            robot.getPayload().lights.purple();
+            robot.getPayload().lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
         }
         else if(lightNum==4){
-            robot.getPayload().lights.blue();
+            robot.getPayload().lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
         }
         else
         {
-            robot.getPayload().lights.lime();
+            robot.getPayload().lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
         }
         lightNum++;
         if(lightNum>5){
