@@ -37,6 +37,8 @@ public class CuriosityAutoLeft extends LinearOpMode {
 
     int conesInStack = 5;
 
+    int lightNum=0;
+
     //boolean linedUpToDrop = false;
 
     //IMPORTANT: ANY CHANGES MADE HERE SHOULD BE COPIED INTO CuriosityAutoRight
@@ -63,15 +65,21 @@ public class CuriosityAutoLeft extends LinearOpMode {
         resetRuntime();
         robot.getChassis().resetGyro();
         robot.getPayload().toggleGripper(false);
+        nextLights();
         int coneSide = getConeSide(robot.camera);
+        nextLights();
         moveConeToPlace(CuriosityPayload.Pole.LOW);
+        nextLights();
         telemetry.addData("Position", coneSide);
         telemetry.update();
 
         //places preload cone
         goToPose(5, -2, 0, 0.8);
+        nextLights();
         turnTo(-45, speed);
+        nextLights();
         deployCone(CuriosityPayload.Pole.LOW);
+        nextLights();
         //sleep(300);
         goToPose(5, 0, 0, 0.8);
         goToPose(55, 0, 0, 1);
@@ -81,26 +89,26 @@ public class CuriosityAutoLeft extends LinearOpMode {
         //spot 1(green)
         if ((coneSide == 1 && isLeft) || (coneSide == 3 && !isLeft)) {
             TwoHigh();
-            TwoMid();
+            //TwoMid();
             OneLow();
             //go to left
-            goToPoseNoLR(48, -20, -180, 1);
+            goToPoseNoLR(48, -20, 0, 1);
         }
         //spot 2(purple)
         else if (coneSide == 2) {
             OneLow();
             TwoHigh();
-            TwoMid();
+            //TwoMid();
             //go to center
-            goToPoseNoLR(48, 0, -180, 1);
+            goToPoseNoLR(48, 0, 0, 1);
         }
         //spot 3(orange)
         else {
             TwoHigh();
-            TwoMid();
+            //TwoMid();
             ThreeHigh();
             //go to right
-            goToPoseNoLR(48, 24, -180, 1);
+            goToPoseNoLR(48, 24, 0, 1);
         }
         telemetry.addLine("DONE");
         telemetry.update();
@@ -112,7 +120,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         moveArmToPickup(conesInStack);
         turnTo(90, speed);
         //raises arm to pick up cone
-        goToPose(conePickupX, conePickupY, 90, speed);//goes to the stack
+        goToPose(conePickupX, conePickupY, 90, .6);//goes to the stack
         //picks up cone
         pickUpCone(conesInStack);
         conesInStack --;
@@ -120,7 +128,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         //moves arm up
         moveConeToPlace(CuriosityPayload.Pole.LOW);
         goToPose(conePickupX, (conePickupY - 8), 90, speed);//backs up a bit to clear stack
-        goToPose(44, 10, -180, speed);//goes to place
+        goToPose(46, 10, -180, speed);//goes to place
         //places cone
         deployCone(CuriosityPayload.Pole.LOW);
         //sleep(300);
@@ -131,7 +139,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         moveArmToPickup(conesInStack);
         turnTo(90, speed);
         //raises arm to pick up cone
-        goToPose(conePickupX, conePickupY, 90, speed);//goes to the stack
+        goToPose(conePickupX, conePickupY, 90, .6);//goes to the stack
         //picks up cone
         pickUpCone(conesInStack);
         conesInStack --;
@@ -139,7 +147,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         //moves arm up
         moveConeToPlace(CuriosityPayload.Pole.MID);
         goToPose(conePickupX, (conePickupY - 8), 90, speed);//backs up a bit to clear stack
-        goToPose(45, -5, -135, speed);//goes to place
+        goToPose(47, -7, -135, speed);//goes to place
         //places cone
         deployCone(CuriosityPayload.Pole.MID);
         //sleep(300);
@@ -150,7 +158,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         moveArmToPickup(conesInStack);
         turnTo(90, speed);
         //raises arm to pick up cone
-        goToPose(conePickupX, conePickupY, 90, speed);//goes to the stack
+        goToPose(conePickupX, conePickupY, 90, .6);//goes to the stack
         //picks up cone
         pickUpCone(conesInStack);
         conesInStack --;
@@ -158,7 +166,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         //moves arm up
         moveConeToPlace(CuriosityPayload.Pole.HIGH);
         goToPose(conePickupX, (conePickupY - 8), 90, speed);//backs up a bit to clear stack
-        goToPose(52, -8, -45, speed);//goes to place
+        goToPose(49, -5, -45, speed);//goes to place
         //places cone
         deployCone(CuriosityPayload.Pole.HIGH);
         //sleep(300);
@@ -169,7 +177,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         moveArmToPickup(conesInStack);
         turnTo(90, speed);
         //raises arm to pick up cone
-        goToPose(conePickupX, conePickupY, 90, speed);//goes to the stack
+        goToPose(conePickupX, conePickupY, 90, .6);//goes to the stack
         //picks up cone
         pickUpCone(conesInStack);
         conesInStack --;
@@ -264,13 +272,13 @@ public class CuriosityAutoLeft extends LinearOpMode {
 
     void moveArmToPickup(int numCones){
         robot.getPayload().toggleGripper(true);
-        robot.getPayload().lift.goToPosition(robot.getPayload().pickupPose[0]+(numCones*coneStackInterval));
+        robot.getPayload().lift.goToPosition(robot.getPayload().pickupPose[0]+(numCones*coneStackInterval)-1);
         robot.getPayload().arm.goToPosition(robot.getPayload().pickupPose[1]);
     }
 
     void pickUpCone(int numCones){
         robot.getPayload().toggleGripper(true);
-        robot.getPayload().lift.goToPosition(numCones*coneStackInterval);
+        robot.getPayload().lift.goToPosition(numCones*coneStackInterval-1);
         robot.getPayload().arm.goToPosition(robot.getPayload().pickupPose[1]);
         while (Math.abs(robot.getPayload().lift.getPosition()-(numCones*coneStackInterval))>0.4
                 || Math.abs(robot.getPayload().arm.getPosition()-robot.getPayload().pickupPose[1])>5) {
@@ -286,5 +294,32 @@ public class CuriosityAutoLeft extends LinearOpMode {
             telemetry.addLine("Lifting 1");
             telemetry.update();
             robot.getPayload().levelGripper();}
+    }
+
+
+    void nextLights(){
+        if(lightNum==0){
+            robot.getPayload().lights.red();
+        }
+        else if(lightNum==1){
+            robot.getPayload().lights.green();
+        }
+        else if(lightNum==2){
+            robot.getPayload().lights.yellow();
+        }
+        else if(lightNum==3){
+            robot.getPayload().lights.purple();
+        }
+        else if(lightNum==4){
+            robot.getPayload().lights.blue();
+        }
+        else
+        {
+            robot.getPayload().lights.lime();
+        }
+        lightNum++;
+        if(lightNum>5){
+            lightNum=0;
+        }
     }
 }
