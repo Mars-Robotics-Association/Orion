@@ -57,6 +57,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         sideMultiplier = 1;
         if (isLeft) {
             sideMultiplier = -1;
+            conePickupX+=1;
         }
 
         //START
@@ -90,13 +91,13 @@ public class CuriosityAutoLeft extends LinearOpMode {
         if ((coneSide == 1 && isLeft) || (coneSide == 3 && !isLeft)) {
             TwoHigh();
             //TwoMid();
-            OneLow();
+            //OneLow();
             //go to left
-            goToPoseNoLR(48, -20, 0, 1);
+            goToPoseNoLR(48, 24, 0, 1);
         }
         //spot 2(purple)
         else if (coneSide == 2) {
-            OneLow();
+            //OneLow();
             TwoHigh();
             //TwoMid();
             //go to center
@@ -104,11 +105,11 @@ public class CuriosityAutoLeft extends LinearOpMode {
         }
         //spot 3(orange)
         else {
-            TwoHigh();
+            //TwoHigh();
             //TwoMid();
             ThreeHigh();
             //go to right
-            goToPoseNoLR(48, 24, 0, 1);
+            goToPoseNoLR(48, -20, 0, 1);
         }
         telemetry.addLine("DONE");
         telemetry.update();
@@ -166,7 +167,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
         //moves arm up
         moveConeToPlace(CuriosityPayload.Pole.HIGH);
         goToPose(conePickupX, (conePickupY - 8), 90, speed);//backs up a bit to clear stack
-        goToPose(49, -5, -45, speed);//goes to place
+        goToPose(48, -4, -45, speed);//goes to place
         //places cone
         deployCone(CuriosityPayload.Pole.HIGH);
         //sleep(300);

@@ -148,6 +148,8 @@ public class CuriosityTeleop extends OpMode implements ControllerInputListener
                 robot.getNavigator().setMeasuredPose(0, 0, 0);
                 robot.getNavigator().getChassis().driveMotors.stopAndResetEncoders();
                 robot.getChassis().resetGyro();
+                robot.getPayload().getArm().resetToZero();
+                robot.getPayload().getLift().resetToZero();
                 break;
 
             //PLACEMENT
