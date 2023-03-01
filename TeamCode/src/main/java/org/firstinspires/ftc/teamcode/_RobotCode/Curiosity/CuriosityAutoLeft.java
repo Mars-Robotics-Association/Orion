@@ -36,7 +36,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
     public static double coneStackInterval = 1;
     public static double coneSide = 1;
 
-    double conePickupX = 49;
+    double conePickupX = 54;
     double conePickupY = 24;
 
     int conesInStack = 5;
@@ -83,8 +83,8 @@ public class CuriosityAutoLeft extends LinearOpMode {
         //sleep(300);
         goToPoseOvershoot(5, 0, 0, 0.8, Nav_Axis.ANGLE);
         moveArmToPickup(conesInStack);
-        //goToPose(55, 0, 0, 1);
-        goToPoseOvershoot(48, 0, 0, 1, Nav_Axis.X);
+        goToPoseOvershoot(55, 0, 0, 1,Nav_Axis.X);
+        goToPose(48, 0, 0, 1);
         nextLights();
 
         //1=stack for left, 1=far for right
