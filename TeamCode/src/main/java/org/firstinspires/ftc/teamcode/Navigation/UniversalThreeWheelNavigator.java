@@ -193,7 +193,8 @@ public class UniversalThreeWheelNavigator
         //return true if robot should keep driving, false if movement is done
         return !(shouldStop(moveDistanceAngleError[0],turnError));
     }
-    public boolean goTowardsPoseOvershoot(double targetX, double targetY, double targetAngle, double speed, boolean movingPositiveX, boolean movingPositiveY, boolean movingPositiveA){
+    public enum Nav_Axis{X,Y,ANGLE}
+    public boolean goTowardsPoseOvershoot(double targetX, double targetY, double targetAngle, double speed, Nav_Axis axis, double startVal){
         targetPose[0] = targetX;
         targetPose[1] = targetY;
         targetPose[2] = targetAngle;
@@ -218,21 +219,27 @@ public class UniversalThreeWheelNavigator
         opMode.telemetry.addData("TURN ERROR:", turnError);
         opMode.telemetry.addData("TURN SPEED:", turnSpeed);
 
-        boolean xPast = false;
-        boolean yPast = false;
-        boolean aPast = false;
+        boolean past = false;
         Pose2d robotPose = getMeasuredPose();
 
-        if(movingPositiveX) xPast = (targetX>=robotPose.getX());
-        else xPast = (targetX<=robotPose.getX());
-        if(movingPositiveY) yPast = (targetY>=robotPose.getY());
-        else yPast = (targetY<=robotPose.getY());
-        if(movingPositiveA) aPast = (targetAngle>=robotPose.getHeading());
-        else aPast = (targetAngle<=robotPose.getHeading());
+        switch (axis){
+            case X:
+                if(targetX>startVal)past=(robotPose.getX()>=targetX);
+                else past=(robotPose.getX()<=targetX);
+                break;
+            case Y:
+                if(targetY>startVal)past=(robotPose.getY()>=targetY);
+                else past=(robotPose.getY()<=targetY);
+                break;
+            case ANGLE:
+                if(targetAngle>startVal)past=(robotPose.getHeading()>=targetAngle);
+                else past=(robotPose.getHeading()<=targetAngle);
+                break;
+        }
 
 
         //return true if robot should keep driving, false if movement is done
-        return !(xPast&&yPast&&aPast);
+        return !(past);
     }
     public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed, ControllerInput controllerInput, double controllerWeight){
         opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetAngle+")");

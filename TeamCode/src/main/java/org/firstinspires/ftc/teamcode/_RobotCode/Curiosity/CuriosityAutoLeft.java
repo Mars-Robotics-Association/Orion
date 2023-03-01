@@ -14,8 +14,10 @@ import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRo
 import org.firstinspires.ftc.teamcode.Navigation.Camera;
 import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.Navigation.OpenCV.OpenCVColors;
+import org.firstinspires.ftc.teamcode.Navigation.UniversalThreeWheelNavigator;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
+import org.firstinspires.ftc.teamcode.Navigation.UniversalThreeWheelNavigator.Nav_Axis;
 
 @Autonomous(name = "*CURIOSITY AUTO LEFT*", group="Curiosity")
 @Config
@@ -79,10 +81,10 @@ public class CuriosityAutoLeft extends LinearOpMode {
         deployCone(CuriosityPayload.Pole.LOW);
         nextLights();
         //sleep(300);
-        goToPose(5, 0, 0, 0.8);
+        goToPoseOvershoot(5, 0, 0, 0.8, Nav_Axis.ANGLE);
         moveArmToPickup(conesInStack);
         //goToPose(55, 0, 0, 1);
-        goToPose(48, 0, 0, 1);
+        goToPoseOvershoot(48, 0, 0, 1, Nav_Axis.X);
         nextLights();
 
         //1=stack for left, 1=far for right
@@ -244,20 +246,26 @@ public class CuriosityAutoLeft extends LinearOpMode {
         }
     }
 
-//    void goToPoseOvershoot(double x, double y, double angle, double speed) throws InterruptedException {
-//        Pose2d startPose = robot.navigator.getMeasuredPose();
-//        boolean xPositive = false;
-//        boolean yPositive = false;
-//        boolean aPositive = false;
-//        if(x>startPose.getX()) xPositive = true;
-//        if(y>startPose.getY()) yPositive = true;
-//        if(angle>startPose.getHeading()) aPositive = true;
-//        while (robot.navigator.goTowardsPoseOvershoot(x, y * sideMultiplier, angle * sideMultiplier, speed, xPositive,yPositive,aPositive) && !isStopRequested()) {//&& getRuntime()<28
-//            robot.update();
-//            robot.getPayload().levelGripper();
-//            telemetry.update();
-//        }
-//    }
+    void goToPoseOvershoot(double x, double y, double angle, double speed, UniversalThreeWheelNavigator.Nav_Axis axis) throws InterruptedException {
+        Pose2d startPose = robot.navigator.getMeasuredPose();
+        double startVal = 0;
+        switch (axis){
+            case X:
+                startVal = startPose.getX();
+                break;
+            case Y:
+                startVal = startPose.getY();
+                break;
+            case ANGLE:
+                startVal = startPose.getHeading();
+                break;
+        }
+        while (robot.navigator.goTowardsPoseOvershoot(x, y * sideMultiplier, angle * sideMultiplier, speed, axis, startVal) && !isStopRequested()) {//&& getRuntime()<28
+            robot.update();
+            robot.getPayload().levelGripper();
+            telemetry.update();
+        }
+    }
 
     void goToPoseNoLR(double x, double y, double angle, double speed) throws InterruptedException {
         while (robot.navigator.goTowardsPose(x, y, angle * sideMultiplier, speed) && !isStopRequested()) {
