@@ -319,7 +319,7 @@ public class CuriosityAutoLeft extends LinearOpMode {
     }
 
     void pickUpCone(int numCones) throws InterruptedException {
-        goToPose(conePickupX,27,90,0.4);
+        //goToPose(conePickupX,27,90,0.4);
         robot.getPayload().toggleGripper(true);
         robot.getPayload().lift.goToPosition(numCones*coneStackInterval-0);
         robot.getPayload().arm.goToPosition(robot.getPayload().pickupPose[1]);

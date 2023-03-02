@@ -78,28 +78,33 @@ public class CuriosityAutoLeft_SIMPLE extends LinearOpMode {
         moveConeToPlace(CuriosityPayload.Pole.HIGH);
         goToPoseOvershoot(55, 0, 0, 1,Nav_Axis.X);
         goToPose(48, 0, 0, 1);
-        goToPose(47.5, -3.5, -45, speed);//goes to place
-        turnTo(-45,0.6);
+        goToPose(48, -3, -40, speed);//goes to place
+        turnTo(-40,0.6);
         //places cone
         deployCone(CuriosityPayload.Pole.HIGH);
+        //goToPose(47,-3,-45,speed);
         nextLights();
 
         //1=stack for left, 1=far for right
         //spot 1(green)
         if ((coneSide == 1 && isLeft) || (coneSide == 3 && !isLeft)) {
+            goToPoseNoLR(48, -20, 0, 1);
             moveArmToPickup(2);
-            goToPoseNoLR(40, -20, 0, 1);
+            goToPoseNoLR(30, -20, 0, 1);
         }
         //spot 2(purple)
         else if (coneSide == 2) {
+            goToPoseNoLR(48, 0, 0, 1);
             moveArmToPickup(2);
-            goToPoseNoLR(40, 0, 0, 1);
+            goToPoseNoLR(30, 0, 0, 1);
         }
         //spot 3(orange)
         else {
+            goToPoseNoLR(48, 20, 0, 1);
             moveArmToPickup(2);
-            goToPoseNoLR(40, 24, 0, 1);
+            goToPoseNoLR(30, 20, 0, 1);
         }
+        while(!isStopRequested()){robot.getPayload().levelGripper();}
         telemetry.addLine("DONE");
         telemetry.update();
         robot.stop();
@@ -197,14 +202,15 @@ public class CuriosityAutoLeft_SIMPLE extends LinearOpMode {
     void deployCone(CuriosityPayload.Pole p){
         //moves the arm and lift up
         double[] polePose = robot.getPayload().getPolePose(p);
-        robot.getPayload().lift.goToPosition(polePose[0]);
+        robot.getPayload().lift.goToPosition(polePose[0]-1);
         robot.getPayload().arm.goToPosition(polePose[1]);
         while (Math.abs(robot.getPayload().lift.getPosition()-polePose[0])>0.4
                 || Math.abs(robot.getPayload().arm.getPosition()-polePose[1])>5 &&!isStopRequested()) {
             telemetry.addLine("Lifting 2");
             telemetry.update();
             robot.getPayload().levelGripper();}
-
+        robot.getPayload().levelGripper();
+        sleep(1000);
         robot.getPayload().toggleGripper(true);
         sleep(300);
     }
@@ -216,7 +222,7 @@ public class CuriosityAutoLeft_SIMPLE extends LinearOpMode {
     }
 
     void pickUpCone(int numCones) throws InterruptedException {
-        goToPose(conePickupX,27,90,0.4);
+        //goToPose(conePickupX,27,90,0.4);
         robot.getPayload().toggleGripper(true);
         robot.getPayload().lift.goToPosition(numCones*coneStackInterval-0);
         robot.getPayload().arm.goToPosition(robot.getPayload().pickupPose[1]);

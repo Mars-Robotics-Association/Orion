@@ -38,7 +38,7 @@ public class CuriosityPayload
     public static double LIFT_COOLDOWN = 0.6;
     public static double GRIPPER_COOLDOWN = 0.4;
     public static double gripperLevelPlaceStart = 5;//degrees of arm to rotate for placing
-    public static double gripperLevelPlaceOffset = -40;//degrees to rotate gripper further for placing
+    public static double gripperLevelPlaceOffset = -10;//degrees to rotate gripper further for placing
     public static double gripperLevelCoefficient = -150;//1 is 150 degree rotation on end
     public static double gripperLevelOverallOffset = 0;
 
