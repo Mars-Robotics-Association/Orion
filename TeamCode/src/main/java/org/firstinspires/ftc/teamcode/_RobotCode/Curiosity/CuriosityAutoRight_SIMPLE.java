@@ -77,8 +77,8 @@ public class CuriosityAutoRight_SIMPLE extends LinearOpMode {
         //places preload cone on high junction
         moveConeToPlace(CuriosityPayload.Pole.HIGH);
         goToPoseOvershoot(55, 0, 0, 1,Nav_Axis.X);
-        goToPose(48, 0, 0, 1);
-        goToPose(48, -3, -40, speed);//goes to place
+//        goToPose(48, 0, 0, 1);
+        goToPose(49, -3, -40, speed);//goes to place
         turnTo(-40,0.6);
         //places cone
         deployCone(CuriosityPayload.Pole.HIGH);
@@ -202,7 +202,7 @@ public class CuriosityAutoRight_SIMPLE extends LinearOpMode {
     void deployCone(CuriosityPayload.Pole p){
         //moves the arm and lift up
         double[] polePose = robot.getPayload().getPolePose(p);
-        robot.getPayload().lift.goToPosition(polePose[0]-1);
+        robot.getPayload().lift.goToPosition(polePose[0]-3);
         robot.getPayload().arm.goToPosition(polePose[1]);
         while (Math.abs(robot.getPayload().lift.getPosition()-polePose[0])>0.4
                 || Math.abs(robot.getPayload().arm.getPosition()-polePose[1])>5 &&!isStopRequested()) {

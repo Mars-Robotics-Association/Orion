@@ -202,7 +202,7 @@ public class CuriosityAutoLeft_SIMPLE extends LinearOpMode {
     void deployCone(CuriosityPayload.Pole p){
         //moves the arm and lift up
         double[] polePose = robot.getPayload().getPolePose(p);
-        robot.getPayload().lift.goToPosition(polePose[0]-1);
+        robot.getPayload().lift.goToPosition(polePose[0]-3);
         robot.getPayload().arm.goToPosition(polePose[1]);
         while (Math.abs(robot.getPayload().lift.getPosition()-polePose[0])>0.4
                 || Math.abs(robot.getPayload().arm.getPosition()-polePose[1])>5 &&!isStopRequested()) {
