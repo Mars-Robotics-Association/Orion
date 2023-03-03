@@ -36,12 +36,16 @@ public class CuriosityAutoLeft extends LinearOpMode {
     public static double coneStackInterval = 1;
     public static double coneSide = 1;
 
-    double conePickupX = 45;
-    double conePickupY = 24;
+    double conePickupX = 47;
+    double conePickupY = 25.5;
 
     int conesInStack = 5;
 
     int lightNum=0;
+
+    public static double pickupTime = 4;
+    double pickupTimer = 4;
+    double lastRuntime = 0;
 
     //boolean linedUpToDrop = false;
 
@@ -75,46 +79,48 @@ public class CuriosityAutoLeft extends LinearOpMode {
         telemetry.addData("Position", coneSide);
         telemetry.update();
 
-        //places preload cone
-        goToPose(5, -2.3, 0, 0.8);
-        turnTo(-45, speed);
-        deployCone(CuriosityPayload.Pole.LOW);
-        nextLights();
-        //sleep(300);
-        goToPoseOvershoot(5, 0, 0, 0.8, Nav_Axis.ANGLE);
-        moveArmToPickup(conesInStack);
+        //places preload cone on high junction
+        moveConeToPlace(CuriosityPayload.Pole.HIGH);
+        goToPoseOvershoot(50, 0, 0, 1,Nav_Axis.X);
         goToPoseOvershoot(55, 0, 0, 1,Nav_Axis.X);
+        sleep(500);
         goToPose(48, 0, 0, 1);
+        goToPose(48, -3, -40, speed);//goes to place
+        turnTo(-40,0.6);
+        //places cone
+        deployCone(CuriosityPayload.Pole.HIGH);
+        goToPose(48,3,0,speed);
+
+        TwoMid();
+        //goToPose(47,-3,-45,speed);
         nextLights();
+        robot.getPayload().lift.goToPosition(0);
+        robot.getPayload().arm.goToPosition(0);
+        //turnTo(-90,speed);
 
         //1=stack for left, 1=far for right
         //spot 1(green)
         if ((coneSide == 1 && isLeft) || (coneSide == 3 && !isLeft)) {
-            TwoHigh();
-            //TwoMid();
-            OneLow();
-            //go to left
-            moveArmToPickup(2);
-            goToPoseNoLR(43, -20, 0, 1);
+            goToPoseNoLR(48, -20, -90, 1);
+//            moveArmToPickup(2);
+
+            goToPoseNoLR(30, -20, 0, 1);
         }
         //spot 2(purple)
         else if (coneSide == 2) {
-            //OneLow();
-            TwoHigh();
-            TwoMid();
-            //go to center
-            moveArmToPickup(2);
-            goToPoseNoLR(43, 0, 0, 1);
+            goToPoseNoLR(48, 0, -90, 1);
+//            moveArmToPickup(2);
+
+            goToPoseNoLR(30, 0, 0, 1);
         }
         //spot 3(orange)
         else {
-            TwoHigh();
-            //TwoMid();
-            ThreeHigh();
-            //go to right
-            moveArmToPickup(2);
-            goToPoseNoLR(43, 24, 0, 1);
+            goToPoseNoLR(48, 24, -90, 1);
+//            moveArmToPickup(2);
+
+            goToPoseNoLR(30, 24, 0, 1);
         }
+        while(!isStopRequested()){robot.getPayload().levelGripper();}
         telemetry.addLine("DONE");
         telemetry.update();
         robot.stop();
@@ -151,13 +157,14 @@ public class CuriosityAutoLeft extends LinearOpMode {
         conesInStack --;
         //sleep(500);
         //moves arm up
-        goToPose(conePickupX, (conePickupY - 12), 90, speed);//backs up a bit to clear stack
+        goToPoseOvershoot(conePickupX, (conePickupY - 12), 90, speed, Nav_Axis.Y);//backs up a bit to clear stack
         moveConeToPlace(CuriosityPayload.Pole.MID);
-        goToPose(47, -7, -135, speed);//goes to place
+        goToPose(47, -6, 90, speed);//goes to place
+        turnTo(-135,0.6);
         //places cone
         deployCone(CuriosityPayload.Pole.MID);
         //sleep(300);
-        goToPose(48, -5, -135, speed);//back up a bit
+        //goToPose(48, -5, -135, speed);//back up a bit
     }
 
     void TwoHigh() throws InterruptedException {
@@ -199,15 +206,18 @@ public class CuriosityAutoLeft extends LinearOpMode {
     }
 
     public void goToStack() throws InterruptedException {
-        goToPose(conePickupX, conePickupY*sideMultiplier, 90*sideMultiplier, .6);
-//        while (!robot.getPayload().isConeInIntake() && !isStopRequested()) {//&& getRuntime()<28
-//            telemetry.addLine("GOING TO STACK");
-//            robot.navigator.goTowardsPose(conePickupX, conePickupY*sideMultiplier, 90*sideMultiplier, .6);
-//            robot.update();
-//            robot.getPayload().levelGripper();
-//            telemetry.update();
-//        }
-//        robot.getChassis().stop();
+        //goToPose(conePickupX, conePickupY, 90, .6);
+        lastRuntime = getRuntime();
+        pickupTimer = pickupTime;
+        while (robot.navigator.goTowardsPose(conePickupX, conePickupY*sideMultiplier, 90*sideMultiplier, .6) && pickupTimer>0 && !isStopRequested()) {//&& getRuntime()<28
+            pickupTimer -= lastRuntime-getRuntime();
+            telemetry.addData("PICKUP TIMER", pickupTimer);
+            robot.update();
+            robot.getPayload().levelGripper();
+            telemetry.update();
+            lastRuntime = getRuntime();
+        }
+        robot.getChassis().stop();
     }
 
 
@@ -300,14 +310,15 @@ public class CuriosityAutoLeft extends LinearOpMode {
     void deployCone(CuriosityPayload.Pole p){
         //moves the arm and lift up
         double[] polePose = robot.getPayload().getPolePose(p);
-        robot.getPayload().lift.goToPosition(polePose[0]);
+        robot.getPayload().lift.goToPosition(polePose[0]-3);
         robot.getPayload().arm.goToPosition(polePose[1]);
         while (Math.abs(robot.getPayload().lift.getPosition()-polePose[0])>0.4
                 || Math.abs(robot.getPayload().arm.getPosition()-polePose[1])>5 &&!isStopRequested()) {
             telemetry.addLine("Lifting 2");
             telemetry.update();
             robot.getPayload().levelGripper();}
-
+        robot.getPayload().levelGripper();
+        sleep(1000);
         robot.getPayload().toggleGripper(true);
         sleep(300);
     }
@@ -321,11 +332,11 @@ public class CuriosityAutoLeft extends LinearOpMode {
     void pickUpCone(int numCones) throws InterruptedException {
         //goToPose(conePickupX,27,90,0.4);
         robot.getPayload().toggleGripper(true);
-        robot.getPayload().lift.goToPosition(numCones*coneStackInterval-0);
+        robot.getPayload().lift.goToPosition(numCones*coneStackInterval);
         robot.getPayload().arm.goToPosition(robot.getPayload().pickupPose[1]);
         //lower
         while (Math.abs(robot.getPayload().lift.getPosition()-(numCones*coneStackInterval))>0.4
-                || Math.abs(robot.getPayload().arm.getPosition()-robot.getPayload().pickupPose[1])>5 && !isStopRequested()) {
+                && !isStopRequested()) {
             telemetry.addLine("Aligning");
             telemetry.update();
             robot.getPayload().levelGripper();}
