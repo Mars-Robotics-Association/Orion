@@ -89,19 +89,25 @@ public class CuriosityAutoLeft_SIMPLE extends LinearOpMode {
         //spot 1(green)
         if ((coneSide == 1 && isLeft) || (coneSide == 3 && !isLeft)) {
             goToPoseNoLR(48, -20, 0, 1);
-            moveArmToPickup(2);
+//            moveArmToPickup(2);
+            robot.getPayload().lift.goToPosition(0);
+            robot.getPayload().arm.goToPosition(0);
             goToPoseNoLR(30, -20, 0, 1);
         }
         //spot 2(purple)
         else if (coneSide == 2) {
             goToPoseNoLR(48, 0, 0, 1);
-            moveArmToPickup(2);
+//            moveArmToPickup(2);
+            robot.getPayload().lift.goToPosition(0);
+            robot.getPayload().arm.goToPosition(0);
             goToPoseNoLR(30, 0, 0, 1);
         }
         //spot 3(orange)
         else {
             goToPoseNoLR(48, 20, 0, 1);
-            moveArmToPickup(2);
+//            moveArmToPickup(2);
+            robot.getPayload().lift.goToPosition(0);
+            robot.getPayload().arm.goToPosition(0);
             goToPoseNoLR(30, 20, 0, 1);
         }
         while(!isStopRequested()){robot.getPayload().levelGripper();}
