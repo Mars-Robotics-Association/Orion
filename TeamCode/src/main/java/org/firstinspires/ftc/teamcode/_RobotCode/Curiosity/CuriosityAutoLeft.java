@@ -84,9 +84,9 @@ public class CuriosityAutoLeft extends LinearOpMode {
         goToPoseOvershoot(50, 0, 0, 1,Nav_Axis.X);
         goToPoseOvershoot(55, 0, 0, 1,Nav_Axis.X);
         sleep(500);
-        goToPose(48, 0, 0, 1);
-        goToPose(48, -3, -40, speed);//goes to place
-        turnTo(-40,0.6);
+        goToPose(44, 0, 0, 1);
+        goToPose(44, -12, 0, speed);//goes to place
+        //turnTo(-40,0.6);
         //places cone
         deployCone(CuriosityPayload.Pole.HIGH);
         goToPose(48,3,0,speed);

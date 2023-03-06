@@ -84,9 +84,9 @@ public class CuriosityAutoRight extends LinearOpMode {
         goToPoseOvershoot(50, 0, 0, 1,Nav_Axis.X);
         goToPoseOvershoot(55, 0, 0, 1,Nav_Axis.X);
         sleep(500);
-        goToPose(48, 0, 0, 1);
-        goToPose(48, -3, -40, speed);//goes to place
-        turnTo(-40,0.6);
+        goToPose(44, 0, 0, 1);
+        goToPose(44, -12, 0, speed);//goes to place
+        //turnTo(-40,0.6);
         //places cone
         deployCone(CuriosityPayload.Pole.HIGH);
         goToPose(48,3,0,speed);
@@ -332,10 +332,10 @@ public class CuriosityAutoRight extends LinearOpMode {
     void pickUpCone(int numCones) throws InterruptedException {
         //goToPose(conePickupX,27,90,0.4);
         robot.getPayload().toggleGripper(true);
-        robot.getPayload().lift.goToPosition(numCones*coneStackInterval);
+        robot.getPayload().lift.goToPosition((numCones*coneStackInterval)-0.4);
         robot.getPayload().arm.goToPosition(robot.getPayload().pickupPose[1]);
         //lower
-        while (Math.abs(robot.getPayload().lift.getPosition()-(numCones*coneStackInterval))>0.4
+        while (Math.abs(robot.getPayload().lift.getPosition()-((numCones*coneStackInterval)-0.4))>0.4
                 && !isStopRequested()) {
             telemetry.addLine("Aligning");
             telemetry.update();

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.Curiosity;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry.Pose2d;
 
 @TeleOp(name = "Curiosity Testing Teleop", group = "Curiosity")
 @Config
+@Disabled
 public class CuriosityTestingTeleOp extends OpMode implements ControllerInputListener
 {
     ////Dependencies////
