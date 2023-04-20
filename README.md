@@ -1049,7 +1049,7 @@ Changes include:
 
 ## Release 16.03.30
 
- * For the MIT App Inventor, the design blocks have new icons that better represent the function of each design component.
+ * For the MIT App Inventor, the design blocks have new icons that better represent the function of each design behavior.
  * Some changes were made to the shutdown logic to ensure the robust shutdown of some of our USB services.
  * A change was made to LinearOpMode so as to allow a given instance to be executed more than once, which is required for the App Inventor.
  * Javadoc improved/updated.

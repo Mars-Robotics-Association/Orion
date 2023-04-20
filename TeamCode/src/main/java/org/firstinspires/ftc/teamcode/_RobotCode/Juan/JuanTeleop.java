@@ -35,7 +35,7 @@ public class JuanTeleop extends OpMode implements ControllerInputListener
 
         telemetry.addData("Speed Multiplier", speedMultiplier);
 
-        robot = new Juan(this, false, false, false);
+        robot = new Juan(this, true, true, true);
 
         controllerInput1 = new ControllerInput(gamepad1, 1);
 

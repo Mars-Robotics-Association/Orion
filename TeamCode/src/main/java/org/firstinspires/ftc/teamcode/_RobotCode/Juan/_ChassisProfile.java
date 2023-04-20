@@ -10,7 +10,7 @@ class _ChassisProfile implements ChassisProfile
     public double moveSpeed() {return 1;}
 
     @Override
-    public double turnSpeed() {return 1;}
+    public double turnSpeed() {return -1;}
 
     @Override
     public boolean flipIMU() { return false; }
