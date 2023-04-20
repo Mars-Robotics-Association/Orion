@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Core.HermesLog;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -33,7 +32,7 @@ public class HermesTestingOpMode extends OpMode
         //Base64Image imgToSend = new Base64Image("eggs");
         Object[] data = {robotPose};
         log.addData(data);
-        log.Update();
+        log.update();
     }
 
     double fixAngle(double angle){

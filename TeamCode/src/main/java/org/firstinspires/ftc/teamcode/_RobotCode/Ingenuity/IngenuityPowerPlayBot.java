@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Basic.BaseRobot;
 import org.firstinspires.ftc.teamcode.Core.MechanicalControlToolkit.Chassis.MecanumChassis;
 import org.firstinspires.ftc.teamcode.Navigation.Archive.FieldState.Pose;
-import org.firstinspires.ftc.teamcode.Navigation.Camera;
 
 @Config
 public class IngenuityPowerPlayBot extends BaseRobot
@@ -100,7 +99,7 @@ public class IngenuityPowerPlayBot extends BaseRobot
             //camera.convertBitmapToBase64(camera.shrinkBitmap(camera.getImage(),240,135),0));
             Object[] data = {robotPose};
             log.addData(data);
-            log.Update();
+            log.update();
         }
 
         if(USE_PAYLOAD){

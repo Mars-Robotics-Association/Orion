@@ -117,7 +117,7 @@ public class MecanumChassisEx
 
     //Call this on Loop()
     public void update(){
-        log.Update();
+        log.update();
     }
 
     //TODO: UNIVERSAL PUBLIC METHODS

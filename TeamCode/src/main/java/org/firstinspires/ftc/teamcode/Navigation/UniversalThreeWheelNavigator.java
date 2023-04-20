@@ -193,6 +193,54 @@ public class UniversalThreeWheelNavigator
         //return true if robot should keep driving, false if movement is done
         return !(shouldStop(moveDistanceAngleError[0],turnError));
     }
+    public enum Nav_Axis{X,Y,ANGLE}
+    public boolean goTowardsPoseOvershoot(double targetX, double targetY, double targetAngle, double speed, Nav_Axis axis, double startVal){
+        targetPose[0] = targetX;
+        targetPose[1] = targetY;
+        targetPose[2] = targetAngle;
+
+        //get errors
+        double[] moveDistanceAngleError = calculateMoveError(targetX,targetY);
+        double turnError = calculateTurnError(targetAngle);
+
+        //calculate speeds
+        double moveSpeed = calculateScalarMoveSpeed(moveDistanceAngleError[0], minSpeed, speed)*chassis.getProfile().moveSpeed();
+        double turnSpeed = calculateTurnSpeed(turnError, minSpeed, speed)*chassis.getProfile().turnSpeed();
+
+        //drives
+        chassis.rawDrive(moveDistanceAngleError[1], moveSpeed, turnSpeed);
+
+        //prints telemetry
+        //opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetAngle+")");
+        opMode.telemetry.addData("GOING TO POSE:", "("+targetPose[0]+", "+targetPose[1]+", "+targetPose[2]+")");
+        opMode.telemetry.addData("MOVE ERROR:", moveDistanceAngleError[0]);
+        opMode.telemetry.addData("MOVE SPEED:", moveSpeed);
+        opMode.telemetry.addData("MOVE ANGLE:", moveDistanceAngleError[1]);
+        opMode.telemetry.addData("TURN ERROR:", turnError);
+        opMode.telemetry.addData("TURN SPEED:", turnSpeed);
+
+        boolean past = false;
+        Pose2d robotPose = getMeasuredPose();
+
+        switch (axis){
+            case X:
+                if(targetX>startVal)past=(robotPose.getX()>=targetX);
+                else past=(robotPose.getX()<=targetX);
+                break;
+            case Y:
+                if(targetY>startVal)past=(robotPose.getY()>=targetY);
+                else past=(robotPose.getY()<=targetY);
+                break;
+            case ANGLE:
+                if(targetAngle>startVal)past=(robotPose.getHeading()>=targetAngle);
+                else past=(robotPose.getHeading()<=targetAngle);
+                break;
+        }
+
+
+        //return true if robot should keep driving, false if movement is done
+        return !(past);
+    }
     public boolean goTowardsPose(double targetX, double targetY, double targetAngle, double speed, ControllerInput controllerInput, double controllerWeight){
         opMode.telemetry.addData("GOING TO POSE:", "("+targetX+", "+targetY+", "+targetAngle+")");
         targetPose[0] = targetX;
@@ -326,13 +374,14 @@ public class UniversalThreeWheelNavigator
     }
 
     public double[] calculateMoveError(double targetX, double targetY){
+        Pose2d currentPose = getMeasuredPose();
         //get robot pose
-        double actualX = getMeasuredPose().getX();
-        double actualY = getMeasuredPose().getY();
+        double actualX = currentPose.getX();
+        double actualY = currentPose.getY();
         //calculates distance to target
         double distanceError = getDistance(targetX, targetY, actualX, actualY);
         //calculate the move angle
-        double moveAngleError = fixAngle(-Math.toDegrees(getMeasuredPose().getHeading()) + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX))));
+        double moveAngleError = fixAngle(-Math.toDegrees(currentPose.getHeading()) + Math.toDegrees(Math.atan2(-(targetY-actualY), -(targetX-actualX))));
         //double moveAngleError = fixAngle(-Math.toDegrees(getMeasuredPose().getHeading()) + Math.toDegrees(Math.atan2((targetY-actualY), (targetX-actualX))));  // TODO: For Ingenuity
 
         //prints telemetry

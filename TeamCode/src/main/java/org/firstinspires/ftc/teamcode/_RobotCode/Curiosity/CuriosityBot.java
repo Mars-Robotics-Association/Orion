@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.Power;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.DataTypes.RobotPose;
 import org.firstinspires.ftc.teamcode.Core.HermesLog.HermesLog;
 import org.firstinspires.ftc.teamcode.Core.InputSystem.ControllerInput;
@@ -48,7 +49,7 @@ public class CuriosityBot extends BaseRobot
         dashboard = FtcDashboard.getInstance();
         setLog(new HermesLog("Curiosity", 200, opMode));
 
-        if(USE_PAYLOAD) camera = new Camera(opMode,"Webcam 1");
+        if(useCamera) camera = new Camera(opMode,"Webcam 1");
 
 
 
@@ -71,11 +72,12 @@ public class CuriosityBot extends BaseRobot
             EncoderActuator arm = new EncoderActuator(opMode, new _ArmProfile(armMotor));
             EncoderActuator lift = new EncoderActuator(opMode, new _LiftProfile(liftMotor1,liftMotor2));
             Servo gripper = opMode.hardwareMap.servo.get("gripper");
+            Servo gripperLeveller = opMode.hardwareMap.servo.get("gripper leveller");
             gripperDist = opMode.hardwareMap.get(DistanceSensor.class, "gripper distance");
             levelSensor = opMode.hardwareMap.get(TouchSensor.class, "level sensor");
 
             payload= new CuriosityPayload(opMode, gamepad, lift,
-                    arm, gripper, gripperDist, levelSensor, new BlinkinController(opMode));
+                    arm, gripper, gripperLeveller, gripperDist, levelSensor, new BlinkinController(opMode));
 
         }
 
@@ -107,11 +109,14 @@ public class CuriosityBot extends BaseRobot
             //converts camera footage to base 64 for gui
             //Base64Image cameraData = new Base64Image(
                     //camera.convertBitmapToBase64(camera.shrinkBitmap(camera.getImage(),240,135),0));
-            Object[] data = {robotPose};
+            Power power = new Power(getVoltage());
+            opMode.telemetry.addData("voltage", getVoltage());
+            Object[] data = {robotPose, power};
             log.addData(data);
-            log.Update();
+            log.update();
         }
         if(USE_PAYLOAD){
+            payload.lights.update();
         }
     }
 
@@ -147,6 +152,10 @@ public class CuriosityBot extends BaseRobot
     public CuriosityNavigator getNavigator(){return navigator;}
     public MecanumChassis getChassis(){return navigator.getChassis();}
     public CuriosityPayload getPayload(){return payload;}
+
+    public double getVoltage() {
+        return (opMode.hardwareMap.voltageSensor.iterator().next().getVoltage());
+    }
 }
 
 

@@ -276,7 +276,7 @@ public class TensorFlowImageProcessorOpMode extends OpMode
                     ConfidenceLevel conf = new ConfidenceLevel(percent);
                     Object[] data ={base,conf};
                     hermes.addData(data);
-                    hermes.Update();
+                    hermes.update();
 
 
                     DashboardWebSocketServer.getInstance().send(msg);
