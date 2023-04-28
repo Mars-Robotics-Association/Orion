@@ -1,210 +1,193 @@
 package org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behavior;
 
 import java.util.ArrayList;
-
-//Motors:
-
-//      Front Left|Front Right
-//                +
-//         ^M0    |    M3^
-//                |
-//         ^M1    |    M4^
-//                |
-//         ^M2    |    M5^
-//                -
-//       Back Left|Back Right
-
-//Servos:
-
-//      Front Left|Front Right
-//
-//        + S0 -  |  - S2 +
-//                |
-//          XX    |    XX
-//                |
-//        + S1 -  |  - S3 +
-//
-//       Back Left|Back Right
+import java.util.WeakHashMap;
 
 public class RoverDrivetrain extends Behavior {
-    ArrayList<MotorConfig> motorConfigs;
 
-    /** Used within the {@link MotorConfig} interface to specify servo roles. */
-    public enum ServoRole{
-        NO_SERVO,
-        LEFT_SIDE,
-        RIGHT_SIDE
+    private final Configurator configurator;
+    private double drivebaseWidth = Double.POSITIVE_INFINITY;
+    ArrayList<DriveUnit> driveUnits;
+
+    public interface Configurator {
+        void applySettings(RoverDrivetrain drivetrain);
     }
 
-    /**Physics properties of the robot */
-    public class MotorConfig{
-        /** X Offset (-1 = left, +1 = right) in meters. */
-        double offsetX = 0;
-        /** Z Offset (-1 = back, +1 = front) in meters. */
-        double offsetY = 0;
-        /** The DCMotor reference of this motor. */
+    /**
+     * Physics properties of the robot
+     */
+    public static class DriveUnit {
+        /**
+         * The DCMotor reference of this motor.
+         */
         DcMotorSimple motor = null;
-        /** The role of this servo. use the NO_SERVO option */
-        ServoRole servoRole = null;
-        /** the Servo reference of this servo, if any. */
-        Servo servoName = null;
+        /**
+         * the Servo reference of this servo, if it exists.
+         */
+        Servo servo = null;
+        /**
+         * X Offset (-1 = left, +1 = right) in centimeters.
+         */
+        double offsetX = 0;
+        /**
+         * Y Offset (-1 = back, +1 = front) in centimeters.
+         */
+        double offsetY = 0;
+
+
+        /**
+         * Convenience function for setting the motor speed
+         */
+        protected void setSpeed(double speed) {
+            motor.setPower(0);
+        }
+
+        /**
+         * Convenience function for setting the servo angle (in Radians).
+         * Does nothing if {@link #servo} is NULL.
+         */
+        protected void setRadians(double rad) {
+            if (servo == null) return;
+
+            double PI_3_OVER_4 = (Math.PI * .75);
+
+            boolean ccw = rad < 0;
+
+            rad = Math.abs(rad);
+
+            double halfPos = (2 * rad / (Math.PI * .75));
+
+            servo.setPosition((ccw ? -1 : 1) * halfPos + .5);
+        }
     }
 
+    /**
+     * Registers a new {@link DriveUnit}. Used within a {@link Configurator} class.
+     *
+     * @param motorName Motor name
+     * @param servoName Servo name, or NULL for no turn servo.
+     * @param offsetX   X Offset (-1 = left, +1 = right) in meters.
+     * @param offsetY   Y Offset (-1 = back, +1 = front) in meters.
+     * @return This drivetrain for method chaining.
+     */
     public RoverDrivetrain addWheel(
-            double offsetX,
-            double offsetZ,
-            String motorName,
+            @NonNull String motorName,
             String servoName,
-            ServoRole servoRole
-    ){
-        motorConfigs.add(new MotorConfig() {
-        });
+            double offsetX,
+            double offsetY
+    ) {
+        DriveUnit unit = new DriveUnit();
+        unit.offsetX = offsetX;
+        unit.offsetY = offsetY;
+        unit.motor = hardwareMap.get(DcMotorSimple.class, motorName);
+        assert unit.motor != null;
+        if (servoName == null) return this;
+        unit.servo = hardwareMap.get(Servo.class, servoName);
+        assert unit.servo != null;
+        return this;
     }
 
-    public RoverDrivetrain(MotorConfig ...config){
-        MotorConfig instance = new MotorConfig();
-
-        
-
-        this.motorConfigs = config;
+    /**
+     * Takes in a {@link Configurator} to apply drivetrain settings.
+     *
+     * @param configurator The {@link Configurator} to pull settings from.
+     */
+    public RoverDrivetrain(@NonNull Configurator configurator) {
+        this.configurator = configurator;
     }
 
-    private DcMotorSimple[] motors;
-    private Servo[] servos;
-
-    public void stopMotors(){
-        motors[0].setPower(0);
-        motors[1].setPower(0);
-        motors[2].setPower(0);
-        motors[3].setPower(0);
-        motors[4].setPower(0);
-        motors[5].setPower(0);
+    public void stopMotors() {
+        for (DriveUnit unit : driveUnits) {
+            unit.setSpeed(0);
+        }
     }
 
-    public void resetServos(){
-        servos[0].setPosition(.5);
-        servos[1].setPosition(.5);
-        servos[2].setPosition(.5);
-        servos[3].setPosition(.5);
+    public void resetServos() {
+        for (DriveUnit unit : driveUnits) {
+            unit.setRadians(0);
+        }
     }
 
-    private void setServoPos(int index, double rad){
-        double PI_3_OVER_4 = (Math.PI * .75);
-
-        boolean ccw = rad < 0;
-
-        rad = Math.abs(rad);
-
-        double halfPos = (2*rad / (Math.PI * .75));
-
-        servos[index].setPosition((ccw?-1:1) * halfPos + .5);
-    }
-
-    private void setMotorPower(int index, double power){
-        motors[index].setPower(power);
-    }
-
-    public void stopMoving(){
+    public void stopMoving() {
         stopMotors();
         resetServos();
     }
 
-    public void driveBackAndForth(double driveSpeed){
-        motors[0].setPower(driveSpeed);
-        motors[1].setPower(driveSpeed);
-        motors[2].setPower(driveSpeed);
-        motors[3].setPower(driveSpeed);
-        motors[4].setPower(driveSpeed);
-        motors[5].setPower(driveSpeed);
+    public void driveBackAndForth(double driveSpeed) {
+        resetServos();
+
+        for (DriveUnit unit : driveUnits) {
+            unit.setSpeed(driveSpeed);
+        }
     }
 
     private static double map(double x, double min1, double max1, double min2, double max2) {
         return (x - min1) / (max1 - min1) * (max2 - min2) + min2;
     }
 
-    enum Steering{
-        LEFT,
-        RIGHT
-    }
+    public void fullDrive(double turnRadius, double angularSpeed) {
 
-    enum Driving{
-        FORWARD,
-        BACKWARD
-    }
-
-    private double calculateWheelAngle(double turnRadius, double offsetX, double offsetY){
-
-    }
-
-    public void fullDrive(double turnRadius, double angularSpeed, Steering steering, Driving driving) {
-        if((turnRadius <= config.cornerBaseHalf) || (angularSpeed == 0)){
+        // This function won't handle zeroes nicely.
+        if ((turnRadius <= drivebaseWidth / 2) || (angularSpeed == 0)) {
             // what are you doing here?
             stopMoving();
             return;
         }
 
-        double innerDistanceCorner = turnRadius - config.cornerBaseHalf;
-        double outerDistanceCorner = turnRadius + config.cornerBaseHalf;
+        for (DriveUnit driveUnit : driveUnits) {
 
-        double tanInner = Math.tan(config.ZMiddleDistance / innerDistanceCorner);
-        double tanOuter = -Math.tan(config.ZMiddleDistance / outerDistanceCorner);
+            // Handle servo angles, if applicable
 
-        boolean turnRight = steering == Steering.RIGHT;
+            double yPos = driveUnit.offsetY;
+            double xPos = 0;
 
-        setServoPos(0, turnRight ? tanOuter : tanInner);
-        setServoPos(1, turnRight ? tanOuter : tanInner);
+            if (turnRadius > 0) {
+                xPos = turnRadius - driveUnit.offsetX;
+            } else {
+                xPos = -turnRadius + driveUnit.offsetX;
 
-        setServoPos(2, turnRight ? tanInner : tanOuter);
-        setServoPos(3, turnRight ? tanInner : tanOuter);
+            }
 
-        // Motor speeds
+            if (driveUnit.servo != null) {
+                double tan = Math.tan(Math.abs(yPos) / xPos);
+                driveUnit.setRadians(tan);
+            }
 
-        double innerRadiusCenter = distance(turnRadius - config.centerBaseHalf, 0);
-        double outerRadiusCenter = distance(turnRadius + config.centerBaseHalf, 0);
+            double physicalRadius = distance(xPos, yPos);
 
-        double innerRadiusCorner = distance(innerDistanceCorner, config.ZMiddleDistance);
-        double outerRadiusCorner = distance(outerDistanceCorner, config.ZMiddleDistance);
-
-        innerRadiusCorner *= (driving == Driving.FORWARD) ? 1 : -1;
-        outerRadiusCorner *= (driving == Driving.FORWARD) ? 1 : -1;
-        innerRadiusCenter *= (driving == Driving.FORWARD) ? 1 : -1;
-        outerRadiusCenter *= (driving == Driving.FORWARD) ? 1 : -1;
-
-        setMotorPower(0, angularSpeed * (turnRight ? outerRadiusCorner : innerRadiusCorner));
-        setMotorPower(1, angularSpeed * (turnRight ? outerRadiusCenter : innerRadiusCenter));
-        setMotorPower(2, angularSpeed * (turnRight ? outerRadiusCorner : innerRadiusCorner));
-
-        setMotorPower(3, angularSpeed * (turnRight ? innerRadiusCorner : outerRadiusCorner));
-        setMotorPower(4, angularSpeed * (turnRight ? innerRadiusCenter : outerRadiusCenter));
-        setMotorPower(5, angularSpeed * (turnRight ? innerRadiusCorner : outerRadiusCorner));
+            driveUnit.setSpeed(physicalRadius * angularSpeed);
+        }
     }
 
     /**
      * Calculates the distance between the origin (0,0) and some point (x,y).
      * Can also be used to obtain a vector's length.
+     *
      * @param x X vector component
      * @param y Y vector component
      * @return Distance
      */
-    private static double distance(double x, double y){
+    private static double distance(double x, double y) {
         return Math.sqrt(x * x + y * y);
     }
 
     /**
      * Calculates the distance between vector A and vector B.
+     *
      * @param x1 X component on vector A
      * @param y1 Y component on vector A
      * @param x2 X component on vector B
      * @param y2 Y component on vector B
      * @return Distance betwee both vectors.
      */
-    private static double distance(double x1, double y1, double x2, double y2){
+    private static double distance(double x1, double y1, double x2, double y2) {
         double x = x2 - x1;
         double y = y2 - y1;
         return distance(x, y);
@@ -212,55 +195,31 @@ public class RoverDrivetrain extends Behavior {
 
     /**
      * Spin the robot in place at a given speed
-     * @param speed
+     *
+     * @param angularSpeed This doesn't make much sense
      */
-    public void spinTurn(double speed){
-        setServoPos(0, Math.PI*.5);
-        setServoPos(0, Math.PI*.5);
-        setServoPos(0, Math.PI*.5);
-        setServoPos(0, Math.PI*.5);
+    public void spinTurn(double angularSpeed) {
+        for (DriveUnit driveUnit : driveUnits) {
 
-        setMotorPower(0, speed);
-        setMotorPower(1, speed);
-        setMotorPower(2, speed);
+            double frac = driveUnit.offsetY / driveUnit.offsetX;
+            driveUnit.setRadians(Math.tan(frac));
 
-        setMotorPower(3, speed);
-        setMotorPower(4, speed);
-        setMotorPower(5, speed);
+            double physicalDistance = distance(driveUnit.offsetX, driveUnit.offsetY);
+            driveUnit.setSpeed(physicalDistance * angularSpeed);
+        }
     }
 
     /**
-     * {@inheritDoc} Also stops the robot's motors and resets servos.
+     * {@inheritDoc}
      */
     @Override
     protected void init() throws Exception {
-        motors = getHardwareArray(
-                DcMotorSimple.class,
-                "M0",
-                "M1",
-                "M2",
-                "M3",
-                "M4",
-                "M5"
-        );
+        configurator.applySettings(this);
 
-        servos = getHardwareArray(
-                Servo.class,
-                "S0",
-                "S1",
-                "S2",
-                "S3"
-        );
-
-        //TODO: This is up to mechanical to decide
-        motors[0].setDirection(DcMotorSimple.Direction.FORWARD);
-        motors[1].setDirection(DcMotorSimple.Direction.FORWARD);
-        motors[2].setDirection(DcMotorSimple.Direction.FORWARD);
-        motors[3].setDirection(DcMotorSimple.Direction.FORWARD);
-        motors[4].setDirection(DcMotorSimple.Direction.FORWARD);
-        motors[5].setDirection(DcMotorSimple.Direction.FORWARD);
-
-        stopMoving();
+        for (DriveUnit unit :
+                driveUnits) {
+            drivebaseWidth = Math.min(drivebaseWidth, Math.abs(unit.offsetX) * 2);
+        }
     }
 
     /**

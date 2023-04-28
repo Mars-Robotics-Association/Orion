@@ -64,7 +64,7 @@ public class GamepadDriver extends Behavior {
         } else if (gamepad.b) {
             drivetrain.driveBackAndForth(gamepad.left_stick_y);
         }else{
-            drivetrain.fullDrive(0, gamepad.left_stick_y, null, null);
+            drivetrain.fullDrive(0, gamepad.left_stick_y);
         }
 
         lastNano = System.nanoTime();

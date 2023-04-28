@@ -5,10 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors.HeadController;
 import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors.RoverDrivetrain;
-import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors.RoverDrivetrain.MotorConfig;
 import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors.Safeguards;
-
-import java.io.IOException;
 
 @TeleOp(group = "Mars Rover")
 public class MarsRoverTeleop extends OpMode {
@@ -16,11 +13,7 @@ public class MarsRoverTeleop extends OpMode {
     public void init(){
         Behavior.systemInit(this,
                 new Safeguards(),
-                new RoverDrivetrain(
-                        new MotorConfig(){
-                            double
-                        }
-                ),
+                new RoverDrivetrain(new MarsDrivetrainConfig()),
                 new HeadController()
         );
     }
