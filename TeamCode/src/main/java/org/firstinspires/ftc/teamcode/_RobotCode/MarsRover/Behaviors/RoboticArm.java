@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behavior;
 
+import java.util.ArrayList;
+
 public class RoboticArm extends Behavior {
-    // Is this overkill? I mean, Santi can program this for sure, but the maths are a bit tricky.
-    // Never-mind, I got this 😎
 
     private static class ServoLayout{
-        private ServoLayout(Servo ...servos){
+        private ServoLayout(Servo[] servos){
             baseY    = servos[0];
             baseZ    = servos[1];
             boomZ    = servos[2];
@@ -23,8 +23,8 @@ public class RoboticArm extends Behavior {
     // Note to mechanical!
 
     // Defaults are set to
-    // 0pos = -135
-    // 0pos = +135
+    // 0.0 pos = -135
+    // 1.0 pos = +135
 
     // Servos must be mapped to
     // 0pos = 0deg
@@ -75,27 +75,35 @@ public class RoboticArm extends Behavior {
         // ???
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected void init() {
-        layout = new ServoLayout(
-                hardwareMap.servo.get("S2"),
-                hardwareMap.servo.get("S3"),
-                hardwareMap.servo.get("S4"),
-                hardwareMap.servo.get("S5"),
-                hardwareMap.servo.get("S6")
-        );
+    protected void init() throws Exception {
+        layout = new ServoLayout(getHardwareArray(Servo.class,
+                "S4","S5","S6","S7","S8"
+        ));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void start() {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void update() {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void stop() {
 

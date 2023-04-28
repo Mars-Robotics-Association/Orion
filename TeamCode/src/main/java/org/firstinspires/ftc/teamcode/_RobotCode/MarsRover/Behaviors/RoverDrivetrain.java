@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behavior;
+
+import java.util.ArrayList;
 
 //Motors:
 
@@ -30,23 +33,48 @@ import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behavior;
 //       Back Left|Back Right
 
 public class RoverDrivetrain extends Behavior {
-    private Configuration config;
+    ArrayList<MotorConfig> motorConfigs;
+
+    /** Used within the {@link MotorConfig} interface to specify servo roles. */
+    public enum ServoRole{
+        NO_SERVO,
+        LEFT_SIDE,
+        RIGHT_SIDE
+    }
 
     /**Physics properties of the robot */
-    public static class Configuration{
-        /**Distance from any corner wheel to the Z axis*/
-        protected double cornerBaseHalf = 1;
-        /**Distance from either middle wheel to the Z axis*/
-        protected double centerBaseHalf = 1;
-        /**Distance from the center axle to front or back axle*/
-        protected double ZMiddleDistance = 1;
+    public class MotorConfig{
+        /** X Offset (-1 = left, +1 = right) in meters. */
+        double offsetX = 0;
+        /** Z Offset (-1 = back, +1 = front) in meters. */
+        double offsetY = 0;
+        /** The DCMotor reference of this motor. */
+        DcMotorSimple motor = null;
+        /** The role of this servo. use the NO_SERVO option */
+        ServoRole servoRole = null;
+        /** the Servo reference of this servo, if any. */
+        Servo servoName = null;
     }
 
-    public RoverDrivetrain(Configuration config){
-        this.config = config;
+    public RoverDrivetrain addWheel(
+            double offsetX,
+            double offsetZ,
+            String motorName,
+            String servoName,
+            ServoRole servoRole
+    ){
+        motorConfigs.add(new MotorConfig() {
+        });
     }
 
-    // The DCMotor class has a lot of overhead that we don't really need. Could save on battery?
+    public RoverDrivetrain(MotorConfig ...config){
+        MotorConfig instance = new MotorConfig();
+
+        
+
+        this.motorConfigs = config;
+    }
+
     private DcMotorSimple[] motors;
     private Servo[] servos;
 
@@ -100,20 +128,34 @@ public class RoverDrivetrain extends Behavior {
         return (x - min1) / (max1 - min1) * (max2 - min2) + min2;
     }
 
-    public void fullDrive(double driveSpeed, double turnRadius) {
-        boolean turnRight = turnRadius >= 0;
+    enum Steering{
+        LEFT,
+        RIGHT
+    }
 
-        // make sure this is positive
-        turnRadius = Math.abs(turnRadius);
+    enum Driving{
+        FORWARD,
+        BACKWARD
+    }
 
-        if((turnRadius <= config.cornerBaseHalf) || (driveSpeed == 0)){
+    private double calculateWheelAngle(double turnRadius, double offsetX, double offsetY){
+
+    }
+
+    public void fullDrive(double turnRadius, double angularSpeed, Steering steering, Driving driving) {
+        if((turnRadius <= config.cornerBaseHalf) || (angularSpeed == 0)){
             // what are you doing here?
             stopMoving();
             return;
         }
 
-        double tanInner = Math.tan(config.ZMiddleDistance / (turnRadius - config.cornerBaseHalf));
-        double tanOuter = -Math.tan(config.ZMiddleDistance / (turnRadius + config.cornerBaseHalf));
+        double innerDistanceCorner = turnRadius - config.cornerBaseHalf;
+        double outerDistanceCorner = turnRadius + config.cornerBaseHalf;
+
+        double tanInner = Math.tan(config.ZMiddleDistance / innerDistanceCorner);
+        double tanOuter = -Math.tan(config.ZMiddleDistance / outerDistanceCorner);
+
+        boolean turnRight = steering == Steering.RIGHT;
 
         setServoPos(0, turnRight ? tanOuter : tanInner);
         setServoPos(1, turnRight ? tanOuter : tanInner);
@@ -121,93 +163,57 @@ public class RoverDrivetrain extends Behavior {
         setServoPos(2, turnRight ? tanInner : tanOuter);
         setServoPos(3, turnRight ? tanInner : tanOuter);
 
-        double speed1PWM = 0;
-        double speed2PWM = 0;
-        double speed3PWM = 0;
+        // Motor speeds
 
-        // I wanted to condense this using some weird byte
-        // mask switch case but my brain can't process that.
-        // I'm not even sure if this works at all.
+        double innerRadiusCenter = distance(turnRadius - config.centerBaseHalf, 0);
+        double outerRadiusCenter = distance(turnRadius + config.centerBaseHalf, 0);
 
-        if(turnRight) { // Right
-            if (driveSpeed > 0) { // Forward
-                setMotorPower(0, speed1PWM);
-                setMotorPower(1, speed1PWM);
-                setMotorPower(2, speed1PWM);
-                setMotorPower(3, -speed2PWM);
-                setMotorPower(4, -speed3PWM);
-                setMotorPower(5, -speed2PWM);
-            }else if (driveSpeed < 0) { // Backward
-                setMotorPower(0, -speed1PWM);
-                setMotorPower(1, -speed1PWM);
-                setMotorPower(2, -speed1PWM);
-                setMotorPower(3, speed2PWM);
-                setMotorPower(4, speed3PWM);
-                setMotorPower(5, speed2PWM);
-            }
-        }else{ // Left
-            if (driveSpeed > 0) { // Forward
-                setMotorPower(0, speed2PWM);
-                setMotorPower(1, speed3PWM);
-                setMotorPower(2, speed2PWM);
-                setMotorPower(3, -speed1PWM);
-                setMotorPower(4, -speed1PWM);
-                setMotorPower(5, -speed1PWM);
-            }else if (driveSpeed < 0) { // Backward
-                setMotorPower(0, -speed2PWM);
-                setMotorPower(1, -speed3PWM);
-                setMotorPower(2, -speed2PWM);
-                setMotorPower(3, speed1PWM);
-                setMotorPower(4, speed1PWM);
-                setMotorPower(5, speed1PWM);
-            }
-        }
+        double innerRadiusCorner = distance(innerDistanceCorner, config.ZMiddleDistance);
+        double outerRadiusCorner = distance(outerDistanceCorner, config.ZMiddleDistance);
 
-        /*   you know what? f*** it! lets do byte-level stupid!
-            byte funnyByte = 0x00;
+        innerRadiusCorner *= (driving == Driving.FORWARD) ? 1 : -1;
+        outerRadiusCorner *= (driving == Driving.FORWARD) ? 1 : -1;
+        innerRadiusCenter *= (driving == Driving.FORWARD) ? 1 : -1;
+        outerRadiusCenter *= (driving == Driving.FORWARD) ? 1 : -1;
 
-            // apply turn (right = 1, left = 0)
-            funnyByte |= turnRight ? 0x10 : 0x00;
+        setMotorPower(0, angularSpeed * (turnRight ? outerRadiusCorner : innerRadiusCorner));
+        setMotorPower(1, angularSpeed * (turnRight ? outerRadiusCenter : innerRadiusCenter));
+        setMotorPower(2, angularSpeed * (turnRight ? outerRadiusCorner : innerRadiusCorner));
 
-            // apply direction (forward = 1, backward = 0)
-            funnyByte |= (driveSpeed > 0) ? 0x01 : 0x00;
-
-            switch(funnyByte){
-                case 0x11:
-                    setMotorPower(0, speed1PWM);
-                    setMotorPower(1, speed1PWM);
-                    setMotorPower(2, speed1PWM);
-                    setMotorPower(3, -speed2PWM);
-                    setMotorPower(4, -speed3PWM);
-                    setMotorPower(5, -speed2PWM);
-                    break;
-                case 0x10:
-                    setMotorPower(0, -speed1PWM);
-                    setMotorPower(1, -speed1PWM);
-                    setMotorPower(2, -speed1PWM);
-                    setMotorPower(3, speed2PWM);
-                    setMotorPower(4, speed3PWM);
-                    setMotorPower(5, speed2PWM);
-                    break;
-                case 0x01:
-                    setMotorPower(0, speed2PWM);
-                    setMotorPower(1, speed3PWM);
-                    setMotorPower(2, speed2PWM);
-                    setMotorPower(3, -speed1PWM);
-                    setMotorPower(4, -speed1PWM);
-                    setMotorPower(5, -speed1PWM);
-                    break;
-                case 0x00:
-                    setMotorPower(0, -speed2PWM);
-                    setMotorPower(1, -speed3PWM);
-                    setMotorPower(2, -speed2PWM);
-                    setMotorPower(3, speed1PWM);
-                    setMotorPower(4, speed1PWM);
-                    setMotorPower(5, speed1PWM);
-            }
-        */
+        setMotorPower(3, angularSpeed * (turnRight ? innerRadiusCorner : outerRadiusCorner));
+        setMotorPower(4, angularSpeed * (turnRight ? innerRadiusCenter : outerRadiusCenter));
+        setMotorPower(5, angularSpeed * (turnRight ? innerRadiusCorner : outerRadiusCorner));
     }
 
+    /**
+     * Calculates the distance between the origin (0,0) and some point (x,y).
+     * Can also be used to obtain a vector's length.
+     * @param x X vector component
+     * @param y Y vector component
+     * @return Distance
+     */
+    private static double distance(double x, double y){
+        return Math.sqrt(x * x + y * y);
+    }
+
+    /**
+     * Calculates the distance between vector A and vector B.
+     * @param x1 X component on vector A
+     * @param y1 Y component on vector A
+     * @param x2 X component on vector B
+     * @param y2 Y component on vector B
+     * @return Distance betwee both vectors.
+     */
+    private static double distance(double x1, double y1, double x2, double y2){
+        double x = x2 - x1;
+        double y = y2 - y1;
+        return distance(x, y);
+    }
+
+    /**
+     * Spin the robot in place at a given speed
+     * @param speed
+     */
     public void spinTurn(double speed){
         setServoPos(0, Math.PI*.5);
         setServoPos(0, Math.PI*.5);
@@ -223,23 +229,28 @@ public class RoverDrivetrain extends Behavior {
         setMotorPower(5, speed);
     }
 
+    /**
+     * {@inheritDoc} Also stops the robot's motors and resets servos.
+     */
     @Override
-    protected void init() {
-        motors = new DcMotorSimple[]{
-                hardwareMap.get(DcMotorSimple.class, "M0"),
-                hardwareMap.get(DcMotorSimple.class, "M1"),
-                hardwareMap.get(DcMotorSimple.class, "M2"),
-                hardwareMap.get(DcMotorSimple.class, "M3"),
-                hardwareMap.get(DcMotorSimple.class, "M4"),
-                hardwareMap.get(DcMotorSimple.class, "M5")
-        };
+    protected void init() throws Exception {
+        motors = getHardwareArray(
+                DcMotorSimple.class,
+                "M0",
+                "M1",
+                "M2",
+                "M3",
+                "M4",
+                "M5"
+        );
 
-        servos = new Servo[]{
-                hardwareMap.get(Servo.class, "S0"),
-                hardwareMap.get(Servo.class, "S1"),
-                hardwareMap.get(Servo.class, "S2"),
-                hardwareMap.get(Servo.class, "S3")
-        };
+        servos = getHardwareArray(
+                Servo.class,
+                "S0",
+                "S1",
+                "S2",
+                "S3"
+        );
 
         //TODO: This is up to mechanical to decide
         motors[0].setDirection(DcMotorSimple.Direction.FORWARD);
@@ -252,16 +263,25 @@ public class RoverDrivetrain extends Behavior {
         stopMoving();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void start() {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void update() {
 
     }
 
+    /**
+     * {@inheritDoc}. Also stops the robot's motors and resets servos.
+     */
     @Override
     protected void stop() {
         stopMoving();
