@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behavior;
 
+/**
+ * Controls the servos
+ */
 public class HeadController extends Behavior {
     // Pitch = up/down
     // Yaw = left/right
@@ -11,6 +14,7 @@ public class HeadController extends Behavior {
     private Servo pitchServo;
     private Servo yawServo;
 
+    // just getter and setter functions. Nothing much here.
     public double getPitch(){
         return pitchServo.getPosition();
     }
@@ -32,13 +36,13 @@ public class HeadController extends Behavior {
      */
     @Override
     protected void init() throws Exception {
-        yawServo = hardwareMap.servo.get("S4");
-        pitchServo = hardwareMap.servo.get("S5");
+        // Use the hardware map to get hardware references.
+        // STOPSHIP: 5/7/2023 These servo names are based on vague assumptions.
+        yawServo = hardwareMap.servo.get("S7");
+        pitchServo = hardwareMap.servo.get("S8");
 
+        // Check for null references.
         if(yawServo == null || pitchServo == null)throw new Exception("Check head servos!");
-
-        setPitch(0);
-        setYaw(0);
     }
 
     /**

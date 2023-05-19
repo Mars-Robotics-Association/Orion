@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behavior;
 
 import java.util.ArrayList;
 
+// STOPSHIP: 5/7/2023 This entire class is based on a mathematical model based on vague assumptions.  
 public class RoboticArm extends Behavior {
 
     private static class ServoLayout{
@@ -71,7 +72,7 @@ public class RoboticArm extends Behavior {
         layout.boomZ.setPosition(convert(Math.PI - cosine * 2));
     }
 
-    public void takeSample(double x, double y){
+    public void takeSample(){
         // ???
     }
 
@@ -80,8 +81,9 @@ public class RoboticArm extends Behavior {
      */
     @Override
     protected void init() throws Exception {
+        // Use the helper function to retrieve all the hardware
         layout = new ServoLayout(getHardwareArray(Servo.class,
-                "S4","S5","S6","S7","S8"
+                "S6","S7","S8","S9","S10"
         ));
     }
 

@@ -8,6 +8,8 @@ package org.firstinspires.ftc.teamcode.Navigation.Odometry.geometry;
 /*----------------------------------------------------------------------------*/
 
 
+import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
+
 /**
  * A rotation in a 2d coordinate frame represented a point on the unit circle
  * (cosine and sine).

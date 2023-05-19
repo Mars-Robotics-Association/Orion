@@ -1,16 +1,16 @@
 package org.firstinspires.ftc.teamcode._RobotCode.MarsRover;
-
 import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors.RoverDrivetrain;
+import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors.RoverDrivetrain.DriveUnit;
 
 //Motors:
 
 //      Front Left|Front Right
 //                +
-//         ^M0    |    M3^
-//                |
 //         ^M1    |    M4^
 //                |
 //         ^M2    |    M5^
+//                |
+//         ^M3    |    M6^
 //                -
 //       Back Left|Back Right
 
@@ -18,49 +18,46 @@ import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors.RoverDrivet
 
 //      Front Left|Front Right
 //
-//        + S0 -  |  - S2 +
+//        - S1 +  |  - S4 +
 //                |
 //          XX    |    XX
 //                |
-//        + S1 -  |  - S3 +
+//        - S3 +  |  - S6 +
 //
 //       Back Left|Back Right
 
-public class MarsDrivetrainConfig implements RoverDrivetrain.Configurator {
-
-    @Override
-    public void applySettings(RoverDrivetrain drivetrain) {
-        drivetrain.addWheel(
+public class MarsDrivetrainConfig {
+    public static DriveUnit[] getConfig(){
+        return new DriveUnit[]{new DriveUnit(
                 "M1",
                 "S1",
-                -5,
-                +5
-        ).addWheel(
+                -10,
+                +10.78
+        ), new DriveUnit(
                 "M2",
                 null,
                 -7,
                 0
-        ).addWheel(
+        ), new DriveUnit(
                 "M3",
-                "S2",
-                -5,
-                -5
-        ).addWheel(
-
-                "M4",
                 "S3",
-                +5,
-                +5
-        ).addWheel(
+                -10,
+                -12
+        ), new DriveUnit(
+                "M4",
+                "S4",
+                +10,
+                +10.78
+        ), new DriveUnit(
                 "M5",
                 null,
                 +7,
                 0
-        ).addWheel(
+        ), new DriveUnit(
                 "M6",
-                "S4",
-                +5,
-                -5
-        );
-    }
+                "S6",
+                +10,
+                -12
+        )};
+    };
 }

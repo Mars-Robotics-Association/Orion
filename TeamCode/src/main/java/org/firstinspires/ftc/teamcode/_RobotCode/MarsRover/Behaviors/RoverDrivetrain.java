@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behavior;
 
@@ -11,41 +12,81 @@ import java.util.ArrayList;
 import java.util.WeakHashMap;
 
 public class RoverDrivetrain extends Behavior {
-
-    private final Configurator configurator;
+    /**
+     * Used to ensure that all turn radii are not smaller than half of the robot's width,
+     * resulting in division by zero
+     */
     private double drivebaseWidth = Double.POSITIVE_INFINITY;
-    ArrayList<DriveUnit> driveUnits;
 
-    public interface Configurator {
-        void applySettings(RoverDrivetrain drivetrain);
+    public double getMinimumTurnRadius(){
+        return drivebaseWidth;
     }
+    DriveUnit[] driveUnits;
 
     /**
      * Physics properties of the robot
      */
     public static class DriveUnit {
+
         /**
-         * The DCMotor reference of this motor.
+         * Instantiates a new {@link DriveUnit}.
+         *
+         * @param motorName Motor name
+         * @param servoName Servo name, or NULL for no turn servo.
+         * @param offsetX   X Offset (-1 = left, +1 = right) in inches.
+         * @param offsetY   Y Offset (-1 = back, +1 = front) in inches.
          */
-        DcMotorSimple motor = null;
+        public DriveUnit(@NonNull String motorName,
+                         String servoName,
+                         double offsetX,
+                         double offsetY){
+            this.motorName = motorName;
+            this.servoName = servoName;
+            this.offsetX = offsetX;
+            this.offsetY = offsetY;
+
+            this.motor = hardwareMap.get(DcMotorSimple.class, motorName);
+            if(servoName == null)return;
+            this.servo = hardwareMap.get(Servo.class, servoName);
+        }
+
         /**
-         * the Servo reference of this servo, if it exists.
+         * The DCMotor name of this unit.
+         */
+        String motorName;
+        /**
+         * the Servo reference of this unit, if it exists.
+         */
+        String servoName;
+        /**
+         * The DCMotor reference of this unit.
+         */
+        DcMotorSimple motor;
+        /**
+         * the Servo reference of this unit, if it exists.
          */
         Servo servo = null;
         /**
-         * X Offset (-1 = left, +1 = right) in centimeters.
+         * X Offset (-1 = left, +1 = right) in inches.
          */
-        double offsetX = 0;
+        double offsetX;
         /**
-         * Y Offset (-1 = back, +1 = front) in centimeters.
+         * Y Offset (-1 = back, +1 = front) in inches.
          */
-        double offsetY = 0;
+        double offsetY;
 
+        /**
+         * Tells whether this drive unit has a servo.
+         * @return Does this have a servo?
+         */
+        public boolean hasServo(){
+            return servo != null;
+        }
 
         /**
          * Convenience function for setting the motor speed
          */
-        protected void setSpeed(double speed) {
+        public void setSpeed(double speed) {
             motor.setPower(0);
         }
 
@@ -53,73 +94,68 @@ public class RoverDrivetrain extends Behavior {
          * Convenience function for setting the servo angle (in Radians).
          * Does nothing if {@link #servo} is NULL.
          */
-        protected void setRadians(double rad) {
-            if (servo == null) return;
+        public void setRadians(double rad, boolean flipped) {
+            if (servo == null){
+                RobotLog.e("Drive Unit with Motor " + this.motor.getConnectionInfo());
+            }
 
-            double PI_3_OVER_4 = (Math.PI * .75);
+            double FIVE_OVER_SIX_PI = (5. / 6.) * Math.PI;
 
-            boolean ccw = rad < 0;
+            double mapped = (.5 / FIVE_OVER_SIX_PI) * rad;
 
-            rad = Math.abs(rad);
+            servo.setPosition(.5 + (flipped ? -1 : 1) * mapped);
+        }
 
-            double halfPos = (2 * rad / (Math.PI * .75));
-
-            servo.setPosition((ccw ? -1 : 1) * halfPos + .5);
+        public void setRadians(double rad) {
+            setRadians(rad, false);
         }
     }
 
     /**
-     * Registers a new {@link DriveUnit}. Used within a {@link Configurator} class.
-     *
-     * @param motorName Motor name
-     * @param servoName Servo name, or NULL for no turn servo.
-     * @param offsetX   X Offset (-1 = left, +1 = right) in meters.
-     * @param offsetY   Y Offset (-1 = back, +1 = front) in meters.
-     * @return This drivetrain for method chaining.
+     * Creates a new RoverDrivetrain from the following drive units.
      */
-    public RoverDrivetrain addWheel(
-            @NonNull String motorName,
-            String servoName,
-            double offsetX,
-            double offsetY
-    ) {
-        DriveUnit unit = new DriveUnit();
-        unit.offsetX = offsetX;
-        unit.offsetY = offsetY;
-        unit.motor = hardwareMap.get(DcMotorSimple.class, motorName);
-        assert unit.motor != null;
-        if (servoName == null) return this;
-        unit.servo = hardwareMap.get(Servo.class, servoName);
-        assert unit.servo != null;
-        return this;
+    public RoverDrivetrain(@NonNull DriveUnit[] driveUnits) {
+        this.driveUnits = driveUnits;
+
+        for (DriveUnit unit :
+                driveUnits) {
+            drivebaseWidth = Math.min(drivebaseWidth, Math.abs(unit.offsetX) * 2);
+        }
     }
 
     /**
-     * Takes in a {@link Configurator} to apply drivetrain settings.
-     *
-     * @param configurator The {@link Configurator} to pull settings from.
+     * Stops the robot in place. Nothing else to it.
      */
-    public RoverDrivetrain(@NonNull Configurator configurator) {
-        this.configurator = configurator;
-    }
-
     public void stopMotors() {
         for (DriveUnit unit : driveUnits) {
             unit.setSpeed(0);
         }
     }
 
+    /**
+     * Returns the servos to their default position.
+     */
     public void resetServos() {
+        int i = 0;
+
         for (DriveUnit unit : driveUnits) {
+            RobotLog.aa("Reset Servo", String.valueOf(++i));
+
             unit.setRadians(0);
         }
     }
 
+    /**
+     * Calls both {@link #stopMotors()} and {@link #resetServos()}.
+     */
     public void stopMoving() {
         stopMotors();
         resetServos();
     }
 
+    /**
+     * Simply moves back and forth. There is literally nothing else to say here.
+     */
     public void driveBackAndForth(double driveSpeed) {
         resetServos();
 
@@ -132,10 +168,14 @@ public class RoverDrivetrain extends Behavior {
         return (x - min1) / (max1 - min1) * (max2 - min2) + min2;
     }
 
+    /**
+     * Gives you the full power of Ackermann driving.
+     * @param turnRadius Radius of a circle that is tangent to the Z axis of the robot.
+     * @param angularSpeed Motor speed to move along this circle.
+     */
     public void fullDrive(double turnRadius, double angularSpeed) {
-
         // This function won't handle zeroes nicely.
-        if ((turnRadius <= drivebaseWidth / 2) || (angularSpeed == 0)) {
+        if ((Math.abs(turnRadius) <= drivebaseWidth / 2) || (angularSpeed == 0)) {
             // what are you doing here?
             stopMoving();
             return;
@@ -144,20 +184,25 @@ public class RoverDrivetrain extends Behavior {
         for (DriveUnit driveUnit : driveUnits) {
 
             // Handle servo angles, if applicable
+            double yPos = Math.abs(driveUnit.offsetY);
+            double xPos;
 
-            double yPos = driveUnit.offsetY;
-            double xPos = 0;
+            boolean rightTurn = turnRadius > 0;
 
-            if (turnRadius > 0) {
+            if (rightTurn) {
                 xPos = turnRadius - driveUnit.offsetX;
             } else {
                 xPos = -turnRadius + driveUnit.offsetX;
-
             }
 
             if (driveUnit.servo != null) {
+                if(yPos == 0){
+                    driveUnit.setRadians(Math.PI / 2, !rightTurn);
+                }
+
                 double tan = Math.tan(Math.abs(yPos) / xPos);
-                driveUnit.setRadians(tan);
+
+                driveUnit.setRadians(Math.abs(tan), !rightTurn);
             }
 
             double physicalRadius = distance(xPos, yPos);
@@ -179,13 +224,13 @@ public class RoverDrivetrain extends Behavior {
     }
 
     /**
-     * Calculates the distance between vector A and vector B.
+     * Calculates the distance between a vector A and a vector B.
      *
-     * @param x1 X component on vector A
-     * @param y1 Y component on vector A
-     * @param x2 X component on vector B
-     * @param y2 Y component on vector B
-     * @return Distance betwee both vectors.
+     * @param x1 X component on vector A.
+     * @param y1 Y component on vector A.
+     * @param x2 X component on vector B.
+     * @param y2 Y component on vector B.
+     * @return Distance between both vectors.
      */
     private static double distance(double x1, double y1, double x2, double y2) {
         double x = x2 - x1;
@@ -196,13 +241,13 @@ public class RoverDrivetrain extends Behavior {
     /**
      * Spin the robot in place at a given speed
      *
-     * @param angularSpeed This doesn't make much sense
+     * @param angularSpeed This doesn't make much sense,
      */
     public void spinTurn(double angularSpeed) {
         for (DriveUnit driveUnit : driveUnits) {
 
-            double frac = driveUnit.offsetY / driveUnit.offsetX;
-            driveUnit.setRadians(Math.tan(frac));
+            double fraction = driveUnit.offsetY / driveUnit.offsetX;
+            driveUnit.setRadians(Math.tan(fraction), (driveUnit.offsetX < 0));
 
             double physicalDistance = distance(driveUnit.offsetX, driveUnit.offsetY);
             driveUnit.setSpeed(physicalDistance * angularSpeed);
@@ -214,12 +259,7 @@ public class RoverDrivetrain extends Behavior {
      */
     @Override
     protected void init() throws Exception {
-        configurator.applySettings(this);
 
-        for (DriveUnit unit :
-                driveUnits) {
-            drivebaseWidth = Math.min(drivebaseWidth, Math.abs(unit.offsetX) * 2);
-        }
     }
 
     /**

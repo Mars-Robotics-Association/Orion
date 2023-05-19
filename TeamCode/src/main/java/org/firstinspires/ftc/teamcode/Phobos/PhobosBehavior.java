@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode._RobotCode.MarsRover;
+package org.firstinspires.ftc.teamcode.Phobos;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * The Behavior system itself.
+ * The PhobosBehavior system itself.
  */
-public abstract class Behavior {
+public abstract class PhobosBehavior {
 
     /**
      * Thrown by {@link #getHardwareArray} when a hardware device could not be found.
@@ -27,53 +27,42 @@ public abstract class Behavior {
         }
     }
 
-    /**
-     * Thrown by {@link #getBehavior} when a hardware device could not be found.
-     */
-    static class BehaviorNotFound extends Exception{
-        BehaviorNotFound(String name){
-            super(String.format("Behavior %s could not be found", name));
-        }
-    }
-
-    private static final ArrayList<Behavior> BEHAVIOR_ARRAY = new ArrayList<>();
+    private static final ArrayList<PhobosBehavior> PHOBOS_BEHAVIOR_ARRAY = new ArrayList<>();
 
     /**
      * Initializes all the specified Behaviors and calls the {@link #init()} on each behavior.
      * Call this in your OpMode's {@link OpMode#init()}.
      */
-    public static void systemInit(OpMode opmode, Behavior... behaviors){
-        BEHAVIOR_ARRAY.clear();
+    public static void systemInit(OpMode opmode, PhobosBehavior... phobosBehaviors){
+        PHOBOS_BEHAVIOR_ARRAY.clear();
 
-        BEHAVIOR_ARRAY.addAll(Arrays.asList(behaviors));
+        PHOBOS_BEHAVIOR_ARRAY.addAll(Arrays.asList(phobosBehaviors));
 
         opMode = opmode;
         telemetry = opMode.telemetry;
         hardwareMap = opMode.hardwareMap;
 
         try {
-            for (Behavior behavior : BEHAVIOR_ARRAY) {
-                behavior.init();
+            for (PhobosBehavior phobosBehavior : PHOBOS_BEHAVIOR_ARRAY) {
+                phobosBehavior.init();
             }
         }catch(Exception error){
-            RobotLog.e("Nashorn Init Error:" + error);
-            RobotLog.e("Stack Trace:" + Arrays.toString(error.getStackTrace()));
+            RobotLog.e(error.toString());
             opmode.stop();
         }
     }
 
     /**
-     * Calls the {@link #start()} on each behavior.
+     * Calls the {@linn #start()} on each behavior.
      * Call this in your OpMode's {@link OpMode#start()}.
      */
     public static void systemStart() {
         try {
-            for (Behavior behavior : BEHAVIOR_ARRAY) {
-                behavior.start();
+            for (PhobosBehavior phobosBehavior : PHOBOS_BEHAVIOR_ARRAY) {
+                phobosBehavior.start();
             }
         }catch(Exception error){
-            RobotLog.e("Nashorn Start Error:" + error);
-            RobotLog.e("Stack Trace:" + Arrays.toString(error.getStackTrace()));
+            RobotLog.e(error.toString());
             opMode.stop();
         }
     }
@@ -85,12 +74,11 @@ public abstract class Behavior {
      */
     public static void systemUpdate() {
         try {
-            for (Behavior behavior : BEHAVIOR_ARRAY) {
-                behavior.update();
+            for (PhobosBehavior phobosBehavior : PHOBOS_BEHAVIOR_ARRAY) {
+                phobosBehavior.update();
             }
         }catch(Exception error){
-            RobotLog.e("Nashorn Update Error:" + error);
-            RobotLog.e("Stack Trace:" + Arrays.toString(error.getStackTrace()));
+            RobotLog.e(error.toString());
             opMode.stop();
         }
     }
@@ -101,18 +89,18 @@ public abstract class Behavior {
      */
     public static void systemStop() {
         try {
-            for (Behavior behavior : BEHAVIOR_ARRAY) {
-                behavior.stop();
+            for (PhobosBehavior phobosBehavior : PHOBOS_BEHAVIOR_ARRAY) {
+                phobosBehavior.stop();
             }
         }catch(Exception error){
-            RobotLog.e("Nashorn Stop Error:" + error);
-            RobotLog.e("Stack Trace:" + Arrays.toString(error.getStackTrace()));
+            RobotLog.e(error.toString());
+            opMode.stop();
         }
     }
 
-    public static OpMode opMode;
-    public static Telemetry telemetry;
-    public static HardwareMap hardwareMap;
+    protected static OpMode opMode;
+    protected static Telemetry telemetry;
+    protected static HardwareMap hardwareMap;
 
     /**
      * Called on {@link OpMode#init()}
@@ -166,11 +154,11 @@ public abstract class Behavior {
      * @return T if found
      * @param <T> Expected Hardware Type. Should be computed by Java typing system.
      */
-    static protected <T extends Behavior> T getBehavior(Class<T> tClass) throws BehaviorNotFound {
-        for (Behavior behavior : BEHAVIOR_ARRAY){
-            if(tClass.isInstance(behavior))return tClass.cast(behavior);
+    static protected <T extends PhobosBehavior> T getBehavior(Class<T> tClass){
+        for (PhobosBehavior phobosBehavior : PHOBOS_BEHAVIOR_ARRAY){
+            if(tClass.isInstance(phobosBehavior))return tClass.cast(phobosBehavior);
         }
 
-       throw new BehaviorNotFound(tClass.getName());
+        return null;
     }
 }

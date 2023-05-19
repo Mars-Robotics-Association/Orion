@@ -177,7 +177,7 @@ The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc
 * Adds support for TensorFlow v2 object detection models.
 * Reduces ambiguity of the Self Inspect language and graphics.
 * OnBotJava now warns about potentially unintended file overwrites.
-* Improves behavior of the Wi-Fi band and channel selector on the Manage webpage.
+* Improves phobosBehavior of the Wi-Fi band and channel selector on the Manage webpage.
 
 ### Bug fixes
  * Fixes Robot Controller app crash on Android 9+ when a Driver Station connects.
@@ -219,7 +219,7 @@ The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc
 * Fixes potential issues caused by having mismatched Control/Expansion Hub firmware versions 
 * Fixes [ftc_app issue 673](https://github.com/ftctechnh/ftc_app/issues/673) Latest matchlog is being deleted instead of old ones by RobotLog
 * Fixes ConceptVuforiaUltimateGoalNavigationWebcam sample opmode by correctly orienting camera on robot.
-* Fixes issue where logcat would be spammed with InterruptedExceptions when stop is requested from the Driver Station (this behavior was accidentally introduced in v5.3). This change has no impact on functionality.
+* Fixes issue where logcat would be spammed with InterruptedExceptions when stop is requested from the Driver Station (this phobosBehavior was accidentally introduced in v5.3). This change has no impact on functionality.
 * Fixes issue where the blocks editor fails to load if the name of any TeleOp opmode contains an apostrophe.
 
 ## Version 6.1 (20201209-113742)
@@ -251,8 +251,8 @@ The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc
 * Version 5.5 and greater will not work on older Android 4.x and 5.x phones.  Users must upgrade to an approved Android 6.x device or newer.
 * The default PIDF values for REV motors have been reverted to the default PID values that were used in the 2018-2019 season
     * This change was made because the 2018-2019 values turned out to work better for many mechanisms
-    * This brings the behavior of the REV motors in line with the behavior of all other motors
-    * If you prefer the 2019-2020 season's behavior for REV motors, here are the PIDF values that were in place, so that you can manually set them in your OpModes:
+    * This brings the phobosBehavior of the REV motors in line with the phobosBehavior of all other motors
+    * If you prefer the 2019-2020 season's phobosBehavior for REV motors, here are the PIDF values that were in place, so that you can manually set them in your OpModes:
       <br>
       **HD Hex motors (all gearboxes):**
       Velocity PIDF values: `P = 1.17`, `I = 0.117`, `F = 11.7`
@@ -464,7 +464,7 @@ Version 5.5 requires Android Studio 4.0 or later.
     * `BulkCachingMode.AUTO`: Applicable hardware calls are served from a bulk read cache that is cleared/refreshed automatically to ensure identical commands don't hit the same cache. The cache can also be cleared manually with `LynxModule#clearBulkCache()`, although this is not recommended.
     * (advanced users) `BulkCachingMode.MANUAL`: Same as `BulkCachingMode.AUTO` except the cache is never cleared automatically. To avoid getting stale data, the cache must be manually cleared at the beginning of each loop body or as the user deems appropriate.
 * Removes PIDF Annotation values added in Rev 5.3 (to AndyMark, goBILDA and TETRIX motor configurations).
-  * The new motor types will still be available but their Default control behavior will revert back to Rev 5.2
+  * The new motor types will still be available but their Default control phobosBehavior will revert back to Rev 5.2
 * Adds new `ConceptMotorBulkRead` sample Opmode to demonstrate and compare Motor Bulk-Read modes for reducing I/O latencies.
 
 ## Version 5.3 (20191004-112306)
@@ -1027,7 +1027,7 @@ Changes include:
  * ContinuousRotationServo class has been added to the FTC SDK.
  * Range.clip() method has been overloaded so it can support this operation for int, short and byte integers.
  * Some changes have been made (new methods added) on how a user can access items from the hardware map.
- * Users can now set the zero power behavior for a DC motor so that the motor will brake or float when power is zero.
+ * Users can now set the zero power phobosBehavior for a DC motor so that the motor will brake or float when power is zero.
  * Prototype Blockly Programming Mode has been added to FTC Robot Controller.  Users can place the Robot Controller into this mode, and then use a device (such as a laptop) that has a Javascript enabled browser to write Blockly-based Op Modes directly onto the Robot Controller.
  * Users can now configure the robot remotely through the FTC Driver Station app.
  * Android Studio project supports Android Studio 2.1.x and compile SDK Version 23 (Marshmallow).
@@ -1049,7 +1049,7 @@ Changes include:
 
 ## Release 16.03.30
 
- * For the MIT App Inventor, the design blocks have new icons that better represent the function of each design behavior.
+ * For the MIT App Inventor, the design blocks have new icons that better represent the function of each design phobosBehavior.
  * Some changes were made to the shutdown logic to ensure the robust shutdown of some of our USB services.
  * A change was made to LinearOpMode so as to allow a given instance to be executed more than once, which is required for the App Inventor.
  * Javadoc improved/updated.

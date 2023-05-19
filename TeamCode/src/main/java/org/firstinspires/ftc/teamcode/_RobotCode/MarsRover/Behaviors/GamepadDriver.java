@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behavior;
 
 /**
- * Safety features intended to keep the robot from falling apart.
+ * Controls the robot using gamepad input.
  */
 public class GamepadDriver extends Behavior {
 
@@ -17,13 +17,11 @@ public class GamepadDriver extends Behavior {
 
     // Tweaking Vars
 
-    /** Speed in deg/s the pitch (up/down) servo will rotate */
-    final double pitchSpeed = 1;
-    /** Speed in deg/s the yaw (left/right) servo will rotate */
-    final double yawSpeed = 1;
+    /** Speed in pos/s the pitch (up/down) servo will rotate */
+    final double pitchSpeed = 0.01;
+    /** Speed in pos/s the yaw (left/right) servo will rotate */
+    final double yawSpeed = 0.01;
     /** Time since last update in nanoseconds */
-
-
 
     long lastNano = 0;
 
@@ -31,7 +29,8 @@ public class GamepadDriver extends Behavior {
      * {@inheritDoc}
      */
     @Override
-    protected void init() {
+    protected void init() throws Exception {
+        // Calls to getBehavior should be reduced as much as possible.
         drivetrain = getBehavior(RoverDrivetrain.class);
         headController = getBehavior(HeadController.class);
         gamepad = opMode.gamepad1;
@@ -50,21 +49,30 @@ public class GamepadDriver extends Behavior {
      */
     @Override
     protected void update() {
+        // Calculate a time delta
         long deltaNano = System.nanoTime() - lastNano;
         double deltaTime = (double)(deltaNano) / 1e-9;
 
         double pitch = headController.getPitch();
         double yaw = headController.getYaw();
 
+        // Same as headController.pitch += pitchSpeed * gamepad.right_stick_y * deltaTime
         headController.setPitch(pitch + (pitchSpeed*gamepad.right_stick_y*deltaTime));
+        // Same as headController.yaw += yawSpeed * gamepad.right_stick_x * deltaTime
         headController.setYaw(yaw + (yawSpeed*gamepad.right_stick_x*deltaTime));
 
-        if(gamepad.a){
-            drivetrain.spinTurn(gamepad.left_stick_x);
-        } else if (gamepad.b) {
-            drivetrain.driveBackAndForth(gamepad.left_stick_y);
+        if(gamepad.left_stick_button){ // Lock to an axis
+            if (Math.abs(gamepad.left_stick_x) > Math.abs(gamepad.left_stick_y)){
+                // Lock to spinning
+                drivetrain.spinTurn(gamepad.left_stick_x);
+            }else{
+                // Lock to forward/backward
+                drivetrain.driveBackAndForth(gamepad.left_stick_y);
+            }
         }else{
-            drivetrain.fullDrive(0, gamepad.left_stick_y);
+            // Drive normally
+            double turnRadius = gamepad.left_stick_x * 5 + Math.copySign(drivetrain.getMinimumTurnRadius(), gamepad.left_stick_x);
+            drivetrain.fullDrive(turnRadius, gamepad.left_stick_y);
         }
 
         lastNano = System.nanoTime();
@@ -74,6 +82,5 @@ public class GamepadDriver extends Behavior {
      * {@inheritDoc}
      */
     @Override
-    protected void stop() {
-    }
+    protected void stop() {}
 }
