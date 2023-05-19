@@ -46,26 +46,29 @@ public class RoverDrivetrain extends Behavior {
             this.offsetY = offsetY;
 
             this.motor = hardwareMap.get(DcMotorSimple.class, motorName);
-            if(servoName == null)return;
-            this.servo = hardwareMap.get(Servo.class, servoName);
+            if(servoName == null){
+                this.servo = null;
+            }else {
+                this.servo = hardwareMap.get(Servo.class, servoName);
+            }
         }
 
         /**
          * The DCMotor name of this unit.
          */
-        String motorName;
+        public final String motorName;
         /**
          * the Servo reference of this unit, if it exists.
          */
-        String servoName;
+        public final String servoName;
         /**
          * The DCMotor reference of this unit.
          */
-        DcMotorSimple motor;
+        public final DcMotorSimple motor;
         /**
          * the Servo reference of this unit, if it exists.
          */
-        Servo servo = null;
+        public final Servo servo;
         /**
          * X Offset (-1 = left, +1 = right) in inches.
          */
@@ -87,7 +90,7 @@ public class RoverDrivetrain extends Behavior {
          * Convenience function for setting the motor speed
          */
         public void setSpeed(double speed) {
-            motor.setPower(0);
+            motor.setPower(speed);
         }
 
         /**
@@ -103,6 +106,7 @@ public class RoverDrivetrain extends Behavior {
 
             double mapped = (.5 / FIVE_OVER_SIX_PI) * rad;
 
+            assert servo != null;
             servo.setPosition(.5 + (flipped ? -1 : 1) * mapped);
         }
 
