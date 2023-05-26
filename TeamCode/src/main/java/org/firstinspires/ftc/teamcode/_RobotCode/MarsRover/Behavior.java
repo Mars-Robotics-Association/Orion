@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode._RobotCode.MarsRover;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -42,7 +43,7 @@ public abstract class Behavior {
      * Initializes all the specified Behaviors and calls the {@link #init()} on each behavior.
      * Call this in your OpMode's {@link OpMode#init()}.
      */
-    public static void systemInit(OpMode opmode, Behavior... behaviors){
+    public static void systemInit(OpMode opmode, Behavior... behaviors) throws Exception {
         BEHAVIOR_ARRAY.clear();
 
         BEHAVIOR_ARRAY.addAll(Arrays.asList(behaviors));
@@ -57,8 +58,11 @@ public abstract class Behavior {
             }
         }catch(Exception error){
             RobotLog.e("Nashorn Init Error:" + error);
-            RobotLog.e("Stack Trace:" + Arrays.toString(error.getStackTrace()));
-            opmode.stop();
+            RobotLog.e("Stack Trace:");
+            for (StackTraceElement elem : error.getStackTrace()){
+                RobotLog.e(elem.toString());
+            }
+            throw error;
         }
     }
 
@@ -66,15 +70,18 @@ public abstract class Behavior {
      * Calls the {@link #start()} on each behavior.
      * Call this in your OpMode's {@link OpMode#start()}.
      */
-    public static void systemStart() {
+    public static void systemStart() throws Exception {
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.start();
             }
         }catch(Exception error){
             RobotLog.e("Nashorn Start Error:" + error);
-            RobotLog.e("Stack Trace:" + Arrays.toString(error.getStackTrace()));
-            opMode.stop();
+            RobotLog.e("Stack Trace:");
+            for (StackTraceElement elem : error.getStackTrace()){
+                RobotLog.e(elem.toString());
+            }
+            throw error;
         }
     }
 
@@ -83,15 +90,20 @@ public abstract class Behavior {
      * Call this in your OpMode's {@link OpMode#loop()},
      * or in a while loop inside {@link LinearOpMode#runOpMode()}.
      */
-    public static void systemUpdate() {
+    public static void systemUpdate() throws Exception {
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.update();
             }
+
+            telemetry.update();
         }catch(Exception error){
             RobotLog.e("Nashorn Update Error:" + error);
-            RobotLog.e("Stack Trace:" + Arrays.toString(error.getStackTrace()));
-            opMode.stop();
+            RobotLog.e("Stack Trace:");
+            for (StackTraceElement elem : error.getStackTrace()){
+                RobotLog.e(elem.toString());
+            }
+            throw error;
         }
     }
 
@@ -99,14 +111,18 @@ public abstract class Behavior {
      * Calls the {@link #stop()} on each behavior.
      * Call this in your OpMode's {@link OpMode#stop()}.
      */
-    public static void systemStop() {
+    public static void systemStop() throws Exception {
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.stop();
             }
         }catch(Exception error){
             RobotLog.e("Nashorn Stop Error:" + error);
-            RobotLog.e("Stack Trace:" + Arrays.toString(error.getStackTrace()));
+            RobotLog.e("Stack Trace:");
+            for (StackTraceElement elem : error.getStackTrace()){
+                RobotLog.e(elem.toString());
+            }
+            throw error;
         }
     }
 
@@ -142,22 +158,28 @@ public abstract class Behavior {
      * @param deviceNames List of device names. Output will have the same order of this.
      * @throws MissingHardwareDevices Will throw and list all missing hardware, if any.
      */
-    protected static <T> T[] getHardwareArray(Class<T> tClass, String... deviceNames) throws MissingHardwareDevices {
-        ArrayList<T> array = new ArrayList<T>();
+    protected <T> ArrayList<T> getHardwareArray(Class<T> tClass, String... deviceNames) throws MissingHardwareDevices {
+        ArrayList<T> devices = new ArrayList<>(deviceNames.length);
 
-        ArrayList<String> missingNames = new ArrayList<String>();
+        ArrayList<String> missingNames = new ArrayList<>(deviceNames.length);
 
         for (String name : deviceNames) {
             T result = hardwareMap.get(tClass, name);
-            if(result == null)missingNames.add(name);
-            array.add(result);
+            if(result == null){
+                missingNames.add(name);
+            }else{
+                devices.add(result);
+            }
+
         }
 
         if(!missingNames.isEmpty()){
             throw new MissingHardwareDevices(missingNames);
         }
 
-        return (T[]) array.toArray();
+
+
+        return devices;
     }
 
     /**
@@ -166,7 +188,7 @@ public abstract class Behavior {
      * @return T if found
      * @param <T> Expected Hardware Type. Should be computed by Java typing system.
      */
-    static protected <T extends Behavior> T getBehavior(Class<T> tClass) throws BehaviorNotFound {
+    protected static <T extends Behavior> T getBehavior(Class<T> tClass) throws BehaviorNotFound {
         for (Behavior behavior : BEHAVIOR_ARRAY){
             if(tClass.isInstance(behavior))return tClass.cast(behavior);
         }

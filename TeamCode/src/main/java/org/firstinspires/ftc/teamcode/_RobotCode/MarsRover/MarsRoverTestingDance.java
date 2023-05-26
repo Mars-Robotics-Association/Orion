@@ -27,6 +27,8 @@ public class MarsRoverTestingDance extends LinearOpMode {
         DriveUnit[] driveUnits = MarsDrivetrainConfig.getConfig();
 
         for (DriveUnit unit: driveUnits) {
+            unit.init();
+
             telemetry.addLine("Unit Entry: ")
                     .addData("Motor", unit.motorName)
                     .addData("Connection", unit.motor.getConnectionInfo())

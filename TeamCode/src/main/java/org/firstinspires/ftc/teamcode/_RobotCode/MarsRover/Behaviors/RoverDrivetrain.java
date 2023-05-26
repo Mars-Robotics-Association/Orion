@@ -44,12 +44,17 @@ public class RoverDrivetrain extends Behavior {
             this.servoName = servoName;
             this.offsetX = offsetX;
             this.offsetY = offsetY;
+        }
 
-            this.motor = hardwareMap.get(DcMotorSimple.class, motorName);
+        public void init(){
+            motor = hardwareMap.get(DcMotorSimple.class, motorName);
+
+            assert motor != null;
+
             if(servoName == null){
-                this.servo = null;
+                servo = null;
             }else {
-                this.servo = hardwareMap.get(Servo.class, servoName);
+                servo = hardwareMap.get(Servo.class, servoName);
             }
         }
 
@@ -64,11 +69,11 @@ public class RoverDrivetrain extends Behavior {
         /**
          * The DCMotor reference of this unit.
          */
-        public final DcMotorSimple motor;
+        public DcMotorSimple motor = null;
         /**
          * the Servo reference of this unit, if it exists.
          */
-        public final Servo servo;
+        public Servo servo = null;
         /**
          * X Offset (-1 = left, +1 = right) in inches.
          */
@@ -120,11 +125,6 @@ public class RoverDrivetrain extends Behavior {
      */
     public RoverDrivetrain(@NonNull DriveUnit[] driveUnits) {
         this.driveUnits = driveUnits;
-
-        for (DriveUnit unit :
-                driveUnits) {
-            drivebaseWidth = Math.min(drivebaseWidth, Math.abs(unit.offsetX) * 2);
-        }
     }
 
     /**
@@ -263,7 +263,10 @@ public class RoverDrivetrain extends Behavior {
      */
     @Override
     protected void init() throws Exception {
-
+        for (DriveUnit unit : driveUnits) {
+            drivebaseWidth = Math.min(drivebaseWidth, Math.abs(unit.offsetX) * 2);
+            unit.init();
+        }
     }
 
     /**
@@ -279,7 +282,15 @@ public class RoverDrivetrain extends Behavior {
      */
     @Override
     protected void update() {
-
+//        telemetry.addLine("Drivetrain has ".concat(String.valueOf(driveUnits.length)).concat(" drive units"));
+//
+//        for (DriveUnit unit: driveUnits) {
+//            telemetry.addLine("Unit Entry: ")
+//                    .addData("Motor", unit.motorName)
+//                    .addData("Connection", unit.motor.getConnectionInfo())
+//                    .addData("Servo", unit.servoName == null ? "None" : unit.servoName)
+//                    .addData("Connection", unit.servo == null ? "None" : unit.servo.getConnectionInfo());
+//        }
     }
 
     /**

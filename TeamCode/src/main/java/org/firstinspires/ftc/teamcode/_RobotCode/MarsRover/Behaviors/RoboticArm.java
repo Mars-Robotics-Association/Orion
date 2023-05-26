@@ -10,12 +10,12 @@ import java.util.ArrayList;
 public class RoboticArm extends Behavior {
 
     private static class ServoLayout{
-        private ServoLayout(Servo[] servos){
-            baseY    = servos[0];
-            baseZ    = servos[1];
-            boomZ    = servos[2];
-            subjectZ = servos[3];
-            subjectY = servos[4];
+        private ServoLayout(ArrayList<Servo> servos){
+            baseY    = servos.get(0);
+            baseZ    = servos.get(1);
+            boomZ    = servos.get(2);
+            subjectZ = servos.get(3);
+            subjectY = servos.get(4);
         }
 
         Servo baseY, baseZ, boomZ, subjectZ, subjectY;
