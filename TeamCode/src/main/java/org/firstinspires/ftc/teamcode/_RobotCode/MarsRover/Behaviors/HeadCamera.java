@@ -31,9 +31,7 @@ import java.util.concurrent.TimeUnit;
  * Part of the robot head that manages the camera feed.
  * Data is sent in raw YUNV/YUV2 format to reduce necessary data transfer.
  *
- * The Bluetooth camera makes this Behavior useless.
- *
- * @deprecated
+ * @deprecated The Bluetooth camera makes this Behavior useless.
  */
 public class HeadCamera extends Behavior {
     private static final String TAG = "Head Camera";
@@ -58,29 +56,17 @@ public class HeadCamera extends Behavior {
             throw new Exception("No camera found");
         }
 
-        /** Some of the logic below runs asynchronously on other threads. Use of the synchronizer
-         * here allows us to wait in this method until all that asynchrony completes before returning. */
         final ContinuationSynchronizer<CameraCaptureSession> synchronizer = new ContinuationSynchronizer<>();
         try {
-            /** Create a session in which requests to capture frames can be made */
             camera.createCaptureSession(Continuation.create(callbackHandler, new CameraCaptureSession.StateCallbackDefault() {
                 @Override public void onConfigured(@NonNull CameraCaptureSession session) {
                     try {
-                        /** The session is ready to go. Start requesting frames */
                         final CameraCaptureRequest captureRequest = camera.createCaptureRequest(imageFormat, size, 5);
                         session.startCapture(captureRequest,
-                                new CameraCaptureSession.CaptureCallback() {
-                                    @Override public void onNewFrame(@NonNull CameraCaptureSession session, @NonNull CameraCaptureRequest request, @NonNull CameraFrame cameraFrame) {
-                                        /** A new frame is available. The frame data has <em>not</em> been copied for us, and we can only access it
-                                         * for the duration of the callback. So we copy here manually. */
-                                        byte[] bytes = cameraFrame.getImageData();
-                                    }
+                                (session1, request, cameraFrame) -> {
+                                    byte[] bytes = cameraFrame.getImageData();
                                 },
-                                Continuation.create(callbackHandler, new CameraCaptureSession.StatusCallback() {
-                                    @Override public void onCaptureSequenceCompleted(@NonNull CameraCaptureSession session, CameraCaptureSequenceId cameraCaptureSequenceId, long lastFrameNumber) {
-                                        RobotLog.ii(TAG, "capture sequence %s reports completed: lastFrame=%d", cameraCaptureSequenceId, lastFrameNumber);
-                                    }
-                                })
+                                Continuation.create(callbackHandler, (session12, cameraCaptureSequenceId, lastFrameNumber) -> RobotLog.ii(TAG, "capture sequence %s reports completed: lastFrame=%d", cameraCaptureSequenceId, lastFrameNumber))
                         );
                         synchronizer.finish(session);
                     } catch (CameraException | RuntimeException e) {
@@ -97,14 +83,12 @@ public class HeadCamera extends Behavior {
             synchronizer.finish(null);
         }
 
-        /** Wait for all the asynchrony to complete */
         try {
             synchronizer.await();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
-        /** Retrieve the created session. This will be null on error. */
         cameraCaptureSession = synchronizer.getValue();
     }
 

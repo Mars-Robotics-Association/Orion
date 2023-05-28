@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * Safety features intended to keep the robot from physically breaking itself.
+ * @deprecated Throws a type-cast on init.
  */
 public class Safeguards extends Behavior {
     private TouchSensor[] switches;
@@ -19,10 +20,10 @@ public class Safeguards extends Behavior {
      */
     @Override
     protected void init() throws Exception {
-        List<TouchSensor> list = new ArrayList<>();
-        for (TouchSensor touchSensor : hardwareMap.touchSensor) list.add(touchSensor);
-
-        switches = (TouchSensor[]) list.toArray();
+//        List<TouchSensor> list = new ArrayList<>();
+//        for (TouchSensor touchSensor : hardwareMap.touchSensor) list.add(touchSensor);
+//
+//        switches = (TouchSensor[]) list.toArray(); // <-- frick you >:(
     }
 
     /**
@@ -38,9 +39,9 @@ public class Safeguards extends Behavior {
      */
     @Override
     protected void update() throws Exception {
-        for (TouchSensor sensor : switches) {
-            if(sensor.isPressed())throw new Exception("Safety Limit Switch Activated");
-        }
+//        for (TouchSensor sensor : switches) {
+//            if(sensor.isPressed())throw new Exception("Safety Limit Switch Activated");
+//        }
     }
 
     /**

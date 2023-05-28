@@ -10,48 +10,30 @@ import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors.Safeguards;
 public class MarsRoverServoReset extends OpMode {
     @Override
     public void init(){
-        try {
-            Behavior.systemInit(this,
-                    new Safeguards(),
-                    new RoverDrivetrain(MarsDrivetrainConfig.getConfig())
-            );
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Behavior.systemInit(this,
+                new RoverDrivetrain(MarsDrivetrainConfig.getConfig())
+        );
     }
 
     @Override
     public void start() {
-        try {
-            Behavior.systemStart();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Behavior.systemStart();
 
         try {
             RoverDrivetrain drivetrain = Behavior.getBehavior(RoverDrivetrain.class);
             drivetrain.resetServos();
-
-        } catch (Behavior.BehaviorNotFound e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            Behavior.sendException(e);
         }
     }
 
     @Override
     public void loop() {
-        try {
-            Behavior.systemUpdate();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Behavior.systemUpdate();
     }
 
     @Override
     public void stop() {
-        try {
-            Behavior.systemStop();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Behavior.systemStop();
     }
 }

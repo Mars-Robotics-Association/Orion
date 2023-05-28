@@ -39,11 +39,46 @@ public abstract class Behavior {
 
     private static final ArrayList<Behavior> BEHAVIOR_ARRAY = new ArrayList<>();
 
+    private static boolean running = false;
+    private static Exception currentException = null;
+    private static String crashedInPhase = "???";
+
+    private static boolean sendException() {
+        if (!running) {
+            telemetry.clearAll();
+
+            Exception exception = currentException;
+            telemetry.addLine("Orbitross crashed at " + crashedInPhase + " Phase");
+            telemetry.addData("Cause", exception.getMessage());
+            telemetry.addLine("Stack Trace");
+            for (StackTraceElement element: exception.getStackTrace()) {
+                telemetry.addLine(element.toString());
+            }
+            telemetry.addLine();
+
+            telemetry.update();
+        }
+
+        return !running;
+    }
+
+    public static void sendException(Exception exception, String phase) {
+        currentException = exception;
+        crashedInPhase = phase;
+        running = false;
+
+        sendException();
+    }
+
+    public static void sendException(Exception exception) {
+        sendException(exception, "Unnamed");
+    }
+
     /**
      * Initializes all the specified Behaviors and calls the {@link #init()} on each behavior.
      * Call this in your OpMode's {@link OpMode#init()}.
      */
-    public static void systemInit(OpMode opmode, Behavior... behaviors) throws Exception {
+    public static void systemInit(OpMode opmode, Behavior... behaviors) {
         BEHAVIOR_ARRAY.clear();
 
         BEHAVIOR_ARRAY.addAll(Arrays.asList(behaviors));
@@ -52,17 +87,19 @@ public abstract class Behavior {
         telemetry = opMode.telemetry;
         hardwareMap = opMode.hardwareMap;
 
+        currentException = null;
+        running = true;
+
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.init();
             }
-        }catch(Exception error){
-            RobotLog.e("Nashorn Init Error:" + error);
-            RobotLog.e("Stack Trace:");
-            for (StackTraceElement elem : error.getStackTrace()){
-                RobotLog.e(elem.toString());
-            }
-            throw error;
+        }catch(Exception e){
+            currentException = e;
+            crashedInPhase = "Init";
+            running = false;
+
+            sendException();
         }
     }
 
@@ -70,18 +107,15 @@ public abstract class Behavior {
      * Calls the {@link #start()} on each behavior.
      * Call this in your OpMode's {@link OpMode#start()}.
      */
-    public static void systemStart() throws Exception {
+    public static void systemStart() {
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.start();
             }
-        }catch(Exception error){
-            RobotLog.e("Nashorn Start Error:" + error);
-            RobotLog.e("Stack Trace:");
-            for (StackTraceElement elem : error.getStackTrace()){
-                RobotLog.e(elem.toString());
-            }
-            throw error;
+        }catch(Exception e){
+            currentException = e;
+            crashedInPhase = "Start";
+            running = false;
         }
     }
 
@@ -90,20 +124,17 @@ public abstract class Behavior {
      * Call this in your OpMode's {@link OpMode#loop()},
      * or in a while loop inside {@link LinearOpMode#runOpMode()}.
      */
-    public static void systemUpdate() throws Exception {
+    public static void systemUpdate() {
+        if(sendException())return;
+
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.update();
             }
-
-            telemetry.update();
-        }catch(Exception error){
-            RobotLog.e("Nashorn Update Error:" + error);
-            RobotLog.e("Stack Trace:");
-            for (StackTraceElement elem : error.getStackTrace()){
-                RobotLog.e(elem.toString());
-            }
-            throw error;
+        }catch(Exception e){
+            currentException = e;
+            crashedInPhase = "Update";
+            running = false;
         }
     }
 
@@ -111,18 +142,19 @@ public abstract class Behavior {
      * Calls the {@link #stop()} on each behavior.
      * Call this in your OpMode's {@link OpMode#stop()}.
      */
-    public static void systemStop() throws Exception {
+    public static void systemStop() {
+        if(sendException())return;
+
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.stop();
             }
-        }catch(Exception error){
-            RobotLog.e("Nashorn Stop Error:" + error);
-            RobotLog.e("Stack Trace:");
-            for (StackTraceElement elem : error.getStackTrace()){
-                RobotLog.e(elem.toString());
-            }
-            throw error;
+        }catch(Exception e){
+            currentException = e;
+            crashedInPhase = "Stop";
+            running = false;
+
+            sendException();
         }
     }
 
