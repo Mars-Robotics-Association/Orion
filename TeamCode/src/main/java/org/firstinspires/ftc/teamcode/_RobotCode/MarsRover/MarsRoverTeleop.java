@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode._RobotCode.MarsRover;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors.GamepadDriver;
 import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors.RoverDrivetrain;
-import org.firstinspires.ftc.teamcode._RobotCode.MarsRover.Behaviors.Safeguards;
 
 @TeleOp(group = "Mars Rover")
 public class MarsRoverTeleop extends OpMode {

@@ -17,18 +17,6 @@ import java.util.Arrays;
 public abstract class Behavior {
 
     /**
-     * Thrown by {@link #getHardwareArray} when a hardware device could not be found.
-     */
-    static class MissingHardwareDevices extends Exception{
-        MissingHardwareDevices(ArrayList<String> devices){
-            super(String.join("\n",
-                    "Could not find the following devices in the Hardware Map:",
-                    String.join("\n", devices)
-            ));
-        }
-    }
-
-    /**
      * Thrown by {@link #getBehavior} when a hardware device could not be found.
      */
     static class BehaviorNotFound extends Exception{
@@ -43,7 +31,7 @@ public abstract class Behavior {
     private static Exception currentException = null;
     private static String crashedInPhase = "???";
 
-    private static boolean sendException() {
+    private static boolean transmitException() {
         if (!running) {
             telemetry.clearAll();
 
@@ -73,7 +61,7 @@ public abstract class Behavior {
             RobotLog.e(element.toString());
         }
 
-        sendException();
+        transmitException();
     }
 
     public static void sendException(Exception exception) {
@@ -103,6 +91,9 @@ public abstract class Behavior {
         }catch(Exception e){
             sendException(e, "Init");
         }
+
+        transmitException();
+        telemetry.update();
     }
 
     /**
@@ -110,6 +101,8 @@ public abstract class Behavior {
      * Call this in your OpMode's {@link OpMode#start()}.
      */
     public static void systemStart() {
+        if(transmitException())return;
+
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.start();
@@ -117,6 +110,8 @@ public abstract class Behavior {
         }catch(Exception e){
             sendException(e, "Start");
         }
+
+        telemetry.update();
     }
 
     /**
@@ -125,17 +120,17 @@ public abstract class Behavior {
      * or in a while loop inside {@link LinearOpMode#runOpMode()}.
      */
     public static void systemUpdate() {
-        if(sendException())return;
+        if(transmitException())return;
 
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.update();
             }
-
-            telemetry.update();
         }catch(Exception e){
             sendException(e, "Update");
         }
+
+        telemetry.update();
     }
 
     /**
@@ -143,7 +138,7 @@ public abstract class Behavior {
      * Call this in your OpMode's {@link OpMode#stop()}.
      */
     public static void systemStop() {
-        if(sendException())return;
+        if(transmitException())return;
 
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
@@ -152,6 +147,8 @@ public abstract class Behavior {
         }catch(Exception e){
             sendException(e, "Stop");
         }
+
+        telemetry.update();
     }
 
     public static OpMode opMode;
@@ -177,38 +174,6 @@ public abstract class Behavior {
      * Called on {@link OpMode#stop()}
      */
     protected abstract void stop() throws Exception;
-
-    /**
-     * Hardware mapping helper for getting multiple devices of the same type with less code.
-     * @param <T> Device type you are looking for. Should be guessed for you by the type system.
-     * @return Your requested devices.
-     * @param tClass Device type's class as a value (e.g. DCMotor.class).
-     * @param deviceNames List of device names. Output will have the same order of this.
-     * @throws MissingHardwareDevices Will throw and list all missing hardware, if any.
-     */
-    protected <T> ArrayList<T> getHardwareArray(Class<T> tClass, String... deviceNames) throws MissingHardwareDevices {
-        ArrayList<T> devices = new ArrayList<>(deviceNames.length);
-
-        ArrayList<String> missingNames = new ArrayList<>(deviceNames.length);
-
-        for (String name : deviceNames) {
-            T result = hardwareMap.get(tClass, name);
-            if(result == null){
-                missingNames.add(name);
-            }else{
-                devices.add(result);
-            }
-
-        }
-
-        if(!missingNames.isEmpty()){
-            throw new MissingHardwareDevices(missingNames);
-        }
-
-
-
-        return devices;
-    }
 
     /**
      *
