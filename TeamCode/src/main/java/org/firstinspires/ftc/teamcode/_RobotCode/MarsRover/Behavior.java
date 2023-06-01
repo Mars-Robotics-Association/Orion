@@ -31,17 +31,29 @@ public abstract class Behavior {
     private static Exception currentException = null;
     private static String crashedInPhase = "???";
 
+<<<<<<< HEAD
     private static boolean transmitException() {
+=======
+    private static boolean sendException() {
+>>>>>>> main
         if (!running) {
             telemetry.clearAll();
 
             Exception exception = currentException;
+<<<<<<< HEAD
             telemetry.addLine("Orbitron crashed at " + crashedInPhase + " Phase");
+=======
+            telemetry.addLine("Orbitross crashed at " + crashedInPhase + " Phase");
+>>>>>>> main
             telemetry.addData("Cause", exception.getMessage());
             telemetry.addLine("Stack Trace");
             for (StackTraceElement element: exception.getStackTrace()) {
                 telemetry.addLine(element.toString());
             }
+<<<<<<< HEAD
+=======
+            telemetry.addLine();
+>>>>>>> main
 
             telemetry.update();
         }
@@ -54,6 +66,7 @@ public abstract class Behavior {
         crashedInPhase = phase;
         running = false;
 
+<<<<<<< HEAD
         RobotLog.e("Orbitron crashed at " + crashedInPhase + " Phase");
         RobotLog.e("Cause", exception.getMessage());
         RobotLog.e("Stack Trace");
@@ -62,6 +75,9 @@ public abstract class Behavior {
         }
 
         transmitException();
+=======
+        sendException();
+>>>>>>> main
     }
 
     public static void sendException(Exception exception) {
@@ -89,7 +105,15 @@ public abstract class Behavior {
                 behavior.init();
             }
         }catch(Exception e){
+<<<<<<< HEAD
             sendException(e, "Init");
+=======
+            currentException = e;
+            crashedInPhase = "Init";
+            running = false;
+
+            sendException();
+>>>>>>> main
         }
 
         transmitException();
@@ -101,14 +125,23 @@ public abstract class Behavior {
      * Call this in your OpMode's {@link OpMode#start()}.
      */
     public static void systemStart() {
+<<<<<<< HEAD
         if(transmitException())return;
 
+=======
+>>>>>>> main
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.start();
             }
         }catch(Exception e){
+<<<<<<< HEAD
             sendException(e, "Start");
+=======
+            currentException = e;
+            crashedInPhase = "Start";
+            running = false;
+>>>>>>> main
         }
 
         telemetry.update();
@@ -120,14 +153,24 @@ public abstract class Behavior {
      * or in a while loop inside {@link LinearOpMode#runOpMode()}.
      */
     public static void systemUpdate() {
+<<<<<<< HEAD
         if(transmitException())return;
+=======
+        if(sendException())return;
+>>>>>>> main
 
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.update();
             }
         }catch(Exception e){
+<<<<<<< HEAD
             sendException(e, "Update");
+=======
+            currentException = e;
+            crashedInPhase = "Update";
+            running = false;
+>>>>>>> main
         }
 
         telemetry.update();
@@ -138,14 +181,26 @@ public abstract class Behavior {
      * Call this in your OpMode's {@link OpMode#stop()}.
      */
     public static void systemStop() {
+<<<<<<< HEAD
         if(transmitException())return;
+=======
+        if(sendException())return;
+>>>>>>> main
 
         try {
             for (Behavior behavior : BEHAVIOR_ARRAY) {
                 behavior.stop();
             }
         }catch(Exception e){
+<<<<<<< HEAD
             sendException(e, "Stop");
+=======
+            currentException = e;
+            crashedInPhase = "Stop";
+            running = false;
+
+            sendException();
+>>>>>>> main
         }
 
         telemetry.update();

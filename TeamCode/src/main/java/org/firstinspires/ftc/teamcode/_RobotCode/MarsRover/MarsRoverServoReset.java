@@ -23,7 +23,11 @@ public class MarsRoverServoReset extends OpMode {
             RoverDrivetrain drivetrain = Behavior.getBehavior(RoverDrivetrain.class);
             drivetrain.resetServos();
         } catch (Exception e) {
+<<<<<<< HEAD
             Behavior.sendException(e, "Start");
+=======
+            Behavior.sendException(e);
+>>>>>>> main
         }
     }
 
