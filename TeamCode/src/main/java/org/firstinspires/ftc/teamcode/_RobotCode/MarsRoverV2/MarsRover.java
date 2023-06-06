@@ -29,17 +29,17 @@ public class MarsRover extends OpMode
     //Config variables
     public static double FRONT_OFFSET = 10; //front wheel offset from center
     public static double BACK_OFFSET = -12.5; //back wheel offset from center (should be negative)
-    public static double AXEL_LENGTH = 10; //distance from center of robot to wheels on axel (x) axis
+    public static double AXEL_LENGTH = 5; //distance from center of robot to wheels on axel (x) axis
 
-    public static double MIN_TURN_RADIUS = 12; //min turn radius (must be greater than axel length)
+    public static double MIN_TURN_RADIUS = 6; //min turn radius (must be greater than axel length)
     public static double TURN_RADIUS_MULTIPLIER = 5; //how gradually to ramp between infinite and minimum radius
 
-    public static double MAX_SPEED = 0.5; //max speed of motors, for now should be no greater than 0.8 to allow spillover speeds
+    public static double MAX_SPEED = 0.8; //max speed of motors, for now should be no greater than 0.8 to allow spillover speeds
 
-    public static double FR_TRIM = 0; //trims for each of the servos in servo units
-    public static double FL_TRIM = 0;
-    public static double BR_TRIM = 0;
-    public static double BL_TRIM = 0;
+    public static double FR_TRIM = 0.07; //trims for each of the servos in servo units
+    public static double FL_TRIM = -0.02;
+    public static double BR_TRIM = -0.03;
+    public static double BL_TRIM = 0.02;
 
     @Override
     public void init() {
@@ -67,7 +67,7 @@ public class MarsRover extends OpMode
         double linearSpeed = gamepad1.left_stick_y; //remember max speed is one- cant go further up
 
         //make sure dead zones exist
-        if(Math.abs(turnFactor)<0.05) turnFactor = 0;
+        //if(Math.abs(turnFactor)<0.05) turnFactor = 0;
         if(Math.abs(linearSpeed)<0.05) linearSpeed = 0;
 
         //multiplier for turning, LEFT TURN IS POSITIVE, RIGHT IS NEGATIVE
@@ -83,15 +83,32 @@ public class MarsRover extends OpMode
         telemetry.addLine();
 
 
+        //spot turn if "a" button held, else drive normally
+        if(gamepad1.dpad_left) spotTurn(0.5);
+        else if(gamepad1.dpad_right) spotTurn(-0.5);
+        else {
+            //Use turn radius to align servos
+            alignServos(turnDirectionMultiplier, turnRadius);
+
+            //Use radius and speed to move along path
+            setMotorSpeeds(turnFactor, linearSpeed, turnDirectionMultiplier, turnRadius);
+        }
+
+        telemetry.update();
+    }
+
+
+
+    private void alignServos(double turnDirectionMultiplier, double turnRadius) {
         ////CALCULATE WHEEL ROTATION ANGLES (WORKS- might need some algorithm fixes, see below)
 
         //TODO: check and possibly fix algorithms as outer wheels seem to be not rotating enough- inner wheels look fine
         //finds angle AB in triangle ABC where A is turn radius, B is distance from center of robot to front or back, and C is distance from wheel to center of turning circle
         //must multiply axel length by turn direction multiplier depending on which wheels are inner / outer, must multiply buy turn direction multiplier at end as well
-        double frontRightRad = Math.atan(FRONT_OFFSET/(turnRadius+(AXEL_LENGTH*(turnDirectionMultiplier)))) * turnDirectionMultiplier;
-        double frontLeftRad = Math.atan(FRONT_OFFSET/(turnRadius+(AXEL_LENGTH*(-turnDirectionMultiplier)))) * turnDirectionMultiplier;
-        double backRightRad = Math.atan(BACK_OFFSET/(turnRadius+(AXEL_LENGTH*(turnDirectionMultiplier)))) * turnDirectionMultiplier;
-        double backLeftRad = Math.atan(BACK_OFFSET/(turnRadius+(AXEL_LENGTH*(-turnDirectionMultiplier)))) * turnDirectionMultiplier;
+        double frontRightRad = Math.atan(FRONT_OFFSET/(turnRadius +(AXEL_LENGTH* turnDirectionMultiplier))) * turnDirectionMultiplier;
+        double frontLeftRad = Math.atan(FRONT_OFFSET/(turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier)))) * turnDirectionMultiplier;
+        double backRightRad = Math.atan(BACK_OFFSET/(turnRadius +(AXEL_LENGTH* turnDirectionMultiplier))) * turnDirectionMultiplier;
+        double backLeftRad = Math.atan(BACK_OFFSET/(turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier)))) * turnDirectionMultiplier;
 
         telemetry.addData("Front right degrees", Math.toDegrees(frontRightRad));
         telemetry.addData("Front left degrees", Math.toDegrees(frontLeftRad));
@@ -125,18 +142,19 @@ public class MarsRover extends OpMode
         telemetry.addData("Back right servo pos", backRightServoPos);
         telemetry.addData("Back left servo pos", backLeftServoPos);
         telemetry.addLine();
+    }
 
-
+    private void setMotorSpeeds(double turnFactor, double linearSpeed, double turnDirectionMultiplier, double turnRadius) {
         ////CALCULATE DRIVE SPEEDS (WORKS)
 
         //starts by finding individual turn radii of all the wheels using below equation
         //sqrt(frontOffset^2 + (axelLength*sideMult)^2)
-        double frontRightRadius = Math.sqrt(Math.pow(FRONT_OFFSET, 2) + Math.pow(turnRadius+(AXEL_LENGTH*(turnDirectionMultiplier)), 2));
-        double frontLeftRadius = Math.sqrt(Math.pow(FRONT_OFFSET, 2) + Math.pow(turnRadius+(AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
-        double backRightRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius+(AXEL_LENGTH*(turnDirectionMultiplier)), 2));
-        double backLeftRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius+(AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
-        double midRightRadius = turnRadius+(AXEL_LENGTH*(turnDirectionMultiplier));
-        double midLeftRadius = turnRadius+(AXEL_LENGTH*(-turnDirectionMultiplier));
+        double frontRightRadius = Math.sqrt(Math.pow(FRONT_OFFSET, 2) + Math.pow(turnRadius +(AXEL_LENGTH* turnDirectionMultiplier), 2));
+        double frontLeftRadius = Math.sqrt(Math.pow(FRONT_OFFSET, 2) + Math.pow(turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
+        double backRightRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius +(AXEL_LENGTH* turnDirectionMultiplier), 2));
+        double backLeftRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
+        double midRightRadius = turnRadius +(AXEL_LENGTH* turnDirectionMultiplier);
+        double midLeftRadius = turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier));
 
         telemetry.addData("Front right radius", frontRightRadius);
         telemetry.addData("Front left radius", frontLeftRadius);
@@ -200,12 +218,43 @@ public class MarsRover extends OpMode
         telemetry.addData("Mid right speed", midRightSpeed);
         telemetry.addData("Mid left speed", midLeftSpeed);
         telemetry.addLine();
-
-
-
-        telemetry.update();
     }
 
+    private void spotTurn(double speed){
+        ////MOVE SERVOS TO POSITIONS
+
+        //converts radians into servo position using handy map() utility function
+        double frontRightServoPos = map(45, -150, 150, 0, 1);
+        double frontLeftServoPos = map(-45, -150, 150, 0, 1);
+        double backRightServoPos = map(-45, -150, 150, 0, 1);
+        double backLeftServoPos = map(45, -150, 150, 0, 1);
+
+        //actually move the servos
+        servoFrontRight.setPosition(frontRightServoPos + FR_TRIM);
+        servoFrontLeft.setPosition(frontLeftServoPos + FL_TRIM);
+        servoBackRight.setPosition(backRightServoPos + BR_TRIM);
+        servoBackLeft.setPosition(backLeftServoPos + BL_TRIM);
+
+        telemetry.addData("Front right servo pos", frontRightServoPos);
+        telemetry.addData("Front left servo pos", frontLeftServoPos);
+        telemetry.addData("Back right servo pos", backRightServoPos);
+        telemetry.addData("Back left servo pos", backLeftServoPos);
+        telemetry.addLine();
+
+        ////SET MOTOR SPEEDS
+        double frontRightRadius = Math.sqrt(Math.pow(FRONT_OFFSET,2) + Math.pow(AXEL_LENGTH,2));
+        double frontLeftRadius = Math.sqrt(Math.pow(FRONT_OFFSET,2) + Math.pow(AXEL_LENGTH,2));
+        double backRightRadius = Math.sqrt(Math.pow(BACK_OFFSET,2) + Math.pow(AXEL_LENGTH,2));
+        double backLeftRadius = Math.sqrt(Math.pow(BACK_OFFSET,2) + Math.pow(AXEL_LENGTH,2));
+
+        //actually apply speeds- no negatives because we are turning
+        motorFrontRight.setPower(frontRightRadius * speed * MAX_SPEED);
+        motorFrontLeft.setPower(frontLeftRadius * speed * MAX_SPEED);
+        motorBackRight.setPower(backRightRadius * speed * MAX_SPEED);
+        motorBackLeft.setPower(backLeftRadius * speed * MAX_SPEED);
+        motorMiddleRight.setPower(AXEL_LENGTH * speed * MAX_SPEED);
+        motorMiddleLeft.setPower(AXEL_LENGTH * speed * MAX_SPEED);
+    }
 
     ////UTILITY////
     private double distance(double y, double x) {
