@@ -36,6 +36,11 @@ public class MarsRover extends OpMode
 
     public static double MAX_SPEED = 0.5; //max speed of motors, for now should be no greater than 0.8 to allow spillover speeds
 
+    public static double FR_TRIM = 0; //trims for each of the servos in servo units
+    public static double FL_TRIM = 0;
+    public static double BR_TRIM = 0;
+    public static double BL_TRIM = 0;
+
     @Override
     public void init() {
         //Map motors to hardware map
@@ -110,10 +115,10 @@ public class MarsRover extends OpMode
         if(Double.isNaN(backLeftServoPos)) backLeftServoPos = 0.5;
 
         //actually move the servos
-        servoFrontRight.setPosition(frontRightServoPos);
-        servoFrontLeft.setPosition(frontLeftServoPos);
-        servoBackRight.setPosition(backRightServoPos);
-        servoBackLeft.setPosition(backLeftServoPos);
+        servoFrontRight.setPosition(frontRightServoPos + FR_TRIM);
+        servoFrontLeft.setPosition(frontLeftServoPos + FL_TRIM);
+        servoBackRight.setPosition(backRightServoPos + BR_TRIM);
+        servoBackLeft.setPosition(backLeftServoPos + BL_TRIM);
 
         telemetry.addData("Front right servo pos", frontRightServoPos);
         telemetry.addData("Front left servo pos", frontLeftServoPos);
