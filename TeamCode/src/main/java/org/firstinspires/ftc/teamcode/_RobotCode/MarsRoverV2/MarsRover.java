@@ -94,6 +94,16 @@ public class MarsRover extends OpMode
             setMotorSpeeds(turnFactor, linearSpeed, turnDirectionMultiplier, turnRadius);
         }
 
+        if(gamepad2.x){
+            motorFrontRight.setPower(0);
+            motorFrontLeft.setPower(0);
+            motorBackRight.setPower(0);
+            motorBackLeft.setPower(0);
+            motorMiddleRight.setPower(0);
+            motorMiddleLeft.setPower(0);
+            requestOpModeStop();
+        }
+
         telemetry.update();
     }
 
