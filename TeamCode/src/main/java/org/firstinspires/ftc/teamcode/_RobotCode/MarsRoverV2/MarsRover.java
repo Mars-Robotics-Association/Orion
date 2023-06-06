@@ -31,7 +31,7 @@ public class MarsRover extends OpMode
     public static double BACK_OFFSET = -12.5; //back wheel offset from center (should be negative)
     public static double AXEL_LENGTH = 5; //distance from center of robot to wheels on axel (x) axis
 
-    public static double MIN_TURN_RADIUS = 6; //min turn radius (must be greater than axel length)
+    public static double MIN_TURN_RADIUS = 20; //min turn radius (must be greater than axel length)
     public static double TURN_RADIUS_MULTIPLIER = 5; //how gradually to ramp between infinite and minimum radius
 
     public static double MAX_SPEED = 0.8; //max speed of motors, for now should be no greater than 0.8 to allow spillover speeds
@@ -163,8 +163,8 @@ public class MarsRover extends OpMode
         double frontLeftRadius = Math.sqrt(Math.pow(FRONT_OFFSET, 2) + Math.pow(turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
         double backRightRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius +(AXEL_LENGTH* turnDirectionMultiplier), 2));
         double backLeftRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
-        double midRightRadius = turnRadius +(AXEL_LENGTH* turnDirectionMultiplier);
-        double midLeftRadius = turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier));
+        double midRightRadius = turnRadius + ((AXEL_LENGTH+2)* turnDirectionMultiplier);
+        double midLeftRadius = turnRadius + ((AXEL_LENGTH+2)*(-turnDirectionMultiplier));
 
         telemetry.addData("Front right radius", frontRightRadius);
         telemetry.addData("Front left radius", frontLeftRadius);
