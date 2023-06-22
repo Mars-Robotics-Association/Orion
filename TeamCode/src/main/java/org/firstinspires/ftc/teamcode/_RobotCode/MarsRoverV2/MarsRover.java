@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+//all dimensions in meters
 @TeleOp(name = "MARS ROVER")
 @Config
 public class MarsRover extends OpMode
@@ -27,14 +28,23 @@ public class MarsRover extends OpMode
     Servo servoBackRight;
 
     //Config variables
-    public static double FRONT_OFFSET = 10; //front wheel offset from center
-    public static double BACK_OFFSET = -12.5; //back wheel offset from center (should be negative)
-    public static double AXEL_LENGTH = 5; //distance from center of robot to wheels on axel (x) axis
+    public static double FRONT_OFFSET = 0.28575; //front wheel offset from center in meters
+    //measured as 11 inches and 11.5 inches, averaged and converted to meters
+    public static double BACK_OFFSET = -0.339725; //back wheel offset from center (should be negative) in meters
+    //measured as 13.25 inches and 13.5 inches, averaged and converted to meters
 
-    public static double MIN_TURN_RADIUS = 20; //min turn radius (must be greater than axel length)
-    public static double TURN_RADIUS_MULTIPLIER = 5; //how gradually to ramp between infinite and minimum radius
+    public static double FRONT_AXEL_LENGTH = 0.27305; //distance from center of robot to wheels on axel (x) axis in meters
+    //measured as 21.5 inches servo axel to servo axel, divided in half, converted to meters
+    public static double MID_AXEL_LENGTH = 0.3175; //distance from center of robot to wheels on axel (x) axis in meters
+    //measured as 25 inches middle of wheel to middle of wheel, divided in half, converted to meters
+    public static double BACK_AXEL_LENGTH = 0.26035; //distance from center of robot to wheels on axel (x) axis in meters
+    //measured as 20.5 inches servo axel to servo axel, divided in half, converted to meters
 
-    public static double MAX_SPEED = 0.8; //max speed of motors, for now should be no greater than 0.8 to allow spillover speeds
+
+    public static double MIN_TURN_RADIUS = 0.6; //min turn radius (must be greater than axel length)
+    public static double TURN_RADIUS_MULTIPLIER = 0.1; //how gradually to ramp between infinite and minimum radius
+
+    public static double MAX_SPEED = 0.6; //max speed of motors, for now should be no greater than 0.8 to allow spillover speeds
 
     public static double FR_TRIM = 0.07; //trims for each of the servos in servo units
     public static double FL_TRIM = -0.02;
@@ -115,10 +125,10 @@ public class MarsRover extends OpMode
         //TODO: check and possibly fix algorithms as outer wheels seem to be not rotating enough- inner wheels look fine
         //finds angle AB in triangle ABC where A is turn radius, B is distance from center of robot to front or back, and C is distance from wheel to center of turning circle
         //must multiply axel length by turn direction multiplier depending on which wheels are inner / outer, must multiply buy turn direction multiplier at end as well
-        double frontRightRad = Math.atan(FRONT_OFFSET/(turnRadius +(AXEL_LENGTH* turnDirectionMultiplier))) * turnDirectionMultiplier;
-        double frontLeftRad = Math.atan(FRONT_OFFSET/(turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier)))) * turnDirectionMultiplier;
-        double backRightRad = Math.atan(BACK_OFFSET/(turnRadius +(AXEL_LENGTH* turnDirectionMultiplier))) * turnDirectionMultiplier;
-        double backLeftRad = Math.atan(BACK_OFFSET/(turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier)))) * turnDirectionMultiplier;
+        double frontRightRad = Math.atan(FRONT_OFFSET/(turnRadius +(FRONT_AXEL_LENGTH* turnDirectionMultiplier))) * turnDirectionMultiplier;
+        double frontLeftRad = Math.atan(FRONT_OFFSET/(turnRadius +(FRONT_AXEL_LENGTH*(-turnDirectionMultiplier)))) * turnDirectionMultiplier;
+        double backRightRad = Math.atan(BACK_OFFSET/(turnRadius +(BACK_AXEL_LENGTH* turnDirectionMultiplier))) * turnDirectionMultiplier;
+        double backLeftRad = Math.atan(BACK_OFFSET/(turnRadius +(BACK_AXEL_LENGTH*(-turnDirectionMultiplier)))) * turnDirectionMultiplier;
 
         telemetry.addData("Front right degrees", Math.toDegrees(frontRightRad));
         telemetry.addData("Front left degrees", Math.toDegrees(frontLeftRad));
@@ -159,12 +169,12 @@ public class MarsRover extends OpMode
 
         //starts by finding individual turn radii of all the wheels using below equation
         //sqrt(frontOffset^2 + (axelLength*sideMult)^2)
-        double frontRightRadius = Math.sqrt(Math.pow(FRONT_OFFSET, 2) + Math.pow(turnRadius +(AXEL_LENGTH* turnDirectionMultiplier), 2));
-        double frontLeftRadius = Math.sqrt(Math.pow(FRONT_OFFSET, 2) + Math.pow(turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
-        double backRightRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius +(AXEL_LENGTH* turnDirectionMultiplier), 2));
-        double backLeftRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius +(AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
-        double midRightRadius = turnRadius + ((AXEL_LENGTH+2)* turnDirectionMultiplier);
-        double midLeftRadius = turnRadius + ((AXEL_LENGTH+2)*(-turnDirectionMultiplier));
+        double frontRightRadius = Math.sqrt(Math.pow(FRONT_OFFSET, 2) + Math.pow(turnRadius +(FRONT_AXEL_LENGTH* turnDirectionMultiplier), 2));
+        double frontLeftRadius = Math.sqrt(Math.pow(FRONT_OFFSET, 2) + Math.pow(turnRadius +(FRONT_AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
+        double backRightRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius +(BACK_AXEL_LENGTH* turnDirectionMultiplier), 2));
+        double backLeftRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius +(BACK_AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
+        double midRightRadius = turnRadius + ((MID_AXEL_LENGTH)* turnDirectionMultiplier);
+        double midLeftRadius = turnRadius + ((MID_AXEL_LENGTH)*(-turnDirectionMultiplier));
 
         telemetry.addData("Front right radius", frontRightRadius);
         telemetry.addData("Front left radius", frontLeftRadius);
@@ -252,18 +262,18 @@ public class MarsRover extends OpMode
         telemetry.addLine();
 
         ////SET MOTOR SPEEDS
-        double frontRightRadius = Math.sqrt(Math.pow(FRONT_OFFSET,2) + Math.pow(AXEL_LENGTH,2));
-        double frontLeftRadius = Math.sqrt(Math.pow(FRONT_OFFSET,2) + Math.pow(AXEL_LENGTH,2));
-        double backRightRadius = Math.sqrt(Math.pow(BACK_OFFSET,2) + Math.pow(AXEL_LENGTH,2));
-        double backLeftRadius = Math.sqrt(Math.pow(BACK_OFFSET,2) + Math.pow(AXEL_LENGTH,2));
+        double frontRightRadius = Math.sqrt(Math.pow(FRONT_OFFSET,2) + Math.pow(FRONT_AXEL_LENGTH,2));
+        double frontLeftRadius = Math.sqrt(Math.pow(FRONT_OFFSET,2) + Math.pow(FRONT_AXEL_LENGTH,2));
+        double backRightRadius = Math.sqrt(Math.pow(BACK_OFFSET,2) + Math.pow(BACK_AXEL_LENGTH,2));
+        double backLeftRadius = Math.sqrt(Math.pow(BACK_OFFSET,2) + Math.pow(BACK_AXEL_LENGTH,2));
 
         //actually apply speeds- no negatives because we are turning
         motorFrontRight.setPower(frontRightRadius * speed * MAX_SPEED);
         motorFrontLeft.setPower(frontLeftRadius * speed * MAX_SPEED);
         motorBackRight.setPower(backRightRadius * speed * MAX_SPEED);
         motorBackLeft.setPower(backLeftRadius * speed * MAX_SPEED);
-        motorMiddleRight.setPower(AXEL_LENGTH * speed * MAX_SPEED);
-        motorMiddleLeft.setPower(AXEL_LENGTH * speed * MAX_SPEED);
+        motorMiddleRight.setPower(MID_AXEL_LENGTH * speed * MAX_SPEED);
+        motorMiddleLeft.setPower(MID_AXEL_LENGTH * speed * MAX_SPEED);
     }
 
     ////UTILITY////
