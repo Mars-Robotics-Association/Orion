@@ -44,7 +44,7 @@ public class MarsRover extends OpMode
     public static double MIN_TURN_RADIUS = 0.6; //min turn radius (must be greater than axel length)
     public static double TURN_RADIUS_MULTIPLIER = 0.1; //how gradually to ramp between infinite and minimum radius
 
-    public static double MAX_SPEED = 0.6; //max speed of motors, for now should be no greater than 0.8 to allow spillover speeds
+    public static double MAX_SPEED = 0.8; //max speed of motors, for now should be no greater than 0.8 to allow spillover speeds
 
     public static double FR_TRIM = 0.07; //trims for each of the servos in servo units
     public static double FL_TRIM = -0.02;
@@ -65,6 +65,15 @@ public class MarsRover extends OpMode
         servoFrontRight = hardwareMap.servo.get("servoFrontRight");
         servoBackLeft = hardwareMap.servo.get("servoBackLeft");
         servoBackRight = hardwareMap.servo.get("servoBackRight");
+
+
+        //sets inital power to 0
+        motorFrontRight.setPower(0);
+        motorFrontLeft.setPower(0);
+        motorBackRight.setPower(0);
+        motorBackLeft.setPower(0);
+        motorMiddleRight.setPower(0);
+        motorMiddleLeft.setPower(0);
 
         //set ftc dashboard
         dashboard = FtcDashboard.getInstance();
@@ -203,7 +212,7 @@ public class MarsRover extends OpMode
             midLeftSpeed = MAX_SPEED * linearSpeed * (midLeftRadius/midRightRadius);
         }
         //if turning right, use left wheel as reference for speed ratios
-        else{
+        else if(turnDirectionMultiplier < 0){
             frontRightSpeed = MAX_SPEED * linearSpeed * (frontRightRadius/midLeftRadius);
             frontLeftSpeed = MAX_SPEED * linearSpeed * (frontLeftRadius/midLeftRadius);
             backRightSpeed = MAX_SPEED * linearSpeed * (backRightRadius/midLeftRadius);
