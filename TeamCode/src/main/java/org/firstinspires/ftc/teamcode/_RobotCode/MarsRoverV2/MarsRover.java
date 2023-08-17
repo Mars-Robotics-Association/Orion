@@ -54,26 +54,26 @@ public class MarsRover extends OpMode
     @Override
     public void init() {
         //Map motors to hardware map
-        motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
-        motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
-        motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
-        motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
+        motorFrontLeft   = hardwareMap.dcMotor.get("motorFrontLeft"  );
+        motorBackLeft    = hardwareMap.dcMotor.get("motorBackLeft"   );
+        motorFrontRight  = hardwareMap.dcMotor.get("motorFrontRight" );
+        motorBackRight   = hardwareMap.dcMotor.get("motorBackRight"  );
         motorMiddleRight = hardwareMap.dcMotor.get("motorMiddleRight");
-        motorMiddleLeft = hardwareMap.dcMotor.get("motorMiddleLeft");
+        motorMiddleLeft  = hardwareMap.dcMotor.get("motorMiddleLeft" );
 
-        servoFrontLeft = hardwareMap.servo.get("servoFrontLeft");
+        servoFrontLeft  = hardwareMap.servo.get("servoFrontLeft" );
         servoFrontRight = hardwareMap.servo.get("servoFrontRight");
-        servoBackLeft = hardwareMap.servo.get("servoBackLeft");
-        servoBackRight = hardwareMap.servo.get("servoBackRight");
+        servoBackLeft   = hardwareMap.servo.get("servoBackLeft"  );
+        servoBackRight  = hardwareMap.servo.get("servoBackRight" );
 
 
         //sets inital power to 0
-        motorFrontRight.setPower(0);
-        motorFrontLeft.setPower(0);
-        motorBackRight.setPower(0);
-        motorBackLeft.setPower(0);
+        motorFrontRight .setPower(0);
+        motorFrontLeft  .setPower(0);
+        motorBackRight  .setPower(0);
+        motorBackLeft   .setPower(0);
         motorMiddleRight.setPower(0);
-        motorMiddleLeft.setPower(0);
+        motorMiddleLeft .setPower(0);
 
         //set ftc dashboard
         dashboard = FtcDashboard.getInstance();
@@ -86,11 +86,11 @@ public class MarsRover extends OpMode
         double linearSpeed = gamepad1.left_stick_y; //remember max speed is one- cant go further up
 
         //make sure dead zones exist
-        //if(Math.abs(turnFactor)<0.05) turnFactor = 0;
+        if(Math.abs(turnFactor)<0.05) turnFactor = 0;
         if(Math.abs(linearSpeed)<0.05) linearSpeed = 0;
 
         //multiplier for turning, LEFT TURN IS POSITIVE, RIGHT IS NEGATIVE
-        double turnDirectionMultiplier = turnFactor/Math.abs(turnFactor);
+        double turnDirectionMultiplier = Math.copySign(1, turnFactor);
 
         ////CALCULATE TURN RADIUS (WORKS)
 
@@ -110,16 +110,16 @@ public class MarsRover extends OpMode
             alignServos(turnDirectionMultiplier, turnRadius);
 
             //Use radius and speed to move along path
-            setMotorSpeeds(turnFactor, linearSpeed, turnDirectionMultiplier, turnRadius);
+            setMotorSpeeds(linearSpeed, turnDirectionMultiplier, turnRadius);
         }
 
         if(gamepad2.x){
-            motorFrontRight.setPower(0);
-            motorFrontLeft.setPower(0);
-            motorBackRight.setPower(0);
-            motorBackLeft.setPower(0);
+            motorFrontRight .setPower(0);
+            motorFrontLeft  .setPower(0);
+            motorBackRight  .setPower(0);
+            motorBackLeft   .setPower(0);
             motorMiddleRight.setPower(0);
-            motorMiddleLeft.setPower(0);
+            motorMiddleLeft .setPower(0);
             requestOpModeStop();
         }
 
@@ -134,15 +134,15 @@ public class MarsRover extends OpMode
         //TODO: check and possibly fix algorithms as outer wheels seem to be not rotating enough- inner wheels look fine
         //finds angle AB in triangle ABC where A is turn radius, B is distance from center of robot to front or back, and C is distance from wheel to center of turning circle
         //must multiply axel length by turn direction multiplier depending on which wheels are inner / outer, must multiply buy turn direction multiplier at end as well
-        double frontRightRad = Math.atan(FRONT_OFFSET/(turnRadius +(FRONT_AXEL_LENGTH* turnDirectionMultiplier))) * turnDirectionMultiplier;
-        double frontLeftRad = Math.atan(FRONT_OFFSET/(turnRadius +(FRONT_AXEL_LENGTH*(-turnDirectionMultiplier)))) * turnDirectionMultiplier;
-        double backRightRad = Math.atan(BACK_OFFSET/(turnRadius +(BACK_AXEL_LENGTH* turnDirectionMultiplier))) * turnDirectionMultiplier;
-        double backLeftRad = Math.atan(BACK_OFFSET/(turnRadius +(BACK_AXEL_LENGTH*(-turnDirectionMultiplier)))) * turnDirectionMultiplier;
+        double frontRightRad = Math.atan2(FRONT_OFFSET, (turnRadius + (FRONT_AXEL_LENGTH* turnDirectionMultiplier))) * turnDirectionMultiplier;
+        double frontLeftRad  = Math.atan2(FRONT_OFFSET, (turnRadius + (FRONT_AXEL_LENGTH*-turnDirectionMultiplier))) * turnDirectionMultiplier;
+        double backRightRad  = Math.atan2(BACK_OFFSET , (turnRadius + (BACK_AXEL_LENGTH * turnDirectionMultiplier))) * turnDirectionMultiplier;
+        double backLeftRad   = Math.atan2(BACK_OFFSET , (turnRadius + (BACK_AXEL_LENGTH *-turnDirectionMultiplier))) * turnDirectionMultiplier;
 
         telemetry.addData("Front right degrees", Math.toDegrees(frontRightRad));
-        telemetry.addData("Front left degrees", Math.toDegrees(frontLeftRad));
-        telemetry.addData("Back right degrees", Math.toDegrees(backRightRad));
-        telemetry.addData("Back left degrees", Math.toDegrees(backLeftRad));
+        telemetry.addData("Front left degrees" , Math.toDegrees(frontLeftRad ));
+        telemetry.addData("Back right degrees" , Math.toDegrees(backRightRad ));
+        telemetry.addData("Back left degrees"  , Math.toDegrees(backLeftRad  ));
         telemetry.addLine();
 
 
@@ -150,102 +150,77 @@ public class MarsRover extends OpMode
 
         //converts radians into servo position using handy map() utility function
         double frontRightServoPos = map(Math.toDegrees(frontRightRad), -150, 150, 0, 1);
-        double frontLeftServoPos = map(Math.toDegrees(frontLeftRad), -150, 150, 0, 1);
-        double backRightServoPos = map(Math.toDegrees(backRightRad), -150, 150, 0, 1);
-        double backLeftServoPos = map(Math.toDegrees(backLeftRad), -150, 150, 0, 1);
+        double frontLeftServoPos  = map(Math.toDegrees(frontLeftRad ), -150, 150, 0, 1);
+        double backRightServoPos  = map(Math.toDegrees(backRightRad ), -150, 150, 0, 1);
+        double backLeftServoPos   = map(Math.toDegrees(backLeftRad  ), -150, 150, 0, 1);
 
         //if the angle is infinite, point the servos forwards (aka at 0 degrees)
         if(Double.isNaN(frontRightServoPos)) frontRightServoPos = 0.5;
-        if(Double.isNaN(frontLeftServoPos)) frontLeftServoPos = 0.5;
-        if(Double.isNaN(backRightServoPos)) backRightServoPos = 0.5;
-        if(Double.isNaN(backLeftServoPos)) backLeftServoPos = 0.5;
+        if(Double.isNaN(frontLeftServoPos )) frontLeftServoPos  = 0.5;
+        if(Double.isNaN(backRightServoPos )) backRightServoPos  = 0.5;
+        if(Double.isNaN(backLeftServoPos  )) backLeftServoPos   = 0.5;
 
         //actually move the servos
         servoFrontRight.setPosition(frontRightServoPos + FR_TRIM);
-        servoFrontLeft.setPosition(frontLeftServoPos + FL_TRIM);
-        servoBackRight.setPosition(backRightServoPos + BR_TRIM);
-        servoBackLeft.setPosition(backLeftServoPos + BL_TRIM);
+        servoFrontLeft .setPosition(frontLeftServoPos  + FL_TRIM);
+        servoBackRight .setPosition(backRightServoPos  + BR_TRIM);
+        servoBackLeft  .setPosition(backLeftServoPos   + BL_TRIM);
 
         telemetry.addData("Front right servo pos", frontRightServoPos);
-        telemetry.addData("Front left servo pos", frontLeftServoPos);
-        telemetry.addData("Back right servo pos", backRightServoPos);
-        telemetry.addData("Back left servo pos", backLeftServoPos);
+        telemetry.addData("Front left servo pos" , frontLeftServoPos );
+        telemetry.addData("Back right servo pos" , backRightServoPos );
+        telemetry.addData("Back left servo pos"  , backLeftServoPos  );
         telemetry.addLine();
     }
 
-    private void setMotorSpeeds(double turnFactor, double linearSpeed, double turnDirectionMultiplier, double turnRadius) {
-        ////CALCULATE DRIVE SPEEDS (WORKS)
+    private void setMotorSpeeds(double linearSpeed, double turnDirectionMultiplier, double turnRadius) {
+        //// CALCULATE DRIVE SPEEDS (WORKS)
 
         //starts by finding individual turn radii of all the wheels using below equation
         //sqrt(frontOffset^2 + (axelLength*sideMult)^2)
-        double frontRightRadius = Math.sqrt(Math.pow(FRONT_OFFSET, 2) + Math.pow(turnRadius +(FRONT_AXEL_LENGTH* turnDirectionMultiplier), 2));
-        double frontLeftRadius = Math.sqrt(Math.pow(FRONT_OFFSET, 2) + Math.pow(turnRadius +(FRONT_AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
-        double backRightRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius +(BACK_AXEL_LENGTH* turnDirectionMultiplier), 2));
-        double backLeftRadius = Math.sqrt(Math.pow(BACK_OFFSET, 2) + Math.pow(turnRadius +(BACK_AXEL_LENGTH*(-turnDirectionMultiplier)), 2));
-        double midRightRadius = turnRadius + ((MID_AXEL_LENGTH)* turnDirectionMultiplier);
-        double midLeftRadius = turnRadius + ((MID_AXEL_LENGTH)*(-turnDirectionMultiplier));
+        double frontRightRadius = distance(FRONT_OFFSET, turnRadius + (FRONT_AXEL_LENGTH * turnDirectionMultiplier));
+        double frontLeftRadius  = distance(FRONT_OFFSET, turnRadius + (FRONT_AXEL_LENGTH *-turnDirectionMultiplier));
+        double backRightRadius  = distance(BACK_OFFSET , turnRadius + (BACK_AXEL_LENGTH  * turnDirectionMultiplier));
+        double backLeftRadius   = distance(BACK_OFFSET , turnRadius + (BACK_AXEL_LENGTH  *-turnDirectionMultiplier));
+        double midRightRadius   = turnRadius + (MID_AXEL_LENGTH* turnDirectionMultiplier);
+        double midLeftRadius    = turnRadius + (MID_AXEL_LENGTH*-turnDirectionMultiplier);
 
         telemetry.addData("Front right radius", frontRightRadius);
-        telemetry.addData("Front left radius", frontLeftRadius);
-        telemetry.addData("Back right radius", backRightRadius);
-        telemetry.addData("Back left radius", backLeftRadius);
-        telemetry.addData("Mid right radius", midRightRadius);
-        telemetry.addData("Mid left radius", midLeftRadius);
+        telemetry.addData("Front left radius" , frontLeftRadius);
+        telemetry.addData("Back right radius" , backRightRadius);
+        telemetry.addData("Back left radius"  , backLeftRadius);
+        telemetry.addData("Mid right radius"  , midRightRadius);
+        telemetry.addData("Mid left radius"   , midLeftRadius);
         telemetry.addLine();
 
-        //create speed variables
-        double frontRightSpeed = 0;
-        double frontLeftSpeed = 0;
-        double backRightSpeed = 0;
-        double backLeftSpeed = 0;
-        double midRightSpeed = 0;
-        double midLeftSpeed = 0;
+        // Motors midLeft or midRight are already maximums,
+        // so we'll Math.max both along with MAX_SPEED
+        double motorMaximum = Math.max(midRightRadius, midLeftRadius);
+        double maximum = Math.max(MAX_SPEED, motorMaximum * linearSpeed);
 
-        //sets speeds of each motor using the ratio of their radius compared to the outer middle wheel
-        //if turning left, use right wheel as reference for speed ratios
-        if(turnDirectionMultiplier > 0){
-            frontRightSpeed = MAX_SPEED * linearSpeed * (frontRightRadius/midRightRadius);
-            frontLeftSpeed = MAX_SPEED * linearSpeed * (frontLeftRadius/midRightRadius);
-            backRightSpeed = MAX_SPEED * linearSpeed * (backRightRadius/midRightRadius);
-            backLeftSpeed = MAX_SPEED * linearSpeed * (backLeftRadius/midRightRadius);
-            midRightSpeed = MAX_SPEED * linearSpeed * (midRightRadius/midRightRadius);
-            midLeftSpeed = MAX_SPEED * linearSpeed * (midLeftRadius/midRightRadius);
-        }
-        //if turning right, use left wheel as reference for speed ratios
-        else if(turnDirectionMultiplier < 0){
-            frontRightSpeed = MAX_SPEED * linearSpeed * (frontRightRadius/midLeftRadius);
-            frontLeftSpeed = MAX_SPEED * linearSpeed * (frontLeftRadius/midLeftRadius);
-            backRightSpeed = MAX_SPEED * linearSpeed * (backRightRadius/midLeftRadius);
-            backLeftSpeed = MAX_SPEED * linearSpeed * (backLeftRadius/midLeftRadius);
-            midRightSpeed = MAX_SPEED * linearSpeed * (midRightRadius/midLeftRadius);
-            midLeftSpeed = MAX_SPEED * linearSpeed * (midLeftRadius/midLeftRadius);
-        }
 
-        //if not turning at all, just go forwards
-        if(turnFactor == 0){
-            frontRightSpeed = MAX_SPEED * linearSpeed;
-            frontLeftSpeed = MAX_SPEED * linearSpeed;
-            backRightSpeed = MAX_SPEED * linearSpeed;
-            backLeftSpeed = MAX_SPEED * linearSpeed;
-            midRightSpeed = MAX_SPEED * linearSpeed;
-            midLeftSpeed = MAX_SPEED * linearSpeed;
-        }
+        double frontRightSpeed  = (linearSpeed * frontRightRadius) / maximum;
+        double frontLeftSpeed   = (linearSpeed * frontLeftRadius ) / maximum;
+        double backRightSpeed   = (linearSpeed * backRightRadius ) / maximum;
+        double backLeftSpeed    = (linearSpeed * backLeftRadius  ) / maximum;
+        double midRightSpeed    = (linearSpeed * midRightRadius  ) / maximum;
+        double midLeftSpeed     = (linearSpeed * midLeftRadius   ) / maximum;
 
 
         //actually apply speeds- negatives applied here for right vs left side
-        motorFrontRight.setPower(frontRightSpeed);
-        motorFrontLeft.setPower(-frontLeftSpeed);
-        motorBackRight.setPower(backRightSpeed);
-        motorBackLeft.setPower(-backLeftSpeed);
-        motorMiddleRight.setPower(midRightSpeed);
-        motorMiddleLeft.setPower(-midLeftSpeed);
+        motorFrontRight .setPower( frontRightSpeed);
+        motorFrontLeft  .setPower(-frontLeftSpeed );
+        motorBackRight  .setPower( backRightSpeed );
+        motorBackLeft   .setPower(-backLeftSpeed  );
+        motorMiddleRight.setPower( midRightSpeed  );
+        motorMiddleLeft .setPower(-midLeftSpeed   );
 
         telemetry.addData("Front right speed", frontRightSpeed);
-        telemetry.addData("Front left speed", frontLeftSpeed);
-        telemetry.addData("Back right speed", backRightSpeed);
-        telemetry.addData("Back left speed", backLeftSpeed);
-        telemetry.addData("Mid right speed", midRightSpeed);
-        telemetry.addData("Mid left speed", midLeftSpeed);
+        telemetry.addData("Front left speed" , frontLeftSpeed );
+        telemetry.addData("Back right speed" , backRightSpeed );
+        telemetry.addData("Back left speed"  , backLeftSpeed  );
+        telemetry.addData("Mid right speed"  , midRightSpeed  );
+        telemetry.addData("Mid left speed"   , midLeftSpeed   );
         telemetry.addLine();
     }
 
@@ -253,43 +228,53 @@ public class MarsRover extends OpMode
         ////MOVE SERVOS TO POSITIONS
 
         //converts radians into servo position using handy map() utility function
-        double frontRightServoPos = map(45, -150, 150, 0, 1);
-        double frontLeftServoPos = map(-45, -150, 150, 0, 1);
-        double backRightServoPos = map(-45, -150, 150, 0, 1);
-        double backLeftServoPos = map(45, -150, 150, 0, 1);
+        double frontRightServoPos = map( 45, -150, 150, 0, 1);
+        double frontLeftServoPos  = map(-45, -150, 150, 0, 1);
+        double backRightServoPos  = map(-45, -150, 150, 0, 1);
+        double backLeftServoPos   = map( 45, -150, 150, 0, 1);
 
         //actually move the servos
         servoFrontRight.setPosition(frontRightServoPos + FR_TRIM);
-        servoFrontLeft.setPosition(frontLeftServoPos + FL_TRIM);
-        servoBackRight.setPosition(backRightServoPos + BR_TRIM);
-        servoBackLeft.setPosition(backLeftServoPos + BL_TRIM);
+        servoFrontLeft .setPosition(frontLeftServoPos  + FL_TRIM);
+        servoBackRight .setPosition(backRightServoPos  + BR_TRIM);
+        servoBackLeft  .setPosition(backLeftServoPos   + BL_TRIM);
+
+
 
         telemetry.addData("Front right servo pos", frontRightServoPos);
-        telemetry.addData("Front left servo pos", frontLeftServoPos);
-        telemetry.addData("Back right servo pos", backRightServoPos);
-        telemetry.addData("Back left servo pos", backLeftServoPos);
+        telemetry.addData("Front left servo pos" , frontLeftServoPos);
+        telemetry.addData("Back right servo pos" , backRightServoPos);
+        telemetry.addData("Back left servo pos"  , backLeftServoPos);
         telemetry.addLine();
 
         ////SET MOTOR SPEEDS
-        double frontRightRadius = Math.sqrt(Math.pow(FRONT_OFFSET,2) + Math.pow(FRONT_AXEL_LENGTH,2));
-        double frontLeftRadius = Math.sqrt(Math.pow(FRONT_OFFSET,2) + Math.pow(FRONT_AXEL_LENGTH,2));
-        double backRightRadius = Math.sqrt(Math.pow(BACK_OFFSET,2) + Math.pow(BACK_AXEL_LENGTH,2));
-        double backLeftRadius = Math.sqrt(Math.pow(BACK_OFFSET,2) + Math.pow(BACK_AXEL_LENGTH,2));
+        double frontRightRadius = distance(FRONT_OFFSET, FRONT_AXEL_LENGTH);
+        double frontLeftRadius  = distance(FRONT_OFFSET, FRONT_AXEL_LENGTH);
+        double backRightRadius  = distance(BACK_OFFSET , BACK_AXEL_LENGTH );
+        double backLeftRadius   = distance(BACK_OFFSET , BACK_AXEL_LENGTH );
+
+        double motorMaximum = maxNum(MID_AXEL_LENGTH,
+                frontRightRadius,
+                frontLeftRadius,
+                backRightRadius,
+                backLeftRadius);
+
+        double maximum = Math.max(motorMaximum * speed, MAX_SPEED);
 
         //actually apply speeds- no negatives because we are turning
-        motorFrontRight.setPower(frontRightRadius * speed * MAX_SPEED);
-        motorFrontLeft.setPower(frontLeftRadius * speed * MAX_SPEED);
-        motorBackRight.setPower(backRightRadius * speed * MAX_SPEED);
-        motorBackLeft.setPower(backLeftRadius * speed * MAX_SPEED);
-        motorMiddleRight.setPower(MID_AXEL_LENGTH * speed * MAX_SPEED);
-        motorMiddleLeft.setPower(MID_AXEL_LENGTH * speed * MAX_SPEED);
+        motorFrontRight .setPower((frontRightRadius * speed) / maximum);
+        motorFrontLeft  .setPower((frontLeftRadius  * speed) / maximum);
+        motorBackRight  .setPower((backRightRadius  * speed) / maximum);
+        motorBackLeft   .setPower((backLeftRadius   * speed) / maximum);
+        motorMiddleRight.setPower((MID_AXEL_LENGTH  * speed) / maximum);
+        motorMiddleLeft .setPower((MID_AXEL_LENGTH  * speed) / maximum);
     }
 
     ////UTILITY////
     private double distance(double y, double x) {
         return Math.sqrt((x * x) + (y * y));
     }
-    private double maxNum(double[] arr) {
+    private double maxNum(double ...arr) {
         double acc = arr[0];
         for (int i = 1; i < arr.length; i++) {
             acc = Math.max(acc, arr[i]);
@@ -297,7 +282,6 @@ public class MarsRover extends OpMode
         return acc;
     }
     private double map(double x, double in_min, double in_max, double out_min, double out_max) {
-        //return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
         double slope = 1 * (out_max-out_min) / (in_max - in_min);
         return out_min + slope * (x - in_min);
     }
